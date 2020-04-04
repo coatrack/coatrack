@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Profle</h3>
+                </div>
+                <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
+
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>Profile<small></small></h2>
+
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="col-md-3 col-sm-3 col-xs-3 profile_left">
+                            <div class="profile_img">
+                                <div id="crop-avatar">
+                                    <!-- Current avatar -->
+                                    <img class="img-responsive avatar-view" src="/images/user.png" alt="Avatar" title="Change the avatar"/>
+                                </div>
+                            </div>
+                            <h3 id="name">[NAME]</h3>
+                            <ul class="list-unstyled user_data">
+                                <li><i class="fa fa-map-marker user-profile-icon"></i> <span id="company">[COMPANY]</span></li>
+                                <li>
+                                    <i class="fa fa-briefcase user-profile-icon"></i> 
+                                </li>
+
+                                <li class="m-top-xs">
+                                    <i class="fa fa-external-link user-profile-icon"></i>
+                                    <span id="email">[EMAIL]</span>
+                                </li>
+                            </ul>
+                            <br />
+                            <!-- start skills -->
+                            <h4>Actual Credit</h4>
+                            <div class="row top_tiles" style="margin: 10px 0;">
+
+                                <div class="col-md-6 tile">
+
+                                    <h2 id="credits">[CREDITS]</h2>
+
+                                </div>
+
+                            </div>
+
+                            <!-- end of skills -->
+
+                        </div>
+
+                        <div class="col-md-9 col-sm-9 col-xs-9">
+
+                            <div class="profile_title">
+                                <div class="col-md-6">
+                                    <h2>Activity report</h2>
+                                </div>
+
+                            </div>
+
+
+                            <div class="" role="tabpanel" data-example-id="togglable-tabs">
+                                <ul id="myTab" class="nav nav-tabs bar_tabs" role="tablist">
+                                    <li role="presentation" class="active"><a href="#tab_content1" id="withdrawal-tab" role="tab" data-toggle="tab" aria-expanded="true">Withdrawal transactions</a></li>
+                                    <li role="presentation"><a href="#tab_content2" id="deposit-tab" role="tab" data-toggle="tab" aria-expanded="true">Deposit transactions</a></li>
+                                    <li role="presentation"><a href="#tab_content3" id="bankaccount-tab" role="tab" data-toggle="tab" aria-expanded="true">Bank account management</a></li>
+                                    <li role="presentation"><a href="#tab_content4" id="recharge-tab" role="tab" data-toggle="tab" aria-expanded="true">Recharge Credit Account</a></li>
+                                </ul>
+                                <div id="myTabContent" class="tab-content">
+                                    <div role="tabpanel" class="tab-pane fade active in" id="tab_content1" aria-labelledby="home-tab">
+
+                                        <!-- start recent activity -->
+                                        <ul class="messages">
+                                            <table id="withdrawal_list" class="table table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>Description</th>
+                                                        <th>Amount</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </ul>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                                <input type="text" required="required" id="withdrawalAmount" placeholder="amount"/>
+                                            </div>
+
+                                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                                <button id="newWithdrawal" class="btn btn-success">Withdrawal</button>
+                                            </div>
+                                        </div>
+                                        <!-- end recent activity -->
+
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_content2" aria-labelledby="profile-tab">
+
+                                        <!-- start user projects -->
+                                        <table id="deposit_list" class="table table-striped table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Type</th>
+                                                    <th>Description</th>
+                                                    <th>Amount</th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody></tbody>
+                                        </table>
+                                        <!-- end user projects -->
+
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_content3" aria-labelledby="profile-tab">
+                                        <div><table id="bank_account_list" class="table table-striped table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Name</th>
+                                                        <th>Account Holder</th>
+                                                        <th>Bank name</th>
+                                                        <th>IBAN</th>
+                                                        <th>Default</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                        <div class="col-md-12 col-sm-12 col-xs-12">
+                                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                                <input type="text" required="required" id="identification" placeholder="identification"/>
+                                            </div>
+                                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                                <input type="text" required="required" id="accountHolder" placeholder="Account Holder"/>
+                                            </div>
+                                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                                <input type="text" required="required" id="bankName" placeholder="Bank Name"/>
+                                            </div>
+                                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                                <input type="text" required="required" id="iban" placeholder="IBAN"/>
+                                            </div>
+                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                                    <button id="newBankAccount" class="btn btn-success">New</button>
+                                                </div>
+                                                <div class="clearfix"></div>
+                                                <div class="col-md-3 col-sm-3 col-xs-3">
+                                                    <button id="setDefaultBankAccount" class="btn btn-danger">Set Default</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div role="tabpanel" class="tab-pane fade" id="tab_content4" aria-labelledby="profile-tab">
+                                        <div><a href="/pay5euros" class="btn btn-success">5 € Paypal</a></div>
+                                        <!--div><a href="/pay5euros" class="btn btn-success">25 € Paypal</a></div>
+                                        <div><a href="/pay5euros" class="btn btn-success">100 € Paypal</a></div-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+
+        <script th:inline="javascript">
+            // <![CDATA[
+
+            var withdrawal_list = null;
+            var deposit_list = null;
+            var bank_account_list = null;
+
+
+            $(document).ready(function () {
+
+                $.ajax({
+                    url: '/me',
+                    type: 'GET',
+                    contentType: 'application/json',
+
+                    success: function (result) {
+                        $("#name").text(result.firstname + " " + result.lastname);
+                        $("#company").text(result.company);
+                        $("#email").text(result.email);
+                        $("#credits").text(result.account.balance + " €");
+                    }
+                });
+
+
+                withdrawal_list = $('#withdrawal_list').DataTable({
+                    ajax: "/transactions/findByTypeWithdrawal",
+                    dom: "Bfrtip",
+                    ordering: true,
+                    select: true,
+                    deferRender: true,
+                    buttons: [],
+                    responsive: true,
+                    columns: [
+                        {title: "Date"},
+                        {title: "Description"},
+                        {title: "Amount"}
+                    ]
+                });
+
+
+                deposit_list = $('#deposit_list').DataTable({
+                    ajax: "/transactions/findByTypeAnyDeposit",
+                    dom: "Bfrtip",
+                    ordering: true,
+                    select: true,
+                    deferRender: true,
+                    buttons: [],
+                    responsive: true,
+                    columns: [
+                        {title: "Date"},
+                        {title: "Type"},
+                        {title: "Description"},
+                        {title: "Amount"}
+                    ]
+                });
+
+                bank_account_list = $('#bank_account_list').DataTable({
+                    ajax: {
+                        url: "/me",
+                        dataSrc: "account.bankAccount"
+                    },
+                    dom: "Bfrtip",
+                    ordering: true,
+                    select: true,
+                    deferRender: true,
+                    buttons: [],
+                    responsive: true,
+                    columns: [
+                        {data: "identification"},
+                        {data: "accountHolder"},
+                        {data: "bankName"},
+                        {data: "iban"},
+                        {data: "defaultAccount"}
+                    ]
+                });
+
+                $('#withdrawal_list tbody').on('click', 'tr', function () {
+                    $(this).toggleClass('selected');
+                });
+
+                $('#deposit_list tbody').on('click', 'tr', function () {
+                    $(this).toggleClass('selected');
+                });
+
+
+                $('#bank_account_list tbody').on('click', 'tr', function () {
+                    $(this).toggleClass('selected');
+                });
+
+
+
+                $('#newBankAccount').click(function () {
+                    var bankAccount = JSON.parse("{}");
+                    bankAccount.bankName = $("#bankName").val();
+                    bankAccount.iban = $("#iban").val();
+                    bankAccount.identification = $("#identification").val();
+                    bankAccount.accountHolder = $("#accountHolder").val();
+
+
+
+                    $.ajax({
+                        url: '/admin/creditAccount/bankAccount',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(bankAccount),
+                        dataType: 'json'
+                    }).done(function () {
+                        bank_account_list.ajax.reload();
+                    });
+                });
+
+                $('#setDefaultBankAccount').click(function () {
+                    $.ajax({
+                        url: '/admin/creditAccount/bankAccount/' + bank_account_list.rows('.selected').data()[0].id + "/setDefault",
+                        type: 'GET'
+                    }).done(function () {
+                        bank_account_list.ajax.reload();
+                    });
+                });
+
+                $('#newWithdrawal').click(function () {
+
+                    var transaction = JSON.parse("{}");
+                    transaction.amount = $("#withdrawalAmount").val();
+
+                    $.ajax({
+                        url: '/admin/creditAccount/withDrawal',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(transaction),
+                        dataType: 'json'
+                    }).done(function () {
+                        withdrawal_list.ajax.reload();
+
+                        $.ajax({
+                            url: '/me',
+                            type: 'GET',
+                            contentType: 'application/json',
+
+                            success: function (result) {
+                                $("#name").text(result.firstname + " " + result.lastname);
+                                $("#company").text(result.company);
+                                $("#email").text(result.email);
+                                $("#credits").text(result.account.balance + " €");
+                            }
+                        });
+                    });
+                });
+            });
+            // ]]>
+        </script>
+    </body>
+</html>
+

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3 th:text="#{admin.proxies.details.page.title}">Proxy Details</h3>
+                </div>
+                <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
+                    <a th:href="|@{/admin/proxies/}${proxy.id}|"
+                       class="btn btn-primary glyphicon glyphicon-refresh"/>
+                    <a th:href="@{'/admin/proxies/'}" th:text="#{admin.proxies.button.back}"
+                       class="btn btn-primary"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xy-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2 th:text="#{admin.proxies.info.title}">General Information</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <a th:href="|${proxy.id}@{/formUpdate}|"><i class="fa  fa-pencil-square-o"/></a>
+
+                            <table class="table">
+                                <tr>
+                                    <td th:text="#{admin.proxies.info.label.id}">Unique ID:</td>
+                                    <td th:text="${proxy.id}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.proxies.info.label.name}">Name:</td>
+                                    <td th:text="${proxy.name}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.proxies.info.label.description}">...</td>
+                                    <td th:text="${proxy.description}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.proxies.info.label.publicUrl}">...</td>
+                                    <td th:text="${proxy.publicUrl}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.proxies.info.label.port}">...</td>
+                                    <td th:text="${proxy.port}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.proxies.info.label.services}">...</td>
+                                    <td>
+                                        <span th:each="service : ${proxy.serviceApis}">
+                                            <span th:text="${service.guiStringRepresentation}"/>
+                                            <br/>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>
+                                <i class="fa fa-lg fa-bar-chart"></i>
+                                <span th:text="#{admin.proxies.metrics.title}">title</span>
+                            </h2>
+                            <small th:text="#{admin.proxies.metrics.subtitle}" class="h2_subtitle">[Metrics details ]</small>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+
+                            <table id="proxiesTable" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Proxied Service API</th>
+                                        <th>API User</th>
+                                        <th>Request Method</th>
+                                        <th>Path</th>
+                                        <th>Metric</th>
+                                        <th>HTTP Response Status</th>
+                                        <th>Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="metric : ${metrics}">
+                                        <td>
+                                            <div th:text="${metric.serviceApiName}"/>
+                                        </td>
+                                        <td>
+                                            <div th:text="${metric.apiUser}"/>
+                                        </td>
+                                        <td>
+                                            <div th:text="${metric.requestMethod}"/>
+                                        </td>
+                                        <td>
+                                            <div th:text="${metric.path}"/>
+                                        </td>
+                                        <td>
+                                            <div th:text="${metric.type.displayString}"/>
+                                        </td>
+                                        <td>
+                                            <div th:text="${metric.httpResponseCode}"/>
+                                        </td>
+                                        <td>
+                                            <div th:text="${metric.count}"/>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="row"
+                                 style="border-bottom: 1px solid #E0E0E0; padding-bottom: 5px; margin-bottom: 5px;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+    </body>
+</html>
+

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3 th:text="#{admin.api-keys.details.page.title}">Api Key Details</h3>
+                </div>
+                <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
+                    <a th:href="|@{/admin/api-keys/}${apiKey.id}|"
+                       class="btn btn-primary glyphicon glyphicon-refresh"/>
+                    <a th:href="@{'/admin/api-keys/'}" th:text="#{admin.api-keys.button.back}"
+                       class="btn btn-primary"/>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xy-12">
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>General Information</h2>
+
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <!--a th:href="|${apiKey.id}@{/formUpdate}|"><i class="fa  fa-pencil-square-o"/></a-->
+                            <table class="table">
+                                <tr>
+                                    <td th:text="#{admin.api-keys.info.label.id}">ID:</td>
+                                    <td th:text="${apiKey.id}"></td>
+                                </tr>
+
+                                <tr>
+                                    <td th:text="#{admin.api-keys.info.label.consumer}">Consumer</td>
+                                    <td th:text="${apiKey.user.username}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.api-keys.info.label.keyValue}">Key Value</td>
+                                    <td th:text="${apiKey.keyValue}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.api-keys.info.label.created}">Created</td>
+                                    <td th:text="${#dates.format(apiKey.created, 'yyyy-MM-dd')}"></td>
+                                </tr>
+                                <tr>
+                                    <td th:text="#{admin.api-keys.info.label.validUntil}">Valid until</td>
+                                    <td th:text="${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}"></td>
+                                </tr>
+                                <tr>
+                                    <td>Service API</td>
+                                    <td th:text="${apiKey.serviceApi.name}"></td>
+                                </tr>
+
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+    </body>
+</html>
+

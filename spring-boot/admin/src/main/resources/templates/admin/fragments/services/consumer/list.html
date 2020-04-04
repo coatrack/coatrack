@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>
+                        <span th:text="#{admin.services.details.page.title.consumer}">Title</span>
+                    </h3>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+                        <div class="x_content">
+                            <i class="fa fa-lg fa-info-circle"/>
+                            <span th:text="#{admin.services.page.explanation.consumer}"/>
+                        </div>
+                    </div>
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2 th:text="#{admin.services.list.title.consumer}">[Administration]</h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content  fill-body-table">
+                            <div id="message-holder">
+                                <div th:if="${feedbackMessage}"
+                                     th:class="'messageblock hidden'"
+                                     th:text="${feedbackMessage}"></div>
+                            </div>
+                            <table id="servicesTable" class="table table-striped jambo_table default-data-table">
+                                <thead>
+                                    <tr class="heading">
+                                        <th th:text="#{admin.services.list.col.name}"></th>
+                                        <th th:if="${testService == null}" th:text="#{admin.services.list.col.id.consumer}"></th>
+                                        <th th:text="#{admin.services.list.col.pricing}"></th>
+                                        <th th:text="#{admin.services.list.col.description}"></th>
+                                        <th th:text="#{admin.services.list.col.subscribe}"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="service : ${services}" th:id="|@{item}${service.id}|" >
+                                        <td th:text="${service.name}"></td>
+                                        <!-- the service owner column should be hidden in the getting started wizard for consumers; in that wizard the testService will not be null -->
+                                        <td th:if="${testService == null}" th:attrappend="style = ${service.owner.username} == ${loggedInUser}? 'color: #1ABB9C; font-weight: bold'" th:text=" ${service.owner.username}">Service owner</td>
+                                        <td th:text="${service.serviceAccessPaymentPolicy.displayStringShort} == null ? '' : ${service.serviceAccessPaymentPolicy.displayStringShort}"></td>
+                                        <td th:text="${service.description}">service description</td>
+                                        <td>
+                                            <th:block  th:unless="${#lists.contains(idsOfServicesUserCanAccess, service.id)}" class="center">
+                                                <form action="#" th:action="@{/admin/services/consumer/subscribe}" method="post">
+                                                    <input type="hidden" name="selectedServiceId" th:value="${service.id}" />
+                                                    <button class="btn btn-primary" type="submit">Generate your API key</button>
+                                                </form>
+                                            </th:block>
+                                            <th:block  th:if="${#lists.contains(idsOfServicesUserCanAccess, service.id)}">
+                                                <p class="byline">
+                                                    <th:block th:text="#{admin.services.list.col.subscribe.alreadySubscribed}">
+                                                        you subscribed
+                                                    </th:block>
+                                                    <a href="/admin/api-keys/consumer/list"
+                                                       th:text="#{admin.services.list.col.subscribe.checkApiKeyLink}">
+                                                        click here to check api key
+                                                    </a>
+                                                </p>
+                                            </th:block>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(services)}" >
+                                        <td colspan="5"> No items yet  </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
+    </body>
+</html>
+

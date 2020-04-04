@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <div th:include="admin/fragments/head :: head" th:remove="tag">Global Header</div>
+        <div th:include="admin/fragments/js :: functions('/admin')" th:remove="tag">Functions</div>
+
+        <link type="text/css" th:href="@{/dashboard/css/animate.min.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/maps/jquery-jvectormap-2.0.3.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/icheck/flat/red.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/floatexamples.css}" rel="stylesheet"/>
+        <title>CoatRack Administration</title>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            function dateRangePickedByUser(dateFrom, dateUntil) {
+                var dateRangeUrlSuffix = "?dateFrom=" + dateFrom.format('YYYY-MM-DD');
+                dateRangeUrlSuffix += "&dateUntil=" + dateUntil.format('YYYY-MM-DD');
+
+                loadConsumerStatistics(dateRangeUrlSuffix);
+                loadChartsForNewDateRange(dateRangeUrlSuffix);
+
+
+                $("#date-range-from").text(dateFrom.format('YYYY-MM-DD'));
+                $("#date-range-until").text(dateUntil.format('YYYY-MM-DD'));
+            }
+
+            function loadConsumerStatistics(dateRangeUrlSuffix) {
+                var url = "/admin/dashboard/metricsByLoggedUserStatistics";
+                url += dateRangeUrlSuffix;
+
+                $.getJSON(url, function (json) {
+
+                    // Calculate amount of service calls
+                    var resultList = json.filter(function (item) {
+                        return (item.type == "RESPONSE");
+                    });
+                    var callsCounter = 0;
+                    resultList.forEach(function (element) {
+                        callsCounter += element.count;
+                    });
+                    $("#callsThisPeriod").text(callsCounter);
+
+                    // Calculate amount of error service calls
+                    resultList = json.filter(function (item) {
+                        return (item.httpResponseCode >= 400);
+                    });
+
+                    var errorCallsCounter = 0;
+                    resultList.forEach(function (element) {
+                        errorCallsCounter += element.count;
+                    });
+                    $("#errorsThisPeriod").text(errorCallsCounter);
+
+                    // Calculate amount of different service called
+                    var servicesCalledList = [];
+                    for (var i = 0; i < json.length; i++) {
+                        var item = json[i].apiKey;
+                        if (!servicesCalledList.includes(item.serviceApiName)) {
+                            servicesCalledList.push(item.serviceApiName);
+                        }
+                    }
+
+                    $("#servicesCalled").text(servicesCalledList.length);
+
+                    // Calculate List of different service called
+                    var output = document.getElementById("listServicesCalled");
+                    output.childNodes = new Array();
+                    var table = "<h4>List of services called</h4>";
+                    output.innerHTML = table;
+                    for (index = 0; index < servicesCalledList.length; index++)
+                    {
+                        var table = "";
+                        var iDiv = document.createElement('div');
+                        console.log(index);
+                        table += "<div id=\"userStatistics\"  class=\"widget_summary\">";
+                        table += "<div class=\"w_left w_25\"><span>" + servicesCalledList[index] + "</span></div>";
+                        table += "<div class=\"clearfix\"></div>";
+                        table += "<\div>";
+                        iDiv.innerHTML = table;
+                        output.appendChild(iDiv);
+                    }
+                });
+            }
+            function loadChart(url, canvasId) {
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    success: function (result) {
+                        if (result.data != null)
+                        {
+                            var canvas = document.getElementById(canvasId);
+                            if (canvas != null)
+                            {
+                                new Chart(canvas, result);
+                            }
+                        }
+                    },
+                    error: function (result) {
+                        console.log('error when loading chart:' + JSON.stringify(result));
+                    }
+                });
+            }
+            function loadChartsForNewDateRange(dateRangeUrlSuffix) {
+
+                loadChart('/admin/consumer/dashboard/userStatsDoughnutChart' + dateRangeUrlSuffix, 'userStatsChartCanvas');
+                loadChart('/admin/consumer/dashboard/httpResponseStatsChart' + dateRangeUrlSuffix, 'httpStatsChartCanvas');
+                loadChart('/admin/consumer/dashboard/statsPerDayLineChart' + dateRangeUrlSuffix, 'statsPerDayLineChartCanvas');
+
+            }
+
+            $(document).ready(function () {
+
+
+                /* Load Consumer Statistics */
+                var dateFrom = moment().subtract(6, 'days');
+                var dateUntil = moment();
+
+
+                $("#date-range-from").text(dateFrom.format('YYYY-MM-DD'));
+                $("#date-range-until").text(dateUntil.format('YYYY-MM-DD'));
+
+
+                var dateRangeUrlSuffix = "?dateFrom=" + dateFrom.format('YYYY-MM-DD');
+                dateRangeUrlSuffix += "&dateUntil=" + dateUntil.format('YYYY-MM-DD');
+
+                loadChartsForNewDateRange(dateRangeUrlSuffix);
+                loadConsumerStatistics(dateRangeUrlSuffix);
+
+                /* Date Range Picker */
+                $('#date-range-picker').daterangepicker({
+                    locale: {
+                        format: 'YYYY-MM-DD'
+                    },
+                    startDate: dateFrom,
+                    endDate: dateUntil,
+                    showDropdowns: true,
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    }
+                }, dateRangePickedByUser
+                        );
+            });
+
+            /*]]>*/
+        </script>
+
+    </head>
+
+    <body class="nav-md">
+        <div class="container body">
+
+            <div class="main_container">
+                <div class="col-md-3 left_col">
+                    <div th:include="admin/fragments/sidebar :: sidebar" th:remove="tag">Sidebar</div>
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div th:include="admin/fragments/topnav :: topnav" th:remove="tag">Top Navigation Area</div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <br/>
+                <div class="">
+                    <!-- main body -->
+                    <div th:include="admin/fragments/main/consumer_dashboard :: body" th:remove="tag">Main Body</div>
+                    <!-- /main body -->
+                </div>
+
+                <!-- modal pop-up help windows -->
+                <div th:replace="admin/fragments/help :: help-popups">Footer</div>
+                <!-- /modal pop-up help windows -->
+
+                <!-- footer content -->
+                <footer th:replace="admin/fragments/footer :: footer">Footer</footer>
+                <!-- /footer content -->
+
+            </div>
+            <!-- /page content -->
+        </div>
+
+        <div th:include="admin/fragments/notifications :: notifications" th:remove="tag">Notifications</div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <div th:include="admin/fragments/scripts :: dashboard" th:remove="tag">Dashboard Page Javascript</div>
+        <div th:include="admin/fragments/js :: functions('/admin/dashboard')" th:remove="tag">Functions</div>
+
+    </body>
+
+</html>

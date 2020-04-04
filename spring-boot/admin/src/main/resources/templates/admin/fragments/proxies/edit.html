@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3 th:text="${mode} == 0 ? #{admin.proxies.new.page.title} : #{admin.proxies.edit.page.title}"></h3>
+                </div>
+                <div class="title_right">
+                    &nbsp;
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+
+                        <div class="x_title">
+                            <h2  th:text="${mode} == 0 ? #{admin.proxies.new.form.title} : #{admin.proxies.edit.form.title}">Form
+                                <small th:text="#{admin.proxies.edit.form.subtitle}">different form elements</small>
+                            </h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                &nbsp;
+                            </ul>
+                            <div class="clearfix"></div>
+                        </div>
+
+                        <div class="x_content">
+                            <div id="busy_indicator" class="busy_indicator center-div" style="display: none;"></div>
+                            <br/>
+
+                            <div id="proxyFormDiv">
+                                <form id="proxyForm" class="form-horizontal form-label-left"
+                                      action="#" th:action="${mode} == 0 ? @{/admin/proxies/add} : @{/admin/proxies/update}" method="POST">
+                                    <input type="hidden" th:field="${proxy.id}" />
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                            <span th:text="#{admin.proxies.edit.form.label.name}"/>
+                                            <span class="required">*</span>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="text" required="required"
+                                                   th:field="${proxy.name}"
+                                                   class="form-control col-md-7 col-xs-12"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                            <a data-toggle="modal" data-target=".getting-started-gateway-url-modal">
+                                                <span th:text="#{admin.proxies.edit.form.label.publicUrl}"/>
+                                                <span class="required">*</span>
+                                                <i class="fa fa-question-circle"></i>
+                                            </a>
+                                            <br/>
+                                            <small th:text="#{admin.proxies.edit.form.label.publicUrl.explanation}"/>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input id="proxyPublicUrlInputField" type="text" required="required" placeholder="http(s)://"
+                                                   th:field="${proxy.publicUrl}"
+                                                   class="form-control col-md-7 col-xs-12"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                            <span th:text="#{admin.proxies.edit.form.label.port}"/>
+                                            <span class="required">*</span>
+                                            <br/>
+                                            <small th:text="#{admin.proxies.edit.form.label.port.explanation}"/>
+                                        </label>
+                                        <div class="col-md-6 col-sm-6 col-xs-12">
+                                            <input type="number" required="required"
+                                                   th:field="${proxy.port}"
+                                                   class="form-control col-md-7 col-xs-12"/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                                               th:text="#{admin.proxies.edit.form.label.services}">
+                                        </label>
+
+                                        <div class="col-md-9 col-sm-9 col-xs-12">
+                                            <div th:each="service : ${services}" class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" class="flat" name="selectedServices"
+                                                           th:value="${service.id}" th:checked="${proxy.getServiceApis().contains(service)}? 'true': 'false'"/>
+                                                    <span th:text="${service.guiStringRepresentation}"/>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div th:if="${#lists.isEmpty(services)}" class="col-md-9 col-sm-9 col-xs-12">
+                                            <p class="byline">
+                                                <br/>
+                                                You did not yet define any services that could be provided via the new gateway.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                                               th:text="#{admin.proxies.edit.form.label.description}">
+                                        </label>
+                                        <div class="col-md-9 col-sm-9 col-xs-12">
+                                            <textarea class="form-control" rows="4" th:field="${proxy.description}"> </textarea>
+                                        </div>
+                                    </div>
+                                    <div class="ln_solid"></div>
+                                    <div class="invalid-form-error-message" th:if="${errorMessageKey} != null and ${errorMessageKey} != 'updateProxyRefreshError' ">
+                                        <p class="parsley-error"  th:text="#{|admin.proxies.edit.form.error.msg.${errorMessageKey}|}"/>
+                                        <p class="parsley-error" th:if="${errorMessageText}" th:text="${errorMessageText}"/>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                            <a id="save" class="btn btn-success">Submit</a>
+                                            <a th:href="@{'/admin/proxies/'}" class="btn btn-primary"> Cancel</a>
+                                        <button class="btn btn-primary" type="reset">Reset</button>
+
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+            <div th:include="admin/fragments/scripts :: urlValidator">Javascript Libraries</div>
+            <script th:inline="javascript">
+                /*<![CDATA[*/
+                $(document).ready(function(){
+                    ([[${errorMessageKey}]] == 'updateProxyRefreshError'? $('#proxy-update-error').modal('show') : null);
+                });
+
+                // This function will check the port number and public URL
+                $("#save").click(function () {
+                    var port = $('input[name="port"]').val();
+                    if (!(port > 1024 && port < 49151)){ alert('Port number should be in the range from 1025 to 49150'); return false}
+                    (isValidURL($("#proxyPublicUrlInputField").val().trim())) || $("#proxyPublicUrlInputField").val().trim() == "" ? portAndUrlAccepted() : alert("Service URL must be valid and start with http:// or https://");
+                });
+
+                // This function will be called if all the checks (port number and public url) where accepted
+                function portAndUrlAccepted() {
+                    $("#proxyForm").submit();
+                    $('#proxyFormDiv').hide();
+                    $('#busy_indicator').show();
+                };
+                /*]]>*/
+            </script>
+        </div>
+
+    </body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<div th:fragment="body">
+
+    <div class="page-title">
+        <div class="title_left">
+            <h3>
+                Welcome to
+                <span style="font-family: Lobster; font-style: italic; font-size: 120%">CoatRack</span>
+            </h3>
+        </div>
+        <div class="title_right">
+            &nbsp;
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+            <div class="x_panel">
+                <div class="x_content">
+                    <!-- Starter Page -->
+                    <article id="getstarted">
+                        <h2>
+                            <p>
+                                We provide tutorials to support you in getting started with CoatRack.
+                                What would you like to do first?
+                            </p>
+                            <div class="clearfix"></div>
+                        </h2>
+                        <div class="col-md-4 col-sm-12 col-xs-12 form-group" >
+                            <p>
+                                <button type="button" class="btn btn-lg btn-primary" onclick="location.href='/admin/gettingstarted'">Offer my own service via CoatRack</button>
+                            </p>
+                            <p>
+                                <button type="button" class="btn btn-lg btn-primary" onclick="location.href='admin/consumer/gettingstarted'">Learn how to use services offered via CoatRack</button>
+                            </p>
+                        </div>
+                    </article>
+                </div>
+                <!-- End of the Starter Page -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    /*]]>*/
+</script>
+</body>
+</html>

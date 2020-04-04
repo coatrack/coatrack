@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <body>
+        <div th:fragment="sidebar">
+            <div class="left_col scroll-view">
+                <div class="navbar nav_title" style="border: 0;">
+                    <a th:href="@{/admin}" class="site_title">
+                        <span style="font-family: Lobster; font-style: italic; font-size: 130%;">CoatRack</span>
+                        <span style="font-size: 50%;">v@@project.version@@</span>
+                    </a>
+                </div>
+                <div class="clearfix"></div>
+
+                <!-- menu prile quick info -->
+                <div class="profile">
+                    <div class="profile_pic">
+                        <img th:src="@{/images/user.png}" alt="..." class="img-circle profile_img"/>
+                    </div>
+                    <div class="profile_info">
+                        <span>Welcome to
+                            <span style="font-family: Lobster; font-style: italic; font-size: 110%">CoatRack,</span>
+                            <br />
+                            <span th:text="${user.firstname}+' '+${user.lastname}">User Name</span>
+                        </span>
+                    </div>
+                </div>
+                <!-- /menu prile quick info -->
+
+                <br/>
+
+                <!-- sidebar menu -->
+                <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+                    <div class="menu_section">
+                        <h3>Offer Services</h3>
+                        <ul class="nav side-menu">
+                            <li><a th:href="@{/admin}"><i class="fa fa-home"></i> Dashboard</a></li>
+                            <!--                    <li><a><i class="fa fa-user"></i> Users<span class="fa fa-chevron-down"></span></a>
+                                                    <ul class="nav child_menu" style="display: none">
+                                                        <li><a th:href="@{/admin/users}">All Users</a>
+                                                        </li>
+                                                        <li><a th:href="@{/admin/roles}">Roles</a>
+                                                        </li>
+                                                    </ul>
+                                                </li>-->
+                            <li>
+                                <a data-toggle="modal" data-target=".getting-started-modal">
+                                    <i class="fa fa-question-circle"></i>
+                                    Getting Started Information
+                                </a>
+                            </li>
+                            <li>
+                                <a th:href="@{/admin/gettingstarted}">
+                                    <i class="fa fa-play-circle"></i>
+                                    Tutorial
+                                </a>
+                            </li>
+                            <li><a><i class="fa fa-cog"></i> Service Offering Setup<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="display: none">
+                                    <li><a th:href="@{/admin/services}" th:text="#{admin.menu.settings.services}">Manage ...</a>
+                                    </li>
+
+                                    <li><a th:href="@{/admin/proxies}" th:text="#{admin.menu.settings.proxies}">Manage ...</a>
+                                    </li>
+
+                                    <li><a th:href="@{/admin/api-keys}" th:text="#{admin.menu.settings.api-keys}">Manage API keys</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li><a><i class="fa fa-clipboard"></i> Reports<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="display: none">
+                                    <li><a th:href="@{/admin/reports/}">Services Offered by Me</a>
+                                    </li>
+
+                                </ul>
+                            </li>
+
+
+                        </ul>
+                    </div>
+
+                    <div class="menu_section">
+                        <h3>Use Services</h3>
+                        <ul class="nav side-menu">
+                            <li><a th:href="@{/admin/consumer}"><i class="fa fa-home"></i> Dashboard</a></li>
+                            <li>
+                                <a th:href="@{/admin/consumer/gettingstarted}">
+                                    <i class="fa fa-play-circle"></i>
+                                    Tutorial
+                                </a>
+                            </li>
+                            <li><a><i class="fa fa-exchange"></i> Service Usage Setup<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="display: none">
+                                    <li><a th:href="@{/admin/api-keys/consumer/list}">API Keys assigned to me</a>
+                                    </li>
+                                    <li><a th:href="@{/admin/services/consumer/list}">Public Service Offerings</a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li><a><i class="fa fa-clipboard"></i> Reports<span class="fa fa-chevron-down"></span></a>
+                                <ul class="nav child_menu" style="display: none">
+                                    <li><a th:href="@{/admin/reports/consumer}">Services Used by Me</a>
+                                    </li>
+
+                                </ul>
+                            </li>
+
+
+                        </ul>
+                    </div>
+
+
+                </div>
+                <!-- /sidebar menu -->
+
+                <!-- /menu footer buttons -->
+                <div class="sidebar-footer hidden-small">
+                    <a data-toggle="tooltip" data-placement="top" title="" th:href="@{/}">
+                        <span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+                        <span class="sidebar-footer-text">Return to Home</span>
+                    </a>
+                </div>
+                <!-- /menu footer buttons -->
+            </div>
+        </div>
+    </body>
+</html>

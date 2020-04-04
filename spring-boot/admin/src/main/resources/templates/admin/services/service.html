@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <div th:include="admin/fragments/head :: head" th:remove="tag">Global Header</div>
+        <div th:include="admin/fragments/js :: functions('/admin/services')" th:remove="tag">Functions</div>
+        <div th:include="admin/fragments/scripts :: datatables" th:remove="tag">Datatables Support</div>
+        <title>CoatRack Administration - List Proxies</title>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            $(document).ready(function () {
+
+                function loadCharts(url) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        success: function (result) {
+                            for (var key in result) {
+                                var canvas = document.getElementById('canvasDoughnut_' + key);
+                                new Chart(canvas, result[key]);
+                            }
+                        },
+                        error: function (result) {
+                            console.log('error when loading charts via url:' + url + " - result is: " + JSON.stringify(result));
+                        }
+                    });
+                }
+                var serviceId = /*[[${serviceId}]]*/ '-1';
+                loadCharts('/admin/services/' + serviceId + '/usageStatisticsDoughnutCharts');
+
+                function dateRangePickedByUser(dateFrom, dateUntil) {
+                    var dateRangeUrlSuffix = "?dateFrom=" + dateFrom.format('YYYY-MM-DD');
+                    dateRangeUrlSuffix += "&dateUntil=" + dateUntil.format('YYYY-MM-DD');
+
+                    var urlToReloadPage = '/admin/services/' + serviceId + '/' + dateRangeUrlSuffix;
+                    window.location.href = urlToReloadPage;
+                }
+
+                var dateRangeStartDateFromServer = /*[[${#temporals.format(statisticsDateFrom, 'yyyy-MM-dd')}]]*/ '-1';
+                var dateRangeEndDateFromServer = /*[[${#temporals.format(statisticsDateUntil, 'yyyy-MM-dd')}]]*/ '-1';
+
+                $('#date-range-picker').daterangepicker({
+                    locale: {
+                        format: 'DD/MM/YYYY'
+                    },
+                    startDate: moment(dateRangeStartDateFromServer),
+                    endDate: moment(dateRangeEndDateFromServer),
+                    showDropdowns: true,
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    }
+                }, dateRangePickedByUser
+                        );
+            });
+
+            /*]]>*/
+        </script>
+
+        <div th:include="admin/fragments/scripts :: dashboard" th:remove="tag">Dashboard Page Javascript</div>
+
+    </head>
+    <body th:replace="admin/includes/body :: body('services/service')"></body>
+</html>

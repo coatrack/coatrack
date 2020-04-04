@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <div th:include="admin/fragments/head :: head" th:remove="tag">Global Header</div>
+        <div th:include="admin/fragments/js :: functions('/admin')" th:remove="tag">Functions</div>
+
+        <link type="text/css" th:href="@{/dashboard/css/animate.min.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/maps/jquery-jvectormap-2.0.3.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/icheck/flat/red.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/floatexamples.css}" rel="stylesheet"/>
+        <title>CoatRack Administration</title>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            $(document).ready(function () {
+
+                // creates an hash table called charts
+                window.charts = new Object();
+
+                function loadGeneralStatistics(dateRangeUrlSuffix) {
+                    var url = "/admin/dashboard/generalStatistics.json";
+                    url += dateRangeUrlSuffix;
+
+                    $.getJSON(url, function (json) {
+
+                        $("#callsTotal").text(json.callsTotal);
+                        $("#errorsTotal").text(json.errorsTotal);
+                        $("#revenueTotal").text(json.revenueTotal);
+                        $("#users").text(json.users);
+                        $("#callsDiff").text(json.callsDiff);
+                        $("#callsThisPeriod").text(json.callsThisPeriod);
+                        $("#errorsThisPeriod").text(json.errorsThisPeriod);
+                    });
+                }
+                function loadStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(dateRangeUrlSuffix) {
+                    var url = "/admin/dashboard/statisticsPerApiConsumerInDescendingOrderByNoOfCalls.json" + dateRangeUrlSuffix;
+                    $.getJSON(url, function (json) {
+
+                        console.log("success");
+                        console.log(json);
+
+                        var output = document.getElementById("userStatisticsTable");
+                        output.childNodes = new Array();
+                        var table = "<h4>Number of API calls</h4><div class=\"clearfix\"></div><p>Number of API calls in the selected date range.</p>";
+                        output.innerHTML = table;
+                        console.log("size:" + json.length);
+                        for (index = 0; index < json.length; index++)
+                        {
+                            var table = "";
+                            var iDiv = document.createElement('div');
+                            console.log(index);
+                            table += "<div id=\"userStatistics\"  class=\"widget_summary\">";
+                            table += "<div class=\"w_left w_25\"><span>" + json[index].userName + "</span></div>";
+                            table += "<div class=\"w_center w_55\"><div class=\"progress\"><div class=\"progress-bar bg-green\" role=\"progressbar\" aria-valuenow=\"60\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: " + json[index].percentage + "%;\"></div></div></div>";
+                            table += "<div class=\"w_right w_20\"><span>" + json[index].noOfCalls + "</span></div>";
+                            table += "<div class=\"clearfix\"></div>";
+                            table += "<\div>";
+                            console.log(table);
+                            iDiv.innerHTML = table;
+                            output.appendChild(iDiv);
+                        }
+                    });
+                }
+                function loadChart(url, canvasId) {
+                    $.ajax({
+                        url: url,
+                        type: 'GET',
+                        success: function (result) {
+                            if (result.data != null)
+                            {
+                                var canvas = document.getElementById(canvasId);
+
+                                if (canvas != null) {
+
+                                    if (window.charts[canvasId] != undefined)
+                                    {
+                                        window.charts[canvasId].destroy();
+                                    }
+
+                                    window.charts[canvasId] = new Chart(canvas,result);
+                                }
+                            }
+                        },
+                        error: function (result) {
+                            console.log('error when loading chart:' + JSON.stringify(result));
+                        }
+                    });
+                }
+                function loadChartsForNewDateRange(dateRangeUrlSuffix) {
+
+                    loadStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(dateRangeUrlSuffix);
+                    loadChart('/admin/dashboard/httpResponseStatsChart' + dateRangeUrlSuffix, 'httpStatsChartCanvas');
+                    loadChart('/admin/dashboard/userStatsDoughnutChart' + dateRangeUrlSuffix, 'userStatsChartCanvas');
+                    loadChart('/admin/dashboard/statsPerDayLineChart' + dateRangeUrlSuffix, 'statsPerDayLineChartCanvas');
+                }
+
+                function dateRangePickedByUser(dateFrom, dateUntil) {
+                    var dateRangeUrlSuffix = "?dateFrom=" + dateFrom.format('YYYY-MM-DD');
+                    dateRangeUrlSuffix += "&dateUntil=" + dateUntil.format('YYYY-MM-DD');
+
+                    loadGeneralStatistics(dateRangeUrlSuffix);
+                    loadChartsForNewDateRange(dateRangeUrlSuffix);
+
+                    var fromServerRaw = /*[[${stats.dateFrom}]]*/ '-1';
+                    var fromServerFormatted = /*[[${#temporals.format(stats.dateFrom, 'yyyy-MM-dd')}]]*/ '-1';
+                    var test = moment().subtract(6, 'days');
+                    console.log('now four:');
+                    console.log(test);
+                    console.log(moment());
+
+                    console.log(fromServerFormatted);
+                    console.log(fromServerRaw);
+
+                    $("#date-range-from").text(dateFrom.format('YYYY-MM-DD'));
+                    $("#date-range-until").text(dateUntil.format('YYYY-MM-DD'));
+                }
+
+                var dateRangeStartDateFromServer = /*[[${#temporals.format(stats.dateFrom, 'yyyy-MM-dd')}]]*/ '-1';
+                var dateRangeEndDateFromServer = /*[[${#temporals.format(stats.dateUntil, 'yyyy-MM-dd')}]]*/ '-1';
+
+                $('#date-range-picker').daterangepicker({
+                    locale: {
+                        format: 'DD/MM/YYYY'
+                    },
+                    startDate: moment(dateRangeStartDateFromServer),
+                    endDate: moment(dateRangeEndDateFromServer),
+                    showDropdowns: true,
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    }
+                }, dateRangePickedByUser
+                        );
+
+                var dateRangeUrlSuffix = "?dateFrom=" + dateRangeStartDateFromServer;
+                dateRangeUrlSuffix += "&dateUntil=" + dateRangeEndDateFromServer;
+                loadChartsForNewDateRange(dateRangeUrlSuffix);
+            });
+
+            /*]]>*/
+        </script>
+
+    </head>
+
+    <body class="nav-md">
+        <div class="container body">
+
+            <div class="main_container">
+                <div class="col-md-3 left_col">
+                    <div th:include="admin/fragments/sidebar :: sidebar" th:remove="tag">Sidebar</div>
+                </div>
+            </div>
+
+            <!-- top navigation -->
+            <div class="top_nav">
+                <div th:include="admin/fragments/topnav :: topnav" th:remove="tag">Top Navigation Area</div>
+            </div>
+            <!-- /top navigation -->
+
+            <!-- page content -->
+            <div class="right_col" role="main">
+                <br/>
+                <div class="">
+                    <!-- main body -->
+                    <div th:include="admin/fragments/main/dashboard :: body" th:remove="tag">Main Body</div>
+                    <!-- /main body -->
+                </div>
+
+                <!-- modal pop-up help windows -->
+                <div th:replace="admin/fragments/help :: help-popups">Footer</div>
+                <!-- /modal pop-up help windows -->
+
+                <!-- footer content -->
+                <footer th:replace="admin/fragments/footer :: footer">Footer</footer>
+                <!-- /footer content -->
+
+            </div>
+            <!-- /page content -->
+        </div>
+
+        <div th:include="admin/fragments/notifications :: notifications" th:remove="tag">Notifications</div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <div th:include="admin/fragments/scripts :: dashboard" th:remove="tag">Dashboard Page Javascript</div>
+        <div th:include="admin/fragments/js :: functions('/admin/dashboard')" th:remove="tag">Functions</div>
+
+    </body>
+
+</html>
