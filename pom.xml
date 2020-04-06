@@ -11,6 +11,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
         <spring-cloud.version>Dalston.SR3</spring-cloud.version>
+        <licenseName>apache_v2</licenseName>
     </properties>
     <modules>
         <module>api</module>
@@ -56,6 +57,7 @@
                         <phase>process-sources</phase>
                         <configuration>
                             <licenseName>apache_v2</licenseName>
+                            <!--<organizationName>Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)</organizationName>-->
                             <roots>
                                 <root>src/main/java</root>
                                 <root>src/test</root>
