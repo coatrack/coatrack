@@ -1,0 +1,9 @@
+image: maven:3.5.4
+
+pipelines:
+  default:
+    - step:
+        caches:
+          - maven
+        script: # Modify the commands below to build your repository.
+          - mvn -B verify -Dygg.mail.sender.user="" -Dygg.mail.sender.password=""

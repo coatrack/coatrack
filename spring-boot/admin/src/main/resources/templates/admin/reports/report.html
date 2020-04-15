@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <div th:include="admin/fragments/head :: head" th:remove="tag">Global Header</div>
+        <div th:include="admin/fragments/js :: functions('/admin/services')" th:remove="tag">Functions</div>
+        <div th:include="admin/fragments/scripts :: datatables" th:remove="tag">Datatables Support</div>
+        <title>CoatRack Administration - Service API Usage Reports</title>
+
+        <div th:include="admin/fragments/scripts :: dashboard" th:remove="tag">Dashboard Page Javascript</div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            function dateRangePickedByUser(dateFrom, dateUntil) {
+
+
+                $("#date-range-from").text(dateFrom.format('YYYY-MM-DD'));
+                $("#date-range-until").text(dateUntil.format('YYYY-MM-DD'));
+            }
+
+            $(document).ready(function () {
+
+                var dateRangeStartDateFromServer = /*[[${dateFrom}]]*/ '-1';
+                var dateRangeEndDateFromServer = /*[[${dateUntil}]]*/ '-1';
+
+                dateRangePickedByUser( moment(dateRangeStartDateFromServer),  moment(dateRangeEndDateFromServer));
+
+                $('#date-range-picker').daterangepicker({
+                    locale: {
+                        format: 'DD/MM/YYYY'
+                    },
+                    startDate: moment(dateRangeStartDateFromServer),
+                    endDate: moment(dateRangeEndDateFromServer),
+                    showDropdowns: true,
+                    ranges: {
+                        'Today': [moment(), moment()],
+                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                        'This Month': [moment().startOf('month'), moment().endOf('month')],
+                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                    }
+                }, dateRangePickedByUser
+                        );
+
+            });
+
+            /*]]>*/
+        </script>
+
+    </head>
+    <body th:replace="admin/includes/body :: body('reports/report')"></body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <title>CoatRack - Register</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
+        <!--<link rel="stylesheet" href="assets/css/main.css" />-->
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}"/>
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+        <script th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+
+        <!--meta name="_csrf" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:content="${_csrf.headerName}"/-->
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+
+            $(document).ready(function () {
+                $(function () {
+                    var token = $("meta[name='_csrf']").attr("content");
+                    var header = $("meta[name='_csrf_header']").attr("content");
+                    $(document).ajaxSend(function (e, xhr, options) {
+                        xhr.setRequestHeader(header, token);
+                    });
+                });
+            });
+
+            $("a#logout").click(function (event) {
+                event.preventDefault();
+                $.ajax({
+                    beforeSend: function (request) {
+                        var token = $("meta[name='_csrf']").attr("content");
+                        var header = $("meta[name='_csrf_header']").attr("content");
+                        request.setRequestHeader(header, token);
+                    },
+                    url: "/logout"
+//        ,
+//        success: function(response) {
+//            alert(response);
+//        }
+                });
+                return false; // for good measure
+            });
+
+            /*]]>*/
+        </script>        
+
+    </head>
+
+    <body>
+
+        <!-- Wrapper -->
+        <div id="wrapper">
+
+            <!-- Header -->
+            <article id="register" class="active">
+                <div class="content">
+                    <div>
+                        <h2>Register New</h2>
+                        <form name='registerForm'  method='POST' th:object="${user}" >
+
+                            <table>
+                                <tr><td>User Name </td><td><input type='text' th:field="${user.username}" readonly="readonly" /></td></tr>
+                                <tr><td>
+                                        <div th:if="${#fields.hasErrors('*')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('username')}" th:text="${err}" />
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr><td>First Name </td><td><input type='text'  th:field="${user.firstname}" /></td></tr>
+                                <tr><td>
+                                        <div th:if="${#fields.hasErrors('*')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('firstname')}" th:text="${err}" />
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr><td>Last Name </td><td><input type='text' name='lastname' value='' /></td></tr>
+                                <tr><td>Company </td><td><input type='text'   th:field="${user.company}" /></td></tr>
+                                <tr><td>Email </td><td><input type='email'   th:field="${user.email}" /></td></tr>
+                                <tr><td>
+                                        <div th:if="${#fields.hasErrors('*')}">
+                                            <ul>
+                                                <li th:each="err : ${#fields.errors('email')}" th:text="${err}" />
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr><td colspan='2'><input name="submit" type="submit" formaction='/register' value="Create New User"/></td><td><a href="/">Back</a></td></tr>
+                            </table>
+                            <!--input name="_csrf" type="hidden" th:value="${_csrf.token}" /-->
+                        </form>
+
+
+                    </div>
+                </div>
+            </article>
+
+
+
+
+            <!-- Footer -->
+            <footer id="footer">
+                <p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+            </footer>
+
+        </div>
+
+        <!-- BG -->
+        <div id="bg"></div>
+
+        <!-- Scripts -->
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/skel.min.js"></script>
+        <script src="/assets/js/util.js"></script>
+        <script src="/assets/js/main.js"></script>
+
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!--</div>
+<div th:include="fragments/scripts :: [id='scripts']" th:remove="tag">Scripts</div>
+</body>
+</html>-->

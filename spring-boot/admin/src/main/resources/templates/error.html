@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <title>CoatRack</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
+        <!--<link rel="stylesheet" href="assets/css/main.css" />-->
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}"/>
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+        <script th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+    </head>
+
+    <body>
+        <!-- Wrapper -->
+        <div id="wrapper">
+
+            <!-- Header -->
+            <header id="header">
+
+                <div class="logo">
+                    <span class="icon fa-code"></span>
+                </div>
+                <div class="content">
+                    <div class="inner">
+                        <h2>Sorry, an error occured.</h2>
+                        <p/>
+                        <p/>
+                        If this happens repeatedly, please inform us about this problem.
+                        <p/>
+                        <textarea id="description" rows="4" cols="50" placeholder="Please write your error report message here..."/>
+                        <p/>
+                        <strong><button id="contactButton">Submit error report</button></strong>
+                        
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="/">Back to Home Page</a></li>
+                    </ul>
+                </nav>
+                <div class="content" style="width: 100%;">
+                    <div class="inner">
+                        <h3>Error Details</h3>
+                        <table style="text-align: left;">
+                            <tr>
+                                <td>Error</td>
+                                <td th:text="${error}"/>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td th:text="${status}"/>
+                            </tr>
+                            <tr>
+                                <td>Date</td>
+                                <td th:text="${timestamp}"/>
+                            </tr>
+                            <tr>
+                                <td>Path</td>
+                                <td th:text="${path}"/>
+                            </tr>
+                            <tr>
+                                <td>Message</td>
+                                <td th:text="${message}"/>
+                            </tr>
+                            <tr>
+                                <td>Exception</td>
+                                <td th:text="${exception}"/>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Footer -->
+            <footer id="footer">
+                <p class="copyright">&copy; . Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+            </footer>
+
+        </div>
+
+        <!-- BG -->
+        <div id="bg"></div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $("#contactButton").on("click", function () {
+                var errorTemplate = JSON.parse("{}");
+
+                errorTemplate.error = /*[[${error}]]*/;
+                        errorTemplate.status = /*[[${status}]]*/;
+                        errorTemplate.timestamp = /*[[${timestamp}]]*/;
+                        errorTemplate.path = /*[[${path}]]*/;
+                        errorTemplate.message = /*[[${message}]]*/;
+                        errorTemplate.exception = /*[[${exception}]]*/;
+                errorTemplate.description = $("#description").val();
+
+                $.ajax({
+                    url: '/errors',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(errorTemplate),
+                    dataType: 'json',
+                    success: function (result) {
+                        alert('Thank you for your message');
+                        window.location.href = "/";
+                    },
+                    error: function (result) {
+                        console.log(result);
+                        
+                        window.location.href = "/";
+                    }
+                });
+            });
+            /*]]>*/
+        </script>
+
+        <!-- Scripts -->
+        <script src="/assets/js/jquery.min.js"></script>
+        <script src="/assets/js/skel.min.js"></script>
+        <script src="/assets/js/util.js"></script>
+        <script src="/assets/js/main.js"></script>
+
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!--</div>
+<div th:include="fragments/scripts :: [id='scripts']" th:remove="tag">Scripts</div>
+</body>
+</html>-->

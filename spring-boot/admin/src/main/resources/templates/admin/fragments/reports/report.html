@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<div th:fragment="body">
+    <div class="page-title">
+        <div class="title_left">
+            <h3 th:text="#{admin.reports.details.page.title}">Service Details</h3>
+        </div>
+        <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xy-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <div th:if="${isReportForConsumer == true}">
+                        <h2>Generate Report about My Usage of Others' Services</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div th:if="${isReportForConsumer == false}">
+                        <h2>Generate Report about Usage of My Services</h2>
+                        <div class="clearfix"></div>
+                    </div>
+
+                </div>
+
+                <div class="x_content">
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                Time Period
+                            </label>
+
+                            <div class="col-md-4 col-sm-4 col-xs-12">
+                                <div id="date-range-picker" class="pull-left"
+                                     style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 5px;">
+                                    <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
+                                    <span id="date-range-from">April 15, 2018</span>
+                                    -
+                                    <span id="date-range-until">April 21, 2018</span>
+                                    <b class="caret"></b>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                        <span th:if="${isReportForConsumer == false}">
+                                            Service Offered by Me
+                                        </span>
+                                <span th:if="${isReportForConsumer == true}">
+                                            Service Used by Me
+                                        </span>
+                            </label>
+
+                            <div th:if="${!#lists.isEmpty(services)}" class="col-md-4 col-sm-4 col-xs-12">
+                                <select id='selectedServiceId'>
+                                    <option value="-1">Select a service</option>
+                                    <option th:each="service : ${services}"
+                                            th:value="${service.id}" th:text="${service.name}"
+                                            th:selected="${service.id} == ${selectedServiceId}">...
+                                    </option>
+                                </select>
+                            </div>
+                            <div th:if="${#lists.isEmpty(services)}" class="col-md-4 col-sm-4 col-xs-12">
+                                <input type="hidden" id="selectedServiceId" name="selectedServiceId" value="-1"/>
+                                <p class="byline">
+                                    <br/>
+                                    <span th:if="${isReportForConsumer == false}">
+                                                Not available: You did not yet offer any services via CoatRack.
+                                            </span>
+                                    <span th:if="${isReportForConsumer == true}">
+                                                Not available: You need at least one API key before you can use services via CoatRack.
+                                            </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${isReportForConsumer == false}">
+                        <div class="row">
+                            <div class="form-group">
+                                <label class="control-label col-md-2 col-sm-2 col-xs-12">
+                                    User of My Service
+                                </label>
+
+                                <div th:if="${!#lists.isEmpty(users)}" class="col-md-4 col-sm-4 col-xs-12">
+                                    <select id='selectedApiConsumerUserId'>
+                                        <option value="-1">Select an API user</option>
+                                        <option th:each="user : ${users}"
+                                                th:value="${user.id}" th:text="${user.username}"
+                                                th:selected="${user.id} == ${selectedApiConsumerUserId}">
+                                            ...
+                                        </option>
+                                    </select>
+                                </div>
+                                <div th:if="${#lists.isEmpty(users)}" class="col-md-9 col-sm-9 col-xs-12">
+                                    <input type="hidden" id="selectedApiConsumerUserId" name="selectedApiConsumerUserId" value="-1"/>
+                                    <p class="byline">
+                                        <br/>
+                                        There is no user available.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="typeOfCallsRadioButtonsSection">
+                        <label class="control-label col-md-2 col-sm-2 col-xs-12">Type of calls</label>
+                        <div class="col-md-4 col-sm-4 col-xs-12">
+                            <div class="radio">
+                                <label><input type="radio" id="allCallsRadioButton" th:text="'Include all calls in the report'" name="TypeOfCalls"/></label>
+                                <br>
+                                <label><input type="radio" id="onlyPaidCallsRadioButton" th:text="'Include only paid calls'" name="TypeOfCalls"/></label>
+                                </br>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <div class="col-md-9 col-md-offset-3">
+                            <ul style="list-style-type: none;">
+                                <li style="float: left;">
+                                    <div id="searchBtn" class="btn btn-danger">Search</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Table -->
+    <div th:if="${selectedServiceId != -1L and selectedApiConsumerUserId != -1L}">
+        <div class="x_panel">
+            <div class="x_content">
+                <table id="reportTable" class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Pricing Rule (Type of Call)</th>
+                        <th>No of Calls</th>
+                        <th>Price</th>
+                        <th>To Pay</th>
+                    </tr>
+                    </thead>
+                    <tbody></tbody>
+                    <tfoot>
+                    <tr>
+                        <th colspan="2" style="border-right:none;">&nbsp;</th>
+                        <th style="text-align:right;">Total:</th>
+                        <th></th>
+                    </tr>
+                    </tfoot>
+                </table>
+                <div class="row"
+                     style="border-bottom: 1px solid #E0E0E0; padding-bottom: 5px; margin-bottom: 5px;">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+
+<script th:inline="javascript">
+    // <![CDATA[
+
+    function generatePriceDisplayString(data, isTotalPrice) {
+        if ([[${payPerCallServicesIds}]].includes($("#selectedServiceId").val())){
+            if (data == 0) {
+                var returnValue = 'For Free';
+            } else {
+                var returnValue =  (isTotalPrice) ? data + ' €' : data + ' €/1000 calls';
+            }
+        } else {
+            if (data == 0) {
+                var returnValue = 'For Free';
+            } else {
+                var returnValue = (isTotalPrice) ? data + ' €' : data + ' €/Month (Flatrate)';
+            }
+        }
+        return returnValue;
+    }
+
+    $('#searchBtn').on('click', function () {
+        var isOnlyPaidCalls = onlyPaidCallsRadioButton.checked;
+        var selectedServiceId = - 1;
+        var isReportForConsumer = "[[${isReportForConsumer}]]"; // this piece of code just translates thymeleaf consumer variable to a javascript variable
+
+        if ($("#selectedServiceId").val() !== "undefined") {
+            selectedServiceId = $("#selectedServiceId").val();
+        }
+        window.location.href = "/admin/reports" + "/" + $("#date-range-from").text() + "/" + $("#date-range-until").text() + "/" + selectedServiceId + "/" + $("#selectedApiConsumerUserId").val() + "/" + isOnlyPaidCalls;
+        if (isReportForConsumer !== "false") {
+            var selectedApiConsumerUserId = [[${selectedApiConsumerUserId}]];
+            window.location.href = "/admin/reports/consumer" + "/" + $("#date-range-from").text() + "/" + $("#date-range-until").text() + "/" + selectedServiceId + "/" + selectedApiConsumerUserId + "/" + isOnlyPaidCalls;
+        }
+    });
+    $(document).ready(function() {
+        // If pay-per-call service was selected, show radio buttons for type of calls selection
+        [[${payPerCallServicesIds}]].includes($("#selectedServiceId").val()) ? $("#typeOfCallsRadioButtonsSection").show() : $("#typeOfCallsRadioButtonsSection").hide();
+        $("#allCallsRadioButton").attr('checked', 'checked');
+        $("#onlyPaidCallsRadioButton").prop('checked', [[${isOnlyPaidCalls}]]);
+
+        // Get local date and time
+        var today = new Date().toString("yyyy-MM-dd");
+        var nowTimeFormatted = new Date().toString("HH:mm");
+
+        // Format user to become firstname lastname (username)
+        var user = [[${consumerUserSelectedForReport?.firstname}]] + ' ' + [[${consumerUserSelectedForReport?.lastname}]] + ' (' + [[${consumerUserSelectedForReport?.username}]] + ')';
+        var exportUser = [[${exportUser?.firstname}]] + ' ' + [[${exportUser?.lastname}]] + ' (' + [[${exportUser?.username}]] + ')';
+
+        // Report's Subtitle and footer
+        var messageBelowTitle = [[${serviceApiSelectedForReport?.name}]] + ' ' + 'Usage by ' +  user + ' ' + 'from ' + [[${dateFrom}]] + ' to ' + [[${dateUntil}]];
+        var filename = 'Coatrack -' + ' ' + messageBelowTitle;
+        var mainHeadingInFile = 'Coatrack - Service API Usage Report';
+        var subHeadingInFile = messageBelowTitle;
+        var messageBelowTable = ("[[${isReportForConsumer}]]" == "false") ? 'This Report was exported by ' + exportUser + ' on ' + today + ' at ' + nowTimeFormatted : 'This Report was exported by ' + user + ' on ' + today + ' at ' + nowTimeFormatted;
+
+        var reportTable = $('#reportTable').DataTable({
+            ajax: "/admin/reports/apiUsage" + "/" + [[${dateFrom}]] + "/" + [[${dateUntil}]] + "/" + [[${selectedServiceId}]] + "/" + [[${selectedApiConsumerUserId}]] + "/" + [[${isOnlyPaidCalls}]],
+            dom: "Bfrtip",
+            ordering: false,
+            buttons: [
+                {
+                    extend: "copy",
+                    title: mainHeadingInFile,
+                    messageTop: subHeadingInFile,
+                    className: "btn-sm",
+                    footer: true
+                },
+                {
+                    // csv doesn't have any subtitle option, so the messageBelowTitle needs to be the title
+                    extend: "csv",
+                    filename:filename,
+                    title: mainHeadingInFile,
+                    className: "btn-sm",
+                    footer: true
+                },
+                {
+                    extend: "excel",
+                    filename: filename,
+                    title: mainHeadingInFile,
+                    messageTop: subHeadingInFile,
+                    className: "btn-sm",
+                    footer: true
+                },
+                {
+                    extend: "pdfHtml5",
+                    filename: filename,
+                    title: mainHeadingInFile,
+                    messageTop: subHeadingInFile,
+                    messageBottom: messageBelowTable,
+                    className: "btn-sm",
+                    footer: true
+                },
+                {
+                    extend: "print",
+                    filename: filename,
+                    title: mainHeadingInFile,
+                    messageTop: subHeadingInFile,
+                    messageBottom: messageBelowTable,
+                    className: "btn-sm",
+                    footer: true
+                },
+            ],
+            responsive: true,
+            columns: [
+                {data: "name"},
+                {data: "calls"},
+                {
+                    data: "price",
+                    render: function (data, type, row) {
+                        return generatePriceDisplayString(data,false);
+                    }
+                },
+
+                {
+                    data: "total",
+                    render: function (data, type, row) {
+                        return generatePriceDisplayString(data,true);
+                    }
+                }
+            ],
+            // When the table has no data, this function hide the download buttons
+            fnInitComplete: function () {
+                if ($('#reportTable td.dataTables_empty').length === 1) {
+                    $('.btn-group').hide()}
+            },
+            /****/
+            "footerCallback": function (row, data, start, end, display) {
+                var api = this.api(), data;
+                // Remove the formatting to get integer data for summation
+                var intVal = function (i) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\$,]/g, '') * 1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+
+                // Total over all pages
+                overallTotal = api
+                    .column(3)
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                // Total over this page
+                pageTotal = api
+                    .column(3, { page: 'current'})
+                    .data()
+                    .reduce(function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0);
+                // Update footer
+                $(api.column(3).footer()).html(
+                    pageTotal.toFixed(2) + ' € (this page) ' + overallTotal.toFixed(2) + ' € (overall)'
+                );
+            }
+        });
+    });
+
+    // If the service is paid per call, then the Radiobuttons will appear
+    $("#selectedServiceId").change(function () {
+        [[${payPerCallServicesIds}]].includes($("#selectedServiceId").val()) ? $("#typeOfCallsRadioButtonsSection").show() : $("#typeOfCallsRadioButtonsSection").hide();
+    });
+
+    // ]]>
+</script>
+</body>
+</html>
+

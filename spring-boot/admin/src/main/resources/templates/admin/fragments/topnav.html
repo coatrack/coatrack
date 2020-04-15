@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <body>
+        <div th:fragment="topnav">
+            <div class="nav_menu">
+                <nav class="" role="navigation">
+                    <div class="nav toggle">
+                        <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+                    </div>
+
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="">
+                            <a href="javascript:;" class="user-profile dropdown-toggle" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <img th:src="@{/images/user.png}" alt=""/>
+                                <span th:text="${user.firstname}+' '+${user.lastname} + ' ' + '(' + ${user.username} + ')'"></span>
+                                <span class=" fa fa-angle-down"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-usermenu animated fadeInDown pull-right">
+                                <li><a href="/admin/profiles">Profile</a>
+                                </li>
+                                <li><a href="/admin/consumer">Service API User Dashboard</a>
+                                </li>
+                                <li><a href="/admin">Service API Provider Dashboard</a>
+                                </li>
+
+                                <!--
+                                <li>
+                                -->
+                                <!--form name="logoutForm" action='/logout' method='POST'><input name="_csrf" type="hidden" th:value="${_csrf.token}" />
+                                    <!- - <button type="submit">logout</button - ->
+                                </form-->
+                                <!--
+                                    <a href="javascript:;" onclick="logoutForm.submit();" ><i class="fa fa-sign-out pull-right"></i> Log Out</a>
+                                </li>
+                                -->
+                            </ul>
+                        </li>
+
+
+                        <!-- For now we do not need this alert box
+
+                        <li role="presentation" class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown"
+                               aria-expanded="false">
+                                <i class="fa fa-envelope-o"></i>
+                                <span class="badge bg-green">6</span>
+                            </a>
+                            <ul id="menu1" class="dropdown-menu list-unstyled msg_list animated fadeInDown" role="menu">
+                                <li>
+                                    <a>
+                                        <span class="image">
+                                            <img th:src="@{/dashboard/images/img.jpg}" alt="Profile Image"/>
+                                        </span>
+                                        <span>
+                                            <span>John Smith</span>
+                                            <span class="time">2 hours ago</span>
+                                        </span>
+                                        <span class="message">
+                                            Our company would like to get access permission to your service...
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a>
+                                        <span class="image">
+                                            <img th:src="@{/dashboard/images/img.jpg}" alt="Profile Image"/>
+                                        </span>
+                                        <span>
+                                            <span>Dave Developer</span>
+                                            <span class="time">6 hours ago</span>
+                                        </span>
+                                        <span class="message">
+                                            Our company would like to get access permission to your service...
+                                        </span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <div class="text-center">
+                                        <a>
+                                            <strong>See All Alerts</strong>
+                                            <i class="fa fa-angle-right"></i>
+                                        </a>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                        -->
+
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </body>
+</html>

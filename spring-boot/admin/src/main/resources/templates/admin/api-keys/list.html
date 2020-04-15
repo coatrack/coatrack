@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <div th:include="admin/fragments/head :: head" th:remove="tag">Global Header</div>
+        <div th:include="admin/fragments/js :: functions('/admin/api-keys')" th:remove="tag">Functions</div>
+        <div th:include="admin/fragments/scripts :: datatables" th:remove="tag">Datatables Support</div>
+        <title>CoatRack Administration - List API keysss</title>
+        
+        
+    </head>
+    <body th:replace="admin/includes/body :: body('api-keys/list')">
+
+       
+    </body>
+</html>

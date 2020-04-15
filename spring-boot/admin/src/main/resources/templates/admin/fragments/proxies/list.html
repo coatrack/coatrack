@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+
+            <div id="infoDialog" title="Info">
+                <div class="x_panel">
+                    <div class="x_content">
+                        <i class="fa fa-lg fa-info-circle"/>
+                        <span id='message'>message</span>
+                    </div>
+                </div>
+            </div>
+            <script>
+                $(function () {
+
+                    $("#infoDialog").dialog({
+                        width: 'auto',
+                        height: "auto",
+                        autoOpen: false,
+                        modal: true,
+                        show: {
+                            effect: "blind",
+                            duration: 1500
+                        },
+                        hide: {
+                            effect: "blind",
+                            duration: 1000
+                        },
+                        buttons: {
+                            "Yes": function () {
+
+                                var id = $(this).data('deleteItem');
+
+                                var token = $("meta[name='_csrf']").attr("content");
+                                var header = $("meta[name='_csrf_header']").attr("content");
+
+                                $.ajax({
+                                    url: '/admin/proxies/' + id + '.json',
+                                    headers: {header: token},
+                                    type: 'DELETE',
+                                    success: function (result) {
+                                        console.log('success:' + JSON.stringify(result));
+
+                                        console.log('remove :' + id);
+
+                                        $("#item" + id).remove();
+                                    },
+                                    error: function (result) {
+                                        console.log('error:' + JSON.stringify(result));
+                                    }
+                                });
+
+                                $(this).dialog("close");
+                            },
+                            "No": function () {
+                                $(this).dialog("close");
+                            }
+                        }
+                    });
+
+
+
+                });
+
+                function deleteItem(item, name) {
+                    $("#message").html("Are you sure you want to delete the <strong> Service Gateway " + name + " </strong>?")
+                    $("#infoDialog").data('deleteItem', item).dialog("open");
+                }
+
+
+
+            </script>
+
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>
+                        <span th:text="#{admin.proxies.page.title}">Title</span>
+                        <a data-toggle="modal" data-target=".getting-started-gateway-modal">
+                            <i class="fa fa-question-circle"></i>
+                        </a>
+                    </h3>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="x_panel">
+                        <div class="x_content">
+                            <i class="fa fa-lg fa-info-circle"/>
+                            <span th:text="#{admin.proxies.page.explanation}"/>
+                        </div>
+                    </div>
+
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2 th:text="#{admin.proxies.list.title}">[Proxies Administration]</h2>
+                            <div class="pull-right">
+                                <a th:href="@{'/admin/proxies/formAdd'}" th:text="#{admin.proxies.button.new}"
+                                   class="btn btn-primary">[Add]</a>
+                            </div>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content  fill-body-table">
+                            <div id="message-holder">
+                                <div th:if="${feedbackMessage}"
+                                     th:class="'messageblock hidden'"
+                                     th:text="${feedbackMessage}"></div>
+                            </div>
+                            <table id="proxiesTable" class="table table-striped jambo_table default-data-table">
+                                <thead>
+                                    <tr class="heading">
+
+                                        <th th:text="#{admin.proxies.list.col.name}">Name</th>
+                                        <th th:text="#{admin.proxies.list.col.identifier}">Gateway Identifier</th>
+                                        <th th:text="#{admin.proxies.list.col.publicUrl}">URL</th>
+                                        <th th:text="#{admin.proxies.list.col.port}">Port</th>
+                                        <th th:text="#{admin.proxies.list.col.services}">Service API</th>
+                                        <th th:text="#{admin.proxies.list.col.description}">Description</th>
+                                        <th th:text="#{admin.proxies.list.col.download}">...</th>
+                                        <th th:text="#{admin.proxies.list.col.details}">...</th>
+                                        <th></th>
+                                        
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="proxy : ${proxies}" th:id="|@{item}${proxy.id}|">
+                                        <td th:text="${proxy.name}">proxy name</td>
+                                        <td th:text="${proxy.id}">proxy uuid</td>
+                                        <td th:text=" ${proxy.publicUrl}">proxy url</td>
+                                        <td th:text=" ${proxy.port}">proxy port</td>
+                                        <td>
+                                            <span th:each="service : ${proxy.serviceApis}">
+                                                <span th:text="${service.guiStringRepresentation}"/>
+                                                <br/>
+                                            </span>
+                                        </td>
+                                        <td th:text=" ${proxy.description}">proxy description</td>
+                                        <td class="a-center ">
+                                            <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
+                                               class="glyphicon glyphicon-download-alt"/>
+                                        </td>
+                                        <td class="a-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
+                                                                 class="fa fa-bar-chart"/>
+                                        </td>
+                                        <td class="rigth">
+                                            <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{'}|" ><i class="fa fa-search-plus"/></button>
+                                            <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button>
+                                            <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'"><i class="fa  fa-trash"/></button>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${#lists.isEmpty(proxies)}" >
+                                        <td colspan="7"  > No items yet </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
+    </body>
+</html>
+
