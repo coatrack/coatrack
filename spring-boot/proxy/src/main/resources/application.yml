@@ -26,5 +26,5 @@ custom-metrics:
 
 logging:
   level:
-    eu.iof2020.ygg.proxy: DEBUG
+    eu.coatrack.proxy: DEBUG
     org.springframework.security: DEBUG

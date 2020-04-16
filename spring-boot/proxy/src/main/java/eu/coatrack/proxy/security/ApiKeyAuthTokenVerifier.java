@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.security;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L

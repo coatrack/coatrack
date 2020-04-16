@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.metrics;
+package eu.coatrack.proxy.metrics;
 
 /*-
  * #%L
@@ -20,7 +20,7 @@ package eu.iof2020.ygg.proxy.metrics;
  * #L%
  */
 
-import eu.iof2020.ygg.proxy.security.SecurityUtil;
+import eu.coatrack.proxy.security.SecurityUtil;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

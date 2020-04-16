@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.metrics;
+package eu.coatrack.proxy.metrics;
 
 /*-
  * #%L

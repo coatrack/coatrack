@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.filters.pre;
+package eu.coatrack.proxy.filters.pre;
 
 /*-
  * #%L
@@ -20,8 +20,8 @@ package eu.iof2020.ygg.proxy.filters.pre;
  * #L%
  */
 
-import eu.iof2020.ygg.proxy.security.ApiKeyAuthToken;
-import eu.iof2020.ygg.proxy.security.ApiKeyAuthTokenVerifier;
+import eu.coatrack.proxy.security.ApiKeyAuthToken;
+import eu.coatrack.proxy.security.ApiKeyAuthTokenVerifier;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
