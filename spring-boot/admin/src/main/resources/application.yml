@@ -1,0 +1,29 @@
+# application yml just for parameters to be set at build time
+# all other config properties are to be received from cloud config server
+
+mvn.pom.project.version: @@project.version@@
+
+# user and password are expected to be for a gmail account
+ygg.mail.sender.user: @@ygg.mail.sender.user@@
+ygg.mail.sender.password: @@ygg.mail.sender.password@@
+ygg.mail.verification.server.url: http://localhost:8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org: DEBUG
+    nl.corizon.ygg: DEBUG
+
+# Necessary in order to run offline     
+ygg.admin.database.insertSampleDataOnStartup: true
+ygg.admin.gettingStarted.consumer.testService.id: 1
+ygg.admin.gitService.url: http://localhost
+ygg.admin.gitService.user: user
+ygg.admin.gitService.password: password
+ygg.admin.api-base-url-for-gateway: http://localhost
+ygg.proxy.executable-jar.path: path
+ygg.proxy.executable-jar.filename-original-prefix: prefix
+ygg.proxy.executable-jar.filename-custom.prefix: prefix
+ygg.proxy.executable-jar.filename-custom.suffix: suffix
+ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: prefix
+ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: http://localhost

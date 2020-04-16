@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+<body>
+<div th:fragment="body">
+
+    <div class="page-title">
+        <div class="title_left">
+            <h3>CoatRack Tutorial</h3>
+        </div>
+        <div class="title_right"></div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+
+        <div class="col-md-12 col-sm-12 col-xs-12">
+
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>
+                        Learn how to use services
+                    </h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div id="busy_indicator" class="busy_indicator center-div" style="display: none;"></div>
+
+                    <!-- Smart Wizard -->
+                    <div id="wizard" class="form_wizard wizard_verticle">
+                        <ul class="wizard_steps anchor">
+                            <li>
+                                <a href="#step-1" class="selected" isdone="1" rel="1">
+                                    <span class="step_no">1</span>
+                                    <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#step-2" class="disabled" isdone="0" rel="2">
+                                    <span class="step_no">2</span>
+                                    <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#step-3" class="disabled" isdone="0" rel="3">
+                                    <span class="step_no">3</span>
+                                    <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#step-4" class="disabled" isdone="0" rel="3">
+                                    <span class="step_no">4</span>
+                                    <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                </a>
+                            </li>
+                        </ul>
+                        <form  id='Formforthetemplate'>
+                            <div class="stepContainer">
+
+                                <div id="step-1">
+                                    <div class="col-md-7 col-xs-6">
+                                        <h1 class="StepTitle">
+                                            Overview
+                                        </h1>
+                                        <h2>
+                                            <p>
+                                                This tutorial will help you start using the services that are offered by other parties via CoatRack.
+                                            </p>
+                                            <p>
+                                                In the following, we list the individual steps to understand the usage of services:
+                                            </p>
+                                            <ul>
+                                                <li>Choose a service that you want to use</li>
+                                                <li>Obtain your individual API key</li>
+                                                <li>Testing access using your API key</li>
+                                                <li>Check the statistics of using the offered service</li>
+                                            </ul>
+                                            <p>
+                                                Please click the "Next" button below to continue.
+                                            </p>
+                                        </h2>
+                                    </div>
+                                    <div class="col-md-5 col-xs-6">
+                                        <img src="/images/consumer-wizard/Overview.png" style="width:100%;max-width:300px;"/>
+                                    </div>
+                                </div>
+                                <div id="step-2">
+                                    <div class="col-md-7 col-xs-12">
+                                        <h1 class="StepTitle">Choose a service and generate an API key</h1>
+                                        <h2>
+                                            <p>
+                                                The following table shows a short example of the list of public service offerings. Please click on the button to generate your individual API key.
+                                            </p>
+                                        </h2>
+                                        <table id="servicesTable" class="table table-striped jambo_table">
+                                            <thead>
+                                            <tr class="heading">
+                                                <th th:text="#{admin.services.list.col.name}"></th>
+                                                <th th:text="#{admin.services.list.col.pricing}"></th>
+                                                <th th:text="#{admin.services.list.col.description}"></th>
+                                                <th th:text="#{admin.services.list.col.subscribe}"></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr>
+                                                <td th:text="${testService.name}"></td>
+                                                <td th:text="${testService.serviceAccessPaymentPolicy} == null ? '' : ${testService.serviceAccessPaymentPolicy.displayStringShort}"></td>
+                                                <td th:text="${testService.description}"></td>
+                                                <td>
+                                                    <input onclick="subscribeButtonClicked()" class ="btn btn-primary" th:type="button" value="Generate your API key" id="subscribeButton"></input>
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                        <h2>
+                                            <p>
+                                                Please click the "Next" button below to continue.
+                                            </p>
+                                        </h2>
+                                    </div>
+                                    <div class="col-md-5 col-xs-12">
+                                        <img src="/images/consumer-wizard/Choose_service_and_generate_API_key.png" style="width:100%;max-width:300px;"/>
+                                    </div>
+                                </div>
+
+                                <div id="step-3">
+                                    <div class="col-md-7 col-xs-12">
+                                        <h1 class="StepTitle"> Testing access using your API key</h1>
+                                        <h2>
+                                            <p>
+                                                The following table is listing your individual API key that was generated in the step before.
+                                            </p>
+                                        </h2>
+                                        <table id="apiKeyTable" class="table table-striped jambo_table">
+                                        </table>
+                                        <h2>
+                                            <p>
+                                                To test the access to the service with your API key, please click on the following link (a new tab will be opened with the service response). Please return to this tab afterwards.
+                                            </p>
+                                            <p>
+                                                <span id="url" th:fragment="gatewayCallURL">
+                                                    <strong><a th:href="(${proxiesPerApiKey?.get(apiKeys?.keyValue)+ '/' + testService.uriIdentifier + '?api-key=' + apiKeys?.keyValue})" target="_blank"><span th:text=" ${proxiesPerApiKey?.get(apiKeys?.keyValue) + '/' + testService.uriIdentifier}"/>?api-key=<span th:text=" ${apiKeys?.keyValue}">KEY</span></a></strong>
+                                                </span>
+                                            </p>
+                                        </h2>
+                                    </div>
+                                    <div class="col-md-5 col-xs-12">
+                                        <img src="/images/consumer-wizard/Testing_access_using_API_key.png" style="width:105%;max-width:579px;"/>
+                                    </div>
+                                </div>
+                                <div id="step-4">
+                                    <div class="col-md-6 col-xs-12">
+                                        <h1 class="StepTitle">Usage Statistics</h1>
+                                        <h2>
+                                            <p>
+                                                If your test worked fine, the service replied properly and the CoatRack gateway sent the usage statistics to the CoatRack platform.
+                                            </p>
+                                            <p>
+                                                To check the service usage statistics, please click "Finish" below. You will be redirected to the statistics dashboard.
+                                            </p>
+                                        </h2>
+                                    </div>
+                                    <div class="col-md-6 col-xs-12">
+                                        <img src="/images/consumer-wizard/Usage_statistics.png" style="width:107%;max-width:600px;"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- End SmartWizard Content -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    $(document).ready(function () {
+        init_SmartWizard();
+    });
+
+    var smartWizard = null;
+    function init_SmartWizard() {
+
+        if (typeof ($.fn.smartWizard) === 'undefined') {
+            return;
+        }
+
+        smartWizard = $('#wizard').smartWizard(
+            {
+                autoAdjustHeight: true,
+                keyNavigation: false,
+                onLeaveStep:leaveAStepCallback,
+                onFinish: onFinishCallback
+            }
+        );
+
+        $('.buttonNext').addClass('btn btn-success');
+        $('.buttonPrevious').addClass('btn btn-primary');
+        $('.buttonFinish').addClass('btn btn-default');
+
+    }
+
+    // Checks if the user subscribed the service
+    function leaveAStepCallback(obj, context){
+        var isButtonClicked = true;
+        if (context.fromStep == 2 && context.toStep == 3) {
+            var isButtonClicked = ($("#ButtonClicked").attr('clicked') == 1) ? true : false;
+        }
+        if (isButtonClicked == false) alert('Please generate your API key first');
+        return isButtonClicked;
+    }
+
+    function onFinishCallback() {
+        window.location='/admin/consumer';
+    }
+
+    // Post call to subscribe the test service
+    function subscribeButtonClicked() {
+        $.post("/admin/services/consumer/subscribe", {
+            selectedServiceId: [[${testService.id}]]
+        }).done(function ChangeHTML() {
+            console.log("Data sent");
+            var serviceSubscribed = '<p id="ButtonClicked" clicked="1" class="byline"> Your API key was generated. To display your API key, please continue to the next step. </p>';
+            $('#subscribeButton').after(serviceSubscribed).remove();
+            refreshApiKeys();
+        });
+    }
+
+    // load the API Key table for the test service
+    function refreshApiKeys() {
+        $('#apiKeyTable').load("/admin/consumer/gettingstarted/refreshApiKeys/table");
+        $('#url').load("/admin/consumer/gettingstarted/refreshApiKeys/url");
+        console.log("ApiKey Table and Url updated");
+    }
+
+    /*]]>*/
+</script>
+</body>
+</html>

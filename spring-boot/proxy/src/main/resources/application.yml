@@ -1,0 +1,30 @@
+ribbon.eureka.enabled: false
+spring.metrics.servo.enabled: false
+
+# default port for testing
+# Please note: when creating a gateway via admin GUI, this port can be configured
+server.port: 8088
+
+# unique ID of this gateway
+# Please note: in production setting this test ID will be superseded/replaced via the individually generated gateway config
+proxy-id: aa11aa22-aa33-aa44-aa55-aa66aa77aa88
+
+# parameters related to the communication with ygg admin
+ygg.admin:
+  # Please note: in production setting this URL will be superseded by the one from ygg-admin config, which is put into the individual gateway config
+  #api-base-url: https://coatrack.eu/api/
+  resources:
+    proxies: proxies
+    metrics: metrics
+    metricsTransmission: metricsTransmission
+    api-keys: api-keys
+    search-api-keys-by-token-value: api-keys/search/findByKeyValue?keyValue=
+    search-service-by-api-key-value: services/search/findByApiKeyValue?apiKeyValue=
+
+custom-metrics:
+  prefix.counter: CUSTOM.
+
+logging:
+  level:
+    eu.iof2020.ygg.proxy: DEBUG
+    org.springframework.security: DEBUG

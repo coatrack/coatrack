@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <style>
+            .busy_indicator {
+                border: 25px solid #f3f3f3;
+                border-radius: 50%;
+                border-top: 25px solid #3498db;
+                width: 25px;
+                height: 25px;
+                -webkit-animation: spin 2s linear infinite; /* Safari */
+                animation: spin 2s linear infinite;
+            }
+
+            /* Safari */
+            @-webkit-keyframes spin {
+                0% { -webkit-transform: rotate(0deg); }
+                100% { -webkit-transform: rotate(360deg); }
+            }
+
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+        </style>
+        <div id="infoDialog" title="Info">
+            <div class="x_panel">
+                <div class="x_content">
+                    <i class="fa fa-lg fa-info-circle"/>
+                    <span id='message'>message</span>
+
+                </div>
+            </div>
+        </div>
+        <div th:fragment="body">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3 th:text="${mode} == 0 ? #{admin.api-keys.new.page.title}: #{admin.api-keys.edit.page.title}"></h3>
+                </div>
+                <div class="title_right">
+                    &nbsp;
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+                    <div class="x_panel">
+
+                        <div class="x_title">
+                            <!--h2 th:text="${mode} == 0 ? #{admin.api-keys.new.form.title}:#{admin.api-keys.edit.form.title}">Form
+                                <small th:text="#{admin.api-keys.edit.form.subtitle}">different form elements</small>
+                            </h2>
+                            <ul class="nav navbar-right panel_toolbox">
+                                &nbsp;
+                            </ul-->
+                            <div class="clearfix"></div>
+                            <h3>Please select the service and the user who should get an API key for this service
+                            </h3>
+                        </div>
+
+                        <div class="x_content">
+                            <br/>
+
+
+                            <form id="apiKeyForm" class="form-horizontal form-label-left"
+                                  action="#" th:action="${mode} == 0 ? @{/admin/api-keys/add} : @{/admin/api-keys/update}" method="POST">
+
+                                <input type="hidden" th:field="${apiKey.id}" />
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                        Service linked to this Api Key
+                                    </label>
+
+                                    <div class="col-md-9 col-sm-9 col-xs-12">
+                                        <select id="selectedServiceId" name='selectedServiceId'>
+                                            <option th:each="service : ${services}"
+                                                    th:value="${service.id}" th:text="${service.name}" th:selected="(${apiKey.serviceApi.id} == ${service.id})?'selected' ">...</option>
+                                        </select>
+                                    </div>
+                                    <div th:if="${#lists.isEmpty(services)}" class="col-md-9 col-sm-9 col-xs-12">
+                                        <p class="byline">
+                                            <br/>
+                                            You did not yet define any services that could be provided via the new gateway.
+                                        </p>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-12">
+                                        Search for Github user
+                                    </label>
+                                    <div id="searchPanel"  class="input-group">
+                                        <input id="selectedUserId" name="selectedUserId" type="hidden" th:value="${apiKey.user.id}" class="form-control"/>
+                                        <input id="githubUserSearchCriteria" type="text" class="form-control"/>
+                                        <span  class="input-group-btn">
+                                            <button id="githubUserSearchButton" type="button" class="btn btn-primary">Search</button>
+                                            <div  id="busy_indicator" class="busy_indicator" style="display: none;"/>
+
+                                        </span>
+
+
+
+
+                                    </div>
+
+
+
+                                    <!--div th:if="${#lists.isEmpty(services)}" class="col-md-9 col-sm-9 col-xs-12">
+                                        <p class="byline">
+                                            <br/>
+                                            You did not yet define any services that could be provided via the new gateway.
+                                        </p>
+                                    </div-->
+                                </div>
+
+                                <h3> Select API user from table
+                                </h3>
+
+                                <table id="githubUserTable"  class="table table-striped jambo_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Login</th>
+                                            <th>Nombre</th>
+                                            <th>email</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+
+                                </table>
+
+                                <div class="ln_solid"></div>
+                                <div class="form-group">
+                                    <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
+                                        <a id="saveApiKeyButton" class="btn btn-success">Submit</a>
+                                        <a th:href="@{'/admin/api-keys/'}" class="btn btn-primary"> Cancel</a>
+                                        <button class="btn btn-primary" type="reset">Reset</button>
+
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script th:inline="javascript">
+            // <![CDATA[
+            var table = null;
+
+            $(document).ready(function () {
+                /**
+                 * Disable submit the Form by hitting Enter key
+                 */
+                $(window).keydown(function (event) {
+                    if (event.keyCode == 13) {
+                        event.preventDefault();
+                        searchGituhbUsers();
+                        return false;
+                    }
+                });
+                /**
+                 * Dialog used during the validation Form
+                 */
+                $("#infoDialog").dialog({
+                    width: 'auto',
+                    height: "auto",
+                    autoOpen: false,
+                    modal: true,
+                    show: {
+                        effect: "blind",
+                        duration: 1500
+                    },
+                    hide: {
+                        effect: "blind",
+                        duration: 1000
+                    },
+                    buttons: {
+                        "Accept": function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+
+                //
+                // Retrieve the user id just in case we are editing
+
+                var selectedUserId = $('#selectedUserId').val();
+
+                // 
+                // Depending on user, we can retrieve an empty table or a table with existing user
+                var ajaxURL = null;
+                if (selectedUserId !== null && selectedUserId !== "")
+                {
+                    ajaxURL = "/admin/github/" + selectedUserId;
+                } else
+                {
+                    ajaxURL = "/admin/github/search_empty";
+                }
+
+                //
+                // Table used for github users filter
+                table = $('#githubUserTable').DataTable({
+                    ajax: ajaxURL,
+                    ordering: true,
+                    responsive: true,
+                    bFilter: false,
+                    drawCallback: searchGituhbUsersCallBack,
+                    columns: [
+                        {data: "login"},
+                        {data: "name"},
+                        {data: "email"},
+                        {data: "avatar_url", render: function (data, type, row) {
+                                if (type === 'display') {
+                                    return  ' <img src="' + data + '" class="img-circle profile_img" style="height:100px;width:100px"/>';
+                                }
+                                return data;
+                            }}
+                    ]
+                });
+
+                // 
+                // Add behaviour to the table row
+                $('#githubUserTable tbody').on('click', 'tr', function () {
+                    if ($(this).hasClass('selected')) {
+                        $(this).removeClass('selected');
+                    } else {
+                        table.$('tr.selected').removeClass('selected');
+                        $(this).addClass('selected');
+                    }
+                });
+
+                //
+                // Add behaviour when the user filters the github account
+                $('#githubUserSearchButton').click(function () {
+                    searchGituhbUsers();
+                });
+
+                //
+                // Add behaviour when the user saves the selection
+                $('#saveApiKeyButton').click(function () {
+                    // Check if any github user selection
+                    if (table.row('.selected') !== null && table.row('.selected').data() !== null && typeof table.row('.selected').data() !== 'undefined')
+                    {
+                        // Check if any service selection
+                        if ($("#selectedServiceId").val() !== null && $("#selectedServiceId").val() !== "" && typeof $("#selectedServiceId").val() !== 'undefined')
+                        {
+                            // Retrieve the github username which is common attribute in github user database and coatrack user database
+                            $("#selectedUserId").val(table.row('.selected').data().login);
+                            $("#apiKeyForm").submit();
+
+                        } else
+                        {
+                            $("#message").html("You must select a service");
+                            $("#infoDialog").dialog("open");
+                        }
+                    } else
+                    {
+                        $("#message").html("You must select a coatrack user");
+                        $("#infoDialog").dialog("open");
+                    }
+                });
+            });
+
+            function searchGituhbUsers()
+            {
+                $('#githubUserSearchButton').hide();
+                $('#busy_indicator').show();
+
+                table.ajax.url(encodeURI('/admin/github/search/' + $("#githubUserSearchCriteria").val())).load();
+            }
+            function searchGituhbUsersCallBack()
+            {
+                $('#busy_indicator').hide();
+                $('#githubUserSearchButton').show();
+
+            }
+            // ]]>
+        </script>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+    </body>
+</html>

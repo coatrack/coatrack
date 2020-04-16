@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>CoatRack Tutorial: Learn how to offer Services</h3>
+                </div>
+                <div class="title_right">
+                    &nbsp;
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+
+                    <div class="x_title">
+                        <h3>Deploy your CoatRack Gateway</h3>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <div style="font-size:16px;">
+                                CoatRack has generated a custom Gateway for your Service. You can now download the Gateway as a Java JAR file:<p/>
+                                <strong><a th:href="${wizardResponse.proxyUrl}">Click here to download your CoatRack Gateway</a></strong>
+                                <p/>
+                                You can install/run the Gateway on a server that meets the following conditions:
+                                <p/>
+                                <ul>
+                                    <li>Java 1.8 or later needs to be installed in the server.</li>
+                                    <li>The server needs to have network access to your service API at <span th:text=" ${wizardResponse.serviceUrl}">URL</span>.</li>
+                                </ul>
+                                Just copy the Gateway JAR file to the server.
+                                You can then run the Gateway with the following command:
+                                <p/>
+                                <strong>java -jar coatrack-gateway-filename.jar</strong>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <img src="/images/getting-started-providers/coatrack-wizard-gateway.png" style="height:350px; margin-left:60px" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h3>Testing access to your CoatRack gateway</h3>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <div style="font-size:16px;">
+                                After your Gateway is deployed and running, you should test the access to your Service via the Gateway.
+                                <p/>
+                                CoatRack has generated a custom API key for testing:
+                                <p/>
+                                <strong> <span th:text=" ${wizardResponse.apiKey}"></span> </strong>
+                                <p/>
+                                This API key is assigned to your user account:
+                                <p/>
+                                <strong th:text=" ${wizardResponse.userName}"></strong>
+                                <p/>
+                                To test access to your Gateway, please call the following URL (you can use a normal Web browser for this test):
+                                <p/>
+                                <strong>http(s)://[URL of the deployed Gateway]:8088/<span th:text=" ${wizardResponse.uriIdentifier}"/>?api-key=<span th:text=" ${wizardResponse.apiKey}">KEY</span></strong>
+                                <p/>
+                                (please note that by default your Gateway listens on port 8088, you can reconfigure this later).
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <img src="/images/getting-started-providers/service-wizard-result/testing_access_using_api_key.png" height="350px"/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+
+                    <div class="x_title">
+                        <h3>Check access statistics</h3>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <div style="font-size:16px;">
+                                If you were able to successfully access your Service via the CoatRack Gateway, then you should now be able to see access statistics on your
+                                Dashboard. You can access your Dashboard via the sidebar menu or by clicking <a href="/admin/">here</a>.
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xs-12">
+                            <img src="/images/getting-started-providers/service-wizard-result/usage_statistics.png" height="350px"/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+
+                    <div class="x_title">
+                        <h3>What to do next...</h3>
+                    </div>
+                    <div class="x_content">
+                        <div class="col-md-6 col-sm-6 col-xs-12">
+                            <div style="font-size:16px;">
+                                Congratulations! You have successfully setup your first CoatRack scenario. The suggested next steps are:
+                                <p/>
+                                <ul>
+
+                                    <li>Tell CoatRack the public URL of your Gateway. This allows that future configuration changes can be done without restarting the Gateway</li>
+                                    <li>Check/update the configuration of your Service, Gateway and API key</li>
+                                    <li>Create more API keys and give them to users of your Service, so that they can start using your Service.</li>
+                                </ul>
+                                <p/>
+                                You will find all these functionalities via the CoatRack menu in the sidebar.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $(document).ready(function () {
+
+
+                $("#amountDiv").attr('style', 'display: block');
+            });
+            $("#amountDiv").attr('style', 'display: block');
+            /*]]>*/
+        </script>
+    </body>
+</html>

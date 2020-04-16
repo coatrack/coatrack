@@ -1,0 +1,291 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<body>
+<!-- the following fragment contains modal help pop-ups, which can be opened from several places in other templates -->
+<div th:fragment="help-popups">
+    <!-- modal -->
+    <div class="modal fade getting-started-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.overview.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        To get started with CoatRack, you need to do the following:
+                    </p>
+                    <ul>
+                        <li><b>Define Service Offering:</b> Tell CoatRack about Your Service and how it should be
+                            offered (access policies, pricing)
+                        </li>
+                        <li><b>Install Service Gateway:</b> Download your custom CoatRack Gateway and install it in your
+                            network
+                        </li>
+                        <li><b>Generate API keys:</b> Generate API keys for consumers of Your Service</li>
+                    </ul>
+                    <p>The following figures gives an overview of the main elements of CoatRack and the main steps to
+                        get started with CoatRack.</p>
+                    <img th:src="#{admin.help.getting.started.overview.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.overview.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- /modal -->
+    <!-- modal -->
+    <div class="modal fade getting-started-gateway-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.gateway.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.getting.started.gateway.text}">
+                        explanatory text
+                    </p>
+                    <img th:src="#{admin.help.getting.started.gateway.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.gateway.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+    <!-- modal -->
+    <div class="modal fade getting-started-gateway-url-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.gateway.url.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.getting.started.gateway.url.text}">
+                        explanatory text
+                    </p>
+                    <img th:src="#{admin.help.getting.started.gateway.url.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.gateway.url.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+    <!-- modal -->
+    <div class="modal fade getting-started-service-api-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.service.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.getting.started.service.text}">
+                        explanatory text
+                    </p>
+                    <img th:src="#{admin.help.getting.started.service.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.service.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+    <!-- modal -->
+    <div class="modal fade getting-started-service-url-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.service.url.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.getting.started.service.url.text}">
+                        explanatory text
+                    </p>
+                    <img th:src="#{admin.help.getting.started.service.url.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.service.url.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+    <!-- modal -->
+    <div class="modal fade getting-started-service-identifier-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.service.identifier.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.getting.started.service.identifier.text}">
+                        explanatory text
+                    </p>
+                    <img th:src="#{admin.help.getting.started.service.identifier.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.service.identifier.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+    <!-- modal -->
+    <div class="modal fade getting-started-api-key-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.api.key.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.getting.started.api.key.text}">
+                        explanatory text
+                    </p>
+                    <img th:src="#{admin.help.getting.started.api.key.image.path}" width="850px"
+                         th:alt="#{admin.help.getting.started.api.key.image.alt}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+    <!-- modal -->
+    <div class="modal fade payment-rules-wildcard-usage-info" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.paymentrules.wildcards.info}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+
+                <div class="modal-body" style="font-weight: normal;">
+                    <p th:text="#{admin.help.paymentrules.wildcards.text}"/>
+                    <p>
+                        There are different wildcards that you can apply to your pay per call paths, such as:
+                    <ul>
+                        <li><b>? :</b> matches one character</li>
+                        <li><b>* :</b> matches zero or more characters</li>
+                        <li><b>** :</b> matches zero or more directories in the path</li>
+                    </ul>
+                    <p> For additional information about wildcards and regular expressions:
+                    <ul>
+                        <li>CoatRack uses the AntPathMatcher for the wildcards, you will find more information in the
+                            <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/util/AntPathMatcher.html"
+                               target="_blank">AntPathMatcher API documentation</a></li>
+                        <li> The regular expressions used in CoatRack have to be in Java Style, for more information see
+                            <a href="https://docs.oracle.com/javase/1.5.0/docs/api/java/util/regex/Pattern.html"
+                               target="_blank">related API documentation page</a></li>
+                    </ul>
+                    </p>
+                    </p>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal/ about the wildcard of the payment rules -->
+    <!-- modal -->
+    <div class="modal fade" id="proxy-update-error" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.proxies.edit.form.error.msg.updateProxyRefreshError.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p th:text="#{admin.proxies.edit.form.error.msg.updateProxyRefreshError}"/>
+                    <p th:style="'font-family:Courier;'" th:if="${errorMessageText != null}"
+                       th:text="${errorMessageText}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"
+                            th:text="#{admin.proxies.edit.form.error.msg.updateProxyRefreshError.button.publicurl}"></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"
+                            th:text="#{admin.proxies.edit.form.error.msg.updateProxyRefreshError.button.restartgateway}"
+                            onclick="window.location.href= '/admin/proxies'"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--./modal -->
+</div>
+<!--./help-popups fragment -->
+</body>
+</html>
+

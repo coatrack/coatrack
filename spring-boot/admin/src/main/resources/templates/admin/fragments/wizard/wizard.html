@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>CoatRack Tutorial</h3>
+                </div>
+                <div class="title_right">
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2>
+                                Learn how to offer services
+                            </h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+                            <div id="busy_indicator" class="busy_indicator center-div" style="display: none;"></div>
+
+                            <!-- Smart Wizard -->
+                            <div id="wizard" class="form_wizard wizard_verticle">
+                                <ul class="wizard_steps anchor">
+                                    <li>
+                                        <a href="#step-1" class="selected" isdone="1" rel="1">
+                                            <span class="step_no">1</span>
+                                            <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-2" class="disabled" isdone="0" rel="2">
+                                            <span class="step_no">2</span>
+                                            <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-3" class="disabled" isdone="0" rel="3">
+                                            <span class="step_no">3</span>
+                                            <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-4" class="disabled" isdone="0" rel="3">
+                                            <span class="step_no">4</span>
+                                            <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-5" class="disabled" isdone="0" rel="3">
+                                            <span class="step_no">5</span>
+                                            <span class="step_descr">
+                                                <br/>
+                                                <small></small>
+                                            </span>
+                                        </a>
+                                    </li>
+
+                                </ul>
+                                <form  id='wizardForm' name='wizardForm' action='/admin/serviceWizard' method='POST'>
+                                    <div class="stepContainer">
+
+                                        <div id="step-1">
+                                            <div class="col-md-7 col-xs-12">
+                                                <h1 class="StepTitle">
+                                                    Overview
+                                                </h1>
+                                                <h2>
+                                                    This tutorial will help you start offering your services to other parties via CoatRack.
+                                                    In the following, we will guide you through the steps required to set-up and test a basic application scenario:
+                                                    <p/>
+                                                    <ul>
+                                                        <li>Set-up your Service Offering, defining name, URL and pricing policy</li>
+                                                        <li>Download and run your custom CoatRack Gateway</li>
+                                                        <li>Test accessing your service via CoatRack, using your custom API key</li>
+                                                    </ul>
+                                                    <p/>
+                                                    Please click the "Next" button below to continue.
+                                                </h2>
+                                            </div>
+                                            <div class="col-md-5 col-xs-12">
+                                                <img src="/images/getting-started-providers/coatrack-wizard-overview.png" style="width:100%;max-width:390px;"/>
+                                            </div>
+                                        </div>
+                                        <div id="step-2">
+                                            <div class="col-md-7 col-xs-12">
+                                                <h1 class="StepTitle"> Give your service a name </h1>
+                                                <h2>Each of your CoatRack service offerings should have a unique name, which enables you and the users of your service to identify it.</h2>
+                                                <input type="text" id="serviceName" name="serviceName" class="form-control col-md-12 col-xs-12" required="true"/><br/><br/>
+                                                <h2>Please click the "Next" button below to continue.</h2>
+                                            </div>
+                                            <div class="col-md-5 col-xs-12">
+                                                <img src="/images/getting-started-providers/coatrack-wizard-service-name.png" style="width:100%;max-width:390px;"/>
+                                            </div>
+                                        </div>
+                                        <div id="step-3">
+                                            <div class="col-md-7 col-xs-12">
+                                                <h1 class="StepTitle">At which URL is your service accessible? </h1>
+                                                <h2>
+                                                    To be able to forward calls to your service, CoatRack needs to know its URL. This can be a URL inside your local network.
+                                                </h2>
+                                                <input type="text" id="serviceUrl" placeholder="http(s)://" name="serviceUrl" class="form-control col-md-12 col-xs-12" required="true"/><br/>
+                                                <br/>
+                                                <h2>Please click the "Next" button below to continue.</h2>
+                                            </div>
+                                            <div class="col-md-5 col-xs-12">
+                                                <img src="/images/getting-started-providers/coatrack-wizard-service-address.png" style="width:100%;max-width:390px;"/>
+                                            </div>
+                                        </div>
+                                        <div id="step-4">
+
+                                            <div id="last_step_wizard" class="col-md-7 col-xs-12">
+                                                <h1 class="StepTitle"> Define pricing policy</h1>
+                                                <h2> Here you can define if (and how much) the users will have to pay for using your service.
+                                                    <p>Do you want to offer your service for free?</p></h2>
+                                                <a id="serviceForFreeYes" class="btn btn-primary">Yes</a>
+                                                <a id="serviceForFreeNo" class="btn btn-primary">No</a>
+                                                <input type="hidden" id="serviceForFree" name="serviceForFree" />
+                                                <div id="chargeDiv" style="display: none;">
+                                                    <h2 class="StepTitle">How do you want to charge for your service?</h2>
+
+                                                    <a id="monthlyCharge" class="btn btn-primary">Monthly</a>
+                                                    <a id="percallCharge" class="btn btn-primary">Per Call</a>
+                                                    <input type="hidden" id="monthlyChargeInput" name="monthlyCharge" />
+                                                    <input type="hidden" id="percallChargeInput" name="percallCharge" />
+
+                                                    <div id="amountDiv" style="display: none;">
+                                                        <h2 class="StepTitle"></h2>
+                                                        <p>
+                                                        <h2>    How much should your service users pay (&euro; per month or per 1000 calls)?</h2>
+                                                        </p>
+                                                        <input id="serviceCost" type="number" name="serviceCost" min="0" step="0.01" class="form-control col-md-12 col-xs-12"/>
+                                                    </div>
+                                                </div>
+                                                <br/><br/>
+                                                <h2 id="clickNextButtonMessage">Please click the "Next" button below to continue.</h2>
+                                            </div>
+                                            <div class="col-md-5 col-xs-12">
+                                                <img src="/images/getting-started-providers/coatrack-wizard-service-pricing.png" style="width:100%;max-width:390px;"/>
+                                            </div>
+                                        </div>
+                                        <div id="step-5">
+                                            <div class="col-md-7 col-xs-12">
+                                                <h1>Summary </h1>
+                                                <div class="divider"></div>
+                                                Service name:
+                                                <h2 id="serviceNameSummary"/>
+                                                (Local) Service URL:
+                                                <h2 id="serviceUrlSummary" ></h2>
+                                                Payment/Pricing:
+                                                <h2 id="costMethod"></h2>
+                                                <div class="clearfix"></div>
+                                                <div class="divider"></div>
+                                                <br/>
+                                                &nbsp;
+                                                <br/>
+                                                <h2>Click the Finish button to generate your custom CoatRack Gateway.</h2>
+                                            </div>
+                                            <div class="col-md-5 col-xs-12">
+                                                <img src="/images/getting-started-providers/coatrack-wizard-overview.png" style="width:100%;max-width:390px;"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- End SmartWizard Content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <div th:include="admin/fragments/scripts :: urlValidator">Javascript Libraries</div>
+
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            $(document).ready(function () {
+                $("#clickNextButtonMessage").hide();
+                init_SmartWizard();
+
+                $('#serviceForFreeYes').click(function (evt) {
+                    $("#serviceForFreeYes").attr('class', 'btn btn-danger');
+                    $("#serviceForFreeNo").attr('class', 'btn btn-primary');
+                    $("#serviceForFree").val(true);
+                    $("#chargeDiv").attr('style', 'display: none');
+                    // when the user click the service is free, the message for the user to click the next button will appear
+                    $("#clickNextButtonMessage").show();
+                });
+
+                $('#serviceForFreeNo').click(function (evt) {
+                    $("#serviceForFreeYes").attr('class', 'btn btn-primary');
+                    $("#serviceForFreeNo").attr('class', 'btn btn-danger');
+                    $("#chargeDiv").attr('style', 'display: block');
+                    $("#serviceForFree").val(false);
+                    // This hides the message, in case the user first clicked yes and then clicked no
+                    $("#clickNextButtonMessage").hide();
+                });
+
+                $('#monthlyCharge').click(function (evt) {
+                    $("#monthlyCharge").attr('class', 'btn btn-danger');
+                    $("#percallCharge").attr('class', 'btn btn-primary');
+                    $("#monthlyChargeInput").val(true);
+                    $("#percallChargeInput").val(false);
+                    $("#amountDiv").attr('style', 'display: block');
+                });
+
+                $('#percallCharge').click(function (evt) {
+                    $("#percallCharge").attr('class', 'btn btn-danger');
+                    $("#monthlyCharge").attr('class', 'btn btn-primary');
+                    $("#monthlyChargeInput").val(false);
+                    $("#percallChargeInput").val(true);
+                    $("#amountDiv").attr('style', 'display: block');
+                });
+                // This function will check if the user inserted an input in the service value
+                $("#serviceCost").change(function () {
+                    $("#serviceCost").val() == '' ? $("#clickNextButtonMessage").hide() : $("#clickNextButtonMessage").show();
+                });
+            });
+
+            var smartWizard = null;
+            function init_SmartWizard() {
+
+                if (typeof ($.fn.smartWizard) === 'undefined') {
+                    return;
+                }
+
+                smartWizard = $('#wizard').smartWizard(
+                        {
+                            autoAdjustHeight: true,
+                            keyNavigation: false,
+                            onShowStep: onShowStepEvent,
+                            onFinish: onFinishCallback
+                        }
+                );
+
+                $('.buttonNext').addClass('btn btn-success');
+                $('.buttonPrevious').addClass('btn btn-primary');
+                $('.buttonFinish').addClass('btn btn-default');
+
+            }
+
+            function onShowStepEvent(obj, context)
+            {
+                    $("#serviceNameSummary").html($("#serviceName").val());
+                    $("#serviceUrlSummary").html($("#serviceUrl").val());
+
+                    if ($("#monthlyChargeInput").val() == "true")
+                    {
+                        $("#costMethod").html("Monthly charge")
+                    }
+
+                    if ($("#monthlyChargeInput").val() == "true")
+                    {
+                        $("#costMethod").html("Pay per month, " + $("#serviceCost").val() + " € per month")
+                    }
+
+                    if ($("#percallChargeInput").val() == "true")
+                    {
+                        $("#costMethod").html("Pay per number of calls, " + $("#serviceCost").val() + " € per 1000 calls")
+                    }
+
+                    if ($("#serviceForFree").val() == "true")
+                    {
+                        $("#costMethod").html("Service For Free")
+                    }
+                return true;
+
+            }
+
+            function onFinishCallback(objs, context) {
+
+                if ($("#serviceName").val().trim() == "")
+                {
+                    alert("You must fill service name");
+                }
+                if ($("#serviceUrl").val().trim() == "")
+                {
+                    alert("You must fill service url");
+                }
+
+                if (!isValidURL($("#serviceUrl").val().trim()))
+                {
+                    alert("Service URL must be valid and start with http:// or https://");
+                }
+
+                if ($("#serviceForFree").val() == "")
+                {
+                    alert("You must select either free service or not");
+                } else
+                {
+                    if ($("#serviceForFree").val() == "false" && $("#monthlyChargeInput").val() == "")
+                    {
+                        alert("You must select either monthly charge or charge per call");
+                    }
+
+                    if ($("#serviceForFree").val() == "false" && $("#serviceCost").val() == "")
+                    {
+                        alert("You must set up a cost for your service");
+                    }
+                }
+
+                if ($("#serviceName").val().trim() != "" && $("#serviceUrl").val().trim() && isValidURL($("#serviceUrl").val().trim()))
+                {
+                    if ($("#serviceForFree").val() !== "")
+                    {
+                        if ($("#serviceForFree").val() == "true")
+                        {
+                            $("#wizardForm").submit();
+                            $('#wizard').hide();
+                            $('#busy_indicator').show();
+                        } else
+                        {
+                            if ($("#monthlyChargeInput").val() !== "" && $("#serviceCost").val() !== "")
+                            {
+                                $("#wizardForm").submit();
+                                $('#wizard').hide();
+                                $('#busy_indicator').show();
+                            }
+                        }
+                    }
+
+                }
+            }
+            /*]]>*/
+        </script>
+    </body>
+</html>

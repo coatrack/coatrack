@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns="http://www.w3.org/1999/xhtml">
+    <body>
+        <div th:fragment="body">
+
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Service API Definition</h3>
+                </div>
+                <div class="title_right">
+                    &nbsp;
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <div class="row">
+                <div class="col-md-12 col-sm-12 col-xs-12">
+
+                    <div class="x_panel">
+                        <div class="x_title">
+                            <h2 th:text="${mode} == 0 ? #{admin.services.new.form.title} : #{admin.services.edit.form.title}">
+                                Form
+                                <small th:text="#{admin.services.edit.form.subtitle}">different form elements</small>
+                            </h2>
+                            <div class="clearfix"></div>
+                        </div>
+                        <div class="x_content">
+
+                            <!-- Smart Wizard -->
+                            <p th:text="#{admin.services.new.form.wizard.title}">Service API form wizard</p>
+                            <div id="wizard" class="form_wizard wizard_horizontal">
+                                <ul class="wizard_steps anchor">
+                                    <li>
+                                        <a href="#step-1" class="selected" isdone="1" rel="1">
+                                            <span class="step_no">1</span>
+                                            <span class="step_descr">
+                                                Step 1<br/>
+                                                <small>Step 1 Basic data</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-2" class="disabled" isdone="0" rel="2">
+                                            <span class="step_no">2</span>
+                                            <span class="step_descr">
+                                                Step 2<br/>
+                                                <small>Step 2 Access Policies</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-3" class="disabled" isdone="0" rel="3">
+                                            <span class="step_no">3</span>
+                                            <span class="step_descr">
+                                                Step 3<br/>
+                                                <small>Step 3 Payment Options</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#step-4" class="disabled" isdone="0" rel="4">
+                                            <span class="step_no">4</span>
+                                            <span class="step_descr">
+                                                Step 4<br/>
+                                                <small>Step 4 Summary</small>
+                                            </span>
+                                        </a>
+                                    </li>
+                                </ul>
+                                <form>
+                                    <div class="stepContainer">
+                                        <div id="step-1">
+                                            <h2 class="StepTitle">Basic data about your service API</h2>
+                                            <p>
+                                                Please note that this service should be already running/accessible in a local network.
+                                            </p>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">
+                                                    <span th:text="#{admin.services.edit.form.label.name}"/>
+                                                    <span class="required">*</span>
+                                                    <br/>
+                                                    <small th:text="#{admin.services.edit.form.label.name.explanation}"/>
+                                                </label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <input type="text" required="required"
+                                                           th:field="${service.name}"
+                                                           class="form-control col-md-12 col-xs-12"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">
+                                                    <a data-toggle="modal" data-target=".getting-started-service-url-modal">
+                                                        <span th:text="#{admin.services.edit.form.label.url}"/>
+                                                        <span class="required">*</span>
+                                                        <i class="fa fa-question-circle"></i>
+                                                    </a>
+                                                    <br/>
+                                                    <small th:text="#{admin.services.edit.form.label.url.explanation}"/>
+                                                </label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <input type="text" required="required"
+                                                           th:field="${service.localUrl}"
+                                                           th:placeholder="#{admin.services.edit.form.placeholder.url}"
+                                                           class="form-control col-md-12 col-xs-12"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12">
+                                                    <a data-toggle="modal" data-target=".getting-started-service-identifier-modal">
+                                                        <span th:text="#{admin.services.edit.form.label.id}"/>
+                                                        <i class="fa fa-question-circle"></i>
+                                                    </a>
+                                                    <br/>
+                                                    <small th:text="#{admin.services.edit.form.label.id.explanation}"/>
+                                                </label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <input type="text" required="required"
+                                                           th:field="${service.uriIdentifier}"
+                                                           th:placeholder="#{admin.services.edit.form.placeholder.id}"
+                                                           class="form-control col-md-12 col-xs-12"/>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label class="control-label col-md-12 col-sm-12 col-xs-12"
+                                                       th:text="#{admin.services.edit.form.label.description}">
+                                                </label>
+                                                <div class="col-md-12 col-sm-12 col-xs-12">
+                                                    <textarea class="form-control" rows="4"
+                                                              th:field="${service.description}"> </textarea>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div id="step-2">
+                                            <h2 class="StepTitle">Access Policy</h2>
+                                            <p>
+                                                Please specify if your service should be publicly available via CoatRack,
+                                                or if the access should be restricted to a certain group of users.
+                                            </p>
+                                            <div class="form-group">
+                                                <label class="control-label col-md-3 col-sm-3 col-xs-12"
+                                                       th:text="#{admin.services.edit.form.label.accessPolicy}">
+                                                    <span class="required">*</span>
+                                                </label>
+                                                <div class="col-md-9 col-sm-9 col-xs-12">
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio"  name="selectedPermissionPolicy"
+                                                                   required="required" value="PERMISSION_NECESSARY">Restricted - Explicit permission is required to access this service API</input>
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                    <div class="radio">
+                                                        <label>
+                                                            <input type="radio"  name="selectedPermissionPolicy"
+                                                                   required="required" value="PUBLIC" checked="true">Public - Everyone is allowed to access this service API </input>
+                                                            <span></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="step-3">
+                                            <h2 class="StepTitle">Payment Options</h2>
+                                            <p>
+                                                Please specify if the users of your service API should pay a monthly fee or pay per call.
+                                                You can also select to offer your service for free.
+                                            </p>
+
+                                            <div class="form-group">
+
+                                                <div class="x_content ">
+
+                                                    <div class="col-xs-3">
+                                                        <!-- required for floating -->
+                                                        <!-- Nav tabs -->
+                                                        <ul class="nav nav-tabs tabs-left">
+
+                                                            <li>
+                                                                <div id="monthlyFeeButton" class="btn btn-success">Monthly fee
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <div id="wellDefinePriceButton" class="btn btn-primary">
+                                                                    Pay per call
+                                                                </div>
+                                                            </li>
+                                                            <li>
+                                                                <div id="freeButton" class="btn btn-primary">Free</div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+
+                                                    <div class="col-xs-9">
+                                                        <!-- Tab panes -->
+                                                        <div class="tab-content">
+                                                            <div class="tab-pane active" id="monthlyFeePane">
+                                                                <p class="lead">Monthly fee</p>
+                                                                <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
+                                                                    <input id="monthlyFeeInput" placeholder="€ per month"
+                                                                           type="number" step="0.01" min="0"/>
+
+                                                                </div>
+                                                            </div>
+                                                            <div class="tab-pane" id="wellDefinePricePane">
+                                                                <p class="lead">Pay per call
+                                                                    <a data-toggle="modal" data-target=".payment-rules-wildcard-usage-info">
+                                                                        <i class="fa fa-question-circle"></i>
+                                                                    </a>
+                                                                </p>
+                                                                <p>
+                                                                    Here you can define how much the users have to pay per call, depending on the
+                                                                    HTTP method and the path that is called. <br/>
+                                                                    <!--
+                                                                    In case that all calls should have the same
+                                                                    price, please use &#42; as wildcard in the rule.
+                                                                    -->
+                                                                </p>
+                                                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                                                    <input id="wellDefinePriceNameInput" placeholder="Pricing rule name"
+                                                                           type="text"/>
+
+                                                                </div>
+
+                                                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                                                    <input id="wellDefinePricePathInput" placeholder="/path"
+                                                                           type="text"/>
+                                                                </div>
+
+                                                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                                                    <select class="form-control"
+                                                                            id="wellDefinePriceMethodInput">
+                                                                        <option>GET</option>
+                                                                        <option>POST</option>
+                                                                        <option>PUT</option>
+                                                                        <option>DELETE</option>
+                                                                        <option> * </option>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="col-md-3 col-sm-3 col-xs-12">
+                                                                    <input id="wellDefinePriceCostCallInput"
+                                                                           placeholder="€ per 1000 calls" type="number" step="0.01"/>
+                                                                </div>
+
+                                                                <div class="ln_solid"></div>
+                                                                <div>
+                                                                    <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+
+                                                                        <button id="wellDefinePriceResetButton"
+                                                                                class="btn btn-primary" type="reset">Reset
+                                                                        </button>
+                                                                        <button id="wellDefinePriceSubmitButton"
+                                                                                class="btn btn-success" type="button">Add
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+
+                                                                <table id="wellDefinePriceTable" class="table table-striped">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th>Name</th>
+                                                                            <th>Path</th>
+                                                                            <th>Method</th>
+                                                                            <th>€ / 1000 Calls</th>
+                                                                            <th/>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="wellDefinePriceBodyTable">
+
+                                                                    </tbody>
+
+                                                                </table>
+                                                                <button id="wellDefinePriceDeleteButton" type="button" onclick="wellDefinePriceDeleteButtonClick()"><i
+                                                                        class="fa fa-trash-o"></i></button>
+
+                                                            </div>
+                                                            <div class="tab-pane" id="freePane">
+                                                                <p class="lead">For Free</p>
+                                                                <p>Your service will be used for free</p>
+                                                            </div>
+                                                        </div>
+
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="step-4">
+                                            <h2 class="StepTitle">Summary</h2>
+                                            <p>
+                                                Almost complete, please do a final check of your data before creating your Service Offering.
+                                            </p>
+                                            <div class="form-group">
+
+                                                <div class="x_content ">
+
+                                                    <div class="col-xs-9">
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">
+                                                                <span th:text="#{admin.services.edit.form.label.name}"/>
+                                                                <span class="required">*</span>
+                                                                <br/>
+                                                                <small th:text="#{admin.services.edit.form.label.name.explanation}"/>
+                                                            </label>
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <input type="text" disabled="true"
+                                                                       id="nameSum"
+                                                                       class="form-control col-md-12 col-xs-12"/>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">
+                                                                <a data-toggle="modal" data-target=".getting-started-service-url-modal">
+                                                                    <span th:text="#{admin.services.edit.form.label.url}"/>
+                                                                    <span class="required">*</span>
+                                                                    <i class="fa fa-question-circle"></i>
+                                                                </a>
+                                                                <br/>
+                                                                <small th:text="#{admin.services.edit.form.label.url.explanation}"/>
+                                                            </label>
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <input type="text"  disabled="true"
+                                                                       id="localUrlSum"
+                                                                       th:placeholder="#{admin.services.edit.form.placeholder.url}"
+                                                                       class="form-control col-md-12 col-xs-12"/>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-12 col-sm-12 col-xs-12">
+                                                                <a data-toggle="modal" data-target=".getting-started-service-identifier-modal">
+                                                                    <span th:text="#{admin.services.edit.form.label.id}"/>
+                                                                    <i class="fa fa-question-circle"></i>
+                                                                </a>
+                                                                <br/>
+                                                                <small th:text="#{admin.services.edit.form.label.id.explanation}"/>
+                                                            </label>
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <input type="text" disabled="true"
+                                                                       id="uriIdentifierSum"
+                                                                       th:placeholder="#{admin.services.edit.form.placeholder.id}"
+                                                                       class="form-control col-md-12 col-xs-12"/>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-12 col-sm-12 col-xs-12"
+                                                                   th:text="#{admin.services.edit.form.label.description}">
+                                                            </label>
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <textarea class="form-control" rows="4" disabled="true"
+                                                                          id="descriptionSum"> </textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-12 col-sm-12 col-xs-12"
+                                                                   th:text="#{admin.services.edit.form.label.accessPolicy}">
+                                                            </label>
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div id="accessPolicySum" class="btn btn-success disabled">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="control-label col-md-12 col-sm-12 col-xs-12"
+                                                                   th:text="#{admin.services.edit.form.label.paymentPolicy}">
+                                                            </label>
+                                                            <div class="col-md-12 col-sm-12 col-xs-12">
+                                                                <div id="paymentOptionSum" class="btn btn-success disabled">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <p>
+                                                Please click the Finish button below to create your Service Offering.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <!-- End SmartWizard Content -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+        <div th:include="admin/fragments/scripts :: urlValidator" th:remove="tag">Javascript Libraries</div>
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            function wellDefinePriceDeleteButtonClick() {
+                var deleteRowList = [];
+                var wellDefinePriceBodyTable = document.getElementById("wellDefinePriceBodyTable");
+
+                var rows = wellDefinePriceBodyTable.rows;
+
+                console.log("found a table body with " + rows.length + "rows");
+                for (var index = 0; index < rows.length; index++) {
+                    var itemRow = rows[index];
+                    if (itemRow.childNodes[4].childNodes[0].checked) {
+                        console.log("row to delete with index " + index);
+                        deleteRowList[deleteRowList.length] = index;
+                    }
+                }
+
+                for (var index = deleteRowList.length; index > 0; index--) {
+                    document.getElementById("wellDefinePriceBodyTable").deleteRow(deleteRowList[index - 1]);
+                }
+
+            }
+
+            $(document).ready(function () {
+
+                $("#wellDefinePriceSubmitButton").on("click", function () {
+                    var wellDefinePriceTable = document.getElementById("wellDefinePriceTable");
+
+                    var wellDefinePriceBodyTable = document.getElementById("wellDefinePriceBodyTable");
+
+                    var newRow = document.createElement("TR");
+
+                    var newColumn = document.createElement("TD");
+                    var mt_txt = document.createTextNode($("#wellDefinePriceNameInput").val());
+                    newColumn.appendChild(mt_txt);
+                    newRow.appendChild(newColumn);
+                    wellDefinePriceBodyTable.appendChild(newRow);
+
+                    var newColumn = document.createElement("TD");
+                    var mt_txt = document.createTextNode($("#wellDefinePricePathInput").val());
+                    newColumn.appendChild(mt_txt);
+                    newRow.appendChild(newColumn);
+                    wellDefinePriceBodyTable.appendChild(newRow);
+
+                    var newColumn = document.createElement("TD");
+                    var mt_txt = document.createTextNode($("#wellDefinePriceMethodInput").val());
+                    newColumn.appendChild(mt_txt);
+                    newRow.appendChild(newColumn);
+                    wellDefinePriceBodyTable.appendChild(newRow);
+
+                    var newColumn = document.createElement("TD");
+                    var mt_txt = document.createTextNode($("#wellDefinePriceCostCallInput").val());
+                    newColumn.appendChild(mt_txt);
+                    newRow.appendChild(newColumn);
+                    wellDefinePriceBodyTable.appendChild(newRow);
+
+                    var deleteCheckBox = "<input type='checkbox' />";
+
+
+                    var newColumn = document.createElement("TD");
+
+                    newColumn.insertAdjacentHTML('beforeend', deleteCheckBox);
+                    newRow.appendChild(newColumn);
+                    wellDefinePriceBodyTable.appendChild(newRow);
+                });
+
+
+                $("#monthlyFeeButton").on("click", function () {
+
+                    $("#monthlyFeeButton").removeClass("btn-primary");
+                    $("#monthlyFeeButton").addClass("btn-success");
+                    $("#wellDefinePriceButton").addClass("btn-primary");
+                    $("#wellDefinePriceButton").removeClass("btn-success");
+                    $("#freeButton").addClass("btn-primary");
+                    $("#freeButton").removeClass("btn-success");
+
+                    $("#monthlyFeePane").show();
+                    $("#wellDefinePricePane").hide();
+                    $("#freePane").hide();
+
+                });
+
+                $("#wellDefinePriceButton").on("click", function () {
+
+                    $("#monthlyFeeButton").addClass("btn-primary");
+                    $("#monthlyFeeButton").removeClass("btn-success");
+                    $("#wellDefinePriceButton").removeClass("btn-primary");
+                    $("#wellDefinePriceButton").addClass("btn-success");
+                    $("#freeButton").addClass("btn-primary");
+                    $("#freeButton").removeClass("btn-success");
+
+                    $("#monthlyFeePane").hide();
+                    $("#wellDefinePricePane").show();
+                    $("#freePane").hide();
+                });
+                $("#freeButton").on("click", function () {
+                    $("#monthlyFeeButton").addClass("btn-primary");
+                    $("#monthlyFeeButton").removeClass("btn-success");
+                    $("#wellDefinePriceButton").addClass("btn-primary");
+                    $("#wellDefinePriceButton").removeClass("btn-success");
+                    $("#freeButton").removeClass("btn-primary");
+                    $("#freeButton").addClass("btn-success");
+
+                    $("#monthlyFeePane").hide();
+                    $("#wellDefinePricePane").hide();
+                    $("#freePane").show();
+                });
+
+
+                init_SmartWizard();
+            });
+
+            function init_SmartWizard() {
+
+                if (typeof ($.fn.smartWizard) === 'undefined') {
+                    return;
+                }
+                console.log('init_SmartWizard');
+
+                $('#wizard').smartWizard(
+                        {
+                            autoAdjustHeight: true,
+                            keyNavigation: false,
+                            onShowStep: onShowStepEvent,
+                            onFinish: onFinishCallback
+                        }
+                );
+
+                $('.buttonNext').addClass('btn btn-success');
+                $('.buttonPrevious').addClass('btn btn-primary');
+                $('.buttonFinish').addClass('btn btn-default');
+
+            }
+
+            function onShowStepEvent(obj, context)
+            {
+                if (context.fromStep == 3)
+                {
+
+                    $("#nameSum").val($("#name").val());
+                    $("#localUrlSum").val($("#localUrl").val());
+                    $("#uriIdentifierSum").val($("#uriIdentifier").val());
+                    $("#descriptionSum").val($("#description").val());
+
+                    if ($("input[name='selectedPermissionPolicy']:checked").val() === "PUBLIC")
+                    {
+                        $("#accessPolicySum").html("Public Access");
+                    } else
+                    {
+                        $("#accessPolicySum").html("Restricted Access");
+                    }
+
+                    if ($('#monthlyFeeButton').hasClass('btn-success'))
+                    {
+                        $("#paymentOptionSum").html("Monthly Fee");
+                    } else if ($('#wellDefinePriceButton').hasClass('btn-success'))
+                    {
+                        $("#paymentOptionSum").html("Pay Per Call");
+                    } else
+                    {
+                        $("#paymentOptionSum").html("Service Usage For Free");
+                    }
+                }
+                return true;
+            }
+
+            function onFinishCallback(objs, context) {
+
+                if (!isValidURL($("#localUrl").val().trim()))
+                {
+                    alert("Service URL must be valid and start with http:// or https://");
+                }
+
+                var serviceTemplateString = "{\"name\": \"\", \"description\": \"\",\"uriIdentifier\": \"\",\"localUrl\": \"\",\"serviceAccessPaymentPolicy\": \"\",\"serviceAccessPermissionPolicy\": \"\",\"entryPoints\": []}";
+                var methodTemplateString = "{\"name\": \"\",\"pathPattern\": \"\",\"httpMethod\": \"\",\"pricePerCall\": 0.0 }";
+
+                var serviceTemplate = JSON.parse(serviceTemplateString);
+
+                serviceTemplate.name = $('#name').val();
+                serviceTemplate.uriIdentifier = $('#uriIdentifier').val();
+                serviceTemplate.localUrl = $('#localUrl').val();
+                serviceTemplate.description = $('#description').val();
+                serviceTemplate.serviceAccessPermissionPolicy = $("input[name='selectedPermissionPolicy']:checked").val();
+
+                var rows = document.getElementById("wellDefinePriceBodyTable").rows;
+
+                var validPaths = true;
+
+                if ($('#monthlyFeeButton').hasClass('btn-success')) {
+                    serviceTemplate.serviceAccessPaymentPolicy = "MONTHLY_FEE";
+                    serviceTemplate.monthlyFee = $('#monthlyFeeInput').val();
+                } else if ($('#wellDefinePriceButton').hasClass('btn-success')) {
+                    serviceTemplate.serviceAccessPaymentPolicy = "WELL_DEFINED_PRICE";
+
+                    for (var index = 0; index < rows.length; index++) {
+                        var temporalPath = rows[index].childNodes[1].childNodes[0].nodeValue;
+
+                        temporalPath = temporalPath.replace('*', '');
+                        temporalPath = temporalPath.replace('?', '');
+                        if (isValidURL($("#localUrl").val().trim() + temporalPath))
+                        {
+                            var methodTemplate = JSON.parse(methodTemplateString);
+
+                            var itemRow = rows[index];
+                            methodTemplate.name = itemRow.childNodes[0].childNodes[0].nodeValue;
+                            methodTemplate.pathPattern = itemRow.childNodes[1].childNodes[0].nodeValue;
+                            methodTemplate.httpMethod = itemRow.childNodes[2].childNodes[0].nodeValue;
+                            methodTemplate.pricePerCall = itemRow.childNodes[3].childNodes[0].nodeValue;
+
+                            serviceTemplate.entryPoints[index] = methodTemplate;
+                        } else
+                        {
+                            validPaths = false;
+                            alert("Service URL " + $("#localUrl").val().trim() + temporalPath + " is not valid");
+                        }
+                    }
+                } else {
+                    serviceTemplate.serviceAccessPaymentPolicy = "FOR_FREE";
+                }
+
+                if (isValidURL($("#localUrl").val().trim()) && validPaths)
+                {
+                    $.ajax({
+                        url: '/admin/services/add',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(serviceTemplate),
+                        dataType: 'json'
+                    });
+
+                    $(document).ajaxStop(function () {
+                        window.location.href = "/admin/services";
+                    });
+                }
+
+            }
+            /*]]>*/
+        </script>
+    </body>
+</html>
