@@ -37,7 +37,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 
 /**
- * Transmitter receives metric value updates from the buffer and transmits them to ygg admin
+ * Transmitter receives metric value updates from the buffer and transmits them to CoatRack admin
  *
  * @author gr-hovest@atb-bremen.de
  */
@@ -115,7 +115,7 @@ public class MetricsTransmitter implements GaugeWriter {
                     adminBaseUrl + adminEndpointToGetProxies + "/" + myProxyID,
                     "proxy");
 
-            // get Api key entity from ygg admin for given key value
+            // get Api key entity from CoatRack admin for given key value
             ApiKey apiKey = getApiKeyEntityForApiKeyStringValue(metricToTransmit.getApiKey().getKeyValue());
 
             // create relationship from transmitted metric to the api key that was used
@@ -128,7 +128,7 @@ public class MetricsTransmitter implements GaugeWriter {
             */
 
         } catch (Exception e) {
-            log.error("Exception when communicating with YGG admin server", e);
+            log.error("Exception when communicating with CoatRack admin server", e);
         }
     }
 
@@ -138,7 +138,7 @@ public class MetricsTransmitter implements GaugeWriter {
         HttpEntity<String> relatedEntity
                 = new HttpEntity<>(urlOfOtherEntity, httpHeadersForPuttingRelationships);
 
-        // pass relationship to ygg admin api
+        // pass relationship to CoatRack admin api
         ResponseEntity<String> relationshipPutResponse = restTemplate.exchange(uriOfTransmittedMetric + "/" + relationshipAttributeName,
                 HttpMethod.PUT, relatedEntity, String.class);
         log.info(String.format("created relationship from transmitted metric %s to %s entity (url=%s), result was: %s",
@@ -154,12 +154,12 @@ public class MetricsTransmitter implements GaugeWriter {
 
             if (resultOfApiKeySearch != null && resultOfApiKeySearch.getBody() != null) {
                 apiKey = resultOfApiKeySearch.getBody();
-                log.debug("API key was found by YGG admin: " + apiKey.toString());
+                log.debug("API key was found by CoatRack admin: " + apiKey.toString());
             } else {
                 log.error("Communication with Admin server failed, result is: " + resultOfApiKeySearch);
             }
         } catch (Exception e) {
-            log.error("Exception when trying to get API consumer name from YGG admin", e);
+            log.error("Exception when trying to get API consumer name from CoatRack admin", e);
         }
         return apiKey;
     }

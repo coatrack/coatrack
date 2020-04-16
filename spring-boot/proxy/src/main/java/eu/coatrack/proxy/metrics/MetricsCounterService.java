@@ -53,7 +53,7 @@ public class MetricsCounterService {
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
     private static final int MATCHER_GROUP_INDEX_OF_PATH = 2;
 
-    // this ID should be unique for each start of the proxy application, so that ygg admin knows when counting was restarted
+    // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
     private static final String counterSessionID = UUID.randomUUID().toString();
 
     public void increment(HttpServletRequest request, String apiKey, MetricType metricType, Integer httpResponseCode) {
@@ -124,7 +124,7 @@ public class MetricsCounterService {
             outputMetric.setMetricsCounterSessionID(counterSessionID);
             outputMetric.setType(MetricType.valueOf(elements[4]));
 
-            // add a tmp api key object with just the key value, will later be mapped to entity on ygg admin side
+            // add a tmp api key object with just the key value, will later be mapped to entity on CoatRack admin side
             ApiKey tmpApiKey = new ApiKey();
             tmpApiKey.setKeyValue(elements[3]);
             outputMetric.setApiKey(tmpApiKey);
