@@ -1,3 +1,61 @@
+# Mac OS
+.DS_Store
+
+# Idea
+*.iml
+.idea/
+
+# Netbeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+nbactions.xml
+nb-configuration.xml
+.nb-gradle/
+nb_jr_remoting.cfg
+faces-config.NavData
+
+# Eclipse
+.project
+.classpath
+.settings/
+*.pydevproject
+.metadata
+.gradle
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.externalToolBuilders/
+*.launch
+.cproject
+.factorypath
+.buildpath
+.target
+.texlipse
+
+# Maven
 /api/target/
 /spring-boot/proxy/target/
 /spring-boot/admin/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/
+
+
+
+
+
+
+
