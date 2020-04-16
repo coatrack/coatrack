@@ -1,1 +1,1 @@
-# coatrack
+# CoatRack
