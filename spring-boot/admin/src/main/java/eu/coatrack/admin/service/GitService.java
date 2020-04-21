@@ -112,6 +112,8 @@ public class GitService {
 
             writer.println("zuul.routes." + service.getUriIdentifier() + ".url : " + service.getLocalUrl());
         }
+        writer.println("zuul.host.connect-timeout-millis: 150000");
+        writer.println("zuul.host.socket-timeout-millis: 150000");
         writer.close();
 
         AddCommand addCommand = git.add();

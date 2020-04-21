@@ -131,6 +131,7 @@ public class CreateProxyAction implements Action {
 
         } catch (GitAPIException | URISyntaxException | IOException exception) {
             this.ex = exception;
+            log.error("Error occurred when creating proxy:" + exception.getMessage(), exception);
         }
     }
 
