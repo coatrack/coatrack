@@ -68,4 +68,7 @@ public interface ServiceApiRepository extends PagingAndSortingRepository<Service
 
     @Query("SELECT s FROM ServiceApi s WHERE s.uriIdentifier = :uriIdentifier AND s.owner.username = :serviceOwner")
     public ServiceApi findServiceApiByServiceOwnerAndUriIdentifier(@Param("serviceOwner") String serviceOwner, @Param("uriIdentifier") String uriIdentifier);
+
+    @Query("SELECT s FROM ServiceApi s WHERE s.uriIdentifier = :uriIdentifier")
+    public ServiceApi findServiceApiByUriIdentifier(@Param("uriIdentifier") String uriIdentifier);
 }

@@ -29,19 +29,13 @@ import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
-import org.supercsv.io.CsvBeanWriter;
-import org.supercsv.io.ICsvBeanWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.Inet4Address;
 import java.net.UnknownHostException;
 import java.text.ParseException;
@@ -57,7 +51,7 @@ import static org.modelmapper.convention.MatchingStrategies.STRICT;
 @RequestMapping(value = "/public-api")
 @Component
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-public class PublicApi implements ServiceApiService, InitializingBean {
+public class PublicApi {
 
     private static final Logger log = LoggerFactory.getLogger(PublicApi.class);
 
@@ -81,63 +75,33 @@ public class PublicApi implements ServiceApiService, InitializingBean {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
     }
 
-    @GetMapping(value = "/services/{id}", produces = "application/json")
-    @Override
-    public ServiceApiDTO findById(@PathVariable("id") Long id) {
-        return toDTO(serviceApiRepository.findOne(id));
-    }
-
-    @GetMapping(value = "/services/{id}.csv", produces = "text/csv")
-    public void findByIdCSV(@PathVariable("id") Long id, HttpServletResponse response) throws IOException {
-        ServiceApiDTO serviceApiDTO = toDTO(serviceApiRepository.findOne(id));
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-        csvWriter.write(serviceApiDTO);
-        csvWriter.close();
+    @GetMapping(value = "/services/{uriIdentifier}", produces = "application/json")
+    public ServiceApiDTO findById(@PathVariable("uriIdentifier") String uriIdentifier) {
+        return toDTO(serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier));
     }
 
     @GetMapping(value = "/services", produces = "application/json")
     public List<ServiceApiDTO> findByServiceOwner() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return toListDTO(serviceApiRepository.findByOwnerUsername(auth.getName()));
+        return toListOfDTOs(serviceApiRepository.findByOwnerUsername(auth.getName()));
     }
 
-    @GetMapping(value = "/services.csv", produces = "text/csv")
-    public void findAllCSV(HttpServletResponse response) throws IOException {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Iterable<ServiceApi> serviceApis = serviceApiRepository.findByOwnerUsername(auth.getName());
-        ICsvBeanWriter csvWriter = new CsvBeanWriter(response.getWriter(), CsvPreference.STANDARD_PREFERENCE);
-
-        List<String> names = new ArrayList();
-        Field[] allFields = ServiceApiDTO.class.getDeclaredFields();
-        for (Field field : allFields) {
-            names.add(field.getName().toString());
-        }
-        String[] header = names.toArray(new String[names.size()]);
-
-        csvWriter.writeHeader(header);
-        for (ServiceApi item : serviceApis) {
-            ServiceApiDTO metricDTO = toDTO(item);
-            csvWriter.write(metricDTO, header);
-        }
-        csvWriter.close();
-    }
-
-    @PostMapping(value = "services/{id}/subscriptions", produces = "application/json")
-    public String subscribeService(@PathVariable("id") Long id) throws UnknownHostException {
+    @PostMapping(value = "services/{uriIdentifier}/subscriptions", produces = "application/json")
+    public String subscribeService(@PathVariable("uriIdentifier") String uriIdentifier) throws UnknownHostException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userWhoSubscribes = userRepository.findByUsername(auth.getName());
-        ServiceApi serviceToSubscribeTo = serviceApiRepository.findOne(id);
-        createApiKeyAction.setServiceApi(Service);
-        createApiKeyAction.setUser(user);
+        ServiceApi serviceToSubscribeTo = serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier);
+        createApiKeyAction.setServiceApi(serviceToSubscribeTo);
+        createApiKeyAction.setUser(userWhoSubscribes);
         createApiKeyAction.execute();
         String baseURL = "http://" + Inet4Address.getLocalHost().getHostAddress() + ":8080/admin/api-keys";
         return baseURL;
     }
 
-    @GetMapping(value = "services/{id}/usageStatistics")
-    public long getServiceUsageStatistics(@PathVariable("id") Long id, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
+    @GetMapping(value = "services/{uriIdentifier}/usageStatistics")
+    public ServiceUsageStatisticsDTO getServiceUsageStatistics(@PathVariable("uriIdentifier") String uriIdentifier, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        ServiceApi service = serviceApiRepository.findOne(id);
+        ServiceApi service = serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier);
         Long userId = userRepository.findByUsername(auth.getName()).getId();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date dateFromParsedToDate = formatter.parse(dateFrom);
@@ -153,7 +117,7 @@ public class PublicApi implements ServiceApiService, InitializingBean {
         } else {
             apiUsageReports = reportController.calculateApiUsageReportForSpecificService(service, userId, dateFromParsedToDate, dateUntilParsedToDate, false);
         }
-        return apiUsageReports.get(0).getCalls();
+        return toServiceUsageStatisticsDTO(apiUsageReports.get(0));
     }
 
     List<ServiceApiDTO> toListOfDTOs(List<ServiceApi> entity) {
@@ -166,6 +130,10 @@ public class PublicApi implements ServiceApiService, InitializingBean {
 
     ServiceApiDTO toDTO(ServiceApi entity) {
         return modelMapper.map(entity, ServiceApiDTO.class);
+    }
+
+    ServiceUsageStatisticsDTO toServiceUsageStatisticsDTO(ApiUsageReport entity){
+        return modelMapper.map(entity, ServiceUsageStatisticsDTO.class);
     }
 
     ServiceApi toEntity(ServiceApiDTO dto) {

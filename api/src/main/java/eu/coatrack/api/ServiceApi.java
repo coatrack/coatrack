@@ -20,7 +20,6 @@ package eu.coatrack.api;
  * #L%
  */
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -48,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "service_apis")
-public class ServiceApi implements ServiceApiInterface, Serializable {
+public class ServiceApi implements ServiceApiInterface{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
