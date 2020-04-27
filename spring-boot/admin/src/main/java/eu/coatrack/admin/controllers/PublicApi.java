@@ -156,7 +156,7 @@ public class PublicApi implements ServiceApiService, InitializingBean {
         return apiUsageReports.get(0).getCalls();
     }
 
-    List<ServiceApiDTO> toListDTO(List<ServiceApi> entity) {
+    List<ServiceApiDTO> toListOfDTOs(List<ServiceApi> entity) {
         List<ServiceApiDTO> serviceApiDTOList = new ArrayList<>();
         for (ServiceApi singleEntity : entity) {
             serviceApiDTOList.add(modelMapper.map(singleEntity, ServiceApiDTO.class));
