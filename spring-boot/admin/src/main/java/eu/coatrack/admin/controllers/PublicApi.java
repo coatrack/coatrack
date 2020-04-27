@@ -126,7 +126,7 @@ public class PublicApi implements ServiceApiService, InitializingBean {
     public String subscribeService(@PathVariable("id") Long id) throws UnknownHostException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userWhoSubscribes = userRepository.findByUsername(auth.getName());
-        ServiceApi Service = serviceApiRepository.findOne(id);
+        ServiceApi serviceToSubscribeTo = serviceApiRepository.findOne(id);
         createApiKeyAction.setServiceApi(Service);
         createApiKeyAction.setUser(user);
         createApiKeyAction.execute();
