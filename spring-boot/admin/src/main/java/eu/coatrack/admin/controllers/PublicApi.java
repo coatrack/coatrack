@@ -29,6 +29,7 @@ import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -51,7 +52,7 @@ import static org.modelmapper.convention.MatchingStrategies.STRICT;
 @RequestMapping(value = "/public-api")
 @Component
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-public class PublicApi {
+public class PublicApi implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(PublicApi.class);
 
@@ -76,7 +77,7 @@ public class PublicApi {
     }
 
     @GetMapping(value = "/services/{uriIdentifier}", produces = "application/json")
-    public ServiceApiDTO findById(@PathVariable("uriIdentifier") String uriIdentifier) {
+    public ServiceApiDTO findByServiceUriIdentifier(@PathVariable("uriIdentifier") String uriIdentifier) {
         return toDTO(serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier));
     }
 
