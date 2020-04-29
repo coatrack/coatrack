@@ -31,14 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.ZoneId;
@@ -55,6 +54,9 @@ import static org.modelmapper.convention.MatchingStrategies.STRICT;
 public class PublicApi implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(PublicApi.class);
+
+    @Value("${ygg.admin.server.url}")
+    private String serverUrl;
 
     @Autowired
     private ServiceApiRepository serviceApiRepository;
@@ -88,14 +90,14 @@ public class PublicApi implements InitializingBean {
     }
 
     @PostMapping(value = "services/{uriIdentifier}/subscriptions", produces = "application/json")
-    public String subscribeService(@PathVariable("uriIdentifier") String uriIdentifier) throws UnknownHostException {
+    public String subscribeService(@PathVariable("uriIdentifier") String uriIdentifier) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userWhoSubscribes = userRepository.findByUsername(auth.getName());
         ServiceApi serviceToSubscribeTo = serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier);
         createApiKeyAction.setServiceApi(serviceToSubscribeTo);
         createApiKeyAction.setUser(userWhoSubscribes);
         createApiKeyAction.execute();
-        String baseURL = "http://" + Inet4Address.getLocalHost().getHostAddress() + ":8080/admin/api-keys";
+        String baseURL = serverUrl + "/admin/api-keys";
         return baseURL;
     }
 
@@ -118,7 +120,11 @@ public class PublicApi implements InitializingBean {
         } else {
             apiUsageReports = reportController.calculateApiUsageReportForSpecificService(service, userId, dateFromParsedToDate, dateUntilParsedToDate, false);
         }
-        return toServiceUsageStatisticsDTO(apiUsageReports.get(0));
+
+        ServiceUsageStatisticsDTO serviceUsageStatisticsDTO = new ServiceUsageStatisticsDTO();
+        serviceUsageStatisticsDTO.setCalls(apiUsageReports.stream().mapToLong(ApiUsageReport::getCalls).sum());
+
+        return serviceUsageStatisticsDTO;
     }
 
     List<ServiceApiDTO> toListOfDTOs(List<ServiceApi> entity) {
@@ -133,7 +139,7 @@ public class PublicApi implements InitializingBean {
         return modelMapper.map(entity, ServiceApiDTO.class);
     }
 
-    ServiceUsageStatisticsDTO toServiceUsageStatisticsDTO(ApiUsageReport entity){
+    ServiceUsageStatisticsDTO toServiceUsageStatisticsDTO(ApiUsageReport entity) {
         return modelMapper.map(entity, ServiceUsageStatisticsDTO.class);
     }
 
