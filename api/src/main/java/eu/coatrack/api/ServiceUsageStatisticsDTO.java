@@ -31,5 +31,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ServiceUsageStatisticsDTO {
 
-    long calls;
+    long numberOfCalls;
 }
