@@ -22,5 +22,8 @@ package eu.coatrack.api;
 
 public interface ServiceUsageStatisticsInterface {
 
-    long getCalls();
+    long getNumberOfCalls();
+    String getDateFrom();
+    String getDateUntil();
+    String getUriIdentifier();
 }

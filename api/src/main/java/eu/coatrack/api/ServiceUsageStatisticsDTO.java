@@ -29,7 +29,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ServiceUsageStatisticsDTO {
+public class ServiceUsageStatisticsDTO implements ServiceUsageStatisticsInterface {
 
     long numberOfCalls;
+    String dateFrom;
+    String dateUntil;
+    String uriIdentifier;
 }

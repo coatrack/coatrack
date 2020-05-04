@@ -53,7 +53,7 @@ import static org.modelmapper.convention.MatchingStrategies.STRICT;
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
 public class PublicApiController implements InitializingBean {
 
-    private static final Logger log = LoggerFactory.getLogger(PublicApi.class);
+    private static final Logger log = LoggerFactory.getLogger(PublicApiController.class);
 
     @Value("${ygg.admin.server.url}")
     private String serverUrl;
@@ -122,7 +122,10 @@ public class PublicApiController implements InitializingBean {
         }
 
         ServiceUsageStatisticsDTO serviceUsageStatisticsDTO = new ServiceUsageStatisticsDTO();
-        serviceUsageStatisticsDTO.setCalls(apiUsageReports.stream().mapToLong(ApiUsageReport::getCalls).sum());
+        serviceUsageStatisticsDTO.setNumberOfCalls(apiUsageReports.stream().mapToLong(ApiUsageReport::getCalls).sum());
+        serviceUsageStatisticsDTO.setDateFrom(dateFrom);
+        serviceUsageStatisticsDTO.setDateUntil(dateUntil);
+        serviceUsageStatisticsDTO.setUriIdentifier(uriIdentifier);
 
         return serviceUsageStatisticsDTO;
     }
@@ -138,13 +141,4 @@ public class PublicApiController implements InitializingBean {
     ServiceApiDTO toDTO(ServiceApi entity) {
         return modelMapper.map(entity, ServiceApiDTO.class);
     }
-
-    ServiceUsageStatisticsDTO toServiceUsageStatisticsDTO(ApiUsageReport entity) {
-        return modelMapper.map(entity, ServiceUsageStatisticsDTO.class);
-    }
-
-    ServiceApi toEntity(ServiceApiDTO dto) {
-        return modelMapper.map(dto, ServiceApi.class);
-    }
-
 }
