@@ -51,7 +51,7 @@ import static org.modelmapper.convention.MatchingStrategies.STRICT;
 @RequestMapping(value = "/public-api")
 @Component
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-public class PublicApi implements InitializingBean {
+public class PublicApiController implements InitializingBean {
 
     private static final Logger log = LoggerFactory.getLogger(PublicApi.class);
 
