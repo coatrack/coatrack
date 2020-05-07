@@ -56,7 +56,7 @@ public class PublicApiController implements InitializingBean {
     private static final Logger log = LoggerFactory.getLogger(PublicApiController.class);
 
     @Value("${ygg.admin.server.url}")
-    private String serverUrl;
+    private String coatrackAdminPublicServerURL;
 
     @Autowired
     private ServiceApiRepository serviceApiRepository;
@@ -78,9 +78,9 @@ public class PublicApiController implements InitializingBean {
         modelMapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
     }
 
-    @GetMapping(value = "/services/{uriIdentifier}", produces = "application/json")
-    public ServiceApiDTO findByServiceUriIdentifier(@PathVariable("uriIdentifier") String uriIdentifier) {
-        return toDTO(serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier));
+    @GetMapping(value = "/services/{serviceOwnerUsername}/{uriIdentifier}", produces = "application/json")
+    public ServiceApiDTO findByServiceUriIdentifier(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
+        return toDTO(serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier));
     }
 
     @GetMapping(value = "/services", produces = "application/json")
@@ -89,29 +89,29 @@ public class PublicApiController implements InitializingBean {
         return toListOfDTOs(serviceApiRepository.findByOwnerUsername(auth.getName()));
     }
 
-    @PostMapping(value = "services/{uriIdentifier}/subscriptions", produces = "application/json")
-    public String subscribeService(@PathVariable("uriIdentifier") String uriIdentifier) {
+    @PostMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/subscriptions", produces = "application/json")
+    public String subscribeService(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userWhoSubscribes = userRepository.findByUsername(auth.getName());
-        ServiceApi serviceToSubscribeTo = serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier);
+        ServiceApi serviceToSubscribeTo = serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier);
         createApiKeyAction.setServiceApi(serviceToSubscribeTo);
         createApiKeyAction.setUser(userWhoSubscribes);
         createApiKeyAction.execute();
-        String baseURL = serverUrl + "/admin/api-keys";
+        String baseURL = coatrackAdminPublicServerURL + "/admin/api-keys";
         return baseURL;
     }
 
-    @GetMapping(value = "services/{uriIdentifier}/usageStatistics")
-    public ServiceUsageStatisticsDTO getServiceUsageStatistics(@PathVariable("uriIdentifier") String uriIdentifier, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
+    @GetMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/usageStatistics")
+    public ServiceUsageStatisticsDTO getServiceUsageStatistics(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        ServiceApi service = serviceApiRepository.findServiceApiByUriIdentifier(uriIdentifier);
+        ServiceApi service = serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier);
         Long userId = userRepository.findByUsername(auth.getName()).getId();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date dateFromParsedToDate = formatter.parse(dateFrom);
         Date dateUntilParsedToDate = formatter.parse(dateUntil);
         List<ApiUsageReport> apiUsageReports = new ArrayList<>();
         // if user is the owner of the service
-        if (service.getOwner().getUsername().equals(auth.getName())) {
+        if (serviceOwnerUsername.equals(auth.getName())) {
 
             apiUsageReports.addAll(reportController.calculateApiUsageReportForSpecificService(service, -1L, // for all consumers
                     java.sql.Date.valueOf(dateFromParsedToDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()),
@@ -131,14 +131,20 @@ public class PublicApiController implements InitializingBean {
     }
 
     List<ServiceApiDTO> toListOfDTOs(List<ServiceApi> entity) {
+
         List<ServiceApiDTO> serviceApiDTOList = new ArrayList<>();
+        int counter = 0;
         for (ServiceApi singleEntity : entity) {
             serviceApiDTOList.add(modelMapper.map(singleEntity, ServiceApiDTO.class));
+            serviceApiDTOList.get(counter).setServiceOwnerUsername(singleEntity.getOwner().getUsername());
+            counter++;
         }
         return serviceApiDTOList;
     }
 
     ServiceApiDTO toDTO(ServiceApi entity) {
-        return modelMapper.map(entity, ServiceApiDTO.class);
+        ServiceApiDTO serviceDTO = modelMapper.map(entity, ServiceApiDTO.class);
+        serviceDTO.setServiceOwnerUsername(entity.getOwner().getUsername());
+        return serviceDTO;
     }
 }

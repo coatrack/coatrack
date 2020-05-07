@@ -34,5 +34,6 @@ public class ServiceApiDTO implements ServiceApiInterface {
     String name;
     String uriIdentifier;
     String description;
+    String serviceOwnerUsername;
 
 }
