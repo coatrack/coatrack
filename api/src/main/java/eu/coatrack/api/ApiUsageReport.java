@@ -24,7 +24,7 @@ package eu.coatrack.api;
  *
  * @author perezdf
  */
-public class ApiUsageReport{
+public class ApiUsageReport {
 
     private String name;
     private long calls;
