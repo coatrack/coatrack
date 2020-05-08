@@ -38,7 +38,7 @@ import org.springframework.security.access.prepost.PostFilter;
 
 /**
  * @author gr-hovest(at)atb-bremen.de
- * silva@atb-bremen.de
+ * @author silva@atb-bremen.de
  */
 @RepositoryRestResource(collectionResourceRel = "services", path = "services")
 public interface ServiceApiRepository extends PagingAndSortingRepository<ServiceApi, Long> {

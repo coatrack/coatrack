@@ -35,4 +35,5 @@ public class ServiceUsageStatisticsDTO implements ServiceUsageStatisticsInterfac
     String dateFrom;
     String dateUntil;
     String uriIdentifier;
+    String ownerUserName;
 }

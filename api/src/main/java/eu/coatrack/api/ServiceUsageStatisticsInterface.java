@@ -26,4 +26,5 @@ public interface ServiceUsageStatisticsInterface {
     String getDateFrom();
     String getDateUntil();
     String getUriIdentifier();
+    String getOwnerUserName();
 }

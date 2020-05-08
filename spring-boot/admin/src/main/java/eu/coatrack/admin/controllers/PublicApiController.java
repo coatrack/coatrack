@@ -105,7 +105,6 @@ public class PublicApiController implements InitializingBean {
     public ServiceUsageStatisticsDTO getServiceUsageStatistics(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ServiceApi service = serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier);
-        Long userId = userRepository.findByUsername(auth.getName()).getId();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date dateFromParsedToDate = formatter.parse(dateFrom);
         Date dateUntilParsedToDate = formatter.parse(dateUntil);
@@ -118,6 +117,7 @@ public class PublicApiController implements InitializingBean {
                     java.sql.Date.valueOf(dateUntilParsedToDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()),
                     true));
         } else {
+            Long userId = userRepository.findByUsername(auth.getName()).getId();
             apiUsageReports = reportController.calculateApiUsageReportForSpecificService(service, userId, dateFromParsedToDate, dateUntilParsedToDate, false);
         }
 
@@ -126,6 +126,7 @@ public class PublicApiController implements InitializingBean {
         serviceUsageStatisticsDTO.setDateFrom(dateFrom);
         serviceUsageStatisticsDTO.setDateUntil(dateUntil);
         serviceUsageStatisticsDTO.setUriIdentifier(uriIdentifier);
+        serviceUsageStatisticsDTO.setOwnerUserName(service.getOwner().getUsername());
 
         return serviceUsageStatisticsDTO;
     }
@@ -133,11 +134,9 @@ public class PublicApiController implements InitializingBean {
     List<ServiceApiDTO> toListOfDTOs(List<ServiceApi> entity) {
 
         List<ServiceApiDTO> serviceApiDTOList = new ArrayList<>();
-        int counter = 0;
+
         for (ServiceApi singleEntity : entity) {
             serviceApiDTOList.add(modelMapper.map(singleEntity, ServiceApiDTO.class));
-            serviceApiDTOList.get(counter).setServiceOwnerUsername(singleEntity.getOwner().getUsername());
-            counter++;
         }
         return serviceApiDTOList;
     }

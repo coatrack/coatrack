@@ -156,6 +156,11 @@ public class ServiceApi implements ServiceApiInterface{
         return description;
     }
 
+    @Override
+    public String getServiceOwnerUsername() {
+        return owner.getUsername();
+    }
+
     public void setDescription(String description) {
         this.description = description;
     }
