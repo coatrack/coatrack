@@ -26,8 +26,8 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Represents an API key that was transmitted by an YGG gateway to access the
- * YGG admin api.
+ * Represents an API key that was transmitted by a CoatRack gateway to access the
+ * CoatRack admin api.
  *
  * @author gr-hovest
  */

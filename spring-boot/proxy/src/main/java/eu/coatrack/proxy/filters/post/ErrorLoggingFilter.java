@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.filters.post;
+package eu.coatrack.proxy.filters.post;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package eu.iof2020.ygg.proxy.filters.post;
 
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
-import eu.iof2020.ygg.proxy.metrics.MetricsCounterService;
+import eu.coatrack.proxy.metrics.MetricsCounterService;
 import eu.coatrack.api.MetricType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
