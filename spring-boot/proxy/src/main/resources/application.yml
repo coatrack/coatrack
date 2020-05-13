@@ -9,7 +9,7 @@ server.port: 8088
 # Please note: in production setting this test ID will be superseded/replaced via the individually generated gateway config
 proxy-id: aa11aa22-aa33-aa44-aa55-aa66aa77aa88
 
-# parameters related to the communication with ygg admin
+# parameters related to the communication with CoatRack admin
 ygg.admin:
   # Please note: in production setting this URL will be superseded by the one from ygg-admin config, which is put into the individual gateway config
   #api-base-url: https://coatrack.eu/api/
@@ -26,5 +26,5 @@ custom-metrics:
 
 logging:
   level:
-    eu.iof2020.ygg.proxy: DEBUG
+    eu.coatrack.proxy: DEBUG
     org.springframework.security: DEBUG

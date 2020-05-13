@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/transactions")
 public class TransactionController {
 
-    private SimpleDateFormat df = new SimpleDateFormat("DD/MM/YYYY");
+    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY");
 
     @Autowired
     private TransactionRepository transactionRepository;

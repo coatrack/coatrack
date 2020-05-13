@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.security;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -49,7 +49,7 @@ import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 
 /**
  * Checks if the API key token value sent by the client is valid. Right now this
- * is done by a request to YGG admin, asking if the token value is known.
+ * is done by a request to CoatRack admin, asking if the token value is known.
  *
  * @author gr-hovest
  */
@@ -87,7 +87,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             String apiKey = (String) authentication.getCredentials();
             Assert.hasText(apiKey);
 
-            //TODO this is just a workaround for now: check for fixed API key to allow YGG admin access
+            //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
             if (apiKey.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES)) {
 
                 Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
@@ -135,7 +135,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
             if (resultOfApiKeySearch != null) {
                 ApiKey apiKey = resultOfApiKeySearch.getBody();
-                log.debug("API key was found by YGG admin: " + apiKey);
+                log.debug("API key was found by CoatRack admin: " + apiKey);
 
                 if (Date.valueOf(LocalDate.now()).after(apiKey.getValidUntil())) {
                     throw new CredentialsExpiredException("Api key is expired");
@@ -168,7 +168,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
             if (responseEntity != null) {
                 ServiceApi serviceApi = responseEntity.getBody();
-                log.debug("Service API was found by YGG admin: " + serviceApi);
+                log.debug("Service API was found by CoatRack admin: " + serviceApi);
 
                 return serviceApi;
             } else {

@@ -21,7 +21,7 @@ package eu.coatrack.api;
  */
 
 /**
- * Types of metrics that should be transmitted from YGG proxy to YGG admin.
+ * Types of metrics that should be transmitted from CoatRack proxy to CoatRack admin.
  *
  * @author gr-hovest(at)atb-bremen.de
  */
