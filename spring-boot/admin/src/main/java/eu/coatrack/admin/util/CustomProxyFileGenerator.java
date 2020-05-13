@@ -40,7 +40,7 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
 /**
- * Generates custom YGG proxy jars, which can then be downloaded and installed
+ * Generates custom CoatRack proxy jars, which can then be downloaded and installed
  * on API provider side
  *
  * @author gr-hovest(at)atb-bremen.de
@@ -108,7 +108,7 @@ public class CustomProxyFileGenerator {
             JarInputStream originalJarInputStream = new JarInputStream(new FileInputStream(proxyOriginalExecutableFile));
             JarOutputStream customJarOutputStream = new JarOutputStream(new FileOutputStream(newCustomProxyFile));
 
-            // copy all elements from the original ygg proxy jar, except for custom config file
+            // copy all elements from the original CoatRack proxy jar, except for custom config file
             while (entriesInsideJarToCopy.hasMoreElements()) {
 
                 // get meta data for this file from source jar

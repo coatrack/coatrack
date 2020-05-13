@@ -1,4 +1,4 @@
-package eu.iof2020.ygg.proxy.security;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -20,7 +20,7 @@ package eu.iof2020.ygg.proxy.security;
  * #L%
  */
 
-import eu.iof2020.ygg.proxy.filters.pre.ApiKeyAuthFilter;
+import eu.coatrack.proxy.filters.pre.ApiKeyAuthFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.AccessDecisionManager;

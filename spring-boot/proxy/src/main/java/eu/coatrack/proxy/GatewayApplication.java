@@ -9,9 +9,9 @@ package eu.coatrack.proxy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,16 +20,16 @@ package eu.coatrack.proxy;
  * #L%
  */
 
-import eu.iof2020.ygg.proxy.filters.post.ErrorLoggingFilter;
-import eu.iof2020.ygg.proxy.filters.post.ResponseLoggingFilter;
-import eu.iof2020.ygg.proxy.filters.pre.ApiKeyAuthFilter;
-import eu.iof2020.ygg.proxy.filters.pre.RequestLoggingFilter;
-import eu.iof2020.ygg.proxy.metrics.MetricsCounterService;
-import eu.iof2020.ygg.proxy.metrics.MetricsTransmitter;
-import eu.iof2020.ygg.proxy.security.ApiKeyAuthTokenVerifier;
-import eu.iof2020.ygg.proxy.security.SecurityConfigurer;
-import eu.iof2020.ygg.proxy.security.SecurityUtil;
-import eu.iof2020.ygg.proxy.security.ServiceApiAccessRightsVoter;
+import eu.coatrack.proxy.filters.post.ErrorLoggingFilter;
+import eu.coatrack.proxy.filters.post.ResponseLoggingFilter;
+import eu.coatrack.proxy.filters.pre.ApiKeyAuthFilter;
+import eu.coatrack.proxy.filters.pre.RequestLoggingFilter;
+import eu.coatrack.proxy.metrics.MetricsCounterService;
+import eu.coatrack.proxy.metrics.MetricsTransmitter;
+import eu.coatrack.proxy.security.ApiKeyAuthTokenVerifier;
+import eu.coatrack.proxy.security.SecurityConfigurer;
+import eu.coatrack.proxy.security.SecurityUtil;
+import eu.coatrack.proxy.security.ServiceApiAccessRightsVoter;
 import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -141,5 +141,7 @@ public class GatewayApplication {
     }
 
     @Bean
-    public SecurityUtil securityUtil() { return new SecurityUtil(); }
+    public SecurityUtil securityUtil() {
+        return new SecurityUtil();
+    }
 }

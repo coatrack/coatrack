@@ -119,7 +119,7 @@
 
                                             <div 
                                                 id="monthlyFeePane"
-                                                th:styleappend="${T(nl.corizon.ygg.api.ServiceAccessPaymentPolicy).MONTHLY_FEE.equals(service.getServiceAccessPaymentPolicy())} ? 'display: block;' : 'display: none;' ">
+                                                th:styleappend="${T(eu.coatrack.api.ServiceAccessPaymentPolicy).MONTHLY_FEE.equals(service.getServiceAccessPaymentPolicy())} ? 'display: block;' : 'display: none;' ">
                                                 <p class="lead">Monthly fee</p>
                                                 <div class="col-md-3 col-sm-3 col-xs-12 form-group has-feedback">
                                                     <input id="monthlyFeeInput" placeholder="€ per month"
@@ -130,7 +130,7 @@
 
                                             <div 
                                                 id="wellDefinePricePane"
-                                                th:styleappend="${T(nl.corizon.ygg.api.ServiceAccessPaymentPolicy).WELL_DEFINED_PRICE.equals(service.getServiceAccessPaymentPolicy())} ? 'display: block;' : 'display: none;' ">
+                                                th:styleappend="${T(eu.coatrack.api.ServiceAccessPaymentPolicy).WELL_DEFINED_PRICE.equals(service.getServiceAccessPaymentPolicy())} ? 'display: block;' : 'display: none;' ">
 
                                                 <div class="tab-pane" id="wellDefinePricePane">
                                                     <p class="lead">Pay per call</p>
@@ -208,7 +208,7 @@
                                             </div>
                                             <div 
                                                 id="freePane"
-                                                th:styleappend="${T(nl.corizon.ygg.api.ServiceAccessPaymentPolicy).FOR_FREE.equals(service.getServiceAccessPaymentPolicy())} ? 'display: block;' : 'display: none;' ">
+                                                th:styleappend="${T(eu.coatrack.api.ServiceAccessPaymentPolicy).FOR_FREE.equals(service.getServiceAccessPaymentPolicy())} ? 'display: block;' : 'display: none;' ">
                                                 <p class="lead">For free</p>
 
 
@@ -217,6 +217,7 @@
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
                                 <input type="file" name="file"/>
                                 <button id="sendButton" type="button" class="btn btn-success">Upload</button>
