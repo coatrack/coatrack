@@ -25,6 +25,7 @@ import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.api.*;
 
+import io.swagger.annotations.ApiOperation;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -79,17 +80,24 @@ public class PublicApiController implements InitializingBean {
     }
 
     @GetMapping(value = "/services/{serviceOwnerUsername}/{uriIdentifier}", produces = "application/json")
+    @ApiOperation(value = "Get specific service by owner and Uri Identifier",
+            notes = "uriIdentifier - the URI identifier that is used in CoatRack to identify the service\n" +
+                    "serviceOwnerUsername - this is the Github username of the one who owns and offers the service via Coatrack\n")
     public ServiceApiDTO findByServiceOwnerAndUriIdentifier(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
         return toDTO(serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier));
     }
 
     @GetMapping(value = "/services", produces = "application/json")
+    @ApiOperation(value = "Get a list of all services offered by the currently logged in user")
     public List<ServiceApiDTO> findByServiceOwner() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return toListOfDTOs(serviceApiRepository.findByOwnerUsername(auth.getName()));
     }
 
     @PostMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/subscriptions", produces = "application/json")
+    @ApiOperation(value = "Subscribe to a specific service",
+            notes = "uriIdentifier - the URI identifier that is used in CoatRack to identify the service\n" +
+                    "serviceOwnerUsername - this is the Github username of the one who owns and offers the service via Coatrack\n")
     public String subscribeToService(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User userWhoSubscribes = userRepository.findByUsername(auth.getName());
@@ -102,6 +110,10 @@ public class PublicApiController implements InitializingBean {
     }
 
     @GetMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/usageStatistics")
+    @ApiOperation(value = "Get usage statistics of a service",
+            notes = "uriIdentifier - the URI identifier that is used in CoatRack to identify the service\n" +
+                    "serviceOwnerUsername - this is the Github username of the one who owns and offers the service via Coatrack\n" +
+                    "dateFrom and dateUntil - this is the interval, from which the usage statistics will be filtered\n")
     public ServiceUsageStatisticsDTO getServiceUsageStatistics(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ServiceApi service = serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier);
