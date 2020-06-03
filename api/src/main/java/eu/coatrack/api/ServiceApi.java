@@ -9,9 +9,9 @@ package eu.coatrack.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "service_apis")
-public class ServiceApi {
+public class ServiceApi implements ServiceApiInterface{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -154,6 +154,11 @@ public class ServiceApi {
      */
     public String getDescription() {
         return description;
+    }
+
+    @Override
+    public String getServiceOwnerUsername() {
+        return owner.getUsername();
     }
 
     public void setDescription(String description) {
