@@ -48,7 +48,7 @@ public class SwaggerConfig {
                 "CoatRack Public API",
                 "This CoatRack Public API enables the BAE/marketplace to do the following:\n" +
                         "   \u2022 Get information about the service(s) that a specific user created in CoatRack, so that this user can create an offer for that service in the marketplace\n" +
-                        "   \u2022 Inform CoatRack about the acquisition of the service by a specific user via the marketplace, so that CoatRack will give this user permission to access the service\n" +
+                        "   \u2022 Inform CoatRack about the acquisition of a specific service by a specific user via the marketplace, so that CoatRack will give this user permission to access the service\n" +
                         "   \u2022 Get service usage statistics from CoatRack, so that the marketplace can do billing/accounting for pay-per-use services\n",
                 null,
                 null,
