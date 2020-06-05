@@ -261,6 +261,9 @@
 
             $(document).ready(function () {
 
+                $("#wellDefinePriceTable tbody").sortable({
+                }).disableSelection();
+
                 $("#updateButton").on("click", function () {
 
                     if (!isValidURL($("#localUrl").val().trim()))
@@ -268,10 +271,8 @@
                         alert("Service URL must be valid and start with http:// or https://");
                     }
 
-
                     var serviceTemplateString = "{\"id\": \"\",\"name\": \"\", \"description\": \"\",\"uriIdentifier\": \"\",\"localUrl\": \"\",\"serviceAccessPaymentPolicy\": \"\",\"serviceAccessPermissionPolicy\": \"\",\"entryPoints\": []}";
-                    var methodTemplateString = "{\"name\": \"\",\"pathPattern\": \"\",\"httpMethod\": \"\",\"pricePerCall\": 0.0 }";
-
+                    var methodTemplateString = "{\"name\": \"\",\"pathPattern\": \"\",\"httpMethod\": \"\",\"pricePerCall\": 0.0,\"position\": 0}";
                     var serviceTemplate = JSON.parse(serviceTemplateString);
 
                     serviceTemplate.id = $('#id').val();
@@ -308,6 +309,9 @@
                                 methodTemplate.pathPattern = itemRow.childNodes[2].childNodes[0].nodeValue.trim();
                                 methodTemplate.httpMethod = itemRow.childNodes[3].childNodes[0].nodeValue.trim();
                                 methodTemplate.pricePerCall = itemRow.childNodes[4].childNodes[0].nodeValue;
+
+                                // converts index (position in the table) to a String with a decimal number (base 10)
+                                methodTemplate.position = index.toString(10);
 
                                 serviceTemplate.entryPoints[index] = methodTemplate;
                             } else
