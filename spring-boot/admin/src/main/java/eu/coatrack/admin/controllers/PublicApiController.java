@@ -113,7 +113,7 @@ public class PublicApiController implements InitializingBean {
     @ApiOperation(value = "Get usage statistics for a specific service and a specific time interval",
             notes = "uriIdentifier - the URI identifier that is used in CoatRack to identify the service\n" +
                     "serviceOwnerUsername - this is the Github username of the one who owns and offers the service via Coatrack\n" +
-                    "dateFrom and dateUntil - this is the interval, from which the usage statistics will be filtered\n")
+                    "dateFrom and dateUntil - these dates define the time interval to filter the usage statistics\n")
     public ServiceUsageStatisticsDTO getServiceUsageStatistics(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername, @RequestParam String dateFrom, @RequestParam String dateUntil) throws IOException, ParseException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         ServiceApi service = serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier);
