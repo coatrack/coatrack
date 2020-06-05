@@ -80,7 +80,7 @@ public class PublicApiController implements InitializingBean {
     }
 
     @GetMapping(value = "/services/{serviceOwnerUsername}/{uriIdentifier}", produces = "application/json")
-    @ApiOperation(value = "Get specific service by owner and Uri Identifier",
+    @ApiOperation(value = "Get specific service by owner and URI Identifier",
             notes = "uriIdentifier - the URI identifier that is used in CoatRack to identify the service\n" +
                     "serviceOwnerUsername - this is the Github username of the one who owns and offers the service via Coatrack\n")
     public ServiceApiDTO findByServiceOwnerAndUriIdentifier(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
