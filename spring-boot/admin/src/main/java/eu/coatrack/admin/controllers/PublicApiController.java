@@ -110,7 +110,7 @@ public class PublicApiController implements InitializingBean {
     }
 
     @GetMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/usageStatistics")
-    @ApiOperation(value = "Get usage statistics of a service",
+    @ApiOperation(value = "Get usage statistics for a specific service and a specific time interval",
             notes = "uriIdentifier - the URI identifier that is used in CoatRack to identify the service\n" +
                     "serviceOwnerUsername - this is the Github username of the one who owns and offers the service via Coatrack\n" +
                     "dateFrom and dateUntil - this is the interval, from which the usage statistics will be filtered\n")
