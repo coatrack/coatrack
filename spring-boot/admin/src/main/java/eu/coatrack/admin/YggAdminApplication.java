@@ -31,8 +31,10 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.ITemplateResolver;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
+@EnableSwagger2
 @EnableJpaRepositories("eu.coatrack*")
 @ComponentScan(basePackages = {"eu.coatrack*", "eu.coatrack.*"})
 @EntityScan(basePackages = {"eu.coatrack*", "eu.coatrack.*"})
