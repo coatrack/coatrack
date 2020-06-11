@@ -94,7 +94,7 @@ public class PublicApiController implements InitializingBean {
         return toListOfDTOs(serviceApiRepository.findByOwnerUsername(auth.getName()));
     }
 
-    @PostMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/subscriptions", produces = "application/json")
+    @PostMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/subscriptions", produces = "text/plain")
     @ApiOperation(value = "Subscribe to a specific service",
             notes = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
                     "<b> serviceOwnerUsername </b> - this is the Github username of the one who owns and offers the service via Coatrack\n")
@@ -105,7 +105,7 @@ public class PublicApiController implements InitializingBean {
         createApiKeyAction.setServiceApi(serviceToSubscribeTo);
         createApiKeyAction.setUser(userWhoSubscribes);
         createApiKeyAction.execute();
-        String baseURL = coatrackAdminPublicServerURL + "/admin/api-keys";
+        String baseURL = coatrackAdminPublicServerURL + "/admin/api-keys/consumer/list";
         return baseURL;
     }
 
