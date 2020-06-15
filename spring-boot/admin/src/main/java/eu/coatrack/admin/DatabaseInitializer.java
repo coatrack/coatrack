@@ -33,10 +33,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gr-hovest(at)atb-bremen.de
@@ -419,6 +416,15 @@ public class DatabaseInitializer {
         return proxyRepository.save(proxy);
     }
 
+    private EntryPoint createEntrypoint(String name, String pathPattern, double pricePerCall, String httpMethod) {
+        EntryPoint entryPoint = new EntryPoint();
+        entryPoint.setName(name);
+        entryPoint.setPathPattern(pathPattern);
+        entryPoint.setPricePerCall(pricePerCall);
+        entryPoint.setHttpMethod(httpMethod);
+        return entryPoint;
+    }
+
     private ServiceApi createNewServiceAPI(
             User apiProvider,
             String name,
@@ -439,16 +445,12 @@ public class DatabaseInitializer {
         serviceApi.setServiceAccessPaymentPolicy(serviceAccessPaymentPolicy);
         serviceApi.setDescription(description);
 
-        Set<EntryPoint> entryPoints = new HashSet<>();
+        List<EntryPoint> entryPoints = new ArrayList<>();
 
         if (serviceAccessPaymentPolicy.equals(ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE)) {
-            //service is pay per call, add an entry point
-            EntryPoint entryPoint = new EntryPoint();
-            entryPoint.setName("Read historical data");
-            entryPoint.setPathPattern("/historic");
-            entryPoint.setPricePerCall(1.2);
-            entryPoint.setHttpMethod(HttpMethod.GET.toString());
-            entryPoints.add(entryPoint);
+            entryPoints.add(createEntrypoint("Read historical data", "/historic", 1.2, HttpMethod.GET.toString()));
+            entryPoints.add(createEntrypoint("Read test data", "/test", 2, HttpMethod.GET.toString()));
+            entryPoints.add(createEntrypoint("Read weather sample", "/weatherSample", 1.5, HttpMethod.GET.toString()));
         }
         serviceApi.setEntryPoints(entryPoints);
 

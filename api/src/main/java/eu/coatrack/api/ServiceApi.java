@@ -26,19 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
+import javax.persistence.*;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
@@ -75,8 +64,9 @@ public class ServiceApi implements ServiceApiInterface{
     @Enumerated(EnumType.STRING)
     private ServiceAccessPaymentPolicy serviceAccessPaymentPolicy;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<EntryPoint> entryPoints = new HashSet<>(0);
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("position")
+    private List<EntryPoint> entryPoints = new ArrayList<>(0);
 
     @OneToOne
     @JsonIgnore
@@ -207,11 +197,11 @@ public class ServiceApi implements ServiceApiInterface{
         this.serviceAccessPaymentPolicy = serviceAccessPaymentPolicy;
     }
 
-    public Set<EntryPoint> getEntryPoints() {
+    public List<EntryPoint> getEntryPoints() {
         return entryPoints;
     }
 
-    public void setEntryPoints(Set<EntryPoint> entryPoints) {
+    public void setEntryPoints(List<EntryPoint> entryPoints) {
         this.entryPoints = entryPoints;
     }
 

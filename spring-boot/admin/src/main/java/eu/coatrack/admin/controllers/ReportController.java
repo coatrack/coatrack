@@ -269,10 +269,11 @@ public class ReportController {
             });
             // Sums all the calls whom have matching rules
             if (!noOfCallsPerEntryPoint.isEmpty()) {
-                noOfCallsPerEntryPoint.forEach((entryPoint, noOfCalls) -> {
-                    ApiUsageReport apiUsageReport = new ApiUsageReport(entryPoint.getName() + " (" + entryPoint.getHttpMethod() + " " + entryPoint.getPathPattern() + ")", noOfCalls.longValue(), new BigDecimal(entryPoint.getPricePerCall()).doubleValue(), new BigDecimal(entryPoint.getPricePerCall() * noOfCalls.longValue() / 1000).doubleValue());
+                for (EntryPoint entryPoint : serviceApi.getEntryPoints())
+                {
+                    ApiUsageReport apiUsageReport = new ApiUsageReport(entryPoint.getName() + " (" + entryPoint.getHttpMethod() + " " + entryPoint.getPathPattern() + ")", noOfCallsPerEntryPoint.get(entryPoint).longValue(), new BigDecimal(entryPoint.getPricePerCall()).doubleValue(), new BigDecimal(entryPoint.getPricePerCall() * noOfCallsPerEntryPoint.get(entryPoint).longValue() / 1000).doubleValue());
                     result.add(apiUsageReport);
-                });
+                }
             }
             // Sums all calls for the Other calls if they exist
             if (noOfCallsThatDoNotMatchEntryPoints.get() > 0L) {

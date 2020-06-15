@@ -175,17 +175,18 @@
     // <![CDATA[
 
     function generatePriceDisplayString(data, isTotalPrice) {
-        if ([[${payPerCallServicesIds}]].includes($("#selectedServiceId").val())){
-            if (data == 0) {
-                var returnValue = 'For Free';
+        var returnValue = '';
+        if ([[${payPerCallServicesIds}]].includes($("#selectedServiceId").val())) {
+            if (data == 0 && !isTotalPrice) {
+                returnValue = 'For Free';
             } else {
-                var returnValue =  (isTotalPrice) ? data + ' €' : data + ' €/1000 calls';
+                returnValue = (isTotalPrice) ? data + ' €' : data + ' €/1000 calls';
             }
         } else {
             if (data == 0) {
-                var returnValue = 'For Free';
+                returnValue = 'For Free';
             } else {
-                var returnValue = (isTotalPrice) ? data + ' €' : data + ' €/Month (Flatrate)';
+                returnValue = (isTotalPrice) ? data + ' €' : data + ' €/Month (Flatrate)';
             }
         }
         return returnValue;

@@ -521,16 +521,17 @@ public class AdminController {
         } else {
             serviceApi.setServiceAccessPaymentPolicy(ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE);
 
-            Set set = new HashSet<>();
+            List<EntryPoint> entryPoints = new ArrayList<>();
 
             EntryPoint entryPoint = new EntryPoint();
             entryPoint.setHttpMethod("GET");
             entryPoint.setName("/");
             entryPoint.setPathPattern("/");
             entryPoint.setPricePerCall(Double.valueOf(wizard.getServiceCost()));
-            set.add(entryPoint);
 
-            serviceApi.setEntryPoints(set);
+            entryPoints.add(entryPoint);
+            serviceApi.setEntryPoints(entryPoints);
+
         }
 
         serviceApi.setServiceAccessPermissionPolicy(ServiceAccessPermissionPolicy.PERMISSION_NECESSARY);
