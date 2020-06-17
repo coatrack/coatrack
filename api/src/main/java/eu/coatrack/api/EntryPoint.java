@@ -20,11 +20,7 @@ package eu.coatrack.api;
  * #L%
  */
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "entry_points")
@@ -41,6 +37,9 @@ public class EntryPoint implements Comparable<EntryPoint>{
     private String httpMethod;
 
     private double pricePerCall;
+
+    @OrderColumn
+    private Integer position;
 
     public long getId() {
         return id;
@@ -80,6 +79,14 @@ public class EntryPoint implements Comparable<EntryPoint>{
 
     public void setPricePerCall(double pricePerCall) {
         this.pricePerCall = pricePerCall;
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public int compareTo(EntryPoint obj) {
