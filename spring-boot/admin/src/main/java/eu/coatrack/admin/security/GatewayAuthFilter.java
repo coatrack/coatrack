@@ -63,8 +63,12 @@ public class GatewayAuthFilter extends GenericFilterBean {
 
                 final String authorization = httpRequest.getHeader("Authorization");
                 if (authorization != null && authorization.toLowerCase().startsWith("basic")) {
+                    log.debug("Authorization header is: '{}'", authorization);
+                    // in case there is more than one auth token --> get the first one
+                    String firstAuthTokenFromHeader = authorization.split(",")[0];
+                    log.debug("First token from auth header is: '{}'", firstAuthTokenFromHeader);
                     // Authorization: Basic base64credentials
-                    String base64Credentials = authorization.substring("Basic".length()).trim();
+                    String base64Credentials = firstAuthTokenFromHeader.substring("Basic".length()).trim();
                     byte[] credDecoded = Base64.getDecoder().decode(base64Credentials);
                     String credentials = new String(credDecoded, StandardCharsets.UTF_8);
 
