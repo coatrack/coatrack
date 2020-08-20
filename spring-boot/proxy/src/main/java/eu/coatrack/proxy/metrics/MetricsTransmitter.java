@@ -132,7 +132,7 @@ public class MetricsTransmitter implements GaugeWriter {
             */
 
         } catch (Exception e) {
-            log.error("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to send the statistics/metrics from this call: please contact a CoatRack administrator to solve this issue", e);
+            log.error("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to send the statistics/metrics from this call: please assure that your CoatRack gateway has a network connection and can reach https://coatrack.eu", e);
         }
     }
 
