@@ -108,6 +108,10 @@ public class MetricsTransmitter implements GaugeWriter {
             Object idOfTransmittedMetric = restTemplate.postForObject(uriToTransmitMetric, metricToTransmit, Long.class);
             log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit.toString(), idOfTransmittedMetric);
 
+            if(metricToTransmit.getHttpResponseCode() == 503){
+                log.error("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to verify an API key that was sent by a client: Service is not unavailable/accessible, please check if the service is accessible and gateway config in https://coatrack.eu/admin/proxies");
+            }
+
             /*
             // create relationship from transmitted metric to this proxy
             addRelationshipFromMetricToOtherEntity(
@@ -128,7 +132,7 @@ public class MetricsTransmitter implements GaugeWriter {
             */
 
         } catch (Exception e) {
-            log.error("Exception when communicating with CoatRack admin server", e);
+            log.error("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to send the statistics/metrics from this call: please contact a CoatRack administrator to solve this issue", e);
         }
     }
 

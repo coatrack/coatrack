@@ -26,5 +26,5 @@ custom-metrics:
 
 logging:
   level:
-    eu.coatrack.proxy: DEBUG
-    org.springframework.security: DEBUG
+    eu.coatrack.proxy: INFO
+    org.springframework.security: INFO
