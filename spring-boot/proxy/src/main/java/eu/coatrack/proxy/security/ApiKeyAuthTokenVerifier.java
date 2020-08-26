@@ -150,7 +150,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
                 log.debug("API key value is invalid: " + apiKeyValue);
                 return false;
             } else {
-                log.error("Error when communicating with auth server", e);
+                log.error("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to verify an API key that was sent by a client: Service is not unavailable/accessible, please check if the service is accessible and gateway config in https://coatrack.eu/admin/proxies", e);
                 throw new AuthenticationServiceException("Communication with auth server failed");
             }
         }
