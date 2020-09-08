@@ -64,6 +64,9 @@ public class GitService {
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
+    @Value("${ygg.admin.server.url}")
+    private String adminServerUrl;
+
     public void init() throws IOException, GitAPIException {
         
 
@@ -104,6 +107,7 @@ public class GitService {
         PrintWriter writer = new PrintWriter(resultDir + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);
+        writer.println("ygg.admin.server.url: " + adminServerUrl);
         if (proxy.getPort() != null) {
             writer.println("server.port: " + proxy.getPort());
         }

@@ -65,6 +65,9 @@ public class MetricsTransmitter implements GaugeWriter {
     @Value("${ygg.admin.api-base-url}")
     private String adminBaseUrl;
 
+    @Value("${ygg.admin.server.url}")
+    private String adminServerUrl;
+
     @Value("${ygg.admin.resources.metricsTransmission}")
     private String adminEndpointForMetricsTransmission;
 
@@ -128,7 +131,7 @@ public class MetricsTransmitter implements GaugeWriter {
             */
 
         } catch (Exception e) {
-            log.error("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to send the statistics/metrics from this call: please assure that your CoatRack gateway has a network connection and can reach https://coatrack.eu", e);
+            log.error(String.format("An unexpected error occurred when your CoatRack gateway contacted the central CoatRack portal in order to send the statistics/metrics from this call: please assure that your CoatRack gateway has a network connection and can reach %s", adminServerUrl), e);
         }
     }
 
