@@ -142,7 +142,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
                     throw new CredentialsExpiredException("Api key is expired");
                 }
                 if (apiKey.getDeletedWhen() != null) {
-                    throw new AccessDeniedException("access denied");
+                    return false;
                 }
                 return true;
             } else {
