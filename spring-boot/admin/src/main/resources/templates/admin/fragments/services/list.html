@@ -117,7 +117,6 @@
                             var token = $("meta[name='_csrf']").attr("content");
                             var header = $("meta[name='_csrf_header']").attr("content");
 
-
                             $.ajax({
                                 url: '/admin/services/' + id + '.json',
 
@@ -142,13 +141,9 @@
                         }
                     }
                 });
-
-
-
             });
 
             function deleteItem(item, name) {
-
 
                 $.ajax({url: '/admin/services/' + item + '/proxies',
 
@@ -178,17 +173,12 @@
                         $("#infoDialog")
                                 .data('deleteItem', item)
                                 .dialog("open");
-
-
                     },
                     error: function (result) {
                         console.log('error:' + JSON.stringify(result));
                     }
                 });
-
             }
-
-
 
         </script>
     </body>

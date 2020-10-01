@@ -446,7 +446,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
-    public Iterable<ServiceApi> deleteRest(@PathVariable("id") long id) throws IOException {
+    public void deleteRest(@PathVariable("id") long id) throws IOException {
 
         // TODO: Consider the idea to change by a Custom Query or Delete on Cascade
         ServiceApi serviceApi = serviceApiRepository.findOne(id);
@@ -458,8 +458,6 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
             proxy.getServiceApis().remove(serviceApi);
             proxyRepository.save(proxy);
         }
-
-        return serviceListPageRest();
     }
 
     @RequestMapping(value = "/consumer/list", method = GET)
