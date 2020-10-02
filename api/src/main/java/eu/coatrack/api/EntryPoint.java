@@ -39,7 +39,7 @@ public class EntryPoint implements Comparable<EntryPoint>{
     private double pricePerCall;
 
     @OrderColumn
-    private Integer position;
+    private int position;
 
     public long getId() {
         return id;
