@@ -81,11 +81,11 @@ public class EntryPoint implements Comparable<EntryPoint>{
         this.pricePerCall = pricePerCall;
     }
 
-    public int getPosition() {
+    public Integer getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(Integer position) {
         this.position = position;
     }
 
