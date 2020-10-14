@@ -85,10 +85,10 @@ public class UserController {
     @Value("${ygg.mail.sender.password}")
     private String mail_sender_password;
 
-    @Value("${ygg.mail.server.url:smtp.gmail.com}")
+    @Value("${ygg.mail.server.url}")
     private String mail_server_url;
 
-    @Value("${ygg.mail.server.port:587}")
+    @Value("${ygg.mail.server.port}")
     private int mail_server_port;
 
     @Value("${ygg.mail.verification.server.url}")
