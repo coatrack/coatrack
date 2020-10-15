@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>  
     <groupId>eu.coatrack</groupId>
     <artifactId>coatrack-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
