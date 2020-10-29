@@ -59,20 +59,13 @@
                             }
                         }
                     });
-
-
-
                 });
 
                 function deleteItem(item, name) {
                     $("#message").html("Are you sure you want to delete the <strong> Service Gateway " + name + " </strong>?")
                     $("#infoDialog").data('deleteItem', item).dialog("open");
                 }
-
-
-
             </script>
-
 
             <div class="page-title">
                 <div class="title_left">
@@ -148,7 +141,7 @@
                                     <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
                                                                 class="fa fa-bar-chart"/>
                                     </td>
-                                    <td class="rigth">
+                                    <td class="right">
                                         <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{'}|"><i
                                                 class="fa fa-search-plus"/></button>
                                         <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|">
@@ -171,4 +164,3 @@
         <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
     </body>
 </html>
-
