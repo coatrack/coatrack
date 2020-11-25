@@ -173,27 +173,6 @@ public class AdminApiKeysController {
                 user.setUsername(githubUser.get(0).getLogin());
                 user.setFirstname(githubUser.get(0).getName());
                 user.setEmail(githubUser.get(0).getEmail());
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
                 userRepository.save(user);
             }
 

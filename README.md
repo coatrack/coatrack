@@ -1,4 +1,4 @@
 # CoatRack
 
 Production Instance:
-https://www.coatrack.eu
+https://coatrack.eu

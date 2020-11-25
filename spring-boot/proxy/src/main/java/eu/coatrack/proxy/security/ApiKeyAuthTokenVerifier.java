@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -139,6 +140,9 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
                 if (Date.valueOf(LocalDate.now()).after(apiKey.getValidUntil())) {
                     throw new CredentialsExpiredException("Api key is expired");
+                }
+                if (apiKey.getDeletedWhen() != null) {
+                    return false;
                 }
                 return true;
             } else {

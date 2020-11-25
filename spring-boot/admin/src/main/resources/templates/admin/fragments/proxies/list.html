@@ -59,20 +59,13 @@
                             }
                         }
                     });
-
-
-
                 });
 
                 function deleteItem(item, name) {
                     $("#message").html("Are you sure you want to delete the <strong> Service Gateway " + name + " </strong>?")
                     $("#infoDialog").data('deleteItem', item).dialog("open");
                 }
-
-
-
             </script>
-
 
             <div class="page-title">
                 <div class="title_left">
@@ -114,49 +107,52 @@
                             </div>
                             <table id="proxiesTable" class="table table-striped jambo_table default-data-table">
                                 <thead>
-                                    <tr class="heading">
+                                <tr class="heading">
 
-                                        <th th:text="#{admin.proxies.list.col.name}">Name</th>
-                                        <th th:text="#{admin.proxies.list.col.identifier}">Gateway Identifier</th>
-                                        <th th:text="#{admin.proxies.list.col.publicUrl}">URL</th>
-                                        <th th:text="#{admin.proxies.list.col.port}">Port</th>
-                                        <th th:text="#{admin.proxies.list.col.services}">Service API</th>
-                                        <th th:text="#{admin.proxies.list.col.description}">Description</th>
-                                        <th th:text="#{admin.proxies.list.col.download}">...</th>
-                                        <th th:text="#{admin.proxies.list.col.details}">...</th>
-                                        <th></th>
-                                        
-                                    </tr>
+                                    <th th:text="#{admin.proxies.list.col.name}">Name</th>
+                                    <th th:text="#{admin.proxies.list.col.identifier}">Gateway Identifier</th>
+                                    <th th:text="#{admin.proxies.list.col.publicUrl}">URL</th>
+                                    <th th:text="#{admin.proxies.list.col.port}">Port</th>
+                                    <th th:text="#{admin.proxies.list.col.services}">Service API</th>
+                                    <th th:text="#{admin.proxies.list.col.description}">Description</th>
+                                    <th th:text="#{admin.proxies.list.col.download}">...</th>
+                                    <th th:text="#{admin.proxies.list.col.details}">...</th>
+                                    <th></th>
+
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    <tr th:each="proxy : ${proxies}" th:id="|@{item}${proxy.id}|">
-                                        <td th:text="${proxy.name}">proxy name</td>
-                                        <td th:text="${proxy.id}">proxy uuid</td>
-                                        <td th:text=" ${proxy.publicUrl}">proxy url</td>
-                                        <td th:text=" ${proxy.port}">proxy port</td>
-                                        <td>
+                                <tr th:each="proxy : ${proxies}" th:id="|@{item}${proxy.id}|">
+                                    <td th:text="${proxy.name}">proxy name</td>
+                                    <td th:text="${proxy.id}">proxy uuid</td>
+                                    <td th:text=" ${proxy.publicUrl}">proxy url</td>
+                                    <td th:text=" ${proxy.port}">proxy port</td>
+                                    <td>
                                             <span th:each="service : ${proxy.serviceApis}">
                                                 <span th:text="${service.guiStringRepresentation}"/>
                                                 <br/>
                                             </span>
-                                        </td>
-                                        <td th:text=" ${proxy.description}">proxy description</td>
-                                        <td class="a-center ">
-                                            <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
-                                               class="glyphicon glyphicon-download-alt"/>
-                                        </td>
-                                        <td class="a-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
-                                                                 class="fa fa-bar-chart"/>
-                                        </td>
-                                        <td class="rigth">
-                                            <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{'}|" ><i class="fa fa-search-plus"/></button>
-                                            <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button>
-                                            <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'"><i class="fa  fa-trash"/></button>
-                                        </td>
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(proxies)}" >
-                                        <td colspan="7"  > No items yet </td>
-                                    </tr>
+                                    </td>
+                                    <td th:text=" ${proxy.description}">proxy description</td>
+                                    <td class="text-center ">
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
+                                           class="glyphicon glyphicon-download-alt"/>
+                                    </td>
+                                    <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
+                                                                class="fa fa-bar-chart"/>
+                                    </td>
+                                    <td class="right">
+                                        <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{'}|"><i
+                                                class="fa fa-search-plus"/></button>
+                                        <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|">
+                                            <i class="fa  fa-pencil-square-o"/></button>
+                                        <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
+                                            <i class="fa  fa-trash"/></button>
+                                    </td>
+                                </tr>
+                                <tr th:if="${#lists.isEmpty(proxies)}">
+                                    <td colspan="7"> No items yet</td>
+                                </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -168,4 +164,3 @@
         <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
     </body>
 </html>
-
