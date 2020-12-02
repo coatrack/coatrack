@@ -91,7 +91,9 @@
         <div th:fragment="initializeDataTables">
             <script>
                 $( document ).ready(function() {
-                    $('table[class*="default-data-table"]').DataTable();
+                    $('table[class*="default-data-table"]').DataTable( {
+                            "scrollX": true
+                        } );
                 });
             </script>
         </div>
