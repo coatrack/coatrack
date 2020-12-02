@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+     app.kubernetes.io/name: coatrack-admin
+  name: coatrack-admin
+  namespace: coatrack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: coatrack-admin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: coatrack-admin
+    spec:
+      containers:
+      - name: coatrack-admin-container
+        image: coatrack/admin:1.3.0-SNAPSHOT
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: coatrack-config
+        env:
+        - name: server.port
+          value: '8080'
+        ports:
+        - containerPort: 8080
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      imagePullSecrets:
+      - name: docker-login
+
