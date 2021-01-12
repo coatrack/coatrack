@@ -50,7 +50,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.core.SpringVersion;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.Authentication;
@@ -105,7 +104,9 @@ public class AdminController {
 
     private static final String ADMIN_PROFILE = "admin/profile/profile";
 
-    private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
+    private static final String GITHUB_API_USER = "https://api.github.com/user";
+
+    private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
 
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
@@ -155,10 +156,6 @@ public class AdminController {
 
     @Autowired
     ReportController reportController;
-
-    /* OTHERS */
-    @Autowired
-    ResourceServerProperties resource;
 
     @Autowired
     WebUI webUI;
@@ -217,7 +214,7 @@ public class AdminController {
                 OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
                 RestTemplate restTemplate = new RestTemplate();
-                String userInfo = restTemplate.getForObject(resource.getUserInfoUri() + "?access_token=" + details.getTokenValue(), String.class);
+                String userInfo = restTemplate.getForObject(GITHUB_API_USER + "?access_token=" + details.getTokenValue(), String.class);
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

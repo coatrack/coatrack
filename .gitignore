@@ -45,6 +45,7 @@ local.properties
 /api/target/
 /spring-boot/proxy/target/
 /spring-boot/admin/target/
+/spring-boot/config-server/target/
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
