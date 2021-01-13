@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+     app.kubernetes.io/name: coatrack-admin
+  name: coatrack-admin
+  namespace: coatrack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: coatrack-admin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: coatrack-admin
+    spec:
+      containers:
+      - name: coatrack-admin-container
+        image: coatrack/admin:1.3.0-SNAPSHOT
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: coatrack-config
+        env:
+        - name: server.port
+          value: '8080'
+        ports:
+        - containerPort: 8080
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      imagePullSecrets:
+      - name: docker-login
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/name: coatrack-config-server
+  name: coatrack-config-server
+  namespace: coatrack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: coatrack-config-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: coatrack-config-server
+    spec:
+      containers:
+        - name: coatrack-config-server-container
+          image: coatrack/config-server:1.3.0-SNAPSHOT
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: coatrack-config
+          env:
+            - name: server.port
+              value: 8998
+          ports:
+            - containerPort: 8998
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      imagePullSecrets:
+        - name: docker-login
+

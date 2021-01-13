@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coatrack-config
+  namespace: coatrack
+data:
+  spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
+  spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  logging.level.org.springframework: INFO
+  logging.level.nl.bebr: DEBUG
+  ygg.mail.sender.user: "" 
+  ygg.mail.sender.password: ""
+  ygg.mail.server.url: ""
+  ygg.mail.server.port: "0"
