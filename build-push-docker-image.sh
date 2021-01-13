@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export MODULE_NAME=bxd-locations-rest
+export MODULE_NAME=coatrack-admin
 
 echo "building version $MVN_VERSION of module $MODULE_NAME"
 
