@@ -8,9 +8,9 @@ echo "building docker images for version $MVN_VERSION"
 
 base=$PWD
 cd spring-boot
-for module in admin
+for module in admin, config-server
 do
   echo "building $module"
   cd $base/spring-boot/$module
-  bash build-push-docker-image.sh
+  bash build-push-docker-image.sh coatrack-$module
 done

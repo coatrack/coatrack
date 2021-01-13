@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export MODULE_NAME=coatrack-admin
+export MODULE_NAME=${1}
 
 echo "building version $MVN_VERSION of module $MODULE_NAME"
 
