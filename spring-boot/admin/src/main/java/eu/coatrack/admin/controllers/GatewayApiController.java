@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller that handles HTTP calls by CoatRack gateways
+ */
 @Controller
 public class GatewayApiController {
 
@@ -37,15 +40,15 @@ public class GatewayApiController {
     @Autowired
     ServiceApiRepository serviceApiRepository;
 
-    @RequestMapping(value = "/api/api-keys/search/findByKeyValue", method = RequestMethod.GET,  produces = "application/json")
+    @RequestMapping(value = "/api/api-keys/search/findByKeyValue", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public ApiKey verifyAPIKey(@RequestParam("keyValue") String keyValue) {
-        return apiKeyRepository.findByKeyValue(keyValue);
+    public ApiKey findApiKeyEntityByApiKeyValue(@RequestParam("keyValue") String apiKeyValue) {
+        return apiKeyRepository.findByKeyValue(apiKeyValue);
     }
 
     @RequestMapping(value = "/api/services/search/findByApiKeyValue", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public ServiceApi verifyService(@RequestParam("apiKeyValue") String apiKeyValue) {
+    public ServiceApi findServiceByApiKeyValue(@RequestParam("apiKeyValue") String apiKeyValue) {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 }
