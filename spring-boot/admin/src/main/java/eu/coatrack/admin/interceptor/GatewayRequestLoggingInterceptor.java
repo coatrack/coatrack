@@ -39,7 +39,6 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) {
-
         StringBuilder headers = new StringBuilder();
 
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -47,7 +46,8 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             String headerName = headerNames.nextElement();
             headers.append(String.format("'%s': '%s'; ", headerName, request.getHeader(headerName)));
         }
-        log.info(String.format("The prehandle: request url called is '%s' and the headers are [%s] ", request.getRequestURI(), headers.toString()));
+        log.debug(String.format("Request (preHandle): the url called is '%s' and the headers are [%s]",
+                request.getRequestURI(), headers.toString()));
         return true;
     }
 
@@ -65,6 +65,7 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             String headerName = headerNames.nextElement();
             headers.append(String.format("'%s': '%s'; ", headerName, request.getHeader(headerName)));
         }
-        log.info(String.format("After Completion the url called is '%s' and the headers are [%s] ", request.getRequestURI(), headers.toString()));
+        log.info(String.format("Request (afterCompletion): the url called is '%s' and the headers are [%s] ",
+                request.getRequestURI(), headers.toString()));
         }
     }
