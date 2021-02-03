@@ -40,7 +40,7 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             HttpServletResponse response,
             Object handler) {
 
-        log.debug(String.format(
+        log.info(String.format(
                 "Request (preHandle): the url called is '%s' and the headers are [%s]",
                 request.getRequestURI(),
                 generateStringOfRequestHeaders(request))
@@ -56,7 +56,8 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             Exception ex) {
 
         log.info(String.format(
-                "Request (afterCompletion): the url called is '%s' and the headers are [%s] ",
+                "Response status '%s' after completion: the url called was '%s' and the headers were [%s] ",
+                response.getStatus(),
                 request.getRequestURI(),
                 generateStringOfRequestHeaders(request))
         );
