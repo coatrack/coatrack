@@ -9,9 +9,9 @@ package eu.coatrack.admin.interceptor;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,15 +39,10 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             HttpServletRequest request,
             HttpServletResponse response,
             Object handler) {
-        StringBuilder headers = new StringBuilder();
 
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while(headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            headers.append(String.format("'%s': '%s'; ", headerName, request.getHeader(headerName)));
-        }
+        String headers = generateStringOfRequestHeaders(request);
         log.debug(String.format("Request (preHandle): the url called is '%s' and the headers are [%s]",
-                request.getRequestURI(), headers.toString()));
+                request.getRequestURI(), headers));
         return true;
     }
 
@@ -58,14 +53,19 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
             Object handler,
             Exception ex) {
 
+        String headers = generateStringOfRequestHeaders(request);
+        log.info(String.format("Request (afterCompletion): the url called is '%s' and the headers are [%s] ",
+                request.getRequestURI(), headers.toString()));
+    }
+
+    private String generateStringOfRequestHeaders(HttpServletRequest request) {
         StringBuilder headers = new StringBuilder();
 
         Enumeration<String> headerNames = request.getHeaderNames();
-        while(headerNames.hasMoreElements()) {
+        while (headerNames.hasMoreElements()) {
             String headerName = headerNames.nextElement();
             headers.append(String.format("'%s': '%s'; ", headerName, request.getHeader(headerName)));
         }
-        log.info(String.format("Request (afterCompletion): the url called is '%s' and the headers are [%s] ",
-                request.getRequestURI(), headers.toString()));
-        }
+        return headers.toString();
     }
+}
