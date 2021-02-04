@@ -9,9 +9,9 @@ package eu.coatrack.proxy.security;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,6 +46,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
 import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 
 /**
@@ -72,12 +73,6 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     @Value("${ygg.admin.resources.search-service-by-api-key-value}")
     private String adminResourceToGetServiceByApiKeyValue;
-
-    @Value("${spring.cloud.config.username}")
-    String config_server_admin_name;
-
-    @Value("${spring.cloud.config.password}")
-    String config_server_password;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -129,8 +124,6 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
             String urlToSearchForApiKeys = securityUtil.attachGatewayApiKeyToUrl(
                     adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
-
-            restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(config_server_admin_name, config_server_password));
 
             ResponseEntity<ApiKey> resultOfApiKeySearch = restTemplate.getForEntity(urlToSearchForApiKeys, ApiKey.class);
 
