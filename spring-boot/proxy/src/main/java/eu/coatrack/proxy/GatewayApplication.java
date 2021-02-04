@@ -32,6 +32,7 @@ import eu.coatrack.proxy.security.SecurityUtil;
 import eu.coatrack.proxy.security.ServiceApiAccessRightsVoter;
 import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.buffer.BufferMetricReader;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
@@ -41,6 +42,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
@@ -60,6 +62,12 @@ import java.util.List;
 @EnableZuulProxy
 @SpringBootApplication
 public class GatewayApplication {
+
+    @Value("${spring.cloud.config.username}")
+    String config_server_username;
+
+    @Value("${spring.cloud.config.password}")
+    String config_server_password;
 
     public static void main(String[] args) {
         if (AuthConfigFactory.getFactory() == null) {
@@ -118,9 +126,17 @@ public class GatewayApplication {
         return new SecurityConfigurer();
     }
 
+    /**
+     * Rest template to be used for communication with CoatRack admin,
+     * configured with auth credentials.
+     */
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getInterceptors().add(
+                new BasicAuthorizationInterceptor(config_server_username, config_server_password)
+        );
+        return restTemplate;
     }
 
     @Bean(name = "zuul-org.springframework.cloud.netflix.zuul.filters.ZuulProperties")

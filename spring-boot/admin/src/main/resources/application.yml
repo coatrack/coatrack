@@ -4,8 +4,6 @@
 mvn.pom.project.version: @@project.version@@
 
 # user and password are expected to be for a gmail account
-ygg.mail.sender.user: @@ygg.mail.sender.user@@
-ygg.mail.sender.password: @@ygg.mail.sender.password@@
 ygg.mail.verification.server.url: http://localhost:8080
 
 logging:
