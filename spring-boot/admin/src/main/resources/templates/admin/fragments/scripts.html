@@ -88,6 +88,15 @@
             </script>
         </div>
 
+        <div th:fragment="initializeDataTables">
+            <script>
+                $( document ).ready(function() {
+                    $('table[class*="default-data-table"]').DataTable( {
+                    } );
+                });
+            </script>
+        </div>
+
         <div th:fragment="dashboard">
 
             <link type="text/css" th:href="@{/dashboard/css/animate.min.css}" rel="stylesheet"/>

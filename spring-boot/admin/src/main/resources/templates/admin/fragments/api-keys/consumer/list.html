@@ -1,114 +1,137 @@
 <!DOCTYPE html >
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-    <body>
-        <div id="infoDialog" title="Info">
+<body>
+<div id="infoDialog" title="Info">
+    <div class="x_panel">
+        <div class="x_content">
+            <i class="fa fa-lg fa-info-circle"/>
+            <span id='message'>message</span>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+
+        $("#infoDialog").dialog({
+            width: 'auto',
+            height: "auto",
+            autoOpen: false,
+            modal: true,
+            show: {
+                effect: "blind",
+                duration: 1500
+            },
+            hide: {
+                effect: "blind",
+                duration: 1000
+            },
+        });
+    });
+</script>
+
+<div th:fragment="body">
+
+    <div class="page-title">
+        <div class="title_left">
+            <h3>
+                <span th:text="#{admin.api-keys.page.title}">Title</span>
+                <a data-toggle="modal" data-target=".getting-started-api-key-modal">
+                    <i class="fa fa-question-circle"></i>
+                </a>
+            </h3>
+        </div>
+    </div>
+
+    <div class="clearfix"></div>
+
+    <div class="row">
+        <div class="col-md-12">
             <div class="x_panel">
                 <div class="x_content">
                     <i class="fa fa-lg fa-info-circle"/>
-                    <span id='message'>message</span>
-
+                    <span th:text="#{admin.api-keys-consumer.page.explanation}"/>
                 </div>
             </div>
-        </div>
-
-        <script>
-            $(function () {
-
-                $("#infoDialog").dialog({
-                    width: 'auto',
-                    height: "auto",
-                    autoOpen: false,
-                    modal: true,
-                    show: {
-                        effect: "blind",
-                        duration: 1500
-                    },
-                    hide: {
-                        effect: "blind",
-                        duration: 1000
-                    },
-                });
-            });
-        </script>
-
-        <div th:fragment="body">
-
-            <div class="page-title">
-                <div class="title_left">
-                    <h3>
-                        <span th:text="#{admin.api-keys.page.title}">Title</span>
-                        <a data-toggle="modal" data-target=".getting-started-api-key-modal">
-                            <i class="fa fa-question-circle"></i>
-                        </a>
-                    </h3>
-                </div>
-            </div>
-
-            <div class="clearfix"></div>
-
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="x_panel">
-                        <div class="x_content">
-                            <i class="fa fa-lg fa-info-circle"/>
-                            <span th:text="#{admin.api-keys-consumer.page.explanation}"/>
-                        </div>
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2 th:text="#{admin.api-keys-consumer.subtitle}">[Post Administration</h2>
+                    <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
                     </div>
-                    <div class="x_panel">
-                        <div class="x_title">
-                            <h2 th:text="#{admin.api-keys-consumer.subtitle}">[Post Administration</h2>
-                            <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
-                            </div>
-                            <div class="clearfix"></div>
-                        </div>
-                        <div class="x_content  fill-body-table">
-                            <div id="message-holder">
-                                <div th:if="${feedbackMessage}"
-                                     th:class="'messageblock hidden'"
-                                     th:text="${feedbackMessage}"></div>
-                            </div>
-                            <table th:fragment="apiKeyTable" id="apiKeyTable"  class="table table-striped jambo_table default-data-table">
-                                <thead>
-                                    <tr class="heading">
-                                        <th th:text="#{admin.api-keys.list.col.service.heading}">Service</th>
-                                        <th th:if="${testService == null}" th:text="#{admin.api-keys.info.label.provider}">Provider</th>
-                                        <th th:text="#{admin.api-keys.info.label.urls}"></th>
-                                        <th>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content  fill-body-table">
+                    <div id="message-holder">
+                        <div th:if="${feedbackMessage}"
+                             th:class="'messageblock hidden'"
+                             th:text="${feedbackMessage}"></div>
+                    </div>
+                    <table th:fragment="apiKeyTable" id="apiKeyTable"
+                           class="table table-striped jambo_table default-data-table">
+                        <thead>
+                        <tr class="heading">
+                            <th th:text="#{admin.api-keys.list.col.service.heading}">Service</th>
+                            <th th:if="${testService == null}" th:text="#{admin.api-keys.info.label.provider}">
+                                Provider
+                            </th>
+                            <th th:text="#{admin.api-keys.info.label.urls}"></th>
+                            <th>
                                             <span th:text="#{admin.api-keys.list.col.key.heading}">
                                                 Key value
                                             </span>
-                                            <a data-toggle="modal" data-target=".getting-started-api-key-modal">
-                                                <i class="fa fa-question-circle"></i>
-                                            </a>
-                                        </th>
-                                        <th th:if="${testService == null}" th:text="#{admin.api-keys.list.col.created.heading}">Created </th>
-                                        <th th:if="${testService == null}" th:text="#{admin.api-keys.list.col.validity.heading}">Validity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="apiKey : ${apiKeys}" th:id="|@{item}${apiKey.id}|">
-                                        <td class="a-center " th:text=" ${apiKey.serviceApiName != null} ? ${apiKey.serviceApiName} : '' ">Service API name</td>
-                                        <td th:if="${testService == null}" th:text=" ${apiKey.serviceApi.owner.username == null} ? '':${apiKey.serviceApi.owner.username}">Consumer</td>
-                                        <td th:if="${#lists.size(proxiesPerApiKey.get(apiKey.keyValue)) == 0}" th:text="#{admin.api-keys.info.urls.serviceNotAccessible}"></td>
-                                        <td th:unless="${#lists.size(proxiesPerApiKey.get(apiKey.keyValue)) == 0}"> <span th:each="proxyURLPerApiKey : ${proxiesPerApiKey.get(apiKey.keyValue)}">
+                                <a data-toggle="modal" data-target=".getting-started-api-key-modal">
+                                    <i class="fa fa-question-circle"></i>
+                                </a>
+                            </th>
+                            <th th:if="${testService == null}" th:text="#{admin.api-keys.list.col.created.heading}">
+                                Created
+                            </th>
+                            <th th:if="${testService == null}" th:text="#{admin.api-keys.list.col.validity.heading}">
+                                Validity
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="apiKey : ${apiKeys}" th:id="|@{item}${apiKey.id}|">
+                            <td class="a-center "
+                                th:text=" ${apiKey.serviceApiName != null} ? ${apiKey.serviceApiName} : '' ">Service API
+                                name
+                            </td>
+                            <td th:if="${testService == null}"
+                                th:text=" ${apiKey.serviceApi.owner.username == null} ? '':${apiKey.serviceApi.owner.username}">
+                                Consumer
+                            </td>
+                            <td th:if="${#lists.size(proxiesPerApiKey.get(apiKey.keyValue)) == 0}"
+                                th:text="#{admin.api-keys.info.urls.serviceNotAccessible}"></td>
+                            <td th:unless="${#lists.size(proxiesPerApiKey.get(apiKey.keyValue)) == 0}"> <span
+                                    th:each="proxyURLPerApiKey : ${proxiesPerApiKey.get(apiKey.keyValue)}">
                                                 <span th:text="${proxyURLPerApiKey + '/' + apiKey.serviceApi.uriIdentifier + '?api-key=' + apiKey.keyValue}"/><br/>
                                            </span>
-                                        </td>
-                                        <td th:text=" ${apiKey.keyValue}">Key Value</td>
-                                        <td th:if="${testService == null}" class="a-center " th:text="${apiKey.created != null} ? ${#dates.format(apiKey.created, 'yyyy-MM-dd')} : ''">Created</td>
-                                        <td th:if="${testService == null}" th:id="|@{item}${apiKey.id}@{ValidUntil}|" th:attr="validUntil=${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}" class="a-center " th:text="${apiKey.validUntil != null} ? ${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}: ''">Valid until</td>
-                                    </tr>
-                                    <tr th:if="${#lists.isEmpty(apiKeys)}" >
-                                        <td colspan="7"> No items yet </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                            </td>
+                            <td th:text=" ${apiKey.keyValue}">Key Value</td>
+                            <td th:if="${testService == null}" class="a-center "
+                                th:text="${apiKey.created != null} ? ${#dates.format(apiKey.created, 'yyyy-MM-dd')} : ''">
+                                Created
+                            </td>
+                            <td th:if="${testService == null}" th:id="|@{item}${apiKey.id}@{ValidUntil}|"
+                                th:attr="validUntil=${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}" class="a-center "
+                                th:text="${apiKey.validUntil != null} ? ${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}: ''">
+                                Valid until
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(apiKeys)}">
+                            <td colspan="7"> No items yet</td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
+</div>
 
-        <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
-    </body>
+<div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
+<div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
+</body>
 </html>
