@@ -92,7 +92,11 @@
             <script>
                 $( document ).ready(function() {
                     $('table[class*="default-data-table"]').DataTable( {
-                    } );
+                  //      scrollX: true,
+                        "initComplete": function () {
+                            $('table[class*="default-data-table"]').wrap("<div style='overflow:auto; width:100%;position:relative;'></div>");
+                        },
+                    });
                 });
             </script>
         </div>
