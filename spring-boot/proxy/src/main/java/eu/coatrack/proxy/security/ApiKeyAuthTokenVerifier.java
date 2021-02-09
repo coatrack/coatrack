@@ -129,12 +129,17 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
             if (resultOfApiKeySearch != null) {
                 ApiKey apiKey = resultOfApiKeySearch.getBody();
-                log.debug("API key was found by CoatRack admin: " + apiKey);
+                if (apiKey != null) {
+                    log.debug("API key was found by CoatRack admin: " + apiKey);
 
-                if (Date.valueOf(LocalDate.now()).after(apiKey.getValidUntil())) {
-                    throw new CredentialsExpiredException("Api key is expired");
-                }
-                if (apiKey.getDeletedWhen() != null) {
+                    if (Date.valueOf(LocalDate.now()).after(apiKey.getValidUntil())) {
+                        throw new CredentialsExpiredException("Api key is expired");
+                    }
+                    if (apiKey.getDeletedWhen() != null) {
+                        return false;
+                    }
+                } else {
+                    log.debug("API key value could not be found by CoatRack Admin: " + apiKeyValue);
                     return false;
                 }
                 return true;
