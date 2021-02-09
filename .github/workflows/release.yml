@@ -1,0 +1,58 @@
+name: release
+
+on:
+  push:
+    tags:
+      - '[0-9].[0-9]+.[0-9]+'
+
+jobs:
+  release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Cache Maven Dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('./**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build
+        run: bash build.sh
+
+      # extract the tag name from GITHUB_REF - e.g. refs/tags/1.0.0 --> 1.0.0
+      - name: Get Tag Name
+        id: get_tag_name
+        run: echo ::set-output name=TAG_NAME::${GITHUB_REF#refs/tags/}
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      # add proxy-${TAG_NAME}.jar to the release - assumes that TAG_NAME is equal to pom version
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: spring-boot/proxy/target/coatrack-proxy-${{ steps.get_tag_name.outputs.TAG_NAME }}.jar
+          asset_name: coatrack-proxy-${{ steps.get_tag_name.outputs.TAG_NAME }}.jar
+          asset_content_type: application/java-archive
