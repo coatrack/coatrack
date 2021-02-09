@@ -133,6 +133,8 @@ public class DatabaseInitializer {
 
             Proxy proxyWeather = createNewProxy(
                     "aa11aa22-aa33-aa44-aa55-aa66aa77aa88",
+                    "username-aa33-aa44-aa55-aa66aa77aa88",
+                    "password-aa33-aa44-aa55-aa66aa77aa88",
                     "Weather Information Gateway",
                     collection,
                     "http://localhost:8088",
@@ -142,6 +144,8 @@ public class DatabaseInitializer {
             collection.add(serviceApiWeatherStationsLocation);
             createNewProxy(
                     "bb11bb22-bb33-bb44-bb55-bb66bb77bb88",
+                    "username-bb33-bb44-bb55-bb66bb77bb88",
+                    "password-bb33-bb44-bb55-bb66bb77bb88",
                     "Weather Station Locations Service Gateway",
                     collection,
                     "http://localhost:8089/",
@@ -400,6 +404,8 @@ public class DatabaseInitializer {
 
     private Proxy createNewProxy(
             String uuid,
+            String configServerName,
+            String configServerPassword,
             String name,
             Set<ServiceApi> serviceApis,
             String publicUrl,
@@ -407,6 +413,8 @@ public class DatabaseInitializer {
 
         Proxy proxy = new Proxy();
         proxy.setId(uuid);
+        proxy.setConfigServerName(configServerName);
+        proxy.setConfigServerPassword(configServerPassword);
         proxy.setName(name);
         proxy.setServiceApis(serviceApis);
         proxy.setPublicUrl(publicUrl);
