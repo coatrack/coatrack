@@ -12,7 +12,7 @@ proxy-id: aa11aa22-aa33-aa44-aa55-aa66aa77aa88
 # parameters related to the communication with CoatRack admin
 ygg.admin:
   # Please note: in production setting this URL will be superseded by the one from ygg-admin config, which is put into the individual gateway config
-  #api-base-url: https://coatrack.eu/api/
+  api-base-url: http://localhost:8080/api/
   resources:
     proxies: proxies
     metrics: metrics
@@ -23,6 +23,13 @@ ygg.admin:
 
 custom-metrics:
   prefix.counter: CUSTOM.
+
+# The following gateway routes are just for local development testing purposes
+zuul:
+  routes:
+    # service IDs in line with admin's DatabaseInitializer
+    weather-service.url: https://example.org/
+    humidity-by-location.url: http://example.org/
 
 logging:
   level:
