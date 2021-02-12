@@ -34,7 +34,7 @@ CoatRack comprises a central web application and distributed lighweight API gate
 * generated/configured via the central application and 
 * delivering statistics about monitored service API calls to the central application.
 
-The following figure shows the typical CoatRack architecture. The calls to a software service API are routed and logged by a custom CoatRack Gateway, which can be installed in the service provider's local network. Configuration and statistics are accessible via the CoatRack web application.
+The following figure shows the typical CoatRack architecture, the CoatRack web application is depicted on the right and one CoatRack Service gateway is depicted on the left. The calls from the client to the service API are routed and logged by a custom CoatRack Gateway, which can be installed in the service provider's local network. Configuration and statistics are accessible via the CoatRack web application.
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
