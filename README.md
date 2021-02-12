@@ -20,21 +20,21 @@ CoatRack can facilitate your work if you have existing REST APIs and you want to
 
 ## Background
 
-In case you would like to manage backend-to-backend communication via REST APIs, e.g. offering backend services to other parties, some general work is required in addition to developing the actual API, e.g.:
+In case you would like to manage backend-to-backend communication via REST APIs, e.g. offering backend services to other parties, some general work is required in addition to developing the actual service API, e.g.:
 
 * implementing mechanisms for authentication/authorisation, 
 * providing access credentials to the users, 
 * monitoring calls to the API, 
 * generating statistics. 
 
-CoatRack facilitates these general tasks, so that you can focus on developing the actual service API. A CoatRack installation comprises:
+CoatRack facilitates these general tasks, so that you can focus on developing the actual service API. 
 
-* a centralized web application, where you can manage your service APIs, and 
-* distributed lightweight API gateways, which are generated/configured via the central application and which are delivering statistics about monitored service calls to the central application.
+CoatRack comprises a central web application and distributed lighweight API gateways, which are:
 
-This approach allows you to manage, configure and monitor distributed API gateways in a central place, keeping an overview of the API gateways, the access to your services and the service monetization.
+* generated/configured via the central application and 
+* delivering statistics about monitored service API calls to the central application.
 
-The following figure shows the typical CoatRack architecture. The calls to a software service API are routed and logged by a custom CoatRack Gateway, which can be installed in the service provider's local network. Configuration and statistics are accessible via the CoatRack website.
+The following figure shows the typical CoatRack architecture. The calls to a software service API are routed and logged by a custom CoatRack Gateway, which can be installed in the service provider's local network. Configuration and statistics are accessible via the CoatRack web application.
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
@@ -57,7 +57,7 @@ After starting up, the CoatRack web application will be accessible at `http://lo
 To start using CoatRack: 
 
 - either run the admin application locally, as explained in the [Install](#install) section
-- or open the public instance available at `https://coatrack.eu`.
+- or open the public instance available at (https://coatrack.eu).
 
 To log-in to CoatRack, a Github account is required. After logging in and filling in the registration form, the CoatRack admin application will open. Use the "Getting started tutorials" that are accessible from inside the application to learn the basics of using CoatRack.
 
