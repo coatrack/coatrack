@@ -1,15 +1,15 @@
 # CoatRack
 
-CoatRack is an API gateway management framework that supports:
+CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of:
 
-* Monitoring APIs calls
-* Authentication/Authorization of API calls
-* Monetization of APIs
+* distributed, lightweight API gateways and
+* a centralized web application to generate and manage those API gateways.
 
-CoatRack consists of:
+CoatRack can facilitate your work if you have existing REST APIs and you want to do one (or more) of the following: 
 
-* Distributed, lightweight API gateways
-* A centralized web application to generate and manage the API gateways.
+* monitoring the access to your APIs,
+* authentication/authorization of calls to your APIs via API keys,
+* monetization of API calls, based on pay-per-call rules or flatrates.
 
 ## Contents
 
@@ -20,11 +20,21 @@ CoatRack consists of:
 
 ## Background
 
-In case a company/organization would like to offer services to third parties in the form of REST APIs, a lot of additional work is usually required in addition to developing the actual API, e.g. implementing mechanisms for authentication/authorisation, providing access credentials to the users, monitoring calls to the API, generating statistics.
+In case you would like to manage backend-to-backend communication via REST APIs, e.g. offering backend services to other parties, some general work is required in addition to developing the actual API, e.g.:
 
-CoatRack facilitates these general tasks by providing an API gateway management framework, consisting of distributed, lightweight API gateways and a centralized web application to generate and manage the API gateways. 
+* implementing mechanisms for authentication/authorisation, 
+* providing access credentials to the users, 
+* monitoring calls to the API, 
+* generating statistics. 
 
-The following figure shows a typical architecture. The calls to a software service API are routed and logged by a custom CoatRack Gateway, which can be install in the service provider's local network. Configuration and statistics are accessible via the CoatRack website.
+CoatRack facilitates these general tasks, so that you can focus on developing the actual service API. A CoatRack installation comprises:
+
+* a centralized web application, where you can manage your service APIs, and 
+* distributed lightweight API gateways, which are generated/configured via the central application and which are delivering statistics about monitored service calls to the central application.
+
+This approach allows you to manage, configure and monitor distributed API gateways in a central place, keeping an overview of the API gateways, the access to your services and the service monetization.
+
+The following figure shows the typical CoatRack architecture. The calls to a software service API are routed and logged by a custom CoatRack Gateway, which can be installed in the service provider's local network. Configuration and statistics are accessible via the CoatRack website.
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
