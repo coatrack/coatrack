@@ -26,16 +26,16 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Represents an API key that was transmitted by a CoatRack gateway to access the
- * CoatRack admin api.
+ * Represents the auth information that was transmitted by a CoatRack gateway to access the
+ * CoatRack admin api. This includes basic auth header (cloud config username and password)
+ * plus the UUID of the gateway sent as URL parameter "api-key".
  *
  * @author gr-hovest
  */
 public class GatewayAuthToken extends AbstractAuthenticationToken {
 
-    private final String gatewayApiKey;
-    private final String user;
-
+    private final String gatewayApiKey; // this is the same as the UUID of the gateway
+    private final String user; // username for cloud config server
     private final String password;
 
     public GatewayAuthToken(String gatewayApiKey, String user, String password, Collection<? extends GrantedAuthority> authorities) {
@@ -43,7 +43,6 @@ public class GatewayAuthToken extends AbstractAuthenticationToken {
         this.gatewayApiKey = gatewayApiKey;
         this.user = user;
         this.password = password;
-
     }
 
     public String getUser() {
@@ -54,7 +53,6 @@ public class GatewayAuthToken extends AbstractAuthenticationToken {
         return password;
     }
     
-
     @Override
     public Object getCredentials() {
         return gatewayApiKey;
