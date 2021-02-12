@@ -45,7 +45,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="service : ${services}" th:id="|@{item}${service.id}|" >
-                                        <td th:text="${service.name}"></td>
+                                        <td th:text="${service.name + ' / ' + service.uriIdentifier}"></td>
                                         <!-- the service owner column should be hidden in the getting started wizard for consumers; in that wizard the testService will not be null -->
                                         <td th:if="${testService == null}" th:attrappend="style = ${service.owner.username} == ${loggedInUser}? 'color: #1ABB9C; font-weight: bold'" th:text=" ${service.owner.username}">Service owner</td>
                                         <td th:text="${service.serviceAccessPaymentPolicy.displayStringShort} == null ? '' : ${service.serviceAccessPaymentPolicy.displayStringShort}"></td>

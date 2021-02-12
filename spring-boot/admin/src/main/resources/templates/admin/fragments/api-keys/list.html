@@ -213,7 +213,7 @@
                                 <tbody>
                                     <tr th:each="apiKey : ${apiKeys}" th:id="|@{item}${apiKey.id}|" >
                                         <td th:text=" ${apiKey.userName == null} ? '':${apiKey.userName}">Consumer</td>
-                                        <td class="a-center " th:text=" ${apiKey.serviceApiName != null} ? ${apiKey.serviceApiName} : '' ">Service API name</td>
+                                        <td class="a-center " th:text=" ${apiKey.serviceApiName != null} ? ${apiKey.serviceApiName + ' / ' + apiKey.serviceApi.uriIdentifier} : '' ">Service API name</td>
 
                                         <td th:text=" ${apiKey.keyValue}">Key Value</td>
                                         <td class="a-center " th:text="${apiKey.created != null} ? ${#dates.format(apiKey.created, 'yyyy-MM-dd')} : ''">Created</td>

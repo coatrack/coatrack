@@ -80,7 +80,7 @@
                                     <div class="col-md-9 col-sm-9 col-xs-12">
                                         <select id="selectedServiceId" name='selectedServiceId'>
                                             <option th:each="service : ${services}"
-                                                    th:value="${service.id}" th:text="${service.name}" th:selected="(${apiKey.serviceApi.id} == ${service.id})?'selected' ">...</option>
+                                                    th:value="${service.id}" th:text="${service.name + ' / ' + service.uriIdentifier}" th:selected="(${apiKey.serviceApi.id} == ${service.id})?'selected' ">...</option>
                                         </select>
                                     </div>
                                     <div th:if="${#lists.isEmpty(services)}" class="col-md-9 col-sm-9 col-xs-12">

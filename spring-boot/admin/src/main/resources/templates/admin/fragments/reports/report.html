@@ -61,7 +61,7 @@
                                 <select id='selectedServiceId'>
                                     <option value="-1">Select a service</option>
                                     <option th:each="service : ${services}"
-                                            th:value="${service.id}" th:text="${service.name}"
+                                            th:value="${service.id}" th:text="${service.name + ' / ' + service.uriIdentifier}"
                                             th:selected="${service.id} == ${selectedServiceId}">...
                                     </option>
                                 </select>
