@@ -1,5 +1,11 @@
 # CoatRack
 
+[![FIWARE Third Party](https://nexus.lab.fiware.org/static/badges/chapters/api-management.svg)](https://www.fiware.org/developers/catalogue/)
+[![License: Apache](https://img.shields.io/github/license/coatrack/coatrack.svg)](https://opensource.org/licenses/Apache-2.0)
+[![SOF support badge](https://nexus.lab.fiware.org/repository/raw/public/badges/stackoverflow/fiware.svg)](http://stackoverflow.com/questions/tagged/fiware)
+<br/>
+![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
+
 CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of:
 
 * distributed, lightweight API gateways and
@@ -10,6 +16,12 @@ CoatRack can facilitate your work if you have existing REST APIs and you want to
 * monitoring the access to your APIs,
 * authentication/authorization of calls to your APIs via API keys,
 * monetization of API calls, based on pay-per-call rules or flatrates.
+
+This project is part of [FIWARE](https://www.fiware.org/). For more information check the FIWARE Catalogue entry for
+[API Management](https://github.com/FIWARE/catalogue/tree/master/data-publication).
+
+| :books: [Documentation](https://coatrack.eu/) |
+| ----------------------------------------------|
 
 ## Contents
 
@@ -70,4 +82,4 @@ There are two tutorials inside the application:
 
 CoatRack is licenced under [Apache 2.0 License](./LICENSE).
 
-© 2013 - 2020 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
+© 2013 - 2021 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
