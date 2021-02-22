@@ -2,6 +2,7 @@
 
 [![FIWARE Third Party](https://nexus.lab.fiware.org/static/badges/chapters/api-management.svg)](https://www.fiware.org/developers/catalogue/)
 [![License: Apache](https://img.shields.io/github/license/coatrack/coatrack.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Docker badge](https://img.shields.io/docker/pulls/coatrack/admin.svg)](https://hub.docker.com/r/coatrack/admin/)
 [![SOF support badge](https://nexus.lab.fiware.org/repository/raw/public/badges/stackoverflow/fiware.svg)](http://stackoverflow.com/questions/tagged/fiware)
 <br/>
 ![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
@@ -20,8 +21,8 @@ CoatRack can facilitate your work if you have existing REST APIs and you want to
 This project is part of [FIWARE](https://www.fiware.org/). For more information check the FIWARE Catalogue entry for
 [API Management](https://github.com/FIWARE/catalogue/tree/master/data-publication).
 
-| :books: [Documentation](https://coatrack.eu/) |
-| ----------------------------------------------|
+| :books: [Documentation](https://coatrack.eu/) |  :whale: [Docker Hub](https://hub.docker.com/r/coatrack/admin/) |
+| ----------------------------------------------| --------------------------------------------------------------------|
 
 ## Contents
 
