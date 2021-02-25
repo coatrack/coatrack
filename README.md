@@ -21,7 +21,7 @@ CoatRack can facilitate your work if you have existing REST APIs and you want to
 This project is part of [FIWARE](https://www.fiware.org/). For more information check the FIWARE Catalogue entry for
 [API Management](https://github.com/FIWARE/catalogue/tree/master/data-publication).
 
-| :books: [Documentation](https://github.com/coatrack/coatrack/wiki) |  :whale: [Docker Hub](https://hub.docker.com/r/coatrack/admin/) | :dart: [Roadmap](https://github.com/coatrack/coatrack/wiki/roadmap.md) |
+| :books: [Documentation](https://github.com/coatrack/coatrack/wiki) |  :whale: [Docker Hub](https://hub.docker.com/r/coatrack/admin/) | :dart: [Roadmap](https://github.com/coatrack/coatrack/blob/master/docs/roadmap.md) |
 | ----------------------------------------------| ----------------------------------------------------------------| --------------------------------------------------------------------|
 
 ## Contents
