@@ -1,0 +1,9 @@
+.dotbaier {
+    height: 15px;
+    width: 15px;
+    background-color: #bf2424;
+    border-radius: 50%;
+    display: inline-block;
+    border:1px solid black;
+    vertical-align: sub;
+}

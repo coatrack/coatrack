@@ -67,6 +67,9 @@ public class Proxy {
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
 
+    @Enumerated(EnumType.STRING)
+    private ProxyStates proxyStates;
+
     public String getCredentialName() {
         return configServerName;
     }
