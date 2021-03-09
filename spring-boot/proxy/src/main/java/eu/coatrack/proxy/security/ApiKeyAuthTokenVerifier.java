@@ -21,33 +21,22 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.sql.Date;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.http.client.support.BasicAuthorizationInterceptor;
+import java.util.*;
 
 /**
  * Checks if the API key token value sent by the client is valid. Right now this
@@ -118,44 +107,11 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private boolean isApiKeyValid(String apiKeyValue) throws AuthenticationException {
-
-        try {
-            log.debug(String.format("checking APIKEY value '%s' with CoatRack admin server at '%s'", apiKeyValue, adminBaseUrl));
-
-            String urlToSearchForApiKeys = securityUtil.attachGatewayApiKeyToUrl(
-                    adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
-
-            ResponseEntity<ApiKey> resultOfApiKeySearch = restTemplate.getForEntity(urlToSearchForApiKeys, ApiKey.class);
-
-            if (resultOfApiKeySearch != null) {
-                ApiKey apiKey = resultOfApiKeySearch.getBody();
-                if (apiKey != null) {
-                    log.debug("API key was found by CoatRack admin: " + apiKey);
-
-                    if (Date.valueOf(LocalDate.now()).after(apiKey.getValidUntil())) {
-                        throw new CredentialsExpiredException("Api key is expired");
-                    }
-                    if (apiKey.getDeletedWhen() != null) {
-                        return false;
-                    }
-                } else {
-                    log.debug("API key value could not be found by CoatRack Admin: " + apiKeyValue);
-                    return false;
-                }
-                return true;
-            } else {
-                log.error("Communication with Admin server failed, result is: " + resultOfApiKeySearch);
-                throw new AuthenticationServiceException("Communication with auth server failed");
-            }
-        } catch (HttpClientErrorException e) {
-            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                log.debug("API key value is invalid: " + apiKeyValue);
-                return false;
-            } else {
-                log.error("Error when communicating with auth server", e);
-                throw new AuthenticationServiceException("Communication with auth server failed");
-            }
-        }
+        log.debug(String.format("checking APIKEY value '%s' with CoatRack admin server at '%s'", apiKeyValue, adminBaseUrl));
+        String url = securityUtil.attachGatewayApiKeyToUrl(
+                adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
+        ApiKeyValidityChecker apiKeyValidityChecker = new ApiKeyValidityChecker();
+        return true;//apiKeyValidityChecker.isApiKeyValid(apiKeyValue, url);
     }
 
     private ServiceApi getServiceApiByApiKey(String apiKeyValue) {
@@ -181,5 +137,4 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             throw new AuthenticationServiceException("An error occured, when trying to get service API data from admin server", e);
         }
     }
-
 }

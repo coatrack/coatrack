@@ -22,11 +22,11 @@ package eu.coatrack.proxy;
 
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.SecurityUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -41,6 +41,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @EnableAsync
 @EnableScheduling
@@ -50,6 +51,7 @@ public class ApiKeyListRequester {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyListRequester.class);
 
     private List<ApiKey> apiKeyList = new ArrayList<>();
+    private List<String> apiKeyValueList = new ArrayList<>();
 
     @Autowired
     private RestTemplate restTemplate;
@@ -80,11 +82,13 @@ public class ApiKeyListRequester {
     public void requestApiKeyList() {
         try {
             ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(uri, ApiKey[].class, gatewayId);
-            apiKeyList = Arrays.asList(responseEntity.getBody());
             checkAndLogHttpStatus(responseEntity.getStatusCode());
+            apiKeyList = Arrays.asList(responseEntity.getBody());
+            apiKeyValueList = apiKeyList.stream().map(x -> x.getKeyValue()).collect(Collectors.toList());
         } catch (RestClientException e){
             log.info("Connection to admin server failed. Probably the server is temporarily down.", e);
         }
+        //setApiKeyValueList(apiKeyValueList);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
@@ -95,7 +99,4 @@ public class ApiKeyListRequester {
                     "new one from cotrack.eu");
     }
 
-    public List<ApiKey> getApiKeyList() {
-        return apiKeyList;
-    }
 }
