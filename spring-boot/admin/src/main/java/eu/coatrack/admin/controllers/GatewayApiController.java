@@ -27,9 +27,12 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -71,11 +74,11 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    @RequestMapping(value = "/api/services/search/receiveHashedApiKeysByGatewayId", method = RequestMethod.GET, produces = "application/json")
-    public List<ApiKey> findServiceByGatewayId(@RequestParam("gatewayId") String gatewayId) {
+    @GetMapping( "/api/gateways/{gatewayId}/receiveApiKeyList")
+    public ResponseEntity<List<ApiKey>> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
         List<ApiKey> apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
                 .stream()).collect(Collectors.toList());
-        return apiKeyList;
+        return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
     }
 }
