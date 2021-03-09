@@ -26,6 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -64,19 +66,33 @@ public class ApiKeyListRequester {
     @Value("${ygg.admin.resources.search-api-key-list}")
     private String adminResourceToSearchForApiKeyList;
 
+    private String uri = "";
+
+    @PostConstruct
+    private void initUriAndRequestApiKeyList(){
+        String raw_uri = adminBaseUrl + adminResourceToSearchForApiKeyList;
+        uri = securityUtil.attachGatewayApiKeyToUrl(raw_uri);
+        requestApiKeyList();
+    }
+
     @Async
     @Scheduled(fixedRate = 5000) // TODO: After finishing #73, this value should be set to 30,000 (5 min).
-    @PostConstruct
-    public void regularlyRequestApiKeyList() {
-        final String raw_uri = adminBaseUrl + adminResourceToSearchForApiKeyList;
-        final String uri = securityUtil.attachGatewayApiKeyToUrl(raw_uri);
+    public void requestApiKeyList() {
         try {
             ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(uri, ApiKey[].class, gatewayId);
             apiKeyList = Arrays.asList(responseEntity.getBody());
-            log.debug("ApiKeyList was successfully requested and delivered. This is the received apiKeyList: " + apiKeyList);
+            checkAndLogHttpStatus(responseEntity.getStatusCode());
         } catch (RestClientException e){
             log.info("Connection to admin server failed. Probably the server is temporarily down.", e);
         }
+    }
+
+    private void checkAndLogHttpStatus(HttpStatus statusCode) {
+        if (statusCode == HttpStatus.OK)
+            log.debug("ApiKeyList was successfully requested and delivered.");
+        else
+            log.warn("Gateway is not recognized by admin, maybe it is deprecated. Please download and run a " +
+                    "new one from cotrack.eu");
     }
 
     public List<ApiKey> getApiKeyList() {

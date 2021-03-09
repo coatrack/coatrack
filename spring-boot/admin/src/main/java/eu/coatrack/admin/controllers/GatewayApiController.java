@@ -26,6 +26,8 @@ import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,15 +44,7 @@ import java.util.stream.Collectors;
 @Controller
 public class GatewayApiController {
 
-    private Long latestUpdateOfApiKeyList = new Date().getTime();
-
-    public void updateApiKeyList(){
-        latestUpdateOfApiKeyList = new Date().getTime();
-    }
-
-    public Long getLatestUpdateOfApiKeyList(){
-        return latestUpdateOfApiKeyList;
-    }
+    private static final Logger log = LoggerFactory.getLogger(GatewayApiController.class);
 
     @Autowired
     ApiKeyRepository apiKeyRepository;
@@ -77,8 +70,18 @@ public class GatewayApiController {
     @GetMapping( "/api/gateways/{gatewayId}/receiveApiKeyList")
     public ResponseEntity<List<ApiKey>> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
-        List<ApiKey> apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
+        List<ApiKey> apiKeyList;
+        if(proxy != null){
+            apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
                 .stream()).collect(Collectors.toList());
-        return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
+            log.info("Successfully created apiKeyList for gateway with the ID: " + gatewayId);
+            return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
+        }
+        else {
+            log.info("No legal object of gateway with the ID: " + gatewayId + " could be found.");
+            apiKeyList = new ArrayList<>();
+            return new ResponseEntity<>(apiKeyList, HttpStatus.NOT_ACCEPTABLE);
+        }
+
     }
 }
