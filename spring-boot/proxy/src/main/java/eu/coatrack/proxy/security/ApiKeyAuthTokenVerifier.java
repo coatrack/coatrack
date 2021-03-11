@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
@@ -34,6 +35,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -110,8 +112,30 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         log.debug(String.format("checking APIKEY value '%s' with CoatRack admin server at '%s'", apiKeyValue, adminBaseUrl));
         String url = securityUtil.attachGatewayApiKeyToUrl(
                 adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
+        ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
+
         ApiKeyValidityChecker apiKeyValidityChecker = new ApiKeyValidityChecker();
-        return true;//apiKeyValidityChecker.isApiKeyValid(apiKeyValue, url);
+        return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
+    }
+
+    private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {
+        ResponseEntity<ApiKey> resultOfApiKeySearch;
+        try {
+            resultOfApiKeySearch = restTemplate.getForEntity(urlToSearchForApiKeys, ApiKey.class);
+        } catch (HttpClientErrorException e) {
+            interpretAndLogHttpStatus(e, apiKeyValue);
+            return null;
+        }
+        return resultOfApiKeySearch;
+    }
+
+    private void interpretAndLogHttpStatus(HttpClientErrorException e, String apiKeyValue) {
+        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+            log.debug("API key value is invalid: " + apiKeyValue);
+        } else {
+            log.error("Error when communicating with auth server", e, " API key value was: " + apiKeyValue,
+                    " Maybe your Gateway is deprecated. Please, try downloading and running a new one.");
+        }
     }
 
     private ServiceApi getServiceApiByApiKey(String apiKeyValue) {
