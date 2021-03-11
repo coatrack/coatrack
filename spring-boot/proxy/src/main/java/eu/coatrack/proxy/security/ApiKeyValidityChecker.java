@@ -23,26 +23,26 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+@Service
 public class ApiKeyValidityChecker {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyValidityChecker.class);
 
-    @Autowired
-    private RestTemplate restTemplate;
-
     private String apiKeyValue;
+    private List<String> apiKeyValueList = new ArrayList<>();
+    private Date lastApiKeyValueListUpdate; //Should be set by ApiKeyListRequester
 
     public boolean doesResultValidateApiKey(ResponseEntity<ApiKey> resultOfApiKeySearch, String apiKeyValue) throws AuthenticationException {
+        this.apiKeyValue = apiKeyValue;
         if (resultOfApiKeySearch != null) {
             return isApiKeyPresentAndValid(resultOfApiKeySearch);
         } else {
@@ -51,19 +51,13 @@ public class ApiKeyValidityChecker {
         }
     }
 
-    private boolean isKeyValidInLocalDatabase() {
-        //TODO checkLocallySavedApiKeyList(); otherwise return false
-        return false;
-    }
-
     private boolean isApiKeyPresentAndValid(ResponseEntity<ApiKey> resultOfApiKeySearch) {
         ApiKey apiKey = resultOfApiKeySearch.getBody();
         if (apiKey != null) {
-            apiKeyValue = apiKey.getKeyValue();
             log.debug("CoatRack admin found a valid key with the value: " + apiKeyValue);
             return isKeyNeitherDeletedNorExpired(apiKey);
         } else {
-            log.debug("API key value could not be found by CoatRack Admin: " + apiKey.getKeyValue());
+            log.debug("API key value could not be found by CoatRack Admin: " + apiKeyValue);
             return false;
         }
     }
@@ -82,5 +76,21 @@ public class ApiKeyValidityChecker {
             log.info(preamble + apiKeyValue + " is expired. " + helpInstruction);
         if (isDeleted)
             log.info(preamble + apiKeyValue + " is deleted. " + helpInstruction);
+    }
+
+    private boolean isKeyValidInLocalDatabase() {//"Database" -> better name required
+        if (apiKeyValueList.stream().anyMatch(x -> x.equals(apiKeyValue)))
+            //TODO add Timecheck
+            return true;
+        else
+            return false;
+    }
+
+    public void setApiKeyList(List<String> apiKeyList){
+        this.apiKeyValueList = apiKeyList;
+    }
+
+    public void setLastApiKeyValueListUpdate(Date lastApiKeyValueListUpdate) {
+        this.lastApiKeyValueListUpdate = lastApiKeyValueListUpdate;
     }
 }

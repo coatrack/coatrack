@@ -51,6 +51,9 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     @Autowired
+    private ApiKeyValidityChecker apiKeyValidityChecker;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Autowired
@@ -113,8 +116,6 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         String url = securityUtil.attachGatewayApiKeyToUrl(
                 adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
         ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-
-        ApiKeyValidityChecker apiKeyValidityChecker = new ApiKeyValidityChecker();
         return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
     }
 

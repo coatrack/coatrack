@@ -71,7 +71,7 @@ public class GatewayApiController {
     public ResponseEntity<List<ApiKey>> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
         List<ApiKey> apiKeyList;
-        if(proxy != null){
+        if(proxy != null){ //extract to extra function
             apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
                 .stream()).collect(Collectors.toList());
             log.info("Successfully created apiKeyList for gateway with the ID: " + gatewayId);

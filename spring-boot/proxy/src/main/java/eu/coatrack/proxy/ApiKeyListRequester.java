@@ -21,6 +21,7 @@ package eu.coatrack.proxy;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.ApiKeyValidityChecker;
 import eu.coatrack.proxy.security.SecurityUtil;
 
 import org.slf4j.Logger;
@@ -38,6 +39,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -52,6 +55,9 @@ public class ApiKeyListRequester {
 
     private List<ApiKey> apiKeyList = new ArrayList<>();
     private List<String> apiKeyValueList = new ArrayList<>();
+
+    @Autowired
+    private ApiKeyValidityChecker apiKeyValidityChecker;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -82,13 +88,14 @@ public class ApiKeyListRequester {
     public void requestApiKeyList() {
         try {
             ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(uri, ApiKey[].class, gatewayId);
-            checkAndLogHttpStatus(responseEntity.getStatusCode());
+            //TODO Add check of success -> Extraction of lines below from try block
+            checkAndLogHttpStatus(responseEntity.getStatusCode());//Duplication?
             apiKeyList = Arrays.asList(responseEntity.getBody());
             apiKeyValueList = apiKeyList.stream().map(x -> x.getKeyValue()).collect(Collectors.toList());
+            updateApiKeyValidityChecker(apiKeyValueList);
         } catch (RestClientException e){
             log.info("Connection to admin server failed. Probably the server is temporarily down.", e);
         }
-        //setApiKeyValueList(apiKeyValueList);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
@@ -99,4 +106,8 @@ public class ApiKeyListRequester {
                     "new one from cotrack.eu");
     }
 
+    private void updateApiKeyValidityChecker(List<String> apiKeyValueList) {
+        apiKeyValidityChecker.setApiKeyList(apiKeyValueList);
+        apiKeyValidityChecker.setLastApiKeyValueListUpdate(Date.valueOf(LocalDate.now()));
+    }
 }
