@@ -40,11 +40,19 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+/**
+ * This bean regularly requests admin to provide the latest API key list affecting this
+ * gateway and updates the ApiKeyValidityChecker if new update content was received.
+ *
+ * @author ChristophBaierATB
+ */
 
 @EnableAsync
 @EnableScheduling
@@ -86,15 +94,19 @@ public class ApiKeyListRequester {
     @Async
     @Scheduled(fixedRate = 5000) // TODO: After finishing #73, this value should be set to 30,000 (5 min).
     public void requestApiKeyList() {
+        ResponseEntity<ApiKey[]> responseEntity;
         try {
-            ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(uri, ApiKey[].class, gatewayId);
-            //TODO Add check of success -> Extraction of lines below from try block
-            checkAndLogHttpStatus(responseEntity.getStatusCode());//Duplication?
-            apiKeyList = Arrays.asList(responseEntity.getBody());
-            apiKeyValueList = apiKeyList.stream().map(x -> x.getKeyValue()).collect(Collectors.toList());
-            updateApiKeyValidityChecker(apiKeyValueList);
+            responseEntity = restTemplate.getForEntity(uri, ApiKey[].class, gatewayId);
         } catch (RestClientException e){
             log.info("Connection to admin server failed. Probably the server is temporarily down.", e);
+            return;
+        }
+        checkAndLogHttpStatus(responseEntity.getStatusCode());
+
+        apiKeyList = Arrays.asList(responseEntity.getBody());
+        if(apiKeyList != null){
+            apiKeyValueList = apiKeyList.stream().map(x -> x.getKeyValue()).collect(Collectors.toList());
+            updateApiKeyValidityChecker(apiKeyValueList);
         }
     }
 
@@ -108,6 +120,6 @@ public class ApiKeyListRequester {
 
     private void updateApiKeyValidityChecker(List<String> apiKeyValueList) {
         apiKeyValidityChecker.setApiKeyList(apiKeyValueList);
-        apiKeyValidityChecker.setLastApiKeyValueListUpdate(Date.valueOf(LocalDate.now()));
+        apiKeyValidityChecker.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
     }
 }

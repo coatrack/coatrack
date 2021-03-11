@@ -28,6 +28,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +38,10 @@ public class ApiKeyValidityChecker {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyValidityChecker.class);
 
-    private String apiKeyValue;
+    private final long oneHourInMillis = 1000 * 60 * 60;
+    private String apiKeyValue = "";
     private List<String> apiKeyValueList = new ArrayList<>();
-    private Date lastApiKeyValueListUpdate; //Should be set by ApiKeyListRequester
+    private Timestamp lastApiKeyValueListUpdate = new Timestamp(System.currentTimeMillis());
 
     public boolean doesResultValidateApiKey(ResponseEntity<ApiKey> resultOfApiKeySearch, String apiKeyValue) throws AuthenticationException {
         this.apiKeyValue = apiKeyValue;
@@ -47,7 +49,7 @@ public class ApiKeyValidityChecker {
             return isApiKeyPresentAndValid(resultOfApiKeySearch);
         } else {
             log.error("Communication with Admin server failed checking API key with the value: " + apiKeyValue);
-            return isKeyValidInLocalDatabase();
+            return isApiKeyValidInLocalApiKeyList();
         }
     }
 
@@ -78,19 +80,26 @@ public class ApiKeyValidityChecker {
             log.info(preamble + apiKeyValue + " is deleted. " + helpInstruction);
     }
 
-    private boolean isKeyValidInLocalDatabase() {//"Database" -> better name required
-        if (apiKeyValueList.stream().anyMatch(x -> x.equals(apiKeyValue)))
-            //TODO add Timecheck
-            return true;
+    private boolean isApiKeyValidInLocalApiKeyList() {
+        if (isApiKeyInLocalApiKeyList())
+            return wasLatestUpdateWithinTheLastHour();
         else
             return false;
+    }
+
+    private boolean isApiKeyInLocalApiKeyList() {
+        return apiKeyValueList.stream().anyMatch(x -> x.equals(apiKeyValue));
+    }
+
+    private boolean wasLatestUpdateWithinTheLastHour() {
+        return lastApiKeyValueListUpdate.getTime() + oneHourInMillis > System.currentTimeMillis();
     }
 
     public void setApiKeyList(List<String> apiKeyList){
         this.apiKeyValueList = apiKeyList;
     }
 
-    public void setLastApiKeyValueListUpdate(Date lastApiKeyValueListUpdate) {
+    public void setLastApiKeyValueListUpdate(Timestamp lastApiKeyValueListUpdate) {
         this.lastApiKeyValueListUpdate = lastApiKeyValueListUpdate;
     }
 }

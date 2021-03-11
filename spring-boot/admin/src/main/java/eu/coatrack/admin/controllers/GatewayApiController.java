@@ -34,9 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.sql.Timestamp;
 
 /**
  * Controller that handles HTTP calls by CoatRack gateways
@@ -68,20 +66,18 @@ public class GatewayApiController {
     }
 
     @GetMapping( "/api/gateways/{gatewayId}/receiveApiKeyList")
-    public ResponseEntity<List<ApiKey>> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
+    public ResponseEntity<ApiKey[]> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
-        List<ApiKey> apiKeyList;
-        if(proxy != null){ //extract to extra function
-            apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
-                .stream()).collect(Collectors.toList());
+
+        if(proxy != null){
+            ApiKey[] apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
+                .stream()).toArray(ApiKey[]::new);
             log.info("Successfully created apiKeyList for gateway with the ID: " + gatewayId);
             return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
         }
         else {
             log.info("No legal object of gateway with the ID: " + gatewayId + " could be found.");
-            apiKeyList = new ArrayList<>();
-            return new ResponseEntity<>(apiKeyList, HttpStatus.NOT_ACCEPTABLE);
+            return new ResponseEntity<>(new ApiKey[0], HttpStatus.NOT_ACCEPTABLE);
         }
-
     }
 }
