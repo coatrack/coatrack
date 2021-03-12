@@ -25,9 +25,6 @@ import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -35,16 +32,14 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 /**
- * Checks if the API key token value sent by the client is valid. Right now this
- * is done by a request to CoatRack admin, asking if the token value is known.
+ *  Checks if the API key token value sent by the client is valid. If so, the client
+ *  is forwarded to the requested service API.
  *
- * @author gr-hovest
+ *  @author gr-hovest
  */
 @Service
 public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
@@ -52,22 +47,10 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     @Autowired
-    private ApiKeyValidityChecker apiKeyValidityChecker;
+    private ApiKeyValidityVerifier apiKeyValidityVerifier;
 
     @Autowired
     ServiceApiProvider serviceApiProvider;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private SecurityUtil securityUtil;
-
-    @Value("${ygg.admin.api-base-url}")
-    private String adminBaseUrl;
-
-    @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
-    private String adminResourceToSearchForApiKeys;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -91,7 +74,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             }
 
             // regular api consumer's api key check
-            if (isApiKeyValid(apiKey)) {
+            if (apiKeyValidityVerifier.isApiKeyValid(apiKey)) {
                 // key is valid, now get service api URI identifier
                 ServiceApi serviceApi = serviceApiProvider.getServiceApiByApiKey(apiKey);
                 String uriIdentifier = serviceApi.getUriIdentifier();
@@ -110,40 +93,6 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         } catch (IllegalArgumentException e) {
             log.debug("API key parameter missing or invalid: " + e.getMessage());
             throw new BadCredentialsException("API key parameter missing or invalid: " + e.getMessage());
-        }
-    }
-
-    private boolean isApiKeyValid(String apiKeyValue) throws AuthenticationException {
-        log.debug(String.format("Checking API key value '%s' with CoatRack admin server at '%s'",
-                apiKeyValue, adminBaseUrl));
-        String url = securityUtil.attachGatewayApiKeyToUrl(
-                adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
-        ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-        return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
-    }
-
-    //TODO Extract To additional class: ApiKeyRequester
-    private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {
-        ResponseEntity<ApiKey> resultOfApiKeySearch;
-        try {
-            resultOfApiKeySearch = restTemplate.getForEntity(urlToSearchForApiKeys, ApiKey.class);
-        } catch (HttpClientErrorException e) {
-            interpretAndLogHttpStatus(e, apiKeyValue);
-            return null;
-        } catch (Exception e) {
-            log.info("Connection to admin failed, ResponseEntity is null. Probably the server is " +
-                    "temporarily down.");
-            return null;
-        }
-        return resultOfApiKeySearch;
-    }
-
-    private void interpretAndLogHttpStatus(HttpClientErrorException e, String apiKeyValue) {
-        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-            log.debug("API key value is invalid: " + apiKeyValue);
-        } else {
-            log.error("Error when communicating with auth server", e, " API key value was: " + apiKeyValue,
-                    " Maybe your Gateway is deprecated. Please, try downloading and running a new one.");
         }
     }
 }

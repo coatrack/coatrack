@@ -31,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class ApiKeyValidityChecker {
+public class LocalApiKeyValidityVerifier {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyValidityChecker.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyValidityVerifier.class);
 
     private final long oneHourInMillis = 1000 * 60 * 60;
     private String apiKeyValue = "";

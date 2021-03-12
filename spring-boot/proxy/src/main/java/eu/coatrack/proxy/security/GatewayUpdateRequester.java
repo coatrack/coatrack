@@ -35,7 +35,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
@@ -46,10 +45,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * This bean regularly requests admin to provide the latest API key list affecting this
- * gateway and updates the ApiKeyValidityChecker if new update content was received.
+ *  This bean regularly requests the admin server to provide the latest list of service APIs
+ *  belonging to the gateway and their referring API keys. After new update content was
+ *  received from the admin server, it updates beans working with these lists.
  *
- * @author Christoph Baier
+ *  @author Christoph Baier
  */
 
 @EnableAsync
@@ -65,7 +65,7 @@ public class GatewayUpdateRequester {
     private ServiceApiProvider serviceApiProvider;
 
     @Autowired
-    private ApiKeyValidityChecker apiKeyValidityChecker;
+    private LocalApiKeyValidityVerifier localApiKeyValidityVerifier;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -135,14 +135,14 @@ public class GatewayUpdateRequester {
 
     private void updateApiKeyValidityChecker(List<String> apiKeyValueList, Timestamp adminsLocalTime) {
         if(apiKeyValueList != null)
-            apiKeyValidityChecker.setApiKeyList(apiKeyValueList);
+            localApiKeyValidityVerifier.setApiKeyList(apiKeyValueList);
         else
-            apiKeyValidityChecker.setApiKeyList(new ArrayList<>());
-        apiKeyValidityChecker.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
+            localApiKeyValidityVerifier.setApiKeyList(new ArrayList<>());
+        localApiKeyValidityVerifier.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
         if(adminsLocalTime != null)
-            apiKeyValidityChecker.setAdminsLocalTime(adminsLocalTime);
+            localApiKeyValidityVerifier.setAdminsLocalTime(adminsLocalTime);
         else
-            apiKeyValidityChecker.setAdminsLocalTime(new Timestamp(0));
+            localApiKeyValidityVerifier.setAdminsLocalTime(new Timestamp(0));
     }
 
     private void updateServiceApiProvider(List<ServiceApi> serviceApiList) {
