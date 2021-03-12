@@ -23,7 +23,7 @@ package eu.coatrack.api;
 import java.sql.Timestamp;
 
 /**
- *
+ * This is a wrapper class which contains update content for the gateways.
  *
  * @author = ChristophBaierATB
  */
@@ -34,6 +34,7 @@ public class GatewayUpdate {
     public Timestamp adminsLocalTime;
 
     public GatewayUpdate(){
+        super();
     }
 
     public GatewayUpdate(ApiKey[] apiKeys, Timestamp adminsLocalTime){

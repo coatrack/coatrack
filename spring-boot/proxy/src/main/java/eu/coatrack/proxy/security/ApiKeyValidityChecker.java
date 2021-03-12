@@ -42,12 +42,18 @@ public class ApiKeyValidityChecker {
     private Timestamp adminsLocalTime = new Timestamp(0);
 
     public boolean doesResultValidateApiKey(ResponseEntity<ApiKey> resultOfApiKeySearch, String apiKeyValue) {
-        this.apiKeyValue = apiKeyValue;
+        if(apiKeyValue != null)
+            this.apiKeyValue = apiKeyValue;
+        else {
+            log.info("The API key value was null and could therefore not be checked for validity.");
+            return false;
+        }
+
         if (resultOfApiKeySearch != null) {
             return isApiKeyPresentAndValid(resultOfApiKeySearch);
         } else {
-            log.error("Communication with Admin server failed checking the API key with the value: " + apiKeyValue +
-                    " Probably there is an implementation error. Now checking if the key is within the local API key list.");
+            log.info("The ResponseEntity is null. Therefore, the key is checked to be validated by " +
+                    "the local API key list.");
             return isApiKeyValidInLocalApiKeyList();
         }
     }
@@ -66,11 +72,11 @@ public class ApiKeyValidityChecker {
     private boolean isApiKeyNeitherDeletedNorExpired(ApiKey apiKey) {
         boolean isExpired = apiKey.getValidUntil().getTime() < adminsLocalTime.getTime();
         boolean isDeleted = apiKey.getDeletedWhen() != null;
-        logIfApiKeyisExpiredOrDeleted(isExpired, isDeleted);
+        logIfApiKeyIsExpiredOrDeleted(isExpired, isDeleted);
         return !(isDeleted || isExpired);
     }
 
-    private void logIfApiKeyisExpiredOrDeleted(boolean isExpired, boolean isDeleted) {
+    private void logIfApiKeyIsExpiredOrDeleted(boolean isExpired, boolean isDeleted) {
         String preamble = "Access to services denied. The api key with the value ";
         String helpInstruction = "Please create a new one.";
         if(isExpired)

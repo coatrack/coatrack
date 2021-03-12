@@ -36,6 +36,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -112,11 +113,16 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private boolean isApiKeyValid(String apiKeyValue) throws AuthenticationException {
-        log.debug(String.format("checking APIKEY value '%s' with CoatRack admin server at '%s'", apiKeyValue, adminBaseUrl));
+        log.debug(String.format("Checking API key value '%s' with CoatRack admin server at '%s'", apiKeyValue, adminBaseUrl));
         String url = securityUtil.attachGatewayApiKeyToUrl(
                 adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
         ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-        return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
+
+        boolean result = apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
+        System.out.println("The result of the Api Key validity check was: " + result);
+        return result;
+
+        //return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
     }
 
     private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {
@@ -126,7 +132,15 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         } catch (HttpClientErrorException e) {
             interpretAndLogHttpStatus(e, apiKeyValue);
             return null;
+        } catch (ResourceAccessException e) {
+            log.info("Connection to admin failed, ResponseEntity is null. Probably the server is temporarily down.", e);
+            return null;
         }
+        catch (Exception e) {
+            log.warn("Unknown exception detected. Please implement an additional catch block for this case.", e);
+            return null;
+        }
+
         return resultOfApiKeySearch;
     }
 

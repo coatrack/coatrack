@@ -21,8 +21,8 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-
 import eu.coatrack.api.GatewayUpdate;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,6 +122,7 @@ public class ApiKeyListRequester {
             List<ApiKey> apiKeyList = Arrays.asList(gatewayUpdate.apiKeys);
             List<String> apiKeyValueList = apiKeyList.stream().map(ApiKey::getKeyValue).collect(Collectors.toList());
             updateApiKeyValidityChecker(apiKeyValueList, localAdminTime);
+            System.out.println("This is the received api key value list: " + apiKeyValueList); //TODO to be removed after testing this feature
         }
     }
 

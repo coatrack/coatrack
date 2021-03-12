@@ -47,7 +47,7 @@ public class ApiKeyValidityCheckerTest {
     private final Timestamp halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
 
     @BeforeEach
-    public void buildAWorkingSetup(){
+    public void createAnAcceptingDefaultSetup(){
         buildUpApiKey();
         buildUpChecker();
         buildUpResponseEntity();
