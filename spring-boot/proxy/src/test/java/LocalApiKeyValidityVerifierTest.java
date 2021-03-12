@@ -31,12 +31,12 @@ import java.util.List;
 
 public class LocalApiKeyValidityVerifierTest {
 
-    private final String someValidValue = "someValidValue";
+    private final String someValidApiKeyValue = "someValidApiKeyValue";
 
     private ApiKey apiKey;
     private List<String> apiKeyValueList;
     private ResponseEntity<ApiKey> responseEntity;
-    private LocalApiKeyValidityVerifier checker = new LocalApiKeyValidityVerifier();
+    private LocalApiKeyValidityVerifier verifier = new LocalApiKeyValidityVerifier();
 
     private final long oneHourInMillis = 1000 * 60 * 60;
     private final long oneDayInMillis = oneHourInMillis * 24;
@@ -49,22 +49,23 @@ public class LocalApiKeyValidityVerifierTest {
     @BeforeEach
     public void createAnAcceptingDefaultSetup(){
         buildUpApiKey();
-        buildUpChecker();
+        buildUpVerifier();
         buildUpResponseEntity();
     }
 
     private void buildUpApiKey() {
         apiKey = new ApiKey();
-        apiKey.setKeyValue(someValidValue);
+        apiKey.setKeyValue(someValidApiKeyValue);
         apiKey.setDeletedWhen(null);
         apiKey.setValidUntil(tomorrow);
     }
 
-    private void buildUpChecker() {
-        checker.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
+    private void buildUpVerifier() {
         apiKeyValueList = new ArrayList<>();
-        apiKeyValueList.add(someValidValue);
-        checker.setApiKeyList(apiKeyValueList);
+        apiKeyValueList.add(someValidApiKeyValue);
+        verifier.setApiKeyList(apiKeyValueList);
+        verifier.setAdminsLocalTime(now);
+        verifier.setLastApiKeyValueListUpdate(now);
     }
 
     private void buildUpResponseEntity() {
@@ -73,59 +74,59 @@ public class LocalApiKeyValidityVerifierTest {
 
     @Test
     public void isDefaultKeyAccepted(){
-        assertTrue(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertTrue(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfDeletedKeyIsDenied(){
         apiKey.setDeletedWhen(yesterday);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
         apiKey.setDeletedWhen(halfAnHourAgo);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfExpiredKeyIsDenied(){
         apiKey.setValidUntil(yesterday);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
         apiKey.setValidUntil(halfAnHourAgo);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfAKeyWhichWasRejectedByAdminIsDenied(){
         apiKey = null;
         responseEntity = new ResponseEntity<>(apiKey, HttpStatus.OK);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsAcceptedSinceItIsInTheLocalApiKeyList(){
         activateTestOfLocalApiKeyList();
-        assertTrue(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        assertTrue(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsDeniedBecauseOfEmptyLocalApiKeyList(){
         activateTestOfLocalApiKeyList();
-        checker.setApiKeyList(new ArrayList<>());
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        verifier.setApiKeyList(new ArrayList<>());
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsDeniedBecauseAdminIsNotReachableForMoreThanOneHour(){
         activateTestOfLocalApiKeyList();
-        checker.setLastApiKeyValueListUpdate(yesterday);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
-        checker.setLastApiKeyValueListUpdate(twoHoursAgo);
-        assertFalse(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        verifier.setLastApiKeyValueListUpdate(yesterday);
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        verifier.setLastApiKeyValueListUpdate(twoHoursAgo);
+        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsAcceptedBecauseAdminIsNotReachableForLessThanOneHour(){
         activateTestOfLocalApiKeyList();
-        checker.setLastApiKeyValueListUpdate(halfAnHourAgo);
-        assertTrue(checker.doesResultValidateApiKey(responseEntity, someValidValue));
+        verifier.setLastApiKeyValueListUpdate(halfAnHourAgo);
+        assertTrue(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
     }
 
     public void activateTestOfLocalApiKeyList(){
