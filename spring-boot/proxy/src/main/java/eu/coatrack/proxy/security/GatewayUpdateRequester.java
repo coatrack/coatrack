@@ -49,20 +49,20 @@ import java.util.stream.Collectors;
  * This bean regularly requests admin to provide the latest API key list affecting this
  * gateway and updates the ApiKeyValidityChecker if new update content was received.
  *
- * @author ChristophBaierATB
+ * @author Christoph Baier
  */
 
 @EnableAsync
 @EnableScheduling
 @RestController
-public class ApiKeyListRequester {
+public class GatewayUpdateRequester {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyListRequester.class);
+    private static final Logger log = LoggerFactory.getLogger(GatewayUpdateRequester.class);
 
     private final int fiveMinutesInMillis = 1000 * 60 * 5;
 
     @Autowired
-    private ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier;
+    private ServiceApiProvider serviceApiProvider;
 
     @Autowired
     private ApiKeyValidityChecker apiKeyValidityChecker;
@@ -92,13 +92,13 @@ public class ApiKeyListRequester {
     }
 
     @Async
-    @Scheduled(fixedRate = fiveMinutesInMillis)
+    @Scheduled(fixedRate = 5000) //TODO Value is to be set to fiveMinutesInMillis if branch is finished
     public void requestApiKeyList() {
         ResponseEntity<GatewayUpdate> responseEntity;
         try {
             responseEntity = restTemplate.getForEntity(uri, GatewayUpdate.class, gatewayId);
-        } catch (RestClientException e){
-            log.info("Connection to admin server failed. Probably the server is temporarily down.", e);
+        } catch (Exception e){
+            log.info("Connection to admin server failed. Probably the server is temporarily down.");
             return;
         }
         checkAndLogHttpStatus(responseEntity.getStatusCode());
@@ -111,8 +111,8 @@ public class ApiKeyListRequester {
         if (statusCode == HttpStatus.OK)
             log.debug("GatewayUpdate was successfully requested and delivered.");
         else
-            log.warn("Gateway is not recognized by admin, maybe it is deprecated. Please download and run a " +
-                    "new one from cotrack.eu");
+            log.warn("Gateway is not recognized by admin, maybe it is deprecated. Please download " +
+                    "and run a new one from coatrack.eu");
     }
 
     private void ifGatewayUpdateIsPresentExtractDataAndUpdateApiKeyValidityChecker(GatewayUpdate gatewayUpdate) {
@@ -129,7 +129,7 @@ public class ApiKeyListRequester {
             List<ServiceApi> serviceApiList = Arrays.asList(gatewayUpdate.serviceApis);
 
             updateApiKeyValidityChecker(apiKeyValueList, localAdminTime);
-            updateApiKeyTokenVerifier(serviceApiList);
+            updateServiceApiProvider(serviceApiList);
         }
     }
 
@@ -143,10 +143,9 @@ public class ApiKeyListRequester {
             apiKeyValidityChecker.setAdminsLocalTime(adminsLocalTime);
         else
             apiKeyValidityChecker.setAdminsLocalTime(new Timestamp(0));
-        //TODO Null checks of these variables can be removed in ApiKeyValidityChecker
     }
 
-    private void updateApiKeyTokenVerifier(List<ServiceApi> serviceApiList) {
-        apiKeyAuthTokenVerifier.setServiceApiList(serviceApiList);
+    private void updateServiceApiProvider(List<ServiceApi> serviceApiList) {
+        serviceApiProvider.setServiceApiList(serviceApiList);
     }
 }

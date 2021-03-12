@@ -25,7 +25,7 @@ import java.sql.Timestamp;
 /**
  * This is a wrapper class which contains update content for the gateways.
  *
- * @author = ChristophBaierATB
+ * @author = Christoph Baier
  */
 
 public class GatewayUpdate {
