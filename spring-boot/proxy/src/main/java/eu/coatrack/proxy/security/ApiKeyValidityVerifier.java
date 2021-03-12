@@ -9,9 +9,9 @@ package eu.coatrack.proxy.security;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,18 +23,17 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *  This bean provides a validity check by requesting the admin server.
- *  If the server is down it will forward this request to a bean which
- *  performs a validity check by using a local list of valid API keys.
+ *  This bean checks if an API key can be verified by considering the
+ *  the local API key list. It is used to evaluate the result of an
+ *  API key request received from admin.
  *
  *  @author Christoph Baier
  */
@@ -42,53 +41,82 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ApiKeyValidityVerifier {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyValidityVerifier.class);
 
-    @Autowired
-    private LocalApiKeyValidityVerifier localApiKeyValidityVerifier;
+    private final long oneHourInMillis = 1000 * 60 * 60;
+    private String apiKeyValue = "";
+    private List<String> apiKeyValueList = new ArrayList<>();
+    private Timestamp lastApiKeyValueListUpdate = new Timestamp(0);
+    private Timestamp adminsLocalTime = new Timestamp(0);
 
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private SecurityUtil securityUtil;
-
-    @Value("${ygg.admin.api-base-url}")
-    private String adminBaseUrl;
-
-    @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
-    private String adminResourceToSearchForApiKeys;
-
-    public boolean isApiKeyValid(String apiKeyValue) {
-        log.debug(String.format("Checking API key value '%s' with CoatRack admin server at '%s'",
-                apiKeyValue, adminBaseUrl));
-        String url = securityUtil.attachGatewayApiKeyToUrl(
-                adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
-        ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-        return localApiKeyValidityVerifier.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
-    }
-
-    private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {
-        ResponseEntity<ApiKey> resultOfApiKeySearch;
-        try {
-            resultOfApiKeySearch = restTemplate.getForEntity(urlToSearchForApiKeys, ApiKey.class);
-        } catch (HttpClientErrorException e) {
-            interpretAndLogHttpStatus(e, apiKeyValue);
-            return null;
-        } catch (Exception e) {
-            log.info("Connection to admin failed, ResponseEntity is null. Probably the server is " +
-                    "temporarily down.");
-            return null;
+    public boolean doesResultValidateApiKey(ResponseEntity<ApiKey> resultOfApiKeySearch, String apiKeyValue) {
+        if(apiKeyValue != null)
+            this.apiKeyValue = apiKeyValue;
+        else {
+            log.info("The API key value was null and could therefore not be checked for validity.");
+            return false;
         }
-        return resultOfApiKeySearch;
-    }
 
-    private void interpretAndLogHttpStatus(HttpClientErrorException e, String apiKeyValue) {
-        if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-            log.debug("API key value is invalid: " + apiKeyValue);
+        if (resultOfApiKeySearch != null) {
+            return isApiKeyPresentAndValid(resultOfApiKeySearch);
         } else {
-            log.error("Error when communicating with auth server", e, " API key value was: " + apiKeyValue,
-                    " Maybe your Gateway is deprecated. Please, try downloading and running a new one.");
+            log.info("The ResponseEntity is null. Therefore, the key is checked to be validated by " +
+                    "the local API key list.");
+            return isApiKeyValidInLocalApiKeyList();
         }
+    }
+
+    private boolean isApiKeyPresentAndValid(ResponseEntity<ApiKey> resultOfApiKeySearch) {
+        ApiKey apiKey = resultOfApiKeySearch.getBody();
+        if (apiKey != null) {
+            log.debug("CoatRack admin found a valid key with the value: " + apiKeyValue);
+            return isApiKeyNeitherDeletedNorExpired(apiKey);
+        } else {
+            log.debug("API key value could not be found by CoatRack Admin: " + apiKeyValue);
+            return false;
+        }
+    }
+
+    private boolean isApiKeyNeitherDeletedNorExpired(ApiKey apiKey) {
+        boolean isExpired = apiKey.getValidUntil().getTime() < adminsLocalTime.getTime();
+        boolean isDeleted = apiKey.getDeletedWhen() != null;
+        logIfApiKeyIsExpiredOrDeleted(isExpired, isDeleted);
+        return !(isDeleted || isExpired);
+    }
+
+    private void logIfApiKeyIsExpiredOrDeleted(boolean isExpired, boolean isDeleted) {
+        String preamble = "Access to services denied. The api key with the value ";
+        String helpInstruction = "Please create a new one.";
+        if(isExpired)
+            log.info(preamble + apiKeyValue + " is expired. " + helpInstruction);
+        if(isDeleted)
+            log.info(preamble + apiKeyValue + " is deleted. " + helpInstruction);
+    }
+
+    private boolean isApiKeyValidInLocalApiKeyList() {
+        if (isApiKeyInLocalApiKeyList())
+            return wasLatestUpdateWithinTheLastHour();
+        else
+            return false;
+    }
+
+    private boolean isApiKeyInLocalApiKeyList() {
+        return apiKeyValueList.stream().anyMatch(x -> x.equals(apiKeyValue));
+    }
+
+    private boolean wasLatestUpdateWithinTheLastHour() {
+        return lastApiKeyValueListUpdate.getTime() + oneHourInMillis > System.currentTimeMillis();
+    }
+
+    public void setApiKeyList(List<String> apiKeyList){
+        this.apiKeyValueList = apiKeyList;
+    }
+
+    public void setLastApiKeyValueListUpdate(Timestamp lastApiKeyValueListUpdate) {
+        this.lastApiKeyValueListUpdate = lastApiKeyValueListUpdate;
+    }
+
+    public void setAdminsLocalTime(Timestamp adminsLocalTime) {
+        this.adminsLocalTime = adminsLocalTime;
     }
 }

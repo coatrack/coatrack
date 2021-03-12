@@ -45,7 +45,7 @@ public class GatewayUpdater {
     private ServiceApiProvider serviceApiProvider;
 
     @Autowired
-    private LocalApiKeyValidityVerifier localApiKeyValidityVerifier;
+    private ApiKeyValidityVerifier apiKeyValidityVerifier;
 
     public void extractDataAndPerformUpdates(GatewayUpdate gatewayUpdate) {
         if(gatewayUpdate.apiKeys != null && gatewayUpdate.adminsLocalTime != null){
@@ -61,19 +61,19 @@ public class GatewayUpdater {
     }
 
     private void updateBeansUsingApiKeyValueListAndLastUpdateTimestamp(List<String> apiKeyValueList) {
-        localApiKeyValidityVerifier.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
+        apiKeyValidityVerifier.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
 
         if(apiKeyValueList != null)
-            localApiKeyValidityVerifier.setApiKeyList(apiKeyValueList);
+            apiKeyValidityVerifier.setApiKeyList(apiKeyValueList);
         else
-            localApiKeyValidityVerifier.setApiKeyList(new ArrayList<>());
+            apiKeyValidityVerifier.setApiKeyList(new ArrayList<>());
     }
 
     private void updateBeansUsingApiAdminsLocalTime(Timestamp adminsLocalTime) {
         if(adminsLocalTime != null)
-            localApiKeyValidityVerifier.setAdminsLocalTime(adminsLocalTime);
+            apiKeyValidityVerifier.setAdminsLocalTime(adminsLocalTime);
         else
-            localApiKeyValidityVerifier.setAdminsLocalTime(new Timestamp(0));
+            apiKeyValidityVerifier.setAdminsLocalTime(new Timestamp(0));
     }
 
     private void updateBeansUsingServiceApiList(List<ServiceApi> serviceApiList) {

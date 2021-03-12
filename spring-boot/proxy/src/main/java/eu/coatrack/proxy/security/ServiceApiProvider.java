@@ -34,10 +34,10 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Performs a service API request to admin and handles possible side effects.
- * If the admin server is not reachable the local API key list is used.
+ *  Performs a service API request to admin and handles possible side effects.
+ *  If the admin server is not reachable the local API key list is used.
  *
- * @author Christoph Baier
+ *  @author Christoph Baier
  */
 
 @Service
@@ -82,14 +82,14 @@ public class ServiceApiProvider {
     }
 
     private ServiceApi getMatchingServiceApiFromLocalServiceApiList(String apiKeyValue) {
-        Optional<ServiceApi> optionalServiceApi = serviceApiList.stream().filter(x -> x.getApiKeys()
+        Optional<ServiceApi> serviceApiToBeFound = serviceApiList.stream().filter(x -> x.getApiKeys()
                 .stream().anyMatch(y -> y.getKeyValue().equals(apiKeyValue))).findFirst();
-        if (optionalServiceApi.isPresent())
-            return optionalServiceApi.get();
+        if (serviceApiToBeFound.isPresent())
+            return serviceApiToBeFound.get();
         else {
             log.warn("The API key with the value " + apiKeyValue + " does not belong to any service " +
                     "despite it is considered valid by the gateway. Probably the cause lies within a " +
-                    "bad GatewayUpdate received from the admin server which does not include this API " +
+                    "bad GatewayUpdate received from the admin server which did not include this API " +
                     "keys service.");
             return null;
         }
@@ -98,10 +98,11 @@ public class ServiceApiProvider {
     private ServiceApi extractServiceApi(ResponseEntity<ServiceApi> responseEntity) {
         if (responseEntity != null) {
             ServiceApi serviceApi = responseEntity.getBody();
-            log.debug("Service API was found by CoatRack admin: " + serviceApi);
+            log.debug("The service API with the name " + serviceApi.getName() + " was found by admin.");
             return serviceApi;
         } else {
-            log.warn("Communication with Admin server failed, result is: " + responseEntity);
+            log.warn("The communication with the admin server was successful but the ResponseEntity " +
+                    "is still null. This should not happen and therefore be debugged.");
             return null;
         }
     }

@@ -18,7 +18,7 @@
  * #L%
  */
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.LocalApiKeyValidityVerifier;
+import eu.coatrack.proxy.security.ApiKeyValidityVerifier;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,14 +29,14 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LocalApiKeyValidityVerifierTest {
+public class LocalApiKeyRequesterTest {
 
     private final String someValidApiKeyValue = "someValidApiKeyValue";
 
     private ApiKey apiKey;
     private List<String> apiKeyValueList;
     private ResponseEntity<ApiKey> responseEntity;
-    private LocalApiKeyValidityVerifier verifier = new LocalApiKeyValidityVerifier();
+    private ApiKeyValidityVerifier verifier = new ApiKeyValidityVerifier();
 
     private final long oneHourInMillis = 1000 * 60 * 60;
     private final long oneDayInMillis = oneHourInMillis * 24;

@@ -47,7 +47,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     @Autowired
-    private ApiKeyValidityVerifier apiKeyValidityVerifier;
+    private ApiKeyRequester apiKeyRequester;
 
     @Autowired
     ServiceApiProvider serviceApiProvider;
@@ -74,7 +74,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             }
 
             // regular api consumer's api key check
-            if (apiKeyValidityVerifier.isApiKeyValid(apiKey)) {
+            if (apiKeyRequester.isApiKeyValid(apiKey)) {
                 // key is valid, now get service api URI identifier
                 ServiceApi serviceApi = serviceApiProvider.getServiceApiByApiKey(apiKey);
                 String uriIdentifier = serviceApi.getUriIdentifier();
