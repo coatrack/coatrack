@@ -22,6 +22,7 @@ package eu.coatrack.proxy.security;
 
 import eu.coatrack.api.ApiKey;
 
+import eu.coatrack.api.GatewayUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +57,8 @@ public class ApiKeyListRequester {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyListRequester.class);
 
+    private final int fiveMinutesInMillis = 1000 * 60 * 5;
+
     @Autowired
     private ApiKeyValidityChecker apiKeyValidityChecker;
 
@@ -84,40 +87,47 @@ public class ApiKeyListRequester {
     }
 
     @Async
-    @Scheduled(fixedRate = 5000) // TODO: Reaching production state, this value should be set to 300,000 (5 min).
+    @Scheduled(fixedRate = fiveMinutesInMillis)
     public void requestApiKeyList() {
-        ResponseEntity<ApiKey[]> responseEntity;
+        ResponseEntity<GatewayUpdate> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(uri, ApiKey[].class, gatewayId);
+            responseEntity = restTemplate.getForEntity(uri, GatewayUpdate.class, gatewayId);
         } catch (RestClientException e){
             log.info("Connection to admin server failed. Probably the server is temporarily down.", e);
             return;
         }
         checkAndLogHttpStatus(responseEntity.getStatusCode());
 
-        List<ApiKey> apiKeyList;
-        try {
-            apiKeyList = Arrays.asList(responseEntity.getBody());
-        } catch (NullPointerException e){
-            log.info("Body of ResponseEntity was empty. Admin did not accept this key. Please, " +
-                    "create a new one." , e);
-            return;
-        }
-
-        List<String> apiKeyValueList = apiKeyList.stream().map(ApiKey::getKeyValue).collect(Collectors.toList());
-        updateApiKeyValidityChecker(apiKeyValueList);
+        GatewayUpdate gatewayUpdate = responseEntity.getBody();
+        ifGatewayUpdateIsPresentExtractDataAndUpdateApiKeyValidityChecker(gatewayUpdate);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
         if (statusCode == HttpStatus.OK)
-            log.debug("ApiKeyList was successfully requested and delivered.");
+            log.debug("GatewayUpdate was successfully requested and delivered.");
         else
             log.warn("Gateway is not recognized by admin, maybe it is deprecated. Please download and run a " +
                     "new one from cotrack.eu");
     }
 
-    private void updateApiKeyValidityChecker(List<String> apiKeyValueList) {
+    private void ifGatewayUpdateIsPresentExtractDataAndUpdateApiKeyValidityChecker(GatewayUpdate gatewayUpdate) {
+        if(gatewayUpdate != null){
+            ifGatewayUpdateDataIsPresentExtractThemAndUpdateApiKeyValidityChecker(gatewayUpdate);
+        }
+    }
+
+    private void ifGatewayUpdateDataIsPresentExtractThemAndUpdateApiKeyValidityChecker(GatewayUpdate gatewayUpdate) {
+        if(gatewayUpdate.apiKeys != null && gatewayUpdate.adminsLocalTime != null){
+            Timestamp localAdminTime = gatewayUpdate.adminsLocalTime;
+            List<ApiKey> apiKeyList = Arrays.asList(gatewayUpdate.apiKeys);
+            List<String> apiKeyValueList = apiKeyList.stream().map(ApiKey::getKeyValue).collect(Collectors.toList());
+            updateApiKeyValidityChecker(apiKeyValueList, localAdminTime);
+        }
+    }
+
+    private void updateApiKeyValidityChecker(List<String> apiKeyValueList, Timestamp adminsLocalTime) {
         apiKeyValidityChecker.setApiKeyList(apiKeyValueList);
         apiKeyValidityChecker.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
+        apiKeyValidityChecker.setAdminsLocalTime(adminsLocalTime);
     }
 }

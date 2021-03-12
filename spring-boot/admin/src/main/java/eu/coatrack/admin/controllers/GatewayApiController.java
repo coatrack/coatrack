@@ -24,6 +24,7 @@ import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.api.GatewayUpdate;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
@@ -66,18 +67,22 @@ public class GatewayApiController {
     }
 
     @GetMapping( "/api/gateways/{gatewayId}/receiveApiKeyList")
-    public ResponseEntity<ApiKey[]> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
+    public ResponseEntity<GatewayUpdate> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
+        GatewayUpdate gatewayUpdate;
 
         if(proxy != null){
-            ApiKey[] apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
+            ApiKey[] apiKeys = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
                 .stream()).toArray(ApiKey[]::new);
             log.info("Successfully created apiKeyList for gateway with the ID: " + gatewayId);
-            return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
+            gatewayUpdate = new GatewayUpdate(apiKeys, new Timestamp(System.currentTimeMillis()));
+            return new ResponseEntity<>(gatewayUpdate, HttpStatus.OK);
         }
         else {
-            log.info("No legal object of gateway with the ID: " + gatewayId + " could be found.");
-            return new ResponseEntity<>(new ApiKey[0], HttpStatus.NOT_ACCEPTABLE);
+            log.info("GatewayUpdate request failed. No legal object of gateway with the ID " + gatewayId +
+                    " could be found.");
+            gatewayUpdate = new GatewayUpdate(new ApiKey[0], new Timestamp(System.currentTimeMillis()));
+            return new ResponseEntity<>(gatewayUpdate, HttpStatus.NOT_ACCEPTABLE);
         }
     }
 }

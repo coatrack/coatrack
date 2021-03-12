@@ -24,12 +24,9 @@ import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,14 +38,16 @@ public class ApiKeyValidityChecker {
     private final long oneHourInMillis = 1000 * 60 * 60;
     private String apiKeyValue = "";
     private List<String> apiKeyValueList = new ArrayList<>();
-    private Timestamp lastApiKeyValueListUpdate = new Timestamp(System.currentTimeMillis());
+    private Timestamp lastApiKeyValueListUpdate = new Timestamp(0);
+    private Timestamp adminsLocalTime = new Timestamp(0);
 
-    public boolean doesResultValidateApiKey(ResponseEntity<ApiKey> resultOfApiKeySearch, String apiKeyValue) throws AuthenticationException {
+    public boolean doesResultValidateApiKey(ResponseEntity<ApiKey> resultOfApiKeySearch, String apiKeyValue) {
         this.apiKeyValue = apiKeyValue;
         if (resultOfApiKeySearch != null) {
             return isApiKeyPresentAndValid(resultOfApiKeySearch);
         } else {
-            log.error("Communication with Admin server failed checking API key with the value: " + apiKeyValue);
+            log.error("Communication with Admin server failed checking the API key with the value: " + apiKeyValue +
+                    " Probably there is an implementation error. Now checking if the key is within the local API key list.");
             return isApiKeyValidInLocalApiKeyList();
         }
     }
@@ -57,18 +56,15 @@ public class ApiKeyValidityChecker {
         ApiKey apiKey = resultOfApiKeySearch.getBody();
         if (apiKey != null) {
             log.debug("CoatRack admin found a valid key with the value: " + apiKeyValue);
-            return isKeyNeitherDeletedNorExpired(apiKey);
+            return isApiKeyNeitherDeletedNorExpired(apiKey);
         } else {
             log.debug("API key value could not be found by CoatRack Admin: " + apiKeyValue);
             return false;
         }
     }
 
-    /*  TODO To check if a key is expired the local admin time is required which
-         could differ from the gateways local time.
-    */
-    private boolean isKeyNeitherDeletedNorExpired(ApiKey apiKey) {
-        boolean isExpired = apiKey.getValidUntil().getTime() < System.currentTimeMillis();
+    private boolean isApiKeyNeitherDeletedNorExpired(ApiKey apiKey) {
+        boolean isExpired = apiKey.getValidUntil().getTime() < adminsLocalTime.getTime();
         boolean isDeleted = apiKey.getDeletedWhen() != null;
         logIfApiKeyisExpiredOrDeleted(isExpired, isDeleted);
         return !(isDeleted || isExpired);
@@ -79,7 +75,7 @@ public class ApiKeyValidityChecker {
         String helpInstruction = "Please create a new one.";
         if(isExpired)
             log.info(preamble + apiKeyValue + " is expired. " + helpInstruction);
-        if (isDeleted)
+        if(isDeleted)
             log.info(preamble + apiKeyValue + " is deleted. " + helpInstruction);
     }
 
@@ -104,5 +100,9 @@ public class ApiKeyValidityChecker {
 
     public void setLastApiKeyValueListUpdate(Timestamp lastApiKeyValueListUpdate) {
         this.lastApiKeyValueListUpdate = lastApiKeyValueListUpdate;
+    }
+
+    public void setAdminsLocalTime(Timestamp adminsLocalTime) {
+        this.adminsLocalTime = adminsLocalTime;
     }
 }
