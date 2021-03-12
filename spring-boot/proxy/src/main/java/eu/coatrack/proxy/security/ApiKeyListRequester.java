@@ -1,4 +1,4 @@
-package eu.coatrack.proxy;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -21,8 +21,6 @@ package eu.coatrack.proxy;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyValidityChecker;
-import eu.coatrack.proxy.security.SecurityUtil;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,10 +37,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.sql.Date;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,20 +56,17 @@ public class ApiKeyListRequester {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyListRequester.class);
 
-    private List<ApiKey> apiKeyList = new ArrayList<>();
-    private List<String> apiKeyValueList = new ArrayList<>();
-
     @Autowired
     private ApiKeyValidityChecker apiKeyValidityChecker;
 
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("${proxy-id}")
-    private String gatewayId = "";
-
     @Autowired
     private SecurityUtil securityUtil;
+
+    @Value("${proxy-id}")
+    private String gatewayId = "";
 
     @Value("${ygg.admin.api-base-url}")
     private String adminBaseUrl;
@@ -92,7 +84,7 @@ public class ApiKeyListRequester {
     }
 
     @Async
-    @Scheduled(fixedRate = 5000) // TODO: After finishing #73, this value should be set to 30,000 (5 min).
+    @Scheduled(fixedRate = 5000) // TODO: Reaching production state, this value should be set to 300,000 (5 min).
     public void requestApiKeyList() {
         ResponseEntity<ApiKey[]> responseEntity;
         try {
@@ -103,11 +95,17 @@ public class ApiKeyListRequester {
         }
         checkAndLogHttpStatus(responseEntity.getStatusCode());
 
-        apiKeyList = Arrays.asList(responseEntity.getBody());
-        if(apiKeyList != null){
-            apiKeyValueList = apiKeyList.stream().map(x -> x.getKeyValue()).collect(Collectors.toList());
-            updateApiKeyValidityChecker(apiKeyValueList);
+        List<ApiKey> apiKeyList;
+        try {
+            apiKeyList = Arrays.asList(responseEntity.getBody());
+        } catch (NullPointerException e){
+            log.info("Body of ResponseEntity was empty. Admin did not accept this key. Please, " +
+                    "create a new one." , e);
+            return;
         }
+
+        List<String> apiKeyValueList = apiKeyList.stream().map(ApiKey::getKeyValue).collect(Collectors.toList());
+        updateApiKeyValidityChecker(apiKeyValueList);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {

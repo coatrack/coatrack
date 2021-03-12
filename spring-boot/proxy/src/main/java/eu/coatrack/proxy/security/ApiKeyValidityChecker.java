@@ -64,8 +64,11 @@ public class ApiKeyValidityChecker {
         }
     }
 
+    /*  TODO To check if a key is expired the local admin time is required which
+         could differ from the gateways local time.
+    */
     private boolean isKeyNeitherDeletedNorExpired(ApiKey apiKey) {
-        boolean isExpired = Date.valueOf(LocalDate.now()).after(apiKey.getValidUntil());
+        boolean isExpired = apiKey.getValidUntil().getTime() < System.currentTimeMillis();
         boolean isDeleted = apiKey.getDeletedWhen() != null;
         logIfApiKeyisExpiredOrDeleted(isExpired, isDeleted);
         return !(isDeleted || isExpired);
