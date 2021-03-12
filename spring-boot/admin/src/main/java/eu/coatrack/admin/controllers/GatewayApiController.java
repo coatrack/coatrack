@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 
 /**
@@ -70,18 +71,20 @@ public class GatewayApiController {
     public ResponseEntity<GatewayUpdate> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
         GatewayUpdate gatewayUpdate;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
 
         if(proxy != null){
+            ServiceApi[] serviceApis = proxy.getServiceApis().stream().toArray(ServiceApi[]::new);
             ApiKey[] apiKeys = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
                 .stream()).toArray(ApiKey[]::new);
-            log.info("Successfully created apiKeyList for gateway with the ID: " + gatewayId);
-            gatewayUpdate = new GatewayUpdate(apiKeys, new Timestamp(System.currentTimeMillis()));
+            log.info("Successfully created API key and service API list for the gateway with the ID: " + gatewayId);
+            gatewayUpdate = new GatewayUpdate(apiKeys, serviceApis, now);
             return new ResponseEntity<>(gatewayUpdate, HttpStatus.OK);
         }
         else {
             log.info("GatewayUpdate request failed. No legal object of gateway with the ID " + gatewayId +
-                    " could be found.");
-            gatewayUpdate = new GatewayUpdate(new ApiKey[0], new Timestamp(System.currentTimeMillis()));
+                    " could be found. Sending an empty Gateway update.");
+            gatewayUpdate = new GatewayUpdate(new ApiKey[0], new ServiceApi[0], now);
             return new ResponseEntity<>(gatewayUpdate, HttpStatus.NOT_ACCEPTABLE);
         }
     }

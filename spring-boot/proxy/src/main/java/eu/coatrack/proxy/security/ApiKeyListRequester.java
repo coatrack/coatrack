@@ -23,6 +23,7 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.GatewayUpdate;
 
+import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +60,9 @@ public class ApiKeyListRequester {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyListRequester.class);
 
     private final int fiveMinutesInMillis = 1000 * 60 * 5;
+
+    @Autowired
+    private ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier;
 
     @Autowired
     private ApiKeyValidityChecker apiKeyValidityChecker;
@@ -87,7 +92,7 @@ public class ApiKeyListRequester {
     }
 
     @Async
-    @Scheduled(fixedRate = fiveMinutesInMillis)
+    @Scheduled(fixedRate = 5000) //TODO to be change to fiveMinutesInMillis
     public void requestApiKeyList() {
         ResponseEntity<GatewayUpdate> responseEntity;
         try {
@@ -121,14 +126,27 @@ public class ApiKeyListRequester {
             Timestamp localAdminTime = gatewayUpdate.adminsLocalTime;
             List<ApiKey> apiKeyList = Arrays.asList(gatewayUpdate.apiKeys);
             List<String> apiKeyValueList = apiKeyList.stream().map(ApiKey::getKeyValue).collect(Collectors.toList());
+            List<ServiceApi> serviceApiList = Arrays.asList(gatewayUpdate.serviceApis);
+
             updateApiKeyValidityChecker(apiKeyValueList, localAdminTime);
-            System.out.println("This is the received api key value list: " + apiKeyValueList); //TODO to be removed after testing this feature
+            updateApiKeyTokenVerifier(serviceApiList);
         }
     }
 
     private void updateApiKeyValidityChecker(List<String> apiKeyValueList, Timestamp adminsLocalTime) {
-        apiKeyValidityChecker.setApiKeyList(apiKeyValueList);
+        if(apiKeyValueList != null)
+            apiKeyValidityChecker.setApiKeyList(apiKeyValueList);
+        else
+            apiKeyValidityChecker.setApiKeyList(new ArrayList<>());
         apiKeyValidityChecker.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
-        apiKeyValidityChecker.setAdminsLocalTime(adminsLocalTime);
+        if(adminsLocalTime != null)
+            apiKeyValidityChecker.setAdminsLocalTime(adminsLocalTime);
+        else
+            apiKeyValidityChecker.setAdminsLocalTime(new Timestamp(0));
+        //TODO Null checks of these variables can be removed in ApiKeyValidityChecker
+    }
+
+    private void updateApiKeyTokenVerifier(List<ServiceApi> serviceApiList) {
+        apiKeyAuthTokenVerifier.setServiceApiList(serviceApiList);
     }
 }

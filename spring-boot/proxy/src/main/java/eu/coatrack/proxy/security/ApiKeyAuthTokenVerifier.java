@@ -34,6 +34,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
@@ -47,6 +48,7 @@ import java.util.*;
  *
  * @author gr-hovest
  */
+@Service
 public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
@@ -68,6 +70,8 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     @Value("${ygg.admin.resources.search-service-by-api-key-value}")
     private String adminResourceToGetServiceByApiKeyValue;
+
+    private List<ServiceApi> serviceApiList = new ArrayList<>();
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -117,12 +121,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         String url = securityUtil.attachGatewayApiKeyToUrl(
                 adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
         ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-
-        boolean result = apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
-        System.out.println("The result of the Api Key validity check was: " + result);
-        return result;
-
-        //return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
+        return apiKeyValidityChecker.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
     }
 
     private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {
@@ -136,7 +135,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             log.info("Connection to admin failed, ResponseEntity is null. Probably the server is temporarily down.", e);
             return null;
         }
-        catch (Exception e) {
+        catch (Exception e) { //TODO Could be redundant if feature is working
             log.warn("Unknown exception detected. Please implement an additional catch block for this case.", e);
             return null;
         }
@@ -154,26 +153,35 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private ServiceApi getServiceApiByApiKey(String apiKeyValue) {
+        log.debug("trying to get service api entity by APIKEY value {}", apiKeyValue);
+        String urlToGetServiceApi = securityUtil.attachGatewayApiKeyToUrl(
+                adminBaseUrl + adminResourceToGetServiceByApiKeyValue + apiKeyValue);
+        ServiceApi serviceApi;
 
         try {
-            log.debug("trying to get service api entity by APIKEY value {}", apiKeyValue);
-
-            String urlToGetServiceApi = securityUtil.attachGatewayApiKeyToUrl(
-                    adminBaseUrl + adminResourceToGetServiceByApiKeyValue + apiKeyValue);
-
             ResponseEntity<ServiceApi> responseEntity = restTemplate.getForEntity(urlToGetServiceApi, ServiceApi.class);
-
             if (responseEntity != null) {
-                ServiceApi serviceApi = responseEntity.getBody();
+                serviceApi = responseEntity.getBody();
                 log.debug("Service API was found by CoatRack admin: " + serviceApi);
-
                 return serviceApi;
             } else {
                 log.error("Communication with Admin server failed, result is: " + responseEntity);
                 throw new AuthenticationServiceException("Communication with auth server failed");
             }
         } catch (Exception e) {
-            throw new AuthenticationServiceException("An error occured, when trying to get service API data from admin server", e);
+            Optional<ServiceApi> optionalServiceApi = serviceApiList.stream().filter(x -> x.getApiKeys()
+                    .stream().anyMatch(y -> y.getKeyValue().equals(apiKeyValue))).findFirst();
+            if (optionalServiceApi.isPresent())
+                return optionalServiceApi.get();
+            else {
+                log.warn("The API key with the value " + apiKeyValue + " does not belong to any service despite " +
+                        "it is considered valid. Probably the cause lies within a bad GatewayUpdate received from the admin server.");
+                throw new AuthenticationServiceException("An error occured, when trying to get service API data from admin server", e);
+            }
         }
+    }
+
+    public void setServiceApiList(List<ServiceApi> serviceApiList) {
+        this.serviceApiList = serviceApiList;
     }
 }

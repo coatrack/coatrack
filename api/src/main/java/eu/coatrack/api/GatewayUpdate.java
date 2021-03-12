@@ -31,14 +31,16 @@ import java.sql.Timestamp;
 public class GatewayUpdate {
 
     public ApiKey[] apiKeys;
+    public ServiceApi[] serviceApis;
     public Timestamp adminsLocalTime;
 
     public GatewayUpdate(){
         super();
     }
 
-    public GatewayUpdate(ApiKey[] apiKeys, Timestamp adminsLocalTime){
+    public GatewayUpdate(ApiKey[] apiKeys, ServiceApi[] serviceApis, Timestamp adminsLocalTime){
         this.apiKeys = apiKeys;
+        this.serviceApis = serviceApis;
         this.adminsLocalTime = adminsLocalTime;
     }
 
