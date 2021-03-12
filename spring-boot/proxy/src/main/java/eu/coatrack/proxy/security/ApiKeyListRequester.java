@@ -92,7 +92,7 @@ public class ApiKeyListRequester {
     }
 
     @Async
-    @Scheduled(fixedRate = 5000) //TODO to be change to fiveMinutesInMillis
+    @Scheduled(fixedRate = fiveMinutesInMillis)
     public void requestApiKeyList() {
         ResponseEntity<GatewayUpdate> responseEntity;
         try {

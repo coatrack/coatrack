@@ -131,15 +131,10 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         } catch (HttpClientErrorException e) {
             interpretAndLogHttpStatus(e, apiKeyValue);
             return null;
-        } catch (ResourceAccessException e) {
+        } catch (Exception e) {
             log.info("Connection to admin failed, ResponseEntity is null. Probably the server is temporarily down.", e);
             return null;
         }
-        catch (Exception e) { //TODO Could be redundant if feature is working
-            log.warn("Unknown exception detected. Please implement an additional catch block for this case.", e);
-            return null;
-        }
-
         return resultOfApiKeySearch;
     }
 
@@ -152,32 +147,50 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         }
     }
 
+    //TODO extract this functionality to an extra class: ServiceApiProvider.findServiceApi(String apiKeyValue) -> after cleanup
     private ServiceApi getServiceApiByApiKey(String apiKeyValue) {
-        log.debug("trying to get service api entity by APIKEY value {}", apiKeyValue);
-        String urlToGetServiceApi = securityUtil.attachGatewayApiKeyToUrl(
-                adminBaseUrl + adminResourceToGetServiceByApiKeyValue + apiKeyValue);
-        ServiceApi serviceApi;
+        log.debug("Trying to get service API entity by API key value {}", apiKeyValue);
+        String urlToGetServiceApi = createUrlToGetServiceApi(apiKeyValue);
+        ResponseEntity<ServiceApi> responseEntity;
 
         try {
-            ResponseEntity<ServiceApi> responseEntity = restTemplate.getForEntity(urlToGetServiceApi, ServiceApi.class);
-            if (responseEntity != null) {
-                serviceApi = responseEntity.getBody();
-                log.debug("Service API was found by CoatRack admin: " + serviceApi);
-                return serviceApi;
-            } else {
-                log.error("Communication with Admin server failed, result is: " + responseEntity);
-                throw new AuthenticationServiceException("Communication with auth server failed");
-            }
+            responseEntity = restTemplate.getForEntity(urlToGetServiceApi, ServiceApi.class);
         } catch (Exception e) {
-            Optional<ServiceApi> optionalServiceApi = serviceApiList.stream().filter(x -> x.getApiKeys()
-                    .stream().anyMatch(y -> y.getKeyValue().equals(apiKeyValue))).findFirst();
-            if (optionalServiceApi.isPresent())
-                return optionalServiceApi.get();
-            else {
-                log.warn("The API key with the value " + apiKeyValue + " does not belong to any service despite " +
-                        "it is considered valid. Probably the cause lies within a bad GatewayUpdate received from the admin server.");
-                throw new AuthenticationServiceException("An error occured, when trying to get service API data from admin server", e);
-            }
+            log.info("The Service API request to the admin server failed. Probably the admin server is " +
+                    "temporarily down.", e);
+            log.debug("Checking if service API belonging to the API key with the value " + apiKeyValue +
+                    " is within the local service API list.");
+            return getMatchingServiceApiFromLocalServiceApiList(apiKeyValue);
+        }
+        return extractServiceApi(responseEntity);
+    }
+
+    private String createUrlToGetServiceApi(String apiKeyValue) {
+        return securityUtil.attachGatewayApiKeyToUrl(
+                adminBaseUrl + adminResourceToGetServiceByApiKeyValue + apiKeyValue);
+    }
+
+    private ServiceApi getMatchingServiceApiFromLocalServiceApiList(String apiKeyValue) {
+        Optional<ServiceApi> optionalServiceApi = serviceApiList.stream().filter(x -> x.getApiKeys()
+                .stream().anyMatch(y -> y.getKeyValue().equals(apiKeyValue))).findFirst();
+        if (optionalServiceApi.isPresent())
+            return optionalServiceApi.get();
+        else {
+            log.warn("The API key with the value " + apiKeyValue + " does not belong to any service despite " +
+                    "it is considered valid by the gateway. Probably the cause lies within a bad GatewayUpdate " +
+                    "received from the admin server which does not include this API keys service.");
+            return null;
+        }
+    }
+
+    private ServiceApi extractServiceApi(ResponseEntity<ServiceApi> responseEntity) {
+        if (responseEntity != null) {
+            ServiceApi serviceApi = responseEntity.getBody();
+            log.debug("Service API was found by CoatRack admin: " + serviceApi);
+            return serviceApi;
+        } else {
+            log.warn("Communication with Admin server failed, result is: " + responseEntity);
+            return null;
         }
     }
 
