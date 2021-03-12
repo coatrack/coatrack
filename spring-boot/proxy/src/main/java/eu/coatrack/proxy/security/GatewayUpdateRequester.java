@@ -20,10 +20,8 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.GatewayUpdate;
 
-import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,16 +36,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  *  This bean regularly requests the admin server to provide the latest list of service APIs
  *  belonging to the gateway and their referring API keys. After new update content was
- *  received from the admin server, it updates beans working with these lists.
+ *  received from the admin server, it is redirect to the GatewayUpdater.
  *
  *  @author Christoph Baier
  */
@@ -62,10 +54,7 @@ public class GatewayUpdateRequester {
     private final int fiveMinutesInMillis = 1000 * 60 * 5;
 
     @Autowired
-    private ServiceApiProvider serviceApiProvider;
-
-    @Autowired
-    private LocalApiKeyValidityVerifier localApiKeyValidityVerifier;
+    private GatewayUpdater gatewayUpdater;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -82,21 +71,21 @@ public class GatewayUpdateRequester {
     @Value("${ygg.admin.resources.search-api-key-list}")
     private String adminResourceToSearchForApiKeyList;
 
-    private String uri = "";
+    private String url = "";
 
     @PostConstruct
-    private void initUriAndRequestApiKeyList(){
-        String raw_uri = adminBaseUrl + adminResourceToSearchForApiKeyList;
-        uri = securityUtil.attachGatewayApiKeyToUrl(raw_uri);
-        requestApiKeyList();
+    private void initUrlAndRequestApiKeyList(){
+        String urlWithoutGatewayId = adminBaseUrl + adminResourceToSearchForApiKeyList;
+        url = securityUtil.attachGatewayApiKeyToUrl(urlWithoutGatewayId);
+        requestGatewayUpdateFromAdmin();
     }
 
     @Async
-    @Scheduled(fixedRate = 5000) //TODO Value is to be set to fiveMinutesInMillis if branch is finished
-    public void requestApiKeyList() {
+    @Scheduled(fixedRate = fiveMinutesInMillis)
+    public void requestGatewayUpdateFromAdmin() {
         ResponseEntity<GatewayUpdate> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(uri, GatewayUpdate.class, gatewayId);
+            responseEntity = restTemplate.getForEntity(url, GatewayUpdate.class, gatewayId);
         } catch (Exception e){
             log.info("Connection to admin server failed. Probably the server is temporarily down.");
             return;
@@ -104,48 +93,20 @@ public class GatewayUpdateRequester {
         checkAndLogHttpStatus(responseEntity.getStatusCode());
 
         GatewayUpdate gatewayUpdate = responseEntity.getBody();
-        ifGatewayUpdateIsPresentExtractDataAndUpdateApiKeyValidityChecker(gatewayUpdate);
+        ifGatewayUpdateIsPresentExtractDataAndPerformUpdates(gatewayUpdate);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
         if (statusCode == HttpStatus.OK)
             log.debug("GatewayUpdate was successfully requested and delivered.");
         else
-            log.warn("Gateway is not recognized by admin, maybe it is deprecated. Please download " +
-                    "and run a new one from coatrack.eu");
+            log.warn("Gateway is probably not recognized by admin, maybe it is deprecated. " +
+                    "Please download and run a new one from coatrack.eu");
     }
 
-    private void ifGatewayUpdateIsPresentExtractDataAndUpdateApiKeyValidityChecker(GatewayUpdate gatewayUpdate) {
+    private void ifGatewayUpdateIsPresentExtractDataAndPerformUpdates(GatewayUpdate gatewayUpdate) {
         if(gatewayUpdate != null){
-            ifGatewayUpdateDataIsPresentExtractThemAndUpdateApiKeyValidityChecker(gatewayUpdate);
+            gatewayUpdater.extractDataAndPerformUpdates(gatewayUpdate);
         }
-    }
-
-    private void ifGatewayUpdateDataIsPresentExtractThemAndUpdateApiKeyValidityChecker(GatewayUpdate gatewayUpdate) {
-        if(gatewayUpdate.apiKeys != null && gatewayUpdate.adminsLocalTime != null){
-            Timestamp localAdminTime = gatewayUpdate.adminsLocalTime;
-            List<ApiKey> apiKeyList = Arrays.asList(gatewayUpdate.apiKeys);
-            List<String> apiKeyValueList = apiKeyList.stream().map(ApiKey::getKeyValue).collect(Collectors.toList());
-            List<ServiceApi> serviceApiList = Arrays.asList(gatewayUpdate.serviceApis);
-
-            updateApiKeyValidityChecker(apiKeyValueList, localAdminTime);
-            updateServiceApiProvider(serviceApiList);
-        }
-    }
-
-    private void updateApiKeyValidityChecker(List<String> apiKeyValueList, Timestamp adminsLocalTime) {
-        if(apiKeyValueList != null)
-            localApiKeyValidityVerifier.setApiKeyList(apiKeyValueList);
-        else
-            localApiKeyValidityVerifier.setApiKeyList(new ArrayList<>());
-        localApiKeyValidityVerifier.setLastApiKeyValueListUpdate(new Timestamp(System.currentTimeMillis()));
-        if(adminsLocalTime != null)
-            localApiKeyValidityVerifier.setAdminsLocalTime(adminsLocalTime);
-        else
-            localApiKeyValidityVerifier.setAdminsLocalTime(new Timestamp(0));
-    }
-
-    private void updateServiceApiProvider(List<ServiceApi> serviceApiList) {
-        serviceApiProvider.setServiceApiList(serviceApiList);
     }
 }
