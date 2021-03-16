@@ -67,9 +67,9 @@ public class AdminCommunicator {
     @Value("${ygg.admin.resources.search-service-by-api-key-value}")
     private String adminResourceToGetServiceByApiKeyValue;
 
-    String apiKeyListRequestUrl;
-    String apiKeyUrlWithoutApiKeyValue;
-    String serviceApiUrlWithoutApiKeyValue;
+    private String apiKeyListRequestUrl;
+    private String apiKeyUrlWithoutApiKeyValue;
+    private String serviceApiUrlWithoutApiKeyValue;
 
     @PostConstruct
     private void initUrls(){
@@ -119,26 +119,14 @@ public class AdminCommunicator {
         if (responseEntity.getStatusCode() == HttpStatus.OK)
             return true;
         else {
-            log.info("The API key with the value " + apiKeyValue + " is found to invalid by admin.");
+            log.info("The API key with the value " + apiKeyValue + " is found to be invalid by admin.");
             return false;
         }
     }
 
-    public ServiceApi requestServiceApiFromAdmin(String apiKeyValue){
+    public ServiceApi requestServiceApiFromAdmin(String apiKeyValue) throws Exception {
         log.debug("Trying to get service API entity by using API key value {}.", apiKeyValue);
-        ResponseEntity<ServiceApi> responseEntity;
-
-        try {
-            responseEntity = restTemplate.getForEntity(serviceApiUrlWithoutApiKeyValue + apiKeyValue, ServiceApi.class);
-        } catch (Exception e) {
-            log.info("The Service API request to the admin server failed. Probably the admin server is " +
-                    "temporarily down.");
-            return null;
-        }
-
-        ServiceApi serviceApi = responseEntity.getBody();
-        if (serviceApi != null)
-            log.debug("The service API with the name " + serviceApi.getName() + " was found by admin.");
-        return serviceApi;
+        ResponseEntity<ServiceApi> responseEntity = restTemplate.getForEntity(serviceApiUrlWithoutApiKeyValue + apiKeyValue, ServiceApi.class);
+        return responseEntity.getBody();
     }
 }

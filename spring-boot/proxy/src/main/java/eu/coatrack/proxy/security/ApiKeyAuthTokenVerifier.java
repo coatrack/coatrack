@@ -63,7 +63,6 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
             //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
             if (apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES)) {
-
                 Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
                 authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
                         ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
@@ -73,23 +72,22 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
                 return apiKeyAuthToken;
             }
 
-            // isApiKeyVerifiedByAdmin: y -> return ServiceAPI,
-            // n -> isApiKeyValidConsideringLocalApiKeyList: y -> return ServiceAPI, otherwise return error/null etc
-
             boolean isApiKeyVerified;
             try{
                 isApiKeyVerified = adminCommunicator.isApiKeyVerifiedByAdmin(apiKeyValue);
-            }catch (Exception e){
+            } catch (Exception e){
                 log.info("Connection to admin failed. Probably the server is temporarily down.");
                 isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
             }
-            
-            // regular api consumer's api key check
-            if (isApiKeyVerified) {
-                // key is valid, now get service api URI identifier
-                ServiceApi serviceApi = adminCommunicator.requestServiceApiFromAdmin(apiKeyValue);
-                if (serviceApi == null)
+
+            if (isApiKeyVerified){
+                ServiceApi serviceApi;
+                try {
+                    serviceApi = adminCommunicator.requestServiceApiFromAdmin(apiKeyValue);
+                } catch (Exception e){
+                    log.info("Connection to admin failed. Probably the server is temporarily down.");
                     serviceApi = localApiKeyAndServiceApiManager.getServiceApiFromLocalList(apiKeyValue);
+                }
 
                 String uriIdentifier = serviceApi.getUriIdentifier();
 
