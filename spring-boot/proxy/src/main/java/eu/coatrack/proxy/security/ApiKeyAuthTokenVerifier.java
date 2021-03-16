@@ -47,7 +47,10 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     @Autowired
-    private AdminRequestingRemoteApiKeyVerifier adminRequestingRemoteApiKeyVerifier;
+    private LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
+
+    @Autowired
+    private AdminCommunicator adminCommunicator;
 
     @Autowired
     ServiceApiProvider serviceApiProvider;
@@ -76,8 +79,16 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             // isApiKeyVerifiedByAdmin: y -> return ServiceAPI,
             // n -> isApiKeyValidConsideringLocalApiKeyList: y -> return ServiceAPI, otherwise return error/null etc
 
+            boolean isApiKeyVerified;
+            try{
+                isApiKeyVerified = adminCommunicator.isApiKeyVerifiedByAdmin(apiKeyValue);
+            }catch (Exception e){
+                log.info("Connection to admin failed. Probably the server is temporarily down.");
+                isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
+            }
+            
             // regular api consumer's api key check
-            if (adminRequestingRemoteApiKeyVerifier.isApiKeyVerifiedByAdmin(apiKeyValue)) {
+            if (isApiKeyVerified) {
                 // key is valid, now get service api URI identifier
                 ServiceApi serviceApi = serviceApiProvider.getServiceApiByApiKey(apiKeyValue);
                 String uriIdentifier = serviceApi.getUriIdentifier();

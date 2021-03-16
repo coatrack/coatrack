@@ -36,7 +36,7 @@ public class LocalApiKeyAndServiceApiManager {
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
 
     private List<ApiKey> localApiKeyList = new ArrayList<>();
-    LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
+    private LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
 
     public boolean isApiKeyValidConsideringLocalApiKeyList(String apiKeyValue) {
         if(apiKeyValue == null){
