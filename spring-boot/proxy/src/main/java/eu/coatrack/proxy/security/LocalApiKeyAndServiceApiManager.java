@@ -83,7 +83,7 @@ public class LocalApiKeyAndServiceApiManager {
         this.latestLocalApiKeyListUpdate = latestLocalApiKeyListUpdate;
     }
 
-    public ServiceApi getServiceApiFromApiKeyOfTheLocalApiKeyList(String apiKeyValue){
+    public ServiceApi getServiceApiFromLocalList(String apiKeyValue){
         ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
         if (apiKey != null){
             return apiKey.getServiceApi();

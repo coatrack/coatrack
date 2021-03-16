@@ -52,9 +52,6 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     @Autowired
     private AdminCommunicator adminCommunicator;
 
-    @Autowired
-    ServiceApiProvider serviceApiProvider;
-
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
@@ -90,7 +87,10 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             // regular api consumer's api key check
             if (isApiKeyVerified) {
                 // key is valid, now get service api URI identifier
-                ServiceApi serviceApi = serviceApiProvider.getServiceApiByApiKey(apiKeyValue);
+                ServiceApi serviceApi = adminCommunicator.requestServiceApiFromAdmin(apiKeyValue);
+                if (serviceApi == null)
+                    serviceApi = localApiKeyAndServiceApiManager.getServiceApiFromLocalList(apiKeyValue);
+
                 String uriIdentifier = serviceApi.getUriIdentifier();
 
                 // add uri identifier as granted authority

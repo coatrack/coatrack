@@ -64,16 +64,19 @@ public class AdminCommunicator {
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
     private String adminResourceToSearchForApiKeys;
 
+    @Value("${ygg.admin.resources.search-service-by-api-key-value}")
+    private String adminResourceToGetServiceByApiKeyValue;
+
     String apiKeyListRequestUrl;
     String apiKeyUrlWithoutApiKeyValue;
+    String serviceApiUrlWithoutApiKeyValue;
 
     @PostConstruct
     private void initUrls(){
         apiKeyListRequestUrl = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToSearchForApiKeyList);
         apiKeyUrlWithoutApiKeyValue = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToSearchForApiKeys);
+        serviceApiUrlWithoutApiKeyValue = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToGetServiceByApiKeyValue);
     }
-
-    //TODO: Provide serviceApi from admin
 
     @Async
     @PostConstruct
@@ -90,10 +93,7 @@ public class AdminCommunicator {
         if (responseEntity == null)
             return;
         checkAndLogHttpStatus(responseEntity.getStatusCode());
-
-        List<ApiKey> apiKeyList = Arrays.asList(responseEntity.getBody());
-        if (apiKeyList != null)
-            localApiKeyAndServiceApiManager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
+        updateLocalApiKeyListManagerUsing(responseEntity);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
@@ -103,6 +103,15 @@ public class AdminCommunicator {
             log.warn("Received http status " + statusCode + " from admin. This should not have happened.");
     }
 
+    private void updateLocalApiKeyListManagerUsing(ResponseEntity<ApiKey[]> responseEntity) {
+        ApiKey[] apiKeys = responseEntity.getBody();
+        List<ApiKey> apiKeyList;
+        if (apiKeys != null){
+            apiKeyList = Arrays.asList(responseEntity.getBody());
+            localApiKeyAndServiceApiManager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
+        }
+    }
+
     public boolean isApiKeyVerifiedByAdmin(String apiKeyValue) throws Exception {
         log.debug("Requesting API key with the value " + apiKeyValue + " from admin and checking its validity.");
         ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyUrlWithoutApiKeyValue + apiKeyValue, ApiKey.class);
@@ -110,13 +119,26 @@ public class AdminCommunicator {
         if (responseEntity.getStatusCode() == HttpStatus.OK)
             return true;
         else {
-            log.info("This API key value is declared invalid by admin: " + apiKeyValue);
+            log.info("The API key with the value " + apiKeyValue + " is found to invalid by admin.");
             return false;
         }
     }
 
-    public ServiceApi requestServiceApiFromAdmin(){
-        return null;
-    }
+    public ServiceApi requestServiceApiFromAdmin(String apiKeyValue){
+        log.debug("Trying to get service API entity by using API key value {}.", apiKeyValue);
+        ResponseEntity<ServiceApi> responseEntity;
 
+        try {
+            responseEntity = restTemplate.getForEntity(serviceApiUrlWithoutApiKeyValue + apiKeyValue, ServiceApi.class);
+        } catch (Exception e) {
+            log.info("The Service API request to the admin server failed. Probably the admin server is " +
+                    "temporarily down.");
+            return null;
+        }
+
+        ServiceApi serviceApi = responseEntity.getBody();
+        if (serviceApi != null)
+            log.debug("The service API with the name " + serviceApi.getName() + " was found by admin.");
+        return serviceApi;
+    }
 }
