@@ -25,7 +25,6 @@ import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,7 +36,9 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- *  The
+ *  Locally stores and periodically refreshes API keys and their associated service APIs
+ *  belonging to the gateway. Provides API key verification services for incoming
+ *  consumer calls which work even when Coatrack admin server is down.
  *
  *  @author Christoph Baier
  */
@@ -46,6 +47,7 @@ import java.util.List;
 public class LocalApiKeyAndServiceApiManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
+    private final int fiveMinutesInMillis = 1000 * 60 * 5;
 
     protected List<ApiKey> localApiKeyList = new ArrayList<>();
     protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
@@ -59,21 +61,21 @@ public class LocalApiKeyAndServiceApiManager {
             return false;
         }
 
-        ApiKey inquiringApiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
-        if (inquiringApiKey == null){
+        ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
+        if (apiKey == null){
             log.info("The API key with the value " + apiKeyValue + " could not be found within the local API key list.");
             return false;
         } else
             log.info("The API key with the value " + apiKeyValue + " matches an API key within the local API key list.");
 
-        return isApiKeyNotDeleted(inquiringApiKey) && isApiKeyNotExpired(inquiringApiKey) && wasLatestUpdateWithinTheLastHour();
+        return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey) && wasLatestUpdateOfLocalApiKeyListWithinTheLastHour();
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {
         boolean isNotDeleted = apiKey.getDeletedWhen() == null;
         if (isNotDeleted){
             return true;
-        }else {
+        } else {
             log.info("The API key with the value " + apiKey.getKeyValue() + " is deleted and therefore rejected.");
             return false;
         }
@@ -83,13 +85,13 @@ public class LocalApiKeyAndServiceApiManager {
         boolean isNotExpired = apiKey.getValidUntil().getTime() > System.currentTimeMillis();
         if (isNotExpired){
             return true;
-        }else {
+        } else {
             log.info("The API key with the value " + apiKey.getKeyValue() + " is expired and therefore rejected.");
             return false;
         }
     }
 
-    private boolean wasLatestUpdateWithinTheLastHour() {
+    private boolean wasLatestUpdateOfLocalApiKeyListWithinTheLastHour() {
         return latestLocalApiKeyListUpdate.plusHours(1).isAfter(LocalDateTime.now());
     }
 
@@ -120,12 +122,15 @@ public class LocalApiKeyAndServiceApiManager {
 
     @Async
     @PostConstruct
-    @Scheduled(fixedRate = 5000)
+    @Scheduled(fixedRate = 5000) //TODO set to fiveMinutesInMillis after finishing works on this feature
     public void updateLocalApiKeyList() {
-        ResponseEntity<ApiKey[]> responseEntity = adminCommunicator.requestLatestApiKeyListFromAdmin();
-        if (responseEntity == null)
+        ApiKey[] apiKeys;
+        try {
+            apiKeys = adminCommunicator.requestLatestApiKeyListFromAdmin();
+        } catch (Exception e){
+            log.info("Connection to admin server failed. Probably the server is temporarily down.");
             return;
-        ApiKey[] apiKeys = responseEntity.getBody();
+        }
         localApiKeyList = Arrays.asList(apiKeys);
         latestLocalApiKeyListUpdate = LocalDateTime.now();
     }

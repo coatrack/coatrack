@@ -34,8 +34,8 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 
 /**
- *  Offers communication services to admin to receive data needed by gateway.
- *  This includes API key lists, single API keys and Service APIs.
+ *  Offers communication services to the Coatrack admin server to receive data
+ *  needed by the gateway.
  *
  *  @author Christoph Baier
  */
@@ -44,10 +44,6 @@ import javax.annotation.PostConstruct;
 public class AdminCommunicator {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.AdminCommunicator.class);
-    private final int fiveMinutesInMillis = 1000 * 60 * 5;
-
-    @Autowired
-    private LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -81,19 +77,13 @@ public class AdminCommunicator {
         serviceApiUrlWithoutApiKeyValue = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToGetServiceByApiKeyValue);
     }
 
-    public ResponseEntity<ApiKey[]> requestLatestApiKeyListFromAdmin(){
+    public ApiKey[] requestLatestApiKeyListFromAdmin() throws Exception {
         log.debug("Trying to receive an update of local API key list by requesting admin.");
-        ResponseEntity<ApiKey[]> responseEntity = null;
-        try {
-            responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
-        } catch (Exception e) {
-            log.info("Connection to admin server failed. Probably the server is temporarily down.");
-            return null;
-        }
+        ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null){
             log.debug("Successfully requested API key list from admin.");
-            return responseEntity;
+            return responseEntity.getBody();
         }
         else {
             log.warn("Request of latest API key list from admin failed. Received http status " +
