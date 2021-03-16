@@ -20,8 +20,7 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-import eu.coatrack.api.GatewayUpdate;
-
+import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,25 +35,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-/**
- *  This bean regularly requests the admin server to provide the latest list of service APIs
- *  belonging to the gateway and their referring API keys. After new update content was
- *  received from the admin server, it is redirect to the GatewayUpdater.
- *
- *  @author Christoph Baier
- */
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 
 @EnableAsync
 @EnableScheduling
 @RestController
-public class GatewayUpdateRequester {
+public class PeriodicAdminRequesterUpdatingLocalApiKeyList {
 
-    private static final Logger log = LoggerFactory.getLogger(GatewayUpdateRequester.class);
-
-    private final int fiveMinutesInMillis = 1000 * 60 * 5;
+    private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.PeriodicAdminRequesterUpdatingLocalApiKeyList.class);
 
     @Autowired
-    private GatewayUpdater gatewayUpdater;
+    private LocalApiKeyListManager localApiKeyListManager;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -74,26 +68,26 @@ public class GatewayUpdateRequester {
     private String url = "";
 
     @PostConstruct
-    private void initUrlAndRequestApiKeyList(){
+    private void initUrlAndRequestApiKeyList() {
         String urlWithoutGatewayId = adminBaseUrl + adminResourceToSearchForApiKeyList;
         url = securityUtil.attachGatewayApiKeyToUrl(urlWithoutGatewayId);
-        requestGatewayUpdateFromAdmin();
+        requestApiKeyListFromAdmin();
     }
 
     @Async
-    @Scheduled(fixedRate = fiveMinutesInMillis)
-    public void requestGatewayUpdateFromAdmin() {
-        ResponseEntity<GatewayUpdate> responseEntity;
+    @Scheduled(fixedRate = 5000)
+    public void requestApiKeyListFromAdmin() {
+        ResponseEntity<ApiKey[]> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(url, GatewayUpdate.class, gatewayId);
-        } catch (Exception e){
+            responseEntity = restTemplate.getForEntity(url, ApiKey[].class, gatewayId);
+        } catch (Exception e) {
             log.info("Connection to admin server failed. Probably the server is temporarily down.");
             return;
         }
         checkAndLogHttpStatus(responseEntity.getStatusCode());
-
-        GatewayUpdate gatewayUpdate = responseEntity.getBody();
-        ifGatewayUpdateIsPresentExtractDataAndPerformUpdates(gatewayUpdate);
+        List<ApiKey> apiKeyList = Arrays.asList(responseEntity.getBody());
+        localApiKeyListManager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
+        System.out.println(apiKeyList);
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
@@ -102,11 +96,5 @@ public class GatewayUpdateRequester {
         else
             log.warn("Gateway is probably not recognized by admin, maybe it is deprecated. " +
                     "Please download and run a new one from coatrack.eu");
-    }
-
-    private void ifGatewayUpdateIsPresentExtractDataAndPerformUpdates(GatewayUpdate gatewayUpdate) {
-        if(gatewayUpdate != null){
-            gatewayUpdater.extractDataAndPerformUpdates(gatewayUpdate);
-        }
     }
 }

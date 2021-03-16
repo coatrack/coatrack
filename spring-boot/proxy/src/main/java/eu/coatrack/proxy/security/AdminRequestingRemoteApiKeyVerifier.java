@@ -31,21 +31,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-/**
- *  This bean provides a validity check of an API key. Its purpose
- *  is to perform a request to the admin server and redirect the
- *  results to another bean for evaluation.
- *
- *  @author Christoph Baier
- */
-
 @Service
-public class ApiKeyRequester {
+public class AdminRequestingRemoteApiKeyVerifier {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(AdminRequestingRemoteApiKeyVerifier.class);
 
     @Autowired
-    private ApiKeyValidityVerifier apiKeyValidityVerifier;
+    private LocalApiKeyListManager localApiKeyListManager;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -59,13 +51,13 @@ public class ApiKeyRequester {
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
     private String adminResourceToSearchForApiKeys;
 
-    public boolean isApiKeyValid(String apiKeyValue) {
+    public boolean isApiKeyVerifiedByAdmin(String apiKeyValue) {
         log.debug(String.format("Checking API key value '%s' with CoatRack admin server at '%s'",
                 apiKeyValue, adminBaseUrl));
         String url = securityUtil.attachGatewayApiKeyToUrl(
                 adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
         ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-        return apiKeyValidityVerifier.doesResultValidateApiKey(resultOfApiKeySearch, apiKeyValue);
+        return localApiKeyListManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
     }
 
     private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {
@@ -92,4 +84,5 @@ public class ApiKeyRequester {
                     "Please, try downloading and running a new one.");
         }
     }
+
 }

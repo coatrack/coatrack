@@ -47,7 +47,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     @Autowired
-    private ApiKeyRequester apiKeyRequester;
+    private AdminRequestingRemoteApiKeyVerifier adminRequestingRemoteApiKeyVerifier;
 
     @Autowired
     ServiceApiProvider serviceApiProvider;
@@ -58,29 +58,32 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         try {
             Assert.notNull(authentication.getCredentials());
             Assert.isInstanceOf(String.class, authentication.getCredentials());
-            String apiKey = (String) authentication.getCredentials();
-            Assert.hasText(apiKey);
+            String apiKeyValue = (String) authentication.getCredentials();
+            Assert.hasText(apiKeyValue);
 
             //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
-            if (apiKey.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES)) {
+            if (apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES)) {
 
                 Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
                 authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
                         ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
 
-                ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKey, authoritiesGrantedToYggAdmin);
+                ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
                 apiKeyAuthToken.setAuthenticated(true);
                 return apiKeyAuthToken;
             }
 
+            // isApiKeyVerifiedByAdmin: y -> return ServiceAPI,
+            // n -> isApiKeyValidConsideringLocalApiKeyList: y -> return ServiceAPI, otherwise return error/null etc
+
             // regular api consumer's api key check
-            if (apiKeyRequester.isApiKeyValid(apiKey)) {
+            if (adminRequestingRemoteApiKeyVerifier.isApiKeyVerifiedByAdmin(apiKeyValue)) {
                 // key is valid, now get service api URI identifier
-                ServiceApi serviceApi = serviceApiProvider.getServiceApiByApiKey(apiKey);
+                ServiceApi serviceApi = serviceApiProvider.getServiceApiByApiKey(apiKeyValue);
                 String uriIdentifier = serviceApi.getUriIdentifier();
 
                 // add uri identifier as granted authority
-                ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKey, Collections.singleton(
+                ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, Collections.singleton(
                         new SimpleGrantedAuthority(
                                 ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
 

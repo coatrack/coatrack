@@ -38,6 +38,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "service_apis")
 public class ServiceApi implements ServiceApiInterface{
 
+    public ServiceApi(){}
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -58,6 +60,7 @@ public class ServiceApi implements ServiceApiInterface{
     @Enumerated(EnumType.STRING)
     private ServiceAccessPermissionPolicy serviceAccessPermissionPolicy;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ApiKey> apiKeys = new ArrayList<>(0);
 

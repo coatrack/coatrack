@@ -24,7 +24,6 @@ import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.api.GatewayUpdate;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
@@ -37,6 +36,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller that handles HTTP calls by CoatRack gateways
@@ -68,24 +70,16 @@ public class GatewayApiController {
     }
 
     @GetMapping( "/api/gateways/{gatewayId}/receiveApiKeyList")
-    public ResponseEntity<GatewayUpdate> findServiceByGatewayId(@PathVariable("gatewayId") String gatewayId) {
+    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
-        GatewayUpdate gatewayUpdate;
-        Timestamp now = new Timestamp(System.currentTimeMillis());
 
-        if(proxy != null){
-            ServiceApi[] serviceApis = proxy.getServiceApis().stream().toArray(ServiceApi[]::new);
-            ApiKey[] apiKeys = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
-                .stream()).toArray(ApiKey[]::new);
-            log.info("Successfully created API key and service API list for the gateway with the ID: " + gatewayId);
-            gatewayUpdate = new GatewayUpdate(apiKeys, serviceApis, now);
-            return new ResponseEntity<>(gatewayUpdate, HttpStatus.OK);
-        }
-        else {
-            log.info("GatewayUpdate request failed. No legal object of gateway with the ID " + gatewayId +
-                    " could be found. Sending an empty Gateway update.");
-            gatewayUpdate = new GatewayUpdate(new ApiKey[0], new ServiceApi[0], now);
-            return new ResponseEntity<>(gatewayUpdate, HttpStatus.NOT_ACCEPTABLE);
-        }
+        //TODO try block
+        List<ApiKey> apiKeyList = proxy.getServiceApis().stream().flatMap(x -> x.getApiKeys()
+                .stream()).collect(Collectors.toList());
+
+        return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
+
+        //In case of exception, log.info and:
+        //return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 }

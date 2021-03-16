@@ -18,39 +18,37 @@
  * #L%
  */
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyValidityVerifier;
-import static org.junit.jupiter.api.Assertions.*;
+
+import eu.coatrack.proxy.security.LocalApiKeyListManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class LocalApiKeyRequesterTest {
 
     private final String someValidApiKeyValue = "someValidApiKeyValue";
 
     private ApiKey apiKey;
-    private List<String> apiKeyValueList;
-    private ResponseEntity<ApiKey> responseEntity;
-    private ApiKeyValidityVerifier verifier = new ApiKeyValidityVerifier();
+    private List<ApiKey> apiKeyList = new ArrayList<>();
+    private LocalApiKeyListManager manager = new LocalApiKeyListManager();
 
     private final long oneHourInMillis = 1000 * 60 * 60;
     private final long oneDayInMillis = oneHourInMillis * 24;
     private final Timestamp now = new Timestamp(System.currentTimeMillis());
     private final Timestamp tomorrow = new Timestamp(now.getTime() + oneDayInMillis);
     private final Timestamp yesterday = new Timestamp(now.getTime() - oneDayInMillis);
-    private final Timestamp twoHoursAgo = new Timestamp(now.getTime() - oneHourInMillis * 2);
     private final Timestamp halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
 
     @BeforeEach
     public void createAnAcceptingDefaultSetup(){
         buildUpApiKey();
         buildUpVerifier();
-        buildUpResponseEntity();
     }
 
     private void buildUpApiKey() {
@@ -61,75 +59,54 @@ public class LocalApiKeyRequesterTest {
     }
 
     private void buildUpVerifier() {
-        apiKeyValueList = new ArrayList<>();
-        apiKeyValueList.add(someValidApiKeyValue);
-        verifier.setApiKeyList(apiKeyValueList);
-        verifier.setAdminsLocalTime(now);
-        verifier.setLastApiKeyValueListUpdate(now);
-    }
-
-    private void buildUpResponseEntity() {
-        responseEntity = new ResponseEntity<>(apiKey, HttpStatus.OK);
+        apiKeyList = new ArrayList<>();
+        apiKeyList.add(apiKey);
+        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
     }
 
     @Test
     public void isDefaultKeyAccepted(){
-        assertTrue(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        assertTrue(manager.isApiKeyValidConsideringLocalApiKeyList(apiKey.getKeyValue()));
     }
 
     @Test
     public void testIfDeletedKeyIsDenied(){
         apiKey.setDeletedWhen(yesterday);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
         apiKey.setDeletedWhen(halfAnHourAgo);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfExpiredKeyIsDenied(){
         apiKey.setValidUntil(yesterday);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
         apiKey.setValidUntil(halfAnHourAgo);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
-    }
-
-    @Test
-    public void testIfAKeyWhichWasRejectedByAdminIsDenied(){
-        apiKey = null;
-        responseEntity = new ResponseEntity<>(apiKey, HttpStatus.OK);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsAcceptedSinceItIsInTheLocalApiKeyList(){
-        activateTestOfLocalApiKeyList();
-        assertTrue(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        assertTrue(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsDeniedBecauseOfEmptyLocalApiKeyList(){
-        activateTestOfLocalApiKeyList();
-        verifier.setApiKeyList(new ArrayList<>());
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        manager.updateLocalApiKeyList(new ArrayList<>(), LocalDateTime.now());
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsDeniedBecauseAdminIsNotReachableForMoreThanOneHour(){
-        activateTestOfLocalApiKeyList();
-        verifier.setLastApiKeyValueListUpdate(yesterday);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
-        verifier.setLastApiKeyValueListUpdate(twoHoursAgo);
-        assertFalse(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
+        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now().minusDays(1));
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now().minusHours(2));
+        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsAcceptedBecauseAdminIsNotReachableForLessThanOneHour(){
-        activateTestOfLocalApiKeyList();
-        verifier.setLastApiKeyValueListUpdate(halfAnHourAgo);
-        assertTrue(verifier.doesResultValidateApiKey(responseEntity, someValidApiKeyValue));
-    }
-
-    public void activateTestOfLocalApiKeyList(){
-        responseEntity = null;
+        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now().plusMinutes(30));
+        assertTrue(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 }

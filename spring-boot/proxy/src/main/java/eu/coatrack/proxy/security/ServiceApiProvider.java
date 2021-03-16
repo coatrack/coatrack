@@ -40,6 +40,7 @@ import java.util.Optional;
  *  @author Christoph Baier
  */
 
+//TODO Should perform remote requesting of serviceApi
 @Service
 public class ServiceApiProvider {
 
@@ -59,8 +60,9 @@ public class ServiceApiProvider {
     @Value("${ygg.admin.resources.search-service-by-api-key-value}")
     private String adminResourceToGetServiceByApiKeyValue;
 
+    //TODO not working since serviceApiList is always empty because of refactoring
     public ServiceApi getServiceApiByApiKey(String apiKeyValue) {
-        log.debug("Trying to get service API entity by API key value {}", apiKeyValue);
+        log.debug("Trying to get service API entity by API key value {}.", apiKeyValue);
         String urlToGetServiceApi = createUrlToGetServiceApi(apiKeyValue);
         ResponseEntity<ServiceApi> responseEntity;
 
@@ -107,7 +109,4 @@ public class ServiceApiProvider {
         }
     }
 
-    public void setServiceApiList(List<ServiceApi> serviceApiList) {
-        this.serviceApiList = serviceApiList;
-    }
 }
