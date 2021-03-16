@@ -88,19 +88,16 @@ public class AdminCommunicator {
             responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
         } catch (Exception e) {
             log.info("Connection to admin server failed. Probably the server is temporarily down.");
-        }
-
-        if (responseEntity == null)
             return;
-        checkAndLogHttpStatus(responseEntity.getStatusCode());
-        updateLocalApiKeyListManagerUsing(responseEntity);
-    }
-
-    private void checkAndLogHttpStatus(HttpStatus statusCode) {
-        if (statusCode == HttpStatus.OK)
+        }
+        if (responseEntity.getStatusCode() == HttpStatus.OK){
             log.debug("Successfully requested API key list from admin.");
-        else
-            log.warn("Received http status " + statusCode + " from admin. This should not have happened.");
+            updateLocalApiKeyListManagerUsing(responseEntity);
+        }
+        else {
+            log.warn("Received http status " + responseEntity.getStatusCode() + " from admin.");
+            return;
+        }
     }
 
     private void updateLocalApiKeyListManagerUsing(ResponseEntity<ApiKey[]> responseEntity) {
@@ -116,10 +113,12 @@ public class AdminCommunicator {
         log.debug("Requesting API key with the value " + apiKeyValue + " from admin and checking its validity.");
         ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyUrlWithoutApiKeyValue + apiKeyValue, ApiKey.class);
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK)
+        if (responseEntity.getStatusCode() == HttpStatus.OK){
+            log.debug("The API key with the value " + apiKeyValue + " is found to be valid by admin.");
             return true;
+        }
         else {
-            log.info("The API key with the value " + apiKeyValue + " is found to be invalid by admin.");
+            log.debug("The API key with the value " + apiKeyValue + " is found to be invalid by admin.");
             return false;
         }
     }
