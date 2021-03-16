@@ -24,23 +24,38 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+/**
+ *  The
+ *
+ *  @author Christoph Baier
+ */
 
 @Service
 public class LocalApiKeyAndServiceApiManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
 
-    private List<ApiKey> localApiKeyList = new ArrayList<>();
-    private LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
+    protected List<ApiKey> localApiKeyList = new ArrayList<>();
+    protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
+
+    @Autowired
+    private AdminCommunicator adminCommunicator;
 
     public boolean isApiKeyValidConsideringLocalApiKeyList(String apiKeyValue) {
         if(apiKeyValue == null){
-            log.info("The passed API key value is null and can therefore not be checked for validity.");
+            log.debug("The passed API key value is null and can therefore not be checked for validity.");
             return false;
         }
 
@@ -78,9 +93,8 @@ public class LocalApiKeyAndServiceApiManager {
         return latestLocalApiKeyListUpdate.plusHours(1).isAfter(LocalDateTime.now());
     }
 
-    public void updateLocalApiKeyList(List<ApiKey> apiKeyList, LocalDateTime latestLocalApiKeyListUpdate) {
-        this.localApiKeyList = apiKeyList;
-        this.latestLocalApiKeyListUpdate = latestLocalApiKeyListUpdate;
+    public boolean isApiKeyReceivedFromAdminValid(ApiKey apiKey){
+        return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
     }
 
     public ServiceApi getServiceApiFromLocalList(String apiKeyValue){
@@ -102,5 +116,17 @@ public class LocalApiKeyAndServiceApiManager {
             return null;
         }
         return apiKey;
+    }
+
+    @Async
+    @PostConstruct
+    @Scheduled(fixedRate = 5000)
+    public void updateLocalApiKeyList() {
+        ResponseEntity<ApiKey[]> responseEntity = adminCommunicator.requestLatestApiKeyListFromAdmin();
+        if (responseEntity == null)
+            return;
+        ApiKey[] apiKeys = responseEntity.getBody();
+        localApiKeyList = Arrays.asList(apiKeys);
+        latestLocalApiKeyListUpdate = LocalDateTime.now();
     }
 }

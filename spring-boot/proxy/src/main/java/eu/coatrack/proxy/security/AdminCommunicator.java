@@ -28,20 +28,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+
+/**
+ *  Offers communication services to admin to receive data needed by gateway.
+ *  This includes API key lists, single API keys and Service APIs.
+ *
+ *  @author Christoph Baier
+ */
 
 @Service
 public class AdminCommunicator {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.AdminCommunicator.class);
+    private final int fiveMinutesInMillis = 1000 * 60 * 5;
 
     @Autowired
     private LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
@@ -78,48 +81,38 @@ public class AdminCommunicator {
         serviceApiUrlWithoutApiKeyValue = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToGetServiceByApiKeyValue);
     }
 
-    @Async
-    @PostConstruct
-    @Scheduled(fixedRate = 5000)
-    public void requestLatestApiKeyListFromAdmin(){
+    public ResponseEntity<ApiKey[]> requestLatestApiKeyListFromAdmin(){
         log.debug("Trying to receive an update of local API key list by requesting admin.");
         ResponseEntity<ApiKey[]> responseEntity = null;
         try {
             responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
         } catch (Exception e) {
             log.info("Connection to admin server failed. Probably the server is temporarily down.");
-            return;
+            return null;
         }
-        if (responseEntity.getStatusCode() == HttpStatus.OK){
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null){
             log.debug("Successfully requested API key list from admin.");
-            updateLocalApiKeyListManagerUsing(responseEntity);
+            return responseEntity;
         }
         else {
-            log.warn("Received http status " + responseEntity.getStatusCode() + " from admin.");
-            return;
+            log.warn("Request of latest API key list from admin failed. Received http status " +
+                    responseEntity.getStatusCode() + " from admin.");
+            return null;
         }
     }
 
-    private void updateLocalApiKeyListManagerUsing(ResponseEntity<ApiKey[]> responseEntity) {
-        ApiKey[] apiKeys = responseEntity.getBody();
-        List<ApiKey> apiKeyList;
-        if (apiKeys != null){
-            apiKeyList = Arrays.asList(responseEntity.getBody());
-            localApiKeyAndServiceApiManager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
-        }
-    }
-
-    public boolean isApiKeyVerifiedByAdmin(String apiKeyValue) throws Exception {
+    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws Exception {
         log.debug("Requesting API key with the value " + apiKeyValue + " from admin and checking its validity.");
         ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyUrlWithoutApiKeyValue + apiKeyValue, ApiKey.class);
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK){
-            log.debug("The API key with the value " + apiKeyValue + " is found to be valid by admin.");
-            return true;
+        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null){
+            log.debug("The API key with the value " + apiKeyValue + " was found by admin.");
+            return responseEntity.getBody();
         }
         else {
-            log.debug("The API key with the value " + apiKeyValue + " is found to be invalid by admin.");
-            return false;
+            log.debug("The API key with the value " + apiKeyValue + " was not found by admin.");
+            return null;
         }
     }
 

@@ -33,16 +33,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Controller that handles HTTP calls by CoatRack gateways
+ *  Controller that handles HTTP calls by CoatRack gateways.
  */
+
 @Controller
 public class GatewayApiController {
 
@@ -77,7 +74,7 @@ public class GatewayApiController {
             apiKeyList = proxy.getServiceApis().stream().flatMap(serviceApi -> serviceApi.getApiKeys()
                     .stream()).collect(Collectors.toList());
         } catch (Exception e){
-            log.info("Creation of API key list for requesting gateway failed. This concerns the gateway with the ID " + gatewayId +".");
+            log.info("Creation of API key list for requesting gateway failed. This concerns the gateway with the ID " + gatewayId + ".");
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(apiKeyList, HttpStatus.OK);

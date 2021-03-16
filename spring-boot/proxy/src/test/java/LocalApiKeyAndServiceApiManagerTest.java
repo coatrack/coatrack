@@ -27,16 +27,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 
-
-public class LocalApiKeyRequesterTest {
+public class LocalApiKeyAndServiceApiManagerTest extends LocalApiKeyAndServiceApiManager{
 
     private final String someValidApiKeyValue = "someValidApiKeyValue";
 
     private ApiKey apiKey;
-    private List<ApiKey> apiKeyList = new ArrayList<>();
-    private LocalApiKeyAndServiceApiManager manager = new LocalApiKeyAndServiceApiManager();
 
     private final long oneHourInMillis = 1000 * 60 * 60;
     private final long oneDayInMillis = oneHourInMillis * 24;
@@ -59,54 +55,54 @@ public class LocalApiKeyRequesterTest {
     }
 
     private void buildUpVerifier() {
-        apiKeyList = new ArrayList<>();
-        apiKeyList.add(apiKey);
-        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
+        localApiKeyList = new ArrayList<>();
+        localApiKeyList.add(apiKey);
+        latestLocalApiKeyListUpdate = LocalDateTime.now();
     }
 
     @Test
     public void isDefaultKeyAccepted(){
-        assertTrue(manager.isApiKeyValidConsideringLocalApiKeyList(apiKey.getKeyValue()));
+        assertTrue(isApiKeyValidConsideringLocalApiKeyList(apiKey.getKeyValue()));
     }
 
     @Test
     public void testIfDeletedKeyIsDenied(){
         apiKey.setDeletedWhen(yesterday);
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
         apiKey.setDeletedWhen(halfAnHourAgo);
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfExpiredKeyIsDenied(){
         apiKey.setValidUntil(yesterday);
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
         apiKey.setValidUntil(halfAnHourAgo);
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsAcceptedSinceItIsInTheLocalApiKeyList(){
-        assertTrue(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        assertTrue(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsDeniedBecauseOfEmptyLocalApiKeyList(){
-        manager.updateLocalApiKeyList(new ArrayList<>(), LocalDateTime.now());
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        localApiKeyList = new ArrayList<>();
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsDeniedBecauseAdminIsNotReachableForMoreThanOneHour(){
-        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now().minusDays(1));
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
-        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now().minusHours(2));
-        assertFalse(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        latestLocalApiKeyListUpdate = LocalDateTime.now().minusDays(1);
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        latestLocalApiKeyListUpdate = LocalDateTime.now().minusHours(2);
+        assertFalse(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void testIfApiKeyIsAcceptedBecauseAdminIsNotReachableForLessThanOneHour(){
-        manager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now().plusMinutes(30));
-        assertTrue(manager.isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
+        latestLocalApiKeyListUpdate = LocalDateTime.now().plusMinutes(30);
+        assertTrue(isApiKeyValidConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 }

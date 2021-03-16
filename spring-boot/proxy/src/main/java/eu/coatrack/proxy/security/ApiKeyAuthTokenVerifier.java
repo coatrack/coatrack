@@ -36,8 +36,7 @@ import org.springframework.util.Assert;
 import java.util.*;
 
 /**
- *  Checks if the API key token value sent by the client is valid. If so, the client
- *  is forwarded to the requested service API.
+ *  Checks if the API key token value sent by the client is valid.
  *
  *  @author gr-hovest
  */
@@ -74,7 +73,8 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
             boolean isApiKeyVerified;
             try{
-                isApiKeyVerified = adminCommunicator.isApiKeyVerifiedByAdmin(apiKeyValue);
+                ApiKey apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
+                isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyReceivedFromAdminValid(apiKey);
             } catch (Exception e){
                 log.info("Connection to admin failed. Probably the server is temporarily down.");
                 isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
