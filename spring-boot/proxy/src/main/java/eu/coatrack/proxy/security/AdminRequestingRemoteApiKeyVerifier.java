@@ -37,7 +37,7 @@ public class AdminRequestingRemoteApiKeyVerifier {
     private static final Logger log = LoggerFactory.getLogger(AdminRequestingRemoteApiKeyVerifier.class);
 
     @Autowired
-    private LocalApiKeyListManager localApiKeyListManager;
+    private LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -57,7 +57,7 @@ public class AdminRequestingRemoteApiKeyVerifier {
         String url = securityUtil.attachGatewayApiKeyToUrl(
                 adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue);
         ResponseEntity<ApiKey> resultOfApiKeySearch = findApiKey(url, apiKeyValue);
-        return localApiKeyListManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
+        return localApiKeyAndServiceApiManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
     }
 
     private ResponseEntity<ApiKey> findApiKey(String urlToSearchForApiKeys, String apiKeyValue) {

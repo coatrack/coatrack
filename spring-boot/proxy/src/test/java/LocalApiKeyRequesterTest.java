@@ -19,7 +19,7 @@
  */
 import eu.coatrack.api.ApiKey;
 
-import eu.coatrack.proxy.security.LocalApiKeyListManager;
+import eu.coatrack.proxy.security.LocalApiKeyAndServiceApiManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,7 +36,7 @@ public class LocalApiKeyRequesterTest {
 
     private ApiKey apiKey;
     private List<ApiKey> apiKeyList = new ArrayList<>();
-    private LocalApiKeyListManager manager = new LocalApiKeyListManager();
+    private LocalApiKeyAndServiceApiManager manager = new LocalApiKeyAndServiceApiManager();
 
     private final long oneHourInMillis = 1000 * 60 * 60;
     private final long oneDayInMillis = oneHourInMillis * 24;

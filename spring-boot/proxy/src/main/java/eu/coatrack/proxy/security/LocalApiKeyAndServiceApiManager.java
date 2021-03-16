@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -30,9 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class LocalApiKeyListManager {
+public class LocalApiKeyAndServiceApiManager {
 
-    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyListManager.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
 
     private List<ApiKey> localApiKeyList = new ArrayList<>();
     LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
@@ -43,16 +44,7 @@ public class LocalApiKeyListManager {
             return false;
         }
 
-        ApiKey inquiringApiKey;
-        try {
-            inquiringApiKey = localApiKeyList.stream().filter(apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue()
-                    .equals(apiKeyValue)).findFirst().get();
-        } catch (Exception e){
-            log.info("The API key with the value " + apiKeyValue + " can not be found within the local API key list " +
-                    "and is therefore rejected.");
-            return false;
-        }
-
+        ApiKey inquiringApiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
         if (inquiringApiKey == null){
             log.info("The API key with the value " + apiKeyValue + " could not be found within the local API key list.");
             return false;
@@ -60,16 +52,6 @@ public class LocalApiKeyListManager {
             log.info("The API key with the value " + apiKeyValue + " matches an API key within the local API key list.");
 
         return isApiKeyNotDeleted(inquiringApiKey) && isApiKeyNotExpired(inquiringApiKey) && wasLatestUpdateWithinTheLastHour();
-    }
-
-    private boolean isApiKeyNotExpired(ApiKey apiKey) {
-        boolean isNotExpired = apiKey.getValidUntil().getTime() > System.currentTimeMillis();
-        if (isNotExpired){
-            return true;
-        }else {
-            log.info("The API key with the value " + apiKey.getKeyValue() + " is expired and therefore rejected.");
-            return false;
-        }
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {
@@ -82,6 +64,16 @@ public class LocalApiKeyListManager {
         }
     }
 
+    private boolean isApiKeyNotExpired(ApiKey apiKey) {
+        boolean isNotExpired = apiKey.getValidUntil().getTime() > System.currentTimeMillis();
+        if (isNotExpired){
+            return true;
+        }else {
+            log.info("The API key with the value " + apiKey.getKeyValue() + " is expired and therefore rejected.");
+            return false;
+        }
+    }
+
     private boolean wasLatestUpdateWithinTheLastHour() {
         return latestLocalApiKeyListUpdate.plusHours(1).isAfter(LocalDateTime.now());
     }
@@ -89,5 +81,26 @@ public class LocalApiKeyListManager {
     public void updateLocalApiKeyList(List<ApiKey> apiKeyList, LocalDateTime latestLocalApiKeyListUpdate) {
         this.localApiKeyList = apiKeyList;
         this.latestLocalApiKeyListUpdate = latestLocalApiKeyListUpdate;
+    }
+
+    public ServiceApi getServiceApiFromApiKeyOfTheLocalApiKeyList(String apiKeyValue){
+        ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
+        if (apiKey != null){
+            return apiKey.getServiceApi();
+        } else
+            return null;
+    }
+
+    private ApiKey findApiKeyFromLocalApiKeyList(String apiKeyValue) {
+        ApiKey apiKey;
+        try {
+            apiKey = localApiKeyList.stream().filter(apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue()
+                    .equals(apiKeyValue)).findFirst().get();
+        } catch (Exception e){
+            log.info("The API key with the value " + apiKeyValue + " can not be found within the local API key list " +
+                    "and is therefore rejected.");
+            return null;
+        }
+        return apiKey;
     }
 }

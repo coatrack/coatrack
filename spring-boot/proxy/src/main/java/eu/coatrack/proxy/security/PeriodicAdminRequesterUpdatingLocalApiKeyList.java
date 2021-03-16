@@ -35,7 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -48,46 +47,23 @@ public class PeriodicAdminRequesterUpdatingLocalApiKeyList {
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.PeriodicAdminRequesterUpdatingLocalApiKeyList.class);
 
     @Autowired
-    private LocalApiKeyListManager localApiKeyListManager;
+    private AdminCommunicator adminCommunicator;
 
     @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private SecurityUtil securityUtil;
-
-    @Value("${proxy-id}")
-    private String gatewayId = "";
-
-    @Value("${ygg.admin.api-base-url}")
-    private String adminBaseUrl;
-
-    @Value("${ygg.admin.resources.search-api-key-list}")
-    private String adminResourceToSearchForApiKeyList;
-
-    private String url = "";
-
-    @PostConstruct
-    private void initUrlAndRequestApiKeyList() {
-        String urlWithoutGatewayId = adminBaseUrl + adminResourceToSearchForApiKeyList;
-        url = securityUtil.attachGatewayApiKeyToUrl(urlWithoutGatewayId);
-        requestApiKeyListFromAdmin();
-    }
+    private LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
 
     @Async
+    @PostConstruct
     @Scheduled(fixedRate = 5000)
     public void requestApiKeyListFromAdmin() {
-        ResponseEntity<ApiKey[]> responseEntity;
-        try {
-            responseEntity = restTemplate.getForEntity(url, ApiKey[].class, gatewayId);
-        } catch (Exception e) {
-            log.info("Connection to admin server failed. Probably the server is temporarily down.");
+        ResponseEntity<ApiKey[]> responseEntity = adminCommunicator.requestLatestApiKeyListFromAdmin();
+        if (responseEntity == null)
             return;
-        }
         checkAndLogHttpStatus(responseEntity.getStatusCode());
+
         List<ApiKey> apiKeyList = Arrays.asList(responseEntity.getBody());
-        localApiKeyListManager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
-        System.out.println(apiKeyList);
+        if (apiKeyList != null)
+            localApiKeyAndServiceApiManager.updateLocalApiKeyList(apiKeyList, LocalDateTime.now());
     }
 
     private void checkAndLogHttpStatus(HttpStatus statusCode) {
