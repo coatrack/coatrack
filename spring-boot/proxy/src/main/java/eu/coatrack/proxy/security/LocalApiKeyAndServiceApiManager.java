@@ -25,6 +25,7 @@ import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -37,8 +38,8 @@ import java.util.List;
 
 /**
  *  Locally stores and periodically refreshes API keys and their associated service APIs
- *  belonging to the gateway. Provides API key verification services for incoming
- *  consumer calls which work even when Coatrack admin server is down.
+ *  belonging to the gateway. Provides API key verification services for incoming consumer
+ *  calls which work even if the CoatRack admin server is down.
  *
  *  @author Christoph Baier
  */
@@ -51,6 +52,9 @@ public class LocalApiKeyAndServiceApiManager {
 
     protected List<ApiKey> localApiKeyList = new ArrayList<>();
     protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
+
+    @Value("${minutes-the-gateway-works-without-connection-to-admin}")
+    private long minutesTheGatewayWorksWithoutConnectionToAdmin;
 
     @Autowired
     private AdminCommunicator adminCommunicator;
@@ -68,7 +72,7 @@ public class LocalApiKeyAndServiceApiManager {
         } else
             log.info("The API key with the value " + apiKeyValue + " matches an API key within the local API key list.");
 
-        return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey) && wasLatestUpdateOfLocalApiKeyListWithinTheLastHour();
+        return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey) && wasLatestUpdateOfLocalApiKeyListWithinTheGivenDeadline();
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {
@@ -91,8 +95,13 @@ public class LocalApiKeyAndServiceApiManager {
         }
     }
 
-    private boolean wasLatestUpdateOfLocalApiKeyListWithinTheLastHour() {
-        return latestLocalApiKeyListUpdate.plusHours(1).isAfter(LocalDateTime.now());
+    private boolean wasLatestUpdateOfLocalApiKeyListWithinTheGivenDeadline() {
+        boolean check = latestLocalApiKeyListUpdate.plusMinutes(minutesTheGatewayWorksWithoutConnectionToAdmin).isAfter(LocalDateTime.now());
+        if (check == false)
+            log.info("The CoatRack admin server was not reachable for longer than " + minutesTheGatewayWorksWithoutConnectionToAdmin
+                    + " minutes. Since this predefined threshold was exceeded, this and all subsequent service " +
+                    "API requests are rejected until a connection to CoatRack admin could be re-established.");
+        return check;
     }
 
     public boolean isApiKeyReceivedFromAdminValid(ApiKey apiKey){
@@ -122,7 +131,7 @@ public class LocalApiKeyAndServiceApiManager {
 
     @Async
     @PostConstruct
-    @Scheduled(fixedRate = 5000) //TODO set to fiveMinutesInMillis after finishing works on this feature
+    @Scheduled(fixedRate = fiveMinutesInMillis)
     public void updateLocalApiKeyList() {
         ApiKey[] apiKeys;
         try {

@@ -36,3 +36,9 @@ logging:
   level:
     eu.coatrack.proxy: DEBUG
     org.springframework.security: DEBUG
+
+# The gateway has the ability to work even if the CoatRack admin server
+# is not reachable. If admin is not reachable for longer than this period
+# of time, the gateway will reject all service API requests until a
+# a connection could be re-established.
+minutes-the-gateway-works-without-connection-to-admin: 60
