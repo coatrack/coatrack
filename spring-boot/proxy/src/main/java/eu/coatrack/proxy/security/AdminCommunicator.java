@@ -9,9 +9,9 @@ package eu.coatrack.proxy.security;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,10 +34,10 @@ import org.springframework.web.client.RestTemplate;
 import javax.annotation.PostConstruct;
 
 /**
- *  Offers communication services to the Coatrack admin server to receive data
- *  needed by the gateway.
+ * Offers communication services to the Coatrack admin server to receive data
+ * required by the gateway for key verification.
  *
- *  @author Christoph Baier
+ * @author Christoph Baier
  */
 
 @Service
@@ -66,12 +66,13 @@ public class AdminCommunicator {
     @Value("${ygg.admin.resources.search-service-by-api-key-value}")
     private String adminResourceToGetServiceByApiKeyValue;
 
-    private String apiKeyListRequestUrl;
-    private String apiKeyUrlWithoutApiKeyValue;
-    private String serviceApiUrlWithoutApiKeyValue;
+    private String
+            apiKeyListRequestUrl,
+            apiKeyUrlWithoutApiKeyValue,
+            serviceApiUrlWithoutApiKeyValue;
 
     @PostConstruct
-    private void initUrls(){
+    private void initUrls() {
         apiKeyListRequestUrl = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToSearchForApiKeyList);
         apiKeyUrlWithoutApiKeyValue = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToSearchForApiKeys);
         serviceApiUrlWithoutApiKeyValue = securityUtil.attachGatewayApiKeyToUrl(adminBaseUrl + adminResourceToGetServiceByApiKeyValue);
@@ -81,11 +82,10 @@ public class AdminCommunicator {
         log.debug("Trying to receive an update of local API key list by requesting admin.");
         ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null){
+        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.debug("Successfully requested API key list from admin.");
             return responseEntity.getBody();
-        }
-        else {
+        } else {
             log.warn("Request of latest API key list from admin failed. Received http status " +
                     responseEntity.getStatusCode() + " from admin.");
             return null;
@@ -96,11 +96,10 @@ public class AdminCommunicator {
         log.debug("Requesting API key with the value " + apiKeyValue + " from admin and checking its validity.");
         ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyUrlWithoutApiKeyValue + apiKeyValue, ApiKey.class);
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null){
+        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.debug("The API key with the value " + apiKeyValue + " was found by admin.");
             return responseEntity.getBody();
-        }
-        else {
+        } else {
             log.debug("The API key with the value " + apiKeyValue + " was not found by admin.");
             return null;
         }

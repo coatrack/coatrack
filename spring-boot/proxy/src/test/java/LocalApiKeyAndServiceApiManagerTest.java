@@ -34,12 +34,15 @@ public class LocalApiKeyAndServiceApiManagerTest extends LocalApiKeyAndServiceAp
 
     private ApiKey apiKey;
 
-    private final long oneHourInMillis = 1000 * 60 * 60;
-    private final long oneDayInMillis = oneHourInMillis * 24;
-    private final Timestamp now = new Timestamp(System.currentTimeMillis());
-    private final Timestamp tomorrow = new Timestamp(now.getTime() + oneDayInMillis);
-    private final Timestamp yesterday = new Timestamp(now.getTime() - oneDayInMillis);
-    private final Timestamp halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
+    private final long
+            oneHourInMillis = 1000 * 60 * 60,
+            oneDayInMillis = oneHourInMillis * 24;
+
+    private final Timestamp
+            now = new Timestamp(System.currentTimeMillis()),
+            tomorrow = new Timestamp(now.getTime() + oneDayInMillis),
+            yesterday = new Timestamp(now.getTime() - oneDayInMillis),
+            halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
 
     @BeforeEach
     public void createAnAcceptingDefaultSetup(){
