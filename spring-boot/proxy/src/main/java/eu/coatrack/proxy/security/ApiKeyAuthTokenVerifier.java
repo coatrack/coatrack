@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -38,8 +38,9 @@ import java.util.*;
 /**
  *  Checks if the API key token value sent by the client is valid.
  *
- *  @author gr-hovest
+ *  @author gr-hovest, Christoph Baier
  */
+
 @Service
 public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
@@ -53,58 +54,75 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
         try {
-            Assert.notNull(authentication.getCredentials());
-            Assert.isInstanceOf(String.class, authentication.getCredentials());
-            String apiKeyValue = (String) authentication.getCredentials();
-            Assert.hasText(apiKeyValue);
-
+            String apiKeyValue = getApiKeyValue(authentication);
             //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
-            if (apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES)) {
-                Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
-                authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
-                        ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
-
-                ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
-                apiKeyAuthToken.setAuthenticated(true);
-                return apiKeyAuthToken;
+            if (isAdminsKey(apiKeyValue)) {
+                return createAdminAuthToken(apiKeyValue);
             }
 
-            boolean isApiKeyVerified;
-            try{
-                ApiKey apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
-                isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyReceivedFromAdminValid(apiKey);
-            } catch (Exception e){
-                log.info("Connection to admin failed. Probably the server is temporarily down.");
-                isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
+            if (isApiKeyFromConsumerVerified(apiKeyValue)) {
+                return createConsumerAuthToken(apiKeyValue);
             }
 
-            if (isApiKeyVerified){
-                ServiceApi serviceApi;
-                try {
-                    serviceApi = adminCommunicator.requestServiceApiFromAdmin(apiKeyValue);
-                } catch (Exception e){
-                    log.info("Connection to admin failed. Probably the server is temporarily down.");
-                    serviceApi = localApiKeyAndServiceApiManager.getServiceApiFromLocalList(apiKeyValue);
-                }
-
-                String uriIdentifier = serviceApi.getUriIdentifier();
-
-                // add uri identifier as granted authority
-                ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, Collections.singleton(
-                        new SimpleGrantedAuthority(
-                                ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
-
-                apiKeyAuthToken.setAuthenticated(true);
-                return apiKeyAuthToken;
-            } else {
-                // TODO log this via MetricsCounterService?
-                throw new BadCredentialsException("API key value is not valid");
-            }
-        } catch (IllegalArgumentException e) {
-            log.debug("API key parameter missing or invalid: " + e.getMessage());
-            throw new BadCredentialsException("API key parameter missing or invalid: " + e.getMessage());
+        } catch (Exception e) {
+            log.info("During the authentication process this exception occurred: ", e);
         }
+        throw new SessionAuthenticationException("The authentication process failed.");
+    }
+
+    private String getApiKeyValue(Authentication authentication) {
+        Assert.notNull(authentication.getCredentials());
+        Assert.isInstanceOf(String.class, authentication.getCredentials());
+        String apiKeyValue = (String) authentication.getCredentials();
+        Assert.hasText(apiKeyValue);
+        return apiKeyValue;
+    }
+
+    private boolean isAdminsKey(String apiKeyValue) {
+        return apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES);
+    }
+
+    private Authentication createAdminAuthToken(String apiKeyValue) {
+        Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
+        authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
+                ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
+        ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
+        apiKeyAuthToken.setAuthenticated(true);
+        return apiKeyAuthToken;
+    }
+
+    private boolean isApiKeyFromConsumerVerified(String apiKeyValue) {
+        boolean isApiKeyVerified;
+        try {
+            ApiKey apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
+            isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyReceivedFromAdminValid(apiKey);
+        } catch (Exception e) {
+            log.info("Connection to admin failed. Probably the server is temporarily down.");
+            isApiKeyVerified = localApiKeyAndServiceApiManager.isApiKeyValidConsideringLocalApiKeyList(apiKeyValue);
+        }
+        return isApiKeyVerified;
+    }
+
+    private ApiKeyAuthToken createConsumerAuthToken(String apiKeyValue) {
+        ServiceApi serviceApi = findServiceApi(apiKeyValue);
+        String uriIdentifier = serviceApi.getUriIdentifier();
+
+        ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, Collections.singleton(
+                new SimpleGrantedAuthority(
+                        ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
+        apiKeyAuthToken.setAuthenticated(true);
+        return apiKeyAuthToken;
+    }
+
+    private ServiceApi findServiceApi(String apiKeyValue) {
+        ServiceApi serviceApi;
+        try {
+            serviceApi = adminCommunicator.requestServiceApiFromAdmin(apiKeyValue);
+        } catch (Exception e) {
+            log.info("Connection to admin failed. Probably the server is temporarily down.");
+            serviceApi = localApiKeyAndServiceApiManager.getServiceApiFromLocalList(apiKeyValue);
+        }
+        return serviceApi;
     }
 }
