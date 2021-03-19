@@ -54,7 +54,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.debug("Verifying the authentication {}.", authentication);
+        log.debug("Verifying the authentication {}.", authentication.getName());
         try {
             String apiKeyValue = getApiKeyValue(authentication);
             //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
@@ -73,7 +73,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private String getApiKeyValue(Authentication authentication) {
-        log.debug("Getting API key value from authentication {}.", authentication);
+        log.debug("Getting API key value from authentication {}.", authentication.getName());
         Assert.notNull(authentication.getCredentials());
         Assert.isInstanceOf(String.class, authentication.getCredentials());
         String apiKeyValue = (String) authentication.getCredentials();
@@ -93,6 +93,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
                 ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
         ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
         apiKeyAuthToken.setAuthenticated(true);
+        log.info("Admin is successfully authenticated using the API key with the value {}.", apiKeyValue);
         return apiKeyAuthToken;
     }
 
@@ -103,7 +104,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             ApiKey apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
             isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyReceivedFromAdminValid(apiKey);
         } catch (Exception e) {
-            log.info("Trying to verify consumers API key with the value {} the connection to admin " +
+            log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
                     "failed. Probably the server is temporarily down.", apiKeyValue);
             isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyValidConsideringTheLocalApiKeyList(apiKeyValue);
         }
