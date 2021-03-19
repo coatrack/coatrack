@@ -156,7 +156,7 @@ public class MetricsTransmitter implements GaugeWriter {
                 apiKey = resultOfApiKeySearch.getBody();
                 log.debug("API key was found by CoatRack admin: " + apiKey.toString());
             } else {
-                log.error("Communication with Admin server failed, result is: " + resultOfApiKeySearch);
+                log.error("Communication with CoatRack admin server failed, result is: " + resultOfApiKeySearch);
             }
         } catch (Exception e) {
             log.error("Exception when trying to get API consumer name from CoatRack admin", e);

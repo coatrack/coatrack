@@ -79,35 +79,37 @@ public class AdminCommunicator {
     }
 
     public ApiKey[] requestLatestApiKeyListFromAdmin() throws Exception {
-        log.debug("Trying to receive an update of local API key list by requesting admin.");
+        log.debug("Requesting latest API key list from CoatRack admin.");
         ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-            log.debug("Successfully requested API key list from admin.");
+            log.info("Successfully requested latest API key list from CoatRack admin.");
             return responseEntity.getBody();
         } else {
-            log.warn("Request of latest API key list from admin failed. Received http status " +
-                    responseEntity.getStatusCode() + " from admin.");
+            log.warn("Request of latest API key list from CoatRack admin failed. Received http status {} from " +
+                    "CoatRack admin.", responseEntity.getStatusCode());
             return null;
         }
     }
 
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws Exception {
-        log.debug("Requesting API key with the value " + apiKeyValue + " from admin and checking its validity.");
-        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyUrlWithoutApiKeyValue + apiKeyValue, ApiKey.class);
+        log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
+        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyUrlWithoutApiKeyValue
+                + apiKeyValue, ApiKey.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-            log.debug("The API key with the value " + apiKeyValue + " was found by admin.");
+            log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);
             return responseEntity.getBody();
         } else {
-            log.debug("The API key with the value " + apiKeyValue + " was not found by admin.");
+            log.info("The API key with the value {} was not found by CoatRack admin.", apiKeyValue);
             return null;
         }
     }
 
     public ServiceApi requestServiceApiFromAdmin(String apiKeyValue) throws Exception {
-        log.debug("Trying to get service API entity by using API key value {}.", apiKeyValue);
-        ResponseEntity<ServiceApi> responseEntity = restTemplate.getForEntity(serviceApiUrlWithoutApiKeyValue + apiKeyValue, ServiceApi.class);
+        log.debug("Requesting service from CoatRack admin using the API with the value {}.", apiKeyValue);
+        ResponseEntity<ServiceApi> responseEntity = restTemplate.getForEntity(serviceApiUrlWithoutApiKeyValue
+                + apiKeyValue, ServiceApi.class);
         return responseEntity.getBody();
     }
 }
