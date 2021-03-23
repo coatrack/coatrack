@@ -1,9 +1,28 @@
-.dotbaier {
-    height: 15px;
-    width: 15px;
-    background-color: #bf2424;
+.neutral-state-symbol{
+    height: 20px;
+    width: 20px;
+    background-color: grey;
     border-radius: 50%;
     display: inline-block;
     border:1px solid black;
     vertical-align: sub;
+}
+
+.critical-state{
+    background-color: #ff2f2f;
+}
+.warning-state{
+    background-color: #ff9847;
+}
+.ok-state{
+    background-color: #23ac23;
+}
+
+.health-monitor-table{
+    border-collapse: separate;
+    border-spacing: 20px;
+}
+
+.health-monitor-table td:nth-child(2){
+    text-align: center;
 }

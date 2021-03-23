@@ -1,36 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
     <body>
         <div th:fragment="body">
-            <style>
-                .dot {
-                    height: 20px;
-                    width: 20px;
-                    border-radius: 50%;
-                    display: inline-block;
-                    border:1px solid black;
-                    vertical-align: sub;
-                }
-                .red-dot{
-                    background-color: #ff2f2f;
-                }
-                .orange-dot{
-                    background-color: #ff9847;
-                }
-                .green-dot{
-                    background-color: #23ac23;
-                }
-                .health-monitor-table{
-                    border-collapse: separate;
-                    border-spacing: 20px;
-                }
-            </style>
             <div class="row col-md-12">
                 <div id="date-range-picker" class="pull-left" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 5px;">
                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
                     <span id="date-range-from" th:text="${#temporals.format(stats.dateFrom, 'yyyy-MM-dd')}">April 15, 2018</span>
-                    -
                     <span id="date-range-until" th:text="${#temporals.format(stats.dateUntil, 'yyyy-MM-dd')}">April 21, 2018</span>
                     <b class="caret"></b>
                 </div>
@@ -154,12 +131,12 @@
 
                                 <!--
                                 <div>
-                                    <span th:if="${worstState} == ${T(eu.coatrack.api.ProxyStates).CRITICAL} ||
-                                            ${worstState} == ${T(eu.coatrack.api.ProxyStates).WARNING}">
+                                    <span th:if="${worstState == T(eu.coatrack.api.ProxyStates).CRITICAL or
+                                            worstState == T(eu.coatrack.api.ProxyStates).WARNING">
                                         There is a problem to be checked.
                                         <span style="color:#ff2f2f">&#10006;</span>
                                     </span>
-                                    <span th:if="${T(eu.coatrack.api.ProxyStates).OK}">
+                                    <span th:if="${worstState == T(eu.coatrack.api.ProxyStates).OK}">
                                         No problems found.
                                         <span style="color:#23ac23">&#10004;</span>
                                     </span>
@@ -173,15 +150,15 @@
                                     </tr>
                                     <tr th:each="proxy : ${proxies}">
                                         <td th:text="${proxy.name}"></td>
-                                        <td style="text-align: center;" th:switch="${proxy.status}">
+                                        <td th:switch="${proxy.status}">
                                             <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
-                                                  class="dot red-dot"></span>
+                                                  class="neutral-state-symbol critical-state"></span>
                                             <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}"
-                                                  sclass="dot orange-dot"></span>
+                                                  sclass="neutral-state-symbol warning-statet"></span>
                                             <span th:case="${T(eu.coatrack.api.ProxyStates).OK}"
-                                                  class="dot green-dot"></span>
+                                                  class="neutral-state-symbol ok-state"></span>
                                         </td>
-                                        <td th:text="${proxy.minutesPastSinceLastContact}"></td>
+                                        <td th:text="${proxy.minutesPastSinceLastContact} + ' min ago'"></td>
                                     </tr>
                                 </table>
                                 -->
@@ -206,22 +183,22 @@
                                     </tr>
                                     <tr>
                                         <td>First Gateway</td>
-                                        <td style="text-align: center;">
-                                            <span class="dot red-dot"></span>
+                                        <td>
+                                            <span class="neutral-state-symbol critical-state"></span>
                                         </td>
                                         <td>80 min ago</td>
                                     </tr>
                                     <tr>
                                         <td>Second Gateway</td>
-                                        <td style="text-align: center;">
-                                            <span class="dot orange-dot"></span>
+                                        <td>
+                                            <span class="neutral-state-symbol warning-state"></span>
                                         </td>
                                         <td>7 min ago</td>
                                     </tr>
                                     <tr>
                                         <td>First Gateway</td>
-                                        <td style="text-align: center;">
-                                            <span class="dot green-dot"></span>
+                                        <td>
+                                            <span class="neutral-state-symbol ok-state"></span>
                                         </td>
                                         <td>3 min ago</td>
                                     </tr>
