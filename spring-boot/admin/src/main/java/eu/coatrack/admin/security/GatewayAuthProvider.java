@@ -83,25 +83,25 @@ public class GatewayAuthProvider implements AuthenticationProvider {
         try {
             Assert.notNull(authToken.getCredentials(), "the gateway's api key value is NULL");
             Assert.isInstanceOf(String.class, authToken.getCredentials());
-            String apiKeyValue = (String) authToken.getCredentials();
-            Assert.hasText(apiKeyValue, "the gateway's api key value does not contain any text");
+            String gatewayUUID = (String) authToken.getCredentials();
+            Assert.hasText(gatewayUUID, "the gateway's api key value (UUID) does not contain any text");
 
-            log.debug("checking gateway's APIKEY value {}", apiKeyValue);
+            log.debug("checking gateway's APIKEY (UUID) value {}", gatewayUUID);
 
             // search proxy with given api key value, which is equivalent to the proxy's UUID
-            Proxy proxy = proxyRepository.findOne(apiKeyValue);
+            Proxy proxy = proxyRepository.findOne(gatewayUUID);
 
             if (proxy != null) {
                 log.debug("Proxy was found by gateway api key verifier: " + proxy);
                 if (proxy.getCredentialName().equals(authToken.getUser()) && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
                     return true;
                 } else {
-                    log.debug("Gateway's Credential doesnt match for apiKey" + apiKeyValue);
+                    log.debug("Gateway's Credential doesnt match for apiKey/UUID" + gatewayUUID);
                     return false;
                 }
 
             } else {
-                log.debug("Gateway's API key value is invalid: " + apiKeyValue);
+                log.debug("Gateway's API key value (UUID) is invalid: " + gatewayUUID);
                 return false;
             }
         } catch (IllegalArgumentException e) {
