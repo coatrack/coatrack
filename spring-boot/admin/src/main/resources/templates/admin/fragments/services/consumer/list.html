@@ -36,7 +36,7 @@
                             <table id="servicesTable" class="table table-striped jambo_table default-data-table">
                                 <thead>
                                     <tr class="heading">
-                                        <th th:text="#{admin.services.list.col.name}"></th>
+                                        <th th:text="#{admin.api-keys.list.col.service.heading}"></th>
                                         <th th:if="${testService == null}" th:text="#{admin.services.list.col.id.consumer}"></th>
                                         <th th:text="#{admin.services.list.col.pricing}"></th>
                                         <th th:text="#{admin.services.list.col.description}"></th>
@@ -45,7 +45,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="service : ${services}" th:id="|@{item}${service.id}|" >
-                                        <td th:text="${service.name + ' / ' + service.uriIdentifier}"></td>
+                                        <td th:text="${service.name + ' (' + service.uriIdentifier} + ')'"></td>
                                         <!-- the service owner column should be hidden in the getting started wizard for consumers; in that wizard the testService will not be null -->
                                         <td th:if="${testService == null}" th:attrappend="style = ${service.owner.username} == ${loggedInUser}? 'color: #1ABB9C; font-weight: bold'" th:text=" ${service.owner.username}">Service owner</td>
                                         <td th:text="${service.serviceAccessPaymentPolicy.displayStringShort} == null ? '' : ${service.serviceAccessPaymentPolicy.displayStringShort}"></td>
