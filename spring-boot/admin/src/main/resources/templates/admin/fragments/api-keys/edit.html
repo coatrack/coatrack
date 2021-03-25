@@ -52,12 +52,6 @@
                     <div class="x_panel">
 
                         <div class="x_title">
-                            <!--h2 th:text="${mode} == 0 ? #{admin.api-keys.new.form.title}:#{admin.api-keys.edit.form.title}">Form
-                                <small th:text="#{admin.api-keys.edit.form.subtitle}">different form elements</small>
-                            </h2>
-                            <ul class="nav navbar-right panel_toolbox">
-                                &nbsp;
-                            </ul-->
                             <div class="clearfix"></div>
                             <h3>Please select the service and the user who should get an API key for this service
                             </h3>
@@ -65,7 +59,6 @@
 
                         <div class="x_content">
                             <br/>
-
 
                             <form id="apiKeyForm" class="form-horizontal form-label-left"
                                   action="#" th:action="${mode} == 0 ? @{/admin/api-keys/add} : @{/admin/api-keys/update}" method="POST">
@@ -80,7 +73,7 @@
                                     <div class="col-md-9 col-sm-9 col-xs-12">
                                         <select id="selectedServiceId" name='selectedServiceId'>
                                             <option th:each="service : ${services}"
-                                                    th:value="${service.id}" th:text="${service.name + ' / ' + service.uriIdentifier}" th:selected="(${apiKey.serviceApi.id} == ${service.id})?'selected' ">...</option>
+                                                    th:value="${service.id}" th:text="${service.name + ' (' + service.uriIdentifier} + ')'" th:selected="(${apiKey.serviceApi.id} == ${service.id})?'selected' ">...</option>
                                         </select>
                                     </div>
                                     <div th:if="${#lists.isEmpty(services)}" class="col-md-9 col-sm-9 col-xs-12">
@@ -90,7 +83,6 @@
                                         </p>
                                     </div>
                                 </div>
-
 
                                 <div class="form-group">
                                     <label class="control-label col-md-3 col-sm-3 col-xs-12">
@@ -102,22 +94,8 @@
                                         <span  class="input-group-btn">
                                             <button id="githubUserSearchButton" type="button" class="btn btn-primary">Search</button>
                                             <div  id="busy_indicator" class="busy_indicator" style="display: none;"/>
-
                                         </span>
-
-
-
-
                                     </div>
-
-
-
-                                    <!--div th:if="${#lists.isEmpty(services)}" class="col-md-9 col-sm-9 col-xs-12">
-                                        <p class="byline">
-                                            <br/>
-                                            You did not yet define any services that could be provided via the new gateway.
-                                        </p>
-                                    </div-->
                                 </div>
 
                                 <h3> Select API user from table
@@ -127,8 +105,8 @@
                                     <thead>
                                         <tr>
                                             <th>Login</th>
-                                            <th>Nombre</th>
-                                            <th>email</th>
+                                            <th>Name</th>
+                                            <th>E-Mail</th>
                                             <th></th>
                                         </tr>
                                     </thead>
