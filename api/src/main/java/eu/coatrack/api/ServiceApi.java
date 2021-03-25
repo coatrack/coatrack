@@ -210,7 +210,7 @@ public class ServiceApi implements ServiceApiInterface{
      * @return a simple String to display the Service API in a GUI
      */
     public String getGuiStringRepresentation() {
-        return String.format("%s / %s (%s)", name, uriIdentifier, localUrl);
+        return String.format("%s (%s - %s)", name, uriIdentifier, localUrl);
     }
 
     @Override
