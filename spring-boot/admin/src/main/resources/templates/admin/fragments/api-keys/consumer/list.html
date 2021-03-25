@@ -87,7 +87,7 @@
                                 </thead>
                                 <tbody>
                                     <tr th:each="apiKey : ${apiKeys}" th:id="|@{item}${apiKey.id}|">
-                                        <td class="a-center " th:text=" (${apiKey.serviceApiName != null} ? ${apiKey.serviceApiName} : '') + (${apiKey.serviceApi != null} ? ' (' + ${apiKey.serviceApi.uriIdentifier} + ')' : '') ">Service API name</td>
+                                        <td class="a-center " th:text=" ${apiKey.serviceApi != null} ? ${apiKey.serviceApi.name} + ' (' + ${apiKey.serviceApi.uriIdentifier} + ')' : ''">Service API name</td>
                                         <td th:if="${testService == null}" th:text=" ${apiKey.serviceApi.owner.username == null} ? '':${apiKey.serviceApi.owner.username}">Consumer</td>
                                         <td th:if="${#lists.size(proxiesPerApiKey.get(apiKey.keyValue)) == 0}" th:text="#{admin.api-keys.info.urls.serviceNotAccessible}"></td>
                                         <td th:unless="${#lists.size(proxiesPerApiKey.get(apiKey.keyValue)) == 0}"> <span th:each="proxyURLPerApiKey : ${proxiesPerApiKey.get(apiKey.keyValue)}">
