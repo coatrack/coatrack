@@ -75,17 +75,6 @@ public class ServiceApi implements ServiceApiInterface{
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
 
-    /*@OneToOne(optional = true)
-    private ServiceCover cover;
-
-    public ServiceCover getCover() {
-        return cover;
-    }
-
-    public void setCover(ServiceCover cover) {
-        this.cover = cover;
-    }*/
-
     public User getOwner() {
         return owner;
     }
@@ -203,14 +192,6 @@ public class ServiceApi implements ServiceApiInterface{
 
     public void setEntryPoints(List<EntryPoint> entryPoints) {
         this.entryPoints = entryPoints;
-    }
-
-    /**
-     *
-     * @return a simple String to display the Service API in a GUI
-     */
-    public String getGuiStringRepresentation() {
-        return String.format("%s (%s - %s)", name, uriIdentifier, localUrl);
     }
 
     @Override
