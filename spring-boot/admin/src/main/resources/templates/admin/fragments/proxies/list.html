@@ -127,12 +127,12 @@
                                     <td th:text=" ${proxy.publicUrl}">proxy url</td>
                                     <td th:text=" ${proxy.port}">proxy port</td>
                                     <td>
-                                            <span th:each="service : ${proxy.serviceApis}">
-                                                <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"/>
-                                                <i class="fa fa-long-arrow-right"></i>
-                                                <span th:text="${service.localUrl + ') '}"/>
-                                                <br/>
-                                            </span>
+                                        <span th:each="service : ${proxy.serviceApis}">
+                                            <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"/>
+                                            <i class="fa fa-long-arrow-right"></i>
+                                            <span th:text="${' ' + service.localUrl + ')'}"/>
+                                            <br/>
+                                        </span>
                                     </td>
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
