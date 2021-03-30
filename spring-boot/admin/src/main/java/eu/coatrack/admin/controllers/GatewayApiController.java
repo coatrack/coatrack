@@ -66,7 +66,7 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    @GetMapping( "/api/gateways/{gatewayId}/sendApiKeyList")
+    @GetMapping( "/api/gateways/{gatewayId}/apiKeys")
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         Proxy proxy = proxyRepository.findById(gatewayId);
         List<ApiKey> apiKeyList;
