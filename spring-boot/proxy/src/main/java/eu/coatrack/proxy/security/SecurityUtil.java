@@ -22,7 +22,9 @@ package eu.coatrack.proxy.security;
 
 import eu.coatrack.api.Proxy;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
+@Service("securityUtil")
 public class SecurityUtil {
 
     @Value("${proxy-id}")

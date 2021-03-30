@@ -117,11 +117,6 @@ public class GatewayApplication {
     }
 
     @Bean
-    public ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier() {
-        return new ApiKeyAuthTokenVerifier();
-    }
-
-    @Bean
     public SecurityConfigurer securityConfigurer() {
         return new SecurityConfigurer();
     }
@@ -130,7 +125,7 @@ public class GatewayApplication {
      * Rest template to be used for communication with CoatRack admin,
      * configured with auth credentials.
      */
-    @Bean
+    @Bean("restTemplate")
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(
@@ -154,10 +149,5 @@ public class GatewayApplication {
                 new ServiceApiAccessRightsVoter()
         );
         return new UnanimousBased(accessDecisionVoters);
-    }
-
-    @Bean
-    public SecurityUtil securityUtil() {
-        return new SecurityUtil();
     }
 }

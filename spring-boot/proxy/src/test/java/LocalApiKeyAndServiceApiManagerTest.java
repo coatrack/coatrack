@@ -19,6 +19,7 @@
  */
 import eu.coatrack.api.ApiKey;
 
+import eu.coatrack.proxy.security.AdminCommunicator;
 import eu.coatrack.proxy.security.LocalApiKeyAndServiceApiManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,10 @@ public class LocalApiKeyAndServiceApiManagerTest extends LocalApiKeyAndServiceAp
             tomorrow = new Timestamp(now.getTime() + oneDayInMillis),
             yesterday = new Timestamp(now.getTime() - oneDayInMillis),
             halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
+
+    public LocalApiKeyAndServiceApiManagerTest() {
+        super(null);
+    }
 
     @BeforeEach
     public void createAnAcceptingDefaultSetup(){

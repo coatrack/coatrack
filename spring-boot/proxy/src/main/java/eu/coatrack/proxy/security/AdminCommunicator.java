@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * Offers communication services to the Coatrack admin server to receive data
@@ -40,15 +41,12 @@ import javax.annotation.PostConstruct;
  * @author Christoph Baier
  */
 
-@Service
+@Service("adminCommunicator")
 public class AdminCommunicator {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.AdminCommunicator.class);
 
-    @Autowired
     private RestTemplate restTemplate;
-
-    @Autowired
     private SecurityUtil securityUtil;
 
     @Value("${proxy-id}")
@@ -70,6 +68,11 @@ public class AdminCommunicator {
             apiKeyListRequestUrl,
             apiKeyUrlWithoutApiKeyValue,
             serviceApiUrlWithoutApiKeyValue;
+
+    public AdminCommunicator(RestTemplate restTemplate, SecurityUtil securityUtil) {
+        this.restTemplate = restTemplate;
+        this.securityUtil = securityUtil;
+    }
 
     @PostConstruct
     private void initUrls() {

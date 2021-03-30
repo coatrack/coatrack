@@ -32,6 +32,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,8 +46,8 @@ import java.util.List;
  * @author Christoph Baier
  */
 
-@Service
 @EnableAsync
+@Service("localApiKeyAndServiceApiManager")
 public class LocalApiKeyAndServiceApiManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
@@ -58,8 +59,11 @@ public class LocalApiKeyAndServiceApiManager {
     @Value("${minutes-the-gateway-works-without-connection-to-admin}")
     private long minutesTheGatewayWorksWithoutConnectionToAdmin = 60;
 
-    @Autowired
     private AdminCommunicator adminCommunicator;
+
+    public LocalApiKeyAndServiceApiManager(AdminCommunicator adminCommunicator) {
+        this.adminCommunicator = adminCommunicator;
+    }
 
     public boolean isApiKeyValidConsideringTheLocalApiKeyList(String apiKeyValue) {
         log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",

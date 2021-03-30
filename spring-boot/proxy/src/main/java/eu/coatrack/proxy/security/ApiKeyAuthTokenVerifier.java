@@ -33,6 +33,7 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -41,16 +42,18 @@ import java.util.*;
  * @author gr-hovest, Christoph Baier
  */
 
-@Service
+@Service("apiKeyAuthTokenVerifier")
 public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
-    @Autowired
-    private LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
+    private final LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
+    private final AdminCommunicator adminCommunicator;
 
-    @Autowired
-    private AdminCommunicator adminCommunicator;
+    public ApiKeyAuthTokenVerifier(LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager, AdminCommunicator adminCommunicator) {
+        this.localApiKeyAndServiceApiManager = localApiKeyAndServiceApiManager;
+        this.adminCommunicator = adminCommunicator;
+    }
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
