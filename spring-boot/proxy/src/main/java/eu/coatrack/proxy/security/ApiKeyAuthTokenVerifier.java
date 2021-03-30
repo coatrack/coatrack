@@ -37,7 +37,7 @@ import javax.annotation.Resource;
 import java.util.*;
 
 /**
- * Checks if the API key token value sent by the client is valid.
+ * Checks if the API key token value sent by the service consumer is valid.
  *
  * @author gr-hovest, Christoph Baier
  */

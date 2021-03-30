@@ -162,6 +162,7 @@ public class LocalApiKeyAndServiceApiManager {
         } catch (Exception e) {
             log.info("Trying to update the local API key list, the connection to CoatRack admin failed. Probably " +
                     "the server is temporarily down.");
+            log.debug("Following error occurred: " + e);
             return;
         }
         localApiKeyList = Arrays.asList(apiKeys);
