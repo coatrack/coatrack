@@ -112,7 +112,7 @@
                                     <th th:text="#{admin.proxies.list.col.identifier}">Gateway Identifier</th>
                                     <th th:text="#{admin.proxies.list.col.publicUrl}">URL</th>
                                     <th th:text="#{admin.proxies.list.col.port}">Port</th>
-                                    <th th:text="#{admin.proxies.list.col.services}">Service API</th>
+                                    <th th:utext="#{admin.proxies.list.col.services}">Service API</th>
                                     <th th:text="#{admin.proxies.list.col.description}">Description</th>
                                     <th th:text="#{admin.proxies.list.col.download}">...</th>
                                     <th th:text="#{admin.proxies.list.col.details}">...</th>
@@ -128,7 +128,9 @@
                                     <td th:text=" ${proxy.port}">proxy port</td>
                                     <td>
                                             <span th:each="service : ${proxy.serviceApis}">
-                                                <span th:text="${service.guiStringRepresentation}"/>
+                                                <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"/>
+                                                <i class="fa fa-long-arrow-right"></i>
+                                                <span th:text="${service.localUrl + ') '}"/>
                                                 <br/>
                                             </span>
                                     </td>
