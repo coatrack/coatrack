@@ -8,16 +8,31 @@
     vertical-align: sub;
 }
 
-.critical-state{
-    background-color: #ff2f2f;
+.everything-ok-symbol{
+    color: #23ac23;
+    font-size: 20px;
+}
+
+.warning-exclamation-mark{
+    color: #ff9847;
+    font-size: 20px;
+}
+
+.critical-exclamation-mark{
+    color: #ff2f2f;
+    font-size: 20px;
+}
+
+.ok-state{
+    background-color: #23ac23;
 }
 
 .warning-state{
     background-color: #ff9847;
 }
 
-.ok-state{
-    background-color: #23ac23;
+.critical-state{
+    background-color: #ff2f2f;
 }
 
 .health-monitor-data-table{

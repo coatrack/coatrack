@@ -135,15 +135,18 @@
                             <div class="demo-container" style="height:300px">
 
                                 <!--
-                                <div>
-                                    <span th:if="${worstState == T(eu.coatrack.api.ProxyStates).CRITICAL or
-                                            worstState == T(eu.coatrack.api.ProxyStates).WARNING">
-                                        There is a problem to be checked.
-                                        <span style="color:#ff2f2f">&#10006;</span>
-                                    </span>
-                                    <span th:if="${worstState == T(eu.coatrack.api.ProxyStates).OK}">
+                                <div th:switch="${proxy.worstStatus}">
+                                    <span th:case="${T(eu.coatrack.api.ProxyStates).OK}">
                                         No problems found.
-                                        <span style="color:#23ac23">&#10004;</span>
+                                        <span class="everything-ok-symbol">&#10004;</span>
+                                    </span>
+                                    <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}">
+                                        There is a problem to be checked.
+                                        <span class="warning-exclamation-mark">&#9888;</span>
+                                    </span>
+                                    <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}">
+                                        There is a problem to be checked.
+                                        <span class="critical-exclamation-mark">&#9888;</span>
                                     </span>
                                 </div>
 
@@ -171,13 +174,20 @@
                                 <!--
                                 <div>
                                     No problems found.
-                                    <span style="color: green">&#10004;</span>
+                                    <span class="everything-ok-symbol">&#10004;</span>
+                                </div>
+                                -->
+
+                                <!--
+                                <div>
+                                    There is a problem to be checked.
+                                    <span class="warning-exclamation-mark">&#9888;</span>
                                 </div>
                                 -->
 
                                 <div>
                                     There is a problem to be checked.
-                                    <span style="color: red">&#10006;</span>
+                                    <span class="critical-exclamation-mark">&#9888;</span>
                                 </div>
 
                                 <table class="health-monitor-data-table">
