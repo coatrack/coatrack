@@ -49,17 +49,16 @@ import java.util.Optional;
 public class LocalApiKeyAndServiceApiManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
-    private final int fiveMinutesInMillis = 1000 * 60 * 5;
 
     protected List<ApiKey> localApiKeyList = new ArrayList<>();
     protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
 
-    private long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
-    private AdminCommunicator adminCommunicator;
+    private final AdminCommunicator adminCommunicator;
+    private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
 
     public LocalApiKeyAndServiceApiManager(
             AdminCommunicator adminCommunicator,
-            @Value("${minutes-the-gateway-works-without-connection-to-admin}") long minutes) {
+            @Value("${number-of-minutes-the-gateway-works-without-connection-to-admin}") long minutes) {
         this.adminCommunicator = adminCommunicator;
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
@@ -152,7 +151,7 @@ public class LocalApiKeyAndServiceApiManager {
 
     @Async
     @PostConstruct
-    @Scheduled(fixedRate = fiveMinutesInMillis)
+    @Scheduled(fixedRateString = "${local-api-key-list-update-interval-in-millis}")
     public void updateLocalApiKeyList() {
         List<ApiKey> apiKeys;
         try {
