@@ -24,7 +24,6 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,7 +32,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -42,7 +40,7 @@ import java.util.*;
  * @author gr-hovest, Christoph Baier
  */
 
-@Service("apiKeyAuthTokenVerifier")
+@Service
 public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
@@ -105,11 +103,11 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         boolean isApiKeyValid;
         try {
             ApiKey apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
-            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyReceivedFromAdminValid(apiKey);
+            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyValid(apiKey);
         } catch (Exception e) {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
                     "failed. Probably the server is temporarily down.", apiKeyValue);
-            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyValidConsideringTheLocalApiKeyList(apiKeyValue);
+            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(apiKeyValue);
         }
         return isApiKeyValid;
     }
@@ -134,7 +132,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         } catch (Exception e) {
             log.info("Trying to receive a service API from CoatRack admin, the connection process failed. Probably " +
                     "the server is temporarily down.");
-            serviceApi = localApiKeyAndServiceApiManager.getServiceApiFromLocalList(apiKeyValue);
+            serviceApi = localApiKeyAndServiceApiManager.getServiceByApiKeyValue(apiKeyValue);
         }
         return serviceApi;
     }

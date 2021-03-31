@@ -24,7 +24,6 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -32,11 +31,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Locally stores and periodically refreshes API keys and their associated service APIs
@@ -47,7 +45,7 @@ import java.util.List;
  */
 
 @EnableAsync
-@Service("localApiKeyAndServiceApiManager")
+@Service
 public class LocalApiKeyAndServiceApiManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
@@ -56,16 +54,17 @@ public class LocalApiKeyAndServiceApiManager {
     protected List<ApiKey> localApiKeyList = new ArrayList<>();
     protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
 
-    @Value("${minutes-the-gateway-works-without-connection-to-admin}")
-    private long minutesTheGatewayWorksWithoutConnectionToAdmin = 60;
-
+    private long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
     private AdminCommunicator adminCommunicator;
 
-    public LocalApiKeyAndServiceApiManager(AdminCommunicator adminCommunicator) {
+    public LocalApiKeyAndServiceApiManager(
+            AdminCommunicator adminCommunicator,
+            @Value("${minutes-the-gateway-works-without-connection-to-admin}") long minutes) {
         this.adminCommunicator = adminCommunicator;
+        this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
 
-    public boolean isApiKeyValidConsideringTheLocalApiKeyList(String apiKeyValue) {
+    public boolean isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(String apiKeyValue) {
         log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
                 apiKeyValue);
         if (apiKeyValue == null) {
@@ -77,36 +76,34 @@ public class LocalApiKeyAndServiceApiManager {
         ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
         if (apiKey == null) {
             return false;
-        } else
+        } else {
             log.debug("The API key with the value {} is within the local API key list.", apiKeyValue);
-
-        return isApiKeyValid(apiKey);
+            return isApiKeyAuthorizedToAccessItsServiceApi(apiKey);
+        }
     }
 
     private ApiKey findApiKeyFromLocalApiKeyList(String apiKeyValue) {
         log.debug("Trying to find the service API associated to the API key with the value {} from the local list.",
                 apiKeyValue);
-        ApiKey apiKey;
-        try {
-            apiKey = localApiKeyList.stream().filter(apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue()
-                    .equals(apiKeyValue)).findFirst().get();
-        } catch (Exception e) {
+
+        Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue()
+                    .equals(apiKeyValue)).findFirst();
+
+        if (!optionalApiKey.isPresent()) {
             log.info("The API key with the value {} can not be found within the local API key list " +
                     "and is therefore rejected.", apiKeyValue);
             return null;
-        }
-        return apiKey;
+        } else
+            return optionalApiKey.get();
     }
 
-    private boolean isApiKeyValid(ApiKey apiKey) {
-        boolean isApiKeyValid =
-                isApiKeyNotDeleted(apiKey) &&
-                        isApiKeyNotExpired(apiKey) &&
+    private boolean isApiKeyAuthorizedToAccessItsServiceApi(ApiKey apiKey) {
+        boolean isApiKeyAuthorizedToAccessItsServiceApi = isApiKeyValid(apiKey) &&
                         wasLatestUpdateOfLocalApiKeyListWithinTheGivenDeadline();
-        if (isApiKeyValid)
+        if (isApiKeyAuthorizedToAccessItsServiceApi)
             log.info("The API key with the value {} is valid considering the local API key list and is " +
                     "therefore accepted.", apiKey.getKeyValue());
-        return isApiKeyValid;
+        return isApiKeyAuthorizedToAccessItsServiceApi;
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {
@@ -130,21 +127,22 @@ public class LocalApiKeyAndServiceApiManager {
     }
 
     private boolean wasLatestUpdateOfLocalApiKeyListWithinTheGivenDeadline() {
-        boolean wasLatestUpdateWithinDeadline = latestLocalApiKeyListUpdate.plusMinutes(
-                minutesTheGatewayWorksWithoutConnectionToAdmin).isAfter(LocalDateTime.now());
+        LocalDateTime deadline = latestLocalApiKeyListUpdate.plusMinutes(
+                numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
+        boolean wasLatestUpdateWithinDeadline = LocalDateTime.now().isBefore(deadline);
         if (!wasLatestUpdateWithinDeadline)
             log.info("The CoatRack admin server was not reachable for longer than {} minutes. Since this " +
                     "predefined threshold was exceeded, this and all subsequent service API requests are " +
                     "rejected until a connection to CoatRack admin could be re-established.",
-                    minutesTheGatewayWorksWithoutConnectionToAdmin);
+                    numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
         return wasLatestUpdateWithinDeadline;
     }
 
-    public boolean isApiKeyReceivedFromAdminValid(ApiKey apiKey) {
+    public boolean isApiKeyValid(ApiKey apiKey) {
         return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
     }
 
-    public ServiceApi getServiceApiFromLocalList(String apiKeyValue) {
+    public ServiceApi getServiceByApiKeyValue(String apiKeyValue) {
         ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
         if (apiKey != null) {
             return apiKey.getServiceApi();
@@ -156,7 +154,7 @@ public class LocalApiKeyAndServiceApiManager {
     @PostConstruct
     @Scheduled(fixedRate = fiveMinutesInMillis)
     public void updateLocalApiKeyList() {
-        ApiKey[] apiKeys;
+        List<ApiKey> apiKeys;
         try {
             apiKeys = adminCommunicator.requestLatestApiKeyListFromAdmin();
         } catch (Exception e) {
@@ -165,7 +163,7 @@ public class LocalApiKeyAndServiceApiManager {
             log.debug("Following error occurred: " + e);
             return;
         }
-        localApiKeyList = Arrays.asList(apiKeys);
+        localApiKeyList = apiKeys;
         latestLocalApiKeyListUpdate = LocalDateTime.now();
     }
 }

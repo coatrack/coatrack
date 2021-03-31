@@ -30,6 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.inject.Qualifier;
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Offers communication services to the Coatrack admin server to receive data
  * required by the gateway for key verification.
@@ -37,7 +41,7 @@ import org.springframework.web.client.RestTemplate;
  * @author Christoph Baier
  */
 
-@Service("adminCommunicator")
+@Service
 public class AdminCommunicator {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.AdminCommunicator.class);
@@ -50,14 +54,14 @@ public class AdminCommunicator {
         this.config = config;
     }
 
-    public ApiKey[] requestLatestApiKeyListFromAdmin() throws RestClientException {
+    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws RestClientException {
         log.debug("Requesting latest API key list from CoatRack admin.");
         ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(config.getApiKeyListRequestUrl(),
                 ApiKey[].class, config.getGatewayId());
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("Successfully requested latest API key list from CoatRack admin.");
-            return responseEntity.getBody();
+            return Arrays.asList(responseEntity.getBody());
         } else {
             log.warn("Request of latest API key list from CoatRack admin failed. Received http status {} from " +
                     "CoatRack admin.", responseEntity.getStatusCode());

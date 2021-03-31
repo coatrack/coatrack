@@ -38,8 +38,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Table(name = "service_apis")
 public class ServiceApi implements ServiceApiInterface{
 
-    public ServiceApi(){}
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

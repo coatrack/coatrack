@@ -68,16 +68,24 @@ public class GatewayApiController {
 
     @GetMapping( "/api/gateways/{gatewayId}/apiKeys")
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@PathVariable("gatewayId") String gatewayId) {
-        Proxy proxy = proxyRepository.findById(gatewayId);
+        Proxy proxy = null;
         List<ApiKey> apiKeyList;
+        String apiKeyListCreationFailedMessage = "Creation of API key list for requesting gateway failed. " +
+                "This concerns the gateway with the ID {}. ";
         try {
+            proxy = proxyRepository.findById(gatewayId);
             apiKeyList = proxy.getServiceApis().stream().flatMap(serviceApi -> serviceApi.getApiKeys()
                     .stream()).collect(Collectors.toList());
-        } catch (Exception e){
-            log.info("Creation of API key list for requesting gateway failed. This concerns the gateway with the " +
-                    "ID {}.", gatewayId);
+            return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
+        } catch (NullPointerException e){
+            if (proxy == null)
+                log.info(apiKeyListCreationFailedMessage + "The gateway is not known.", gatewayId);
+            else if (proxy.getServiceApis() == null)
+                log.info(apiKeyListCreationFailedMessage + "The gateway does not provide any service.", gatewayId);
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e){
+            log.info(apiKeyListCreationFailedMessage + "An unknown error occurred: {}", gatewayId, e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
     }
 }

@@ -31,7 +31,7 @@ import javax.annotation.PostConstruct;
  * @author Christoph Baier
  */
 
-@Configuration("securityConfiguration")
+@Configuration
 public class AdminCommunicatorConfiguration {
 
     @Value("${proxy-id}")
