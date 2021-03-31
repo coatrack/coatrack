@@ -75,6 +75,17 @@ public class ServiceApi implements ServiceApiInterface{
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
 
+    /*@OneToOne(optional = true)
+    private ServiceCover cover;
+
+    public ServiceCover getCover() {
+        return cover;
+    }
+
+    public void setCover(ServiceCover cover) {
+        this.cover = cover;
+    }*/
+
     public User getOwner() {
         return owner;
     }
