@@ -41,15 +41,15 @@ import java.util.*;
  */
 
 @Service
-public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
+public class ApiKeyAuthTokenProvider implements AuthenticationManager {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenProvider.class);
 
-    private final LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager;
+    private final LocalApiKeyManager localApiKeyManager;
     private final AdminCommunicator adminCommunicator;
 
-    public ApiKeyAuthTokenVerifier(LocalApiKeyAndServiceApiManager localApiKeyAndServiceApiManager, AdminCommunicator adminCommunicator) {
-        this.localApiKeyAndServiceApiManager = localApiKeyAndServiceApiManager;
+    public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager, AdminCommunicator adminCommunicator) {
+        this.localApiKeyManager = localApiKeyManager;
         this.adminCommunicator = adminCommunicator;
     }
 
@@ -82,12 +82,13 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
         try {
             apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
-            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyValid(apiKey);
+            isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey);
         } catch (Exception e) {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
                     "failed. Probably the server is temporarily down.", apiKeyValue);
-            apiKey = localApiKeyAndServiceApiManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyAuthorizedConsideringTheLocalApiKeyList(apiKeyValue);
+            apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+            //TODO what if apiKey == null?
+            isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey) && localApiKeyManager.isApiKeyAuthorizedConsideringTheLocalApiKeyList(apiKeyValue);
         }
 
         if (isApiKeyValid) {

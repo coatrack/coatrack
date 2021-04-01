@@ -19,7 +19,7 @@
  */
 import eu.coatrack.api.ApiKey;
 
-import eu.coatrack.proxy.security.LocalApiKeyAndServiceApiManager;
+import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -28,7 +28,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class LocalApiKeyAndServiceApiManagerTest extends LocalApiKeyAndServiceApiManager{
+public class LocalApiKeyManagerTest extends LocalApiKeyManager {
 
     private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
     private ApiKey apiKey;
@@ -43,7 +43,7 @@ public class LocalApiKeyAndServiceApiManagerTest extends LocalApiKeyAndServiceAp
             yesterday = new Timestamp(now.getTime() - oneDayInMillis),
             halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
 
-    public LocalApiKeyAndServiceApiManagerTest() {
+    public LocalApiKeyManagerTest() {
         super(null, 60);
     }
 

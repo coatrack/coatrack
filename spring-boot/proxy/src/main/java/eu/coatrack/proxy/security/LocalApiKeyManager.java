@@ -21,7 +21,6 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,18 +36,17 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Locally stores and periodically refreshes API keys and their associated service APIs
- * belonging to the gateway. Provides API key verification services for incoming consumer
- * calls which work even if the CoatRack admin server is down.
+ * Locally stores, periodically refreshes and provides API keys and their
+ * associated service APIs belonging to the gateway.
  *
  * @author Christoph Baier
  */
 
 @EnableAsync
 @Service
-public class LocalApiKeyAndServiceApiManager {
+public class LocalApiKeyManager {
 
-    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyAndServiceApiManager.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
     protected List<ApiKey> localApiKeyList = new ArrayList<>();
     protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
@@ -56,7 +54,7 @@ public class LocalApiKeyAndServiceApiManager {
     private final AdminCommunicator adminCommunicator;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
 
-    public LocalApiKeyAndServiceApiManager(
+    public LocalApiKeyManager(
             AdminCommunicator adminCommunicator,
             @Value("${number-of-minutes-the-gateway-works-without-connection-to-admin}") long minutes) {
         this.adminCommunicator = adminCommunicator;
@@ -76,8 +74,8 @@ public class LocalApiKeyAndServiceApiManager {
         if (apiKey == null) {
             return false;
         } else {
-            log.debug("The API key with the value {} is within the local API key list.", apiKeyValue);
-            return isApiKeyAuthorizedToAccessItsServiceApi(apiKey);
+            log.debug("The API key with the value {} is found in the local API key list.", apiKeyValue);
+            return wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey);
         }
     }
 
@@ -88,57 +86,30 @@ public class LocalApiKeyAndServiceApiManager {
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue()
                     .equals(apiKeyValue)).findFirst();
 
-        if (!optionalApiKey.isPresent()) {
+        if (optionalApiKey.isPresent()) {
+            return optionalApiKey.get();
+        } else {
             log.info("The API key with the value {} can not be found within the local API key list " +
                     "and is therefore rejected.", apiKeyValue);
             return null;
-        } else
-            return optionalApiKey.get();
-    }
-
-    private boolean isApiKeyAuthorizedToAccessItsServiceApi(ApiKey apiKey) {
-        boolean isApiKeyAuthorizedToAccessItsServiceApi = isApiKeyValid(apiKey) &&
-                        wasLatestUpdateOfLocalApiKeyListWithinTheGivenDeadline();
-        if (isApiKeyAuthorizedToAccessItsServiceApi)
-            log.info("The API key with the value {} is valid considering the local API key list and is " +
-                    "therefore accepted.", apiKey.getKeyValue());
-        return isApiKeyAuthorizedToAccessItsServiceApi;
-    }
-
-    private boolean isApiKeyNotDeleted(ApiKey apiKey) {
-        boolean isNotDeleted = apiKey.getDeletedWhen() == null;
-        if (isNotDeleted) {
-            return true;
-        } else {
-            log.info("The API key with the value {} is deleted and therefore rejected.", apiKey.getKeyValue());
-            return false;
         }
     }
 
-    private boolean isApiKeyNotExpired(ApiKey apiKey) {
-        boolean isNotExpired = apiKey.getValidUntil().getTime() > System.currentTimeMillis();
-        if (isNotExpired) {
-            return true;
-        } else {
-            log.info("The API key with the value {} is expired and therefore rejected.", apiKey.getKeyValue());
-            return false;
-        }
-    }
-
-    private boolean wasLatestUpdateOfLocalApiKeyListWithinTheGivenDeadline() {
+    private boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline(ApiKey apiKey) {
         LocalDateTime deadline = latestLocalApiKeyListUpdate.plusMinutes(
                 numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
         boolean wasLatestUpdateWithinDeadline = LocalDateTime.now().isBefore(deadline);
-        if (!wasLatestUpdateWithinDeadline)
+
+        if (wasLatestUpdateWithinDeadline)
+            log.info("The API key with the value {} is valid considering the local API key list and is " +
+                    "therefore accepted.", apiKey.getKeyValue());
+        else
             log.info("The CoatRack admin server was not reachable for longer than {} minutes. Since this " +
                     "predefined threshold was exceeded, this and all subsequent service API requests are " +
                     "rejected until a connection to CoatRack admin could be re-established.",
                     numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
-        return wasLatestUpdateWithinDeadline;
-    }
 
-    public boolean isApiKeyValid(ApiKey apiKey) {
-        return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
+        return wasLatestUpdateWithinDeadline;
     }
 
     @Async
