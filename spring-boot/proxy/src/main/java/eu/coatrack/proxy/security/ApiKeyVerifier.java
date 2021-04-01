@@ -23,6 +23,7 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * This class provides a method to determine an API keys validity.
@@ -30,15 +31,16 @@ import org.slf4j.LoggerFactory;
  * @author Christoph Baier
  */
 
+@Service
 public class ApiKeyVerifier {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenProvider.class);
 
-    public static boolean isApiKeyValid(ApiKey apiKey) {
+    public boolean isApiKeyValid(ApiKey apiKey) {
         return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
     }
 
-    private static boolean isApiKeyNotDeleted(ApiKey apiKey) {
+    private boolean isApiKeyNotDeleted(ApiKey apiKey) {
         boolean isNotDeleted = apiKey.getDeletedWhen() == null;
         if (isNotDeleted) {
             return true;
@@ -48,7 +50,7 @@ public class ApiKeyVerifier {
         }
     }
 
-    private static boolean isApiKeyNotExpired(ApiKey apiKey) {
+    private boolean isApiKeyNotExpired(ApiKey apiKey) {
         boolean isNotExpired = apiKey.getValidUntil().getTime() > System.currentTimeMillis();
         if (isNotExpired) {
             return true;

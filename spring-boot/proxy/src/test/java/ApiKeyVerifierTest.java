@@ -18,18 +18,19 @@
  * #L%
  */
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.ApiKeyVerifier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Timestamp;
 
-import static eu.coatrack.proxy.security.ApiKeyVerifier.isApiKeyValid;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApiKeyVerifierTest {
 
     private ApiKey apiKey;
+    private ApiKeyVerifier apiKeyVerifier = new ApiKeyVerifier();
 
     private final long
             oneHourInMillis = 1000 * 60 * 60,
@@ -50,22 +51,22 @@ public class ApiKeyVerifierTest {
 
     @Test
     public void validDefaultApiKeyShouldBeAccepted(){
-        assertTrue(isApiKeyValid(apiKey));
+        assertTrue(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
     public void deletedApiKeysShouldBeDenied(){
         apiKey.setDeletedWhen(yesterday);
-        assertFalse(isApiKeyValid(apiKey));
+        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
         apiKey.setDeletedWhen(halfAnHourAgo);
-        assertFalse(isApiKeyValid(apiKey));
+        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
     public void expiredApiKeysShouldBeDenied(){
         apiKey.setValidUntil(yesterday);
-        assertFalse(isApiKeyValid(apiKey));
+        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
         apiKey.setValidUntil(halfAnHourAgo);
-        assertFalse(isApiKeyValid(apiKey));
+        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 }

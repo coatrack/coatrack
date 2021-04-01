@@ -64,17 +64,11 @@ public class LocalApiKeyManager {
     public boolean isApiKeyAuthorizedConsideringLocalApiKeyList(String apiKeyValue) {
         log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
                 apiKeyValue);
-        if (apiKeyValue == null) {
-            log.info("The passed API key value is null and can therefore not be checked for validity. " +
-                    "It is therefore rejected.");
-            return false;
-        }
 
         ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
         if (apiKey == null) {
             return false;
         } else {
-            log.debug("The API key with the value {} is found in the local API key list.", apiKeyValue);
             return wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey);
         }
     }
@@ -83,10 +77,19 @@ public class LocalApiKeyManager {
         log.debug("Trying to find the service API associated to the API key with the value {} from the local list.",
                 apiKeyValue);
 
-        Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue()
-                    .equals(apiKeyValue)).findFirst();
+        if (apiKeyValue == null) {
+            log.info("The passed API key value is null and can therefore not be checked for validity. " +
+                    "It is therefore rejected.");
+            return null;
+        }
+        Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
+                apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)).findFirst();
+        return extractOptionalApiKeyAndLogPossibleErrors(optionalApiKey, apiKeyValue);
+    }
 
+    private ApiKey extractOptionalApiKeyAndLogPossibleErrors(Optional<ApiKey> optionalApiKey, String apiKeyValue) {
         if (optionalApiKey.isPresent()) {
+            log.debug("The API key with the value {} is found in the local API key list.", apiKeyValue);
             return optionalApiKey.get();
         } else {
             log.info("The API key with the value {} can not be found within the local API key list " +

@@ -47,10 +47,13 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
+    private final ApiKeyVerifier apiKeyVerifier;
 
-    public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager, ApiKeyFetcher apiKeyFetcher) {
+    public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager,
+                                   ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
+        this.apiKeyVerifier = apiKeyVerifier;
     }
 
     @Override
@@ -72,29 +75,6 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
         } else
 
        return verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(apiKeyValue);
-    }
-
-    private Authentication verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(String apiKeyValue) {
-        log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
-
-        boolean isApiKeyValid;
-        ApiKey apiKey = null;
-
-        try {
-            apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
-            isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey);
-        } catch (Exception e) {
-            log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
-                    "failed. Probably the server is temporarily down.", apiKeyValue);
-            apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-            //TODO what if apiKey == null?
-            isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey) && localApiKeyManager.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
-        }
-
-        if (isApiKeyValid) {
-            return createConsumersAuthToken(apiKey);
-        } else
-            return null;
     }
 
     private String getApiKeyValue(Authentication authentication) {
@@ -120,6 +100,29 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
         apiKeyAuthToken.setAuthenticated(true);
         log.info("Admin is successfully authenticated using the API key with the value {}.", apiKeyValue);
         return apiKeyAuthToken;
+    }
+
+    private Authentication verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(String apiKeyValue) {
+        log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
+
+        boolean isApiKeyValid;
+        ApiKey apiKey = null;
+
+        try {
+            apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
+            isApiKeyValid = apiKeyVerifier.isApiKeyValid(apiKey);
+        } catch (Exception e) {
+            log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
+                    "failed. Probably the server is temporarily down.", apiKeyValue);
+            apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+            //TODO what if apiKey == null?
+            isApiKeyValid = apiKeyVerifier.isApiKeyValid(apiKey) && localApiKeyManager.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue); //TODO to be transferred to Verifier
+        }
+
+        if (isApiKeyValid) {
+            return createConsumersAuthToken(apiKey);
+        } else
+            return null;
     }
 
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {

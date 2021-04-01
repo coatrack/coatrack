@@ -45,10 +45,10 @@ public class ApiKeyFetchConfigurations {
     private String adminBaseUrl;
 
     @Value("${ygg.admin.resources.search-api-key-list}")
-    private String adminResourceToSearchForApiKeyList;
+    private String adminResourceToFetchApiKeyList;
 
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
-    private String adminResourceToSearchForApiKeys;
+    private String adminResourceToFetchSingleApiKey;
 
     private String
             apiKeyListRequestUrl,
@@ -56,8 +56,12 @@ public class ApiKeyFetchConfigurations {
 
     @PostConstruct
     private void initUrls() {
-        apiKeyListRequestUrl = attachGatewayIdToUrl(adminBaseUrl + adminResourceToSearchForApiKeyList);
-        apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToSearchForApiKeys;
+        apiKeyListRequestUrl = attachGatewayIdToUrl(adminBaseUrl + adminResourceToFetchApiKeyList);
+        apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToFetchSingleApiKey;
+    }
+
+    public String getApiKeyRequestUrl(String apiKeyValue) {
+        return attachGatewayIdToUrl(apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
     }
 
     public String attachGatewayIdToUrl(String urlWithoutApiKey) {
@@ -71,10 +75,6 @@ public class ApiKeyFetchConfigurations {
         url += Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + myProxyID;
 
         return url;
-    }
-
-    public String getApiKeyRequestUrl(String apiKeyValue) {
-        return attachGatewayIdToUrl(apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
     }
 
     public String getApiKeyListRequestUrl() {
