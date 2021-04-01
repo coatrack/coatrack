@@ -20,7 +20,7 @@ package eu.coatrack.proxy.metrics;
  * #L%
  */
 
-import eu.coatrack.proxy.security.SecurityUtil;
+import eu.coatrack.proxy.security.ApiKeyFetchConfigurations;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class MetricsTransmitter implements GaugeWriter {
     private MetricsCounterService metricsCounterService;
 
     @Autowired
-    private SecurityUtil securityUtil;
+    private ApiKeyFetchConfigurations apiKeyFetchConfigurations;
 
     @Value("${custom-metrics.prefix.counter}")
     private String prefixForCustomCounterMetrics;
@@ -98,7 +98,7 @@ public class MetricsTransmitter implements GaugeWriter {
     private void transmitToYggAdmin(eu.coatrack.api.Metric metricToTransmit) {
         try {
             URI uriToTransmitMetric = new URI(
-                    securityUtil.attachGatewayIdToUrl(
+                    apiKeyFetchConfigurations.attachGatewayIdToUrl(
                             adminBaseUrl +
                                     adminEndpointForMetricsTransmission +
                                     "?proxyId=" + myProxyID +

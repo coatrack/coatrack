@@ -23,14 +23,12 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,41 +44,19 @@ public class ApiKeyFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.ApiKeyFetcher.class);
 
-    private final SecurityUtil securityUtil;
+    private final ApiKeyFetchConfigurations configs;
     private final RestTemplate restTemplate;
 
-    @Value("${proxy-id}")
-    private String gatewayId = "";
-
-    @Value("${ygg.admin.api-base-url}")
-    private String adminBaseUrl;
-
-    @Value("${ygg.admin.resources.search-api-key-list}")
-    private String adminResourceToSearchForApiKeyList;
-
-    @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
-    private String adminResourceToSearchForApiKeys;
-
-    private String
-            apiKeyListRequestUrlWithoutGatewayId,
-            apiKeyRequestUrlWithoutApiKeyValueAndGatewayId;
-
-    @PostConstruct
-    private void initUrls() {
-        apiKeyListRequestUrlWithoutGatewayId = adminBaseUrl + adminResourceToSearchForApiKeyList;
-        apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToSearchForApiKeys;
-    }
-
-    public ApiKeyFetcher(RestTemplate restTemplate, SecurityUtil securityUtil) {
+    public ApiKeyFetcher(RestTemplate restTemplate, ApiKeyFetchConfigurations configs) {
         this.restTemplate = restTemplate;
-        this.securityUtil = securityUtil;
+        this.configs = configs;
     }
 
     public List<ApiKey> requestLatestApiKeyListFromAdmin() throws RestClientException {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
-        String apiKeyListRequestUrl = securityUtil.attachGatewayIdToUrl(apiKeyListRequestUrlWithoutGatewayId);
-        ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
+        ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
+                configs.getApiKeyListRequestUrl(), ApiKey[].class, configs.getGatewayId());
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("Successfully requested latest API key list from CoatRack admin.");
@@ -95,9 +71,8 @@ public class ApiKeyFetcher {
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws RestClientException {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
-        String apiKeyRequestUrl = securityUtil.attachGatewayIdToUrl(
-                apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
-        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyRequestUrl, ApiKey.class);
+        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
+                configs.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);

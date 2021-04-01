@@ -24,11 +24,41 @@ import eu.coatrack.api.Proxy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+
+/**
+ * This class provides information required to fetch API keys from the CoatRack admin server.
+ *
+ * @author Christoph Baier
+ */
+
 @Service("securityUtil")
-public class SecurityUtil {
+public class ApiKeyFetchConfigurations {
 
     @Value("${proxy-id}")
     private String myProxyID;
+
+    @Value("${proxy-id}")
+    private String gatewayId = "";
+
+    @Value("${ygg.admin.api-base-url}")
+    private String adminBaseUrl;
+
+    @Value("${ygg.admin.resources.search-api-key-list}")
+    private String adminResourceToSearchForApiKeyList;
+
+    @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
+    private String adminResourceToSearchForApiKeys;
+
+    private String
+            apiKeyListRequestUrl,
+            apiKeyRequestUrlWithoutApiKeyValueAndGatewayId;
+
+    @PostConstruct
+    private void initUrls() {
+        apiKeyListRequestUrl = attachGatewayIdToUrl(adminBaseUrl + adminResourceToSearchForApiKeyList);
+        apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToSearchForApiKeys;
+    }
 
     public String attachGatewayIdToUrl(String urlWithoutApiKey) {
 
@@ -41,5 +71,17 @@ public class SecurityUtil {
         url += Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + myProxyID;
 
         return url;
+    }
+
+    public String getApiKeyRequestUrl(String apiKeyValue) {
+        return attachGatewayIdToUrl(apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
+    }
+
+    public String getApiKeyListRequestUrl() {
+        return apiKeyListRequestUrl;
+    }
+
+    public Object getGatewayId() {
+        return gatewayId;
     }
 }
