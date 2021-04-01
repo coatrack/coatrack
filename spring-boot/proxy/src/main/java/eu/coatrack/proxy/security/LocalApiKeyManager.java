@@ -61,7 +61,7 @@ public class LocalApiKeyManager {
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
 
-    public boolean isApiKeyAuthorizedConsideringTheLocalApiKeyList(String apiKeyValue) {
+    public boolean isApiKeyAuthorizedConsideringLocalApiKeyList(String apiKeyValue) {
         log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
                 apiKeyValue);
         if (apiKeyValue == null) {
@@ -115,7 +115,7 @@ public class LocalApiKeyManager {
     @Async
     @PostConstruct
     @Scheduled(fixedRateString = "${local-api-key-list-update-interval-in-millis}")
-    public void updateLocalApiKeyList() {
+    protected void updateLocalApiKeyList() {
         List<ApiKey> apiKeys;
         try {
             apiKeys = adminCommunicator.requestLatestApiKeyListFromAdmin();

@@ -88,7 +88,7 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
                     "failed. Probably the server is temporarily down.", apiKeyValue);
             apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
             //TODO what if apiKey == null?
-            isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey) && localApiKeyManager.isApiKeyAuthorizedConsideringTheLocalApiKeyList(apiKeyValue);
+            isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey) && localApiKeyManager.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
         }
 
         if (isApiKeyValid) {

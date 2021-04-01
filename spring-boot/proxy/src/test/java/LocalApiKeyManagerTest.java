@@ -22,93 +22,53 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class LocalApiKeyManagerTest extends LocalApiKeyManager {
 
+    private final static long oneHourInMinutes = 60;
+
     private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
     private ApiKey apiKey;
 
-    private final long
-            oneHourInMillis = 1000 * 60 * 60,
-            oneDayInMillis = oneHourInMillis * 24;
-
-    private final Timestamp
-            now = new Timestamp(System.currentTimeMillis()),
-            tomorrow = new Timestamp(now.getTime() + oneDayInMillis),
-            yesterday = new Timestamp(now.getTime() - oneDayInMillis),
-            halfAnHourAgo = new Timestamp(now.getTime() - oneHourInMillis / 2);
-
     public LocalApiKeyManagerTest() {
-        super(null, 60);
+        super(null, oneHourInMinutes);
     }
 
     @BeforeEach
     public void createAnAcceptingDefaultSetup(){
-        buildUpApiKey();
-        buildUpVerifier();
-    }
-
-    private void buildUpApiKey() {
         apiKey = new ApiKey();
         apiKey.setKeyValue(someValidApiKeyValue);
-        apiKey.setDeletedWhen(null);
-        apiKey.setValidUntil(tomorrow);
-    }
 
-    private void buildUpVerifier() {
         localApiKeyList = new ArrayList<>();
         localApiKeyList.add(apiKey);
         latestLocalApiKeyListUpdate = LocalDateTime.now();
     }
 
     @Test
-    public void validDefaultKeyShouldBeAccepted(){
-        assertTrue(isApiKeyAuthorizedConsideringTheLocalApiKeyList(apiKey.getKeyValue()));
-    }
-
-    @Test
-    public void deletedApiKeysShouldBeDenied(){
-        apiKey.setDeletedWhen(yesterday);
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
-        apiKey.setDeletedWhen(halfAnHourAgo);
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
-    }
-
-    @Test
-    public void expiredApiKeysShouldBeDenied(){
-        apiKey.setValidUntil(yesterday);
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
-        apiKey.setValidUntil(halfAnHourAgo);
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
-    }
-
-    @Test
     public void apiKeyFromLocalApiKeyListShouldBeAccepted(){
-        assertTrue(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertTrue(isApiKeyAuthorizedConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void apiKeyNotContainedInLocalApiKeyListShouldBeDenied(){
         localApiKeyList = new ArrayList<>();
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
-    }
-
-    @Test
-    public void adminIsNotReachableForMoreThanOneHourSoValidApiKeysShouldBeDenied(){
-        latestLocalApiKeyListUpdate = LocalDateTime.now().minusDays(1);
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
-        latestLocalApiKeyListUpdate = LocalDateTime.now().minusHours(2);
-        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void adminIsNotReachableForLessThanOneHourSoValidApiKeysShouldBeAccepted(){
-        latestLocalApiKeyListUpdate = LocalDateTime.now().plusMinutes(30);
-        assertTrue(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        latestLocalApiKeyListUpdate = LocalDateTime.now().minusMinutes(oneHourInMinutes - 1);
+        assertTrue(isApiKeyAuthorizedConsideringLocalApiKeyList(someValidApiKeyValue));
+    }
+
+    @Test
+    public void adminIsNotReachableForMoreThanOneHourSoValidApiKeysShouldBeDenied(){
+        latestLocalApiKeyListUpdate = LocalDateTime.now().minusMinutes(oneHourInMinutes + 1);
+        assertFalse(isApiKeyAuthorizedConsideringLocalApiKeyList(someValidApiKeyValue));
     }
 }
