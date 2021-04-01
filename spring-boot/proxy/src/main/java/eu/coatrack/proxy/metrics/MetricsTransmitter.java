@@ -98,7 +98,7 @@ public class MetricsTransmitter implements GaugeWriter {
     private void transmitToYggAdmin(eu.coatrack.api.Metric metricToTransmit) {
         try {
             URI uriToTransmitMetric = new URI(
-                    securityUtil.attachGatewayApiKeyToUrl(
+                    securityUtil.attachGatewayIdToUrl(
                             adminBaseUrl +
                                     adminEndpointForMetricsTransmission +
                                     "?proxyId=" + myProxyID +

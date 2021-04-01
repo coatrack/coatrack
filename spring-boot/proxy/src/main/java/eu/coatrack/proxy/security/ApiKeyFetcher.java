@@ -35,16 +35,16 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Offers communication services to the Coatrack admin server to receive data
- * required by the gateway for key verification.
+ * Offers request services to the Coatrack admin server to receive single
+ * API keys or a list of API keys belonging to this gateway.
  *
  * @author Christoph Baier
  */
 
 @Service
-public class AdminCommunicator {
+public class ApiKeyFetcher {
 
-    private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.AdminCommunicator.class);
+    private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.ApiKeyFetcher.class);
 
     private final SecurityUtil securityUtil;
     private final RestTemplate restTemplate;
@@ -71,7 +71,7 @@ public class AdminCommunicator {
         apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToSearchForApiKeys;
     }
 
-    public AdminCommunicator(RestTemplate restTemplate, SecurityUtil securityUtil) {
+    public ApiKeyFetcher(RestTemplate restTemplate, SecurityUtil securityUtil) {
         this.restTemplate = restTemplate;
         this.securityUtil = securityUtil;
     }
@@ -79,7 +79,7 @@ public class AdminCommunicator {
     public List<ApiKey> requestLatestApiKeyListFromAdmin() throws RestClientException {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
-        String apiKeyListRequestUrl = securityUtil.attachGatewayApiKeyToUrl(apiKeyListRequestUrlWithoutGatewayId);
+        String apiKeyListRequestUrl = securityUtil.attachGatewayIdToUrl(apiKeyListRequestUrlWithoutGatewayId);
         ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
@@ -95,7 +95,7 @@ public class AdminCommunicator {
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws RestClientException {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
-        String apiKeyRequestUrl = securityUtil.attachGatewayApiKeyToUrl(
+        String apiKeyRequestUrl = securityUtil.attachGatewayIdToUrl(
                 apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
         ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyRequestUrl, ApiKey.class);
 

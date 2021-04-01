@@ -51,13 +51,13 @@ public class LocalApiKeyManager {
     protected List<ApiKey> localApiKeyList = new ArrayList<>();
     protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
 
-    private final AdminCommunicator adminCommunicator;
+    private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
 
     public LocalApiKeyManager(
-            AdminCommunicator adminCommunicator,
+            ApiKeyFetcher apiKeyFetcher,
             @Value("${number-of-minutes-the-gateway-works-without-connection-to-admin}") long minutes) {
-        this.adminCommunicator = adminCommunicator;
+        this.apiKeyFetcher = apiKeyFetcher;
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
 
@@ -118,7 +118,7 @@ public class LocalApiKeyManager {
     protected void updateLocalApiKeyList() {
         List<ApiKey> apiKeys;
         try {
-            apiKeys = adminCommunicator.requestLatestApiKeyListFromAdmin();
+            apiKeys = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
         } catch (Exception e) {
             log.info("Trying to update the local API key list, the connection to CoatRack admin failed. Probably " +
                     "the server is temporarily down.");

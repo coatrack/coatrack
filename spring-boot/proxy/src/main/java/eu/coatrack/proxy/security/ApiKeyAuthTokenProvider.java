@@ -46,11 +46,11 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenProvider.class);
 
     private final LocalApiKeyManager localApiKeyManager;
-    private final AdminCommunicator adminCommunicator;
+    private final ApiKeyFetcher apiKeyFetcher;
 
-    public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager, AdminCommunicator adminCommunicator) {
+    public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager, ApiKeyFetcher apiKeyFetcher) {
         this.localApiKeyManager = localApiKeyManager;
-        this.adminCommunicator = adminCommunicator;
+        this.apiKeyFetcher = apiKeyFetcher;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
         ApiKey apiKey = null;
 
         try {
-            apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
+            apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
             isApiKeyValid = ApiKeyVerifier.isApiKeyValid(apiKey);
         } catch (Exception e) {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin " +

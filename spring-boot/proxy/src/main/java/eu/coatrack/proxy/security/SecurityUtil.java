@@ -30,7 +30,7 @@ public class SecurityUtil {
     @Value("${proxy-id}")
     private String myProxyID;
 
-    public String attachGatewayApiKeyToUrl(String urlWithoutApiKey) {
+    public String attachGatewayIdToUrl(String urlWithoutApiKey) {
 
         String url = urlWithoutApiKey;
         if (!urlWithoutApiKey.contains("?")) {
