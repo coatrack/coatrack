@@ -32,9 +32,27 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class ApiKeyVerifier {
+public class LocalApiKeyVerifier {
 
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenProvider.class);
+
+    private final LocalApiKeyManager localApiKeyManager;
+
+    public LocalApiKeyVerifier(LocalApiKeyManager localApiKeyManager) {
+        this.localApiKeyManager = localApiKeyManager;
+    }
+
+    public boolean isApiKeyAuthorizedConsideringLocalApiKeyList(String apiKeyValue) {
+        log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
+                apiKeyValue);
+
+        ApiKey apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+        if (apiKey == null) {
+            return false;
+        } else {
+            return isApiKeyValid(apiKey) && localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey);
+        }
+    }
 
     public boolean isApiKeyValid(ApiKey apiKey) {
         return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);

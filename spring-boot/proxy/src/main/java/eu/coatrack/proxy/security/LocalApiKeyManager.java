@@ -61,18 +61,6 @@ public class LocalApiKeyManager {
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
 
-    public boolean isApiKeyAuthorizedConsideringLocalApiKeyList(String apiKeyValue) {
-        log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
-                apiKeyValue);
-
-        ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
-        if (apiKey == null) {
-            return false;
-        } else {
-            return wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey);
-        }
-    }
-
     public ApiKey findApiKeyFromLocalApiKeyList(String apiKeyValue) {
         log.debug("Trying to find the service API associated to the API key with the value {} from the local list.",
                 apiKeyValue);
@@ -98,7 +86,7 @@ public class LocalApiKeyManager {
         }
     }
 
-    private boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline(ApiKey apiKey) {
+    public boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline(ApiKey apiKey) {
         LocalDateTime deadline = latestLocalApiKeyListUpdate.plusMinutes(
                 numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
         boolean wasLatestUpdateWithinDeadline = LocalDateTime.now().isBefore(deadline);

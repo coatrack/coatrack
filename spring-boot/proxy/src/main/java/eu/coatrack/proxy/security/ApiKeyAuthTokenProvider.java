@@ -47,13 +47,13 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
-    private final ApiKeyVerifier apiKeyVerifier;
+    private final LocalApiKeyVerifier localApiKeyVerifier;
 
     public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager,
-                                   ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
+                                   ApiKeyFetcher apiKeyFetcher, LocalApiKeyVerifier localApiKeyVerifier) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
-        this.apiKeyVerifier = apiKeyVerifier;
+        this.localApiKeyVerifier = localApiKeyVerifier;
     }
 
     @Override
@@ -73,8 +73,7 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
         if (isAdminsKey(apiKeyValue)) {
             return createAdminsAuthToken(apiKeyValue);
         } else
-
-       return verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(apiKeyValue);
+            return verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(apiKeyValue);
     }
 
     private String getApiKeyValue(Authentication authentication) {
@@ -110,13 +109,13 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
 
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
-            isApiKeyValid = apiKeyVerifier.isApiKeyValid(apiKey);
+            isApiKeyValid = localApiKeyVerifier.isApiKeyValid(apiKey);
         } catch (Exception e) {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
                     "failed. Probably the server is temporarily down.", apiKeyValue);
             apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
             //TODO what if apiKey == null?
-            isApiKeyValid = apiKeyVerifier.isApiKeyValid(apiKey) && localApiKeyManager.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue); //TODO to be transferred to Verifier
+            isApiKeyValid = localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
         }
 
         if (isApiKeyValid) {
