@@ -21,16 +21,16 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import javax.inject.Qualifier;
+import javax.annotation.PostConstruct;
 import java.util.Arrays;
 import java.util.List;
 
@@ -46,18 +46,41 @@ public class AdminCommunicator {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.AdminCommunicator.class);
 
+    private final SecurityUtil securityUtil;
     private final RestTemplate restTemplate;
-    private final AdminCommunicatorConfiguration config;
 
-    public AdminCommunicator(RestTemplate restTemplate, AdminCommunicatorConfiguration config) {
+    @Value("${proxy-id}")
+    private String gatewayId = "";
+
+    @Value("${ygg.admin.api-base-url}")
+    private String adminBaseUrl;
+
+    @Value("${ygg.admin.resources.search-api-key-list}")
+    private String adminResourceToSearchForApiKeyList;
+
+    @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
+    private String adminResourceToSearchForApiKeys;
+
+    private String
+            apiKeyListRequestUrlWithoutGatewayId,
+            apiKeyRequestUrlWithoutApiKeyValueAndGatewayId;
+
+    @PostConstruct
+    private void initUrls() {
+        apiKeyListRequestUrlWithoutGatewayId = adminBaseUrl + adminResourceToSearchForApiKeyList;
+        apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToSearchForApiKeys;
+    }
+
+    public AdminCommunicator(RestTemplate restTemplate, SecurityUtil securityUtil) {
         this.restTemplate = restTemplate;
-        this.config = config;
+        this.securityUtil = securityUtil;
     }
 
     public List<ApiKey> requestLatestApiKeyListFromAdmin() throws RestClientException {
         log.debug("Requesting latest API key list from CoatRack admin.");
-        ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(config.getApiKeyListRequestUrl(),
-                ApiKey[].class, config.getGatewayId());
+
+        String apiKeyListRequestUrl = securityUtil.attachGatewayApiKeyToUrl(apiKeyListRequestUrlWithoutGatewayId);
+        ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(apiKeyListRequestUrl, ApiKey[].class, gatewayId);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("Successfully requested latest API key list from CoatRack admin.");
@@ -71,8 +94,10 @@ public class AdminCommunicator {
 
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws RestClientException {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
-        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
-                config.getApiKeyRequestUrlWithoutApiKeyValue() + apiKeyValue, ApiKey.class);
+
+        String apiKeyRequestUrl = securityUtil.attachGatewayApiKeyToUrl(
+                apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
+        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(apiKeyRequestUrl, ApiKey.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);
@@ -81,12 +106,5 @@ public class AdminCommunicator {
             log.info("The API key with the value {} was not found by CoatRack admin.", apiKeyValue);
             return null;
         }
-    }
-
-    public ServiceApi requestServiceApiFromAdmin(String apiKeyValue) throws RestClientException {
-        log.debug("Requesting service from CoatRack admin using the API with the value {}.", apiKeyValue);
-        ResponseEntity<ServiceApi> responseEntity = restTemplate.getForEntity(
-                config.getServiceApiRequestUrlWithoutApiKeyValue() + apiKeyValue, ServiceApi.class);
-        return responseEntity.getBody();
     }
 }

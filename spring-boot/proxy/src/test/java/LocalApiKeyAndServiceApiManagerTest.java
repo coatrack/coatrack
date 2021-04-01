@@ -68,47 +68,47 @@ public class LocalApiKeyAndServiceApiManagerTest extends LocalApiKeyAndServiceAp
 
     @Test
     public void validDefaultKeyShouldBeAccepted(){
-        assertTrue(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(apiKey.getKeyValue()));
+        assertTrue(isApiKeyAuthorizedConsideringTheLocalApiKeyList(apiKey.getKeyValue()));
     }
 
     @Test
     public void deletedApiKeysShouldBeDenied(){
         apiKey.setDeletedWhen(yesterday);
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
         apiKey.setDeletedWhen(halfAnHourAgo);
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void expiredApiKeysShouldBeDenied(){
         apiKey.setValidUntil(yesterday);
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
         apiKey.setValidUntil(halfAnHourAgo);
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void apiKeyFromLocalApiKeyListShouldBeAccepted(){
-        assertTrue(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertTrue(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void apiKeyNotContainedInLocalApiKeyListShouldBeDenied(){
         localApiKeyList = new ArrayList<>();
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void adminIsNotReachableForMoreThanOneHourSoValidApiKeysShouldBeDenied(){
         latestLocalApiKeyListUpdate = LocalDateTime.now().minusDays(1);
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
         latestLocalApiKeyListUpdate = LocalDateTime.now().minusHours(2);
-        assertFalse(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertFalse(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
     }
 
     @Test
     public void adminIsNotReachableForLessThanOneHourSoValidApiKeysShouldBeAccepted(){
         latestLocalApiKeyListUpdate = LocalDateTime.now().plusMinutes(30);
-        assertTrue(isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(someValidApiKeyValue));
+        assertTrue(isApiKeyAuthorizedConsideringTheLocalApiKeyList(someValidApiKeyValue));
     }
 }

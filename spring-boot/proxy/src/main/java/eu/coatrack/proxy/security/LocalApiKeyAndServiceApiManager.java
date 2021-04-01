@@ -63,7 +63,7 @@ public class LocalApiKeyAndServiceApiManager {
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
 
-    public boolean isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(String apiKeyValue) {
+    public boolean isApiKeyAuthorizedConsideringTheLocalApiKeyList(String apiKeyValue) {
         log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
                 apiKeyValue);
         if (apiKeyValue == null) {
@@ -81,7 +81,7 @@ public class LocalApiKeyAndServiceApiManager {
         }
     }
 
-    private ApiKey findApiKeyFromLocalApiKeyList(String apiKeyValue) {
+    public ApiKey findApiKeyFromLocalApiKeyList(String apiKeyValue) {
         log.debug("Trying to find the service API associated to the API key with the value {} from the local list.",
                 apiKeyValue);
 
@@ -139,14 +139,6 @@ public class LocalApiKeyAndServiceApiManager {
 
     public boolean isApiKeyValid(ApiKey apiKey) {
         return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
-    }
-
-    public ServiceApi getServiceByApiKeyValue(String apiKeyValue) {
-        ApiKey apiKey = findApiKeyFromLocalApiKeyList(apiKeyValue);
-        if (apiKey != null) {
-            return apiKey.getServiceApi();
-        } else
-            return null;
     }
 
     @Async

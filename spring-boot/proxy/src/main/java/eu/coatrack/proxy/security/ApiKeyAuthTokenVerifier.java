@@ -57,20 +57,43 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         log.debug("Verifying the authentication {}.", authentication.getName());
         try {
-            String apiKeyValue = getApiKeyValue(authentication);
-            //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
-            if (isAdminsKey(apiKeyValue)) {
-                return createAdminsAuthToken(apiKeyValue);
-            }
-
-            if (isApiKeyFromConsumerValid(apiKeyValue)) {
-                return createConsumersAuthToken(apiKeyValue);
-            }
-
+            return createApiKeyAuthToken(authentication);
         } catch (Exception e) {
             log.info("During the authentication process this exception occurred: ", e);
         }
         throw new SessionAuthenticationException("The authentication process failed.");
+    }
+
+    private Authentication createApiKeyAuthToken(Authentication authentication) {
+        String apiKeyValue = getApiKeyValue(authentication);
+        //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
+        if (isAdminsKey(apiKeyValue)) {
+            return createAdminsAuthToken(apiKeyValue);
+        } else
+
+       return verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(apiKeyValue);
+    }
+
+    private Authentication verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(String apiKeyValue) {
+        log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
+
+        boolean isApiKeyValid;
+        ApiKey apiKey = null;
+
+        try {
+            apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
+            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyValid(apiKey);
+        } catch (Exception e) {
+            log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
+                    "failed. Probably the server is temporarily down.", apiKeyValue);
+            apiKey = localApiKeyAndServiceApiManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyAuthorizedConsideringTheLocalApiKeyList(apiKeyValue);
+        }
+
+        if (isApiKeyValid) {
+            return createConsumersAuthToken(apiKey);
+        } else
+            return null;
     }
 
     private String getApiKeyValue(Authentication authentication) {
@@ -98,42 +121,15 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         return apiKeyAuthToken;
     }
 
-    private boolean isApiKeyFromConsumerValid(String apiKeyValue) {
-        log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
-        boolean isApiKeyValid;
-        try {
-            ApiKey apiKey = adminCommunicator.requestApiKeyFromAdmin(apiKeyValue);
-            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyValid(apiKey);
-        } catch (Exception e) {
-            log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
-                    "failed. Probably the server is temporarily down.", apiKeyValue);
-            isApiKeyValid = localApiKeyAndServiceApiManager.isApiKeyAuthorizedToAccessItsServiceApiConsideringTheLocalApiKeyList(apiKeyValue);
-        }
-        return isApiKeyValid;
-    }
-
-    private ApiKeyAuthToken createConsumersAuthToken(String apiKeyValue) {
-        log.debug("Create consumers authentication token using API key with the value {}.", apiKeyValue);
-        ServiceApi serviceApi = findServiceApi(apiKeyValue);
+    private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {
+        log.debug("Create consumers authentication token using API key with the value {}.", apiKey.getKeyValue());
+        ServiceApi serviceApi = apiKey.getServiceApi();
         String uriIdentifier = serviceApi.getUriIdentifier();
 
-        ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, Collections.singleton(
+        ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKey.getKeyValue(), Collections.singleton(
                 new SimpleGrantedAuthority(
                         ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
         apiKeyAuthToken.setAuthenticated(true);
         return apiKeyAuthToken;
-    }
-
-    private ServiceApi findServiceApi(String apiKeyValue) {
-        log.debug("Finding the service API for the API with the value " + apiKeyValue);
-        ServiceApi serviceApi;
-        try {
-            serviceApi = adminCommunicator.requestServiceApiFromAdmin(apiKeyValue);
-        } catch (Exception e) {
-            log.info("Trying to receive a service API from CoatRack admin, the connection process failed. Probably " +
-                    "the server is temporarily down.");
-            serviceApi = localApiKeyAndServiceApiManager.getServiceByApiKeyValue(apiKeyValue);
-        }
-        return serviceApi;
     }
 }
