@@ -48,8 +48,8 @@ public class LocalApiKeyManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
-    protected List<ApiKey> localApiKeyList = new ArrayList<>();
-    protected LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
+    private List<ApiKey> localApiKeyList = new ArrayList<>();
+    private LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
 
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
@@ -106,7 +106,7 @@ public class LocalApiKeyManager {
     @Async
     @PostConstruct
     @Scheduled(fixedRateString = "${local-api-key-list-update-interval-in-millis}")
-    protected void updateLocalApiKeyList() {
+    public void updateLocalApiKeyList() {
         List<ApiKey> apiKeys;
         try {
             apiKeys = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
