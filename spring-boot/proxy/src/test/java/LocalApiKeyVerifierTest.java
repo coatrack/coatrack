@@ -62,8 +62,8 @@ public class LocalApiKeyVerifierTest {
 
     private LocalApiKeyManager createWorkingLocalApiKeyManagerMock() {
         LocalApiKeyManager mock = mock(LocalApiKeyManager.class);
-        when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
-        when(localApiKeyManagerMock.wasLatestUpdateOfLocalApiKeyListWithinDeadline(any())).thenReturn(true);
+        when(mock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
+        when(mock.wasLatestUpdateOfLocalApiKeyListWithinDeadline(any())).thenReturn(true);
         return mock;
     }
 
@@ -79,6 +79,12 @@ public class LocalApiKeyVerifierTest {
         when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(null);
 
         assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()));
+    }
+
+    @Test
+    public void nullArgumentsShouldBeDenied(){
+        assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(null));
+        assertFalse(localApiKeyVerifier.isApiKeyValid(null));
     }
 
     @Test

@@ -91,6 +91,7 @@ public class ApiKeyAuthTokenVerifierTest {
     @Test
     public void nullApiKeyReceivedFromAdminShouldBeRejected(){
         when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
+        shallApiKeyBeValid(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }

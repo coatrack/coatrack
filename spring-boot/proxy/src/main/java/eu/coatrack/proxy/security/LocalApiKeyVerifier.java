@@ -55,7 +55,12 @@ public class LocalApiKeyVerifier {
     }
 
     public boolean isApiKeyValid(ApiKey apiKey) {
-        return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
+        if(apiKey == null){
+            log.info("The argument was null.");
+            return false;
+        } else
+            log.info("Checking validity of API key with the value {}.", apiKey.getKeyValue());
+            return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {
