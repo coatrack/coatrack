@@ -65,7 +65,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void nullCredentialsShouldCauseException(){
+    public void nullCredentialsInAuthTokenShouldCauseException(){
         String nullCredentials = null;
         ApiKeyAuthToken token = new ApiKeyAuthToken(nullCredentials, null);
 
@@ -74,49 +74,49 @@ public class ApiKeyAuthTokenVerifierTest {
 
     @Test
     public void validApiKeyFromAdminShouldBeAuthenticated(){
-        apiKeyRequestFromAdminWorked();
-        apiKeyIsValid();
+        shallApiKeyRequestFromAdminWork(true);
+        shallApiKeyBeValid(true);
 
         assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     @Test
     public void invalidApiKeyFromAdminShouldBeRejected(){
-        apiKeyRequestFromAdminWorked();
-        apiKeyIsInvalid();
+        shallApiKeyRequestFromAdminWork(true);
+        shallApiKeyBeValid(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void nullApiKeyReceivedFromAdminShouldBeRejected(){
-        apiKeyRequestFromAdminWorkedButKeyIsNull();
+        when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected(){
-        apiKeyRequestFromAdminFailed();
-        apiKeyNotFoundInLocalApiKeyList();
+        shallApiKeyRequestFromAdminWork(false);
+        shallApiKeyBeFoundInLocalApiKeyList(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized(){
-        apiKeyRequestFromAdminFailed();
-        apiKeyWasFoundInLocalApiKeyList();
-        apiKeyIsAuthorizedConsideringLocalApiKeyList();
+        shallApiKeyRequestFromAdminWork(false);
+        shallApiKeyBeFoundInLocalApiKeyList(true);
+        shallApiKeyBeAuthorizedConsideringLocalApiKeyList(true);
 
         assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     @Test
     public void apiKeyNotAuthorizedByLocalApiKeyListAndShouldNotBeAuthorized(){
-        apiKeyRequestFromAdminFailed();
-        apiKeyWasFoundInLocalApiKeyList();
-        apiKeyIsUnauthorizedConsideringLocalApiKeyList();
+        shallApiKeyRequestFromAdminWork(false);
+        shallApiKeyBeFoundInLocalApiKeyList(true);
+        shallApiKeyBeAuthorizedConsideringLocalApiKeyList(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
@@ -125,41 +125,28 @@ public class ApiKeyAuthTokenVerifierTest {
     //Behavior of the mock objects
 
     //apiKeyFetcherMock
-    private void apiKeyRequestFromAdminWorked() {
-        when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
-    }
-
-    private void apiKeyRequestFromAdminWorkedButKeyIsNull() {
-        when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(null);
-    }
-
-    private void apiKeyRequestFromAdminFailed() {
-        when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new RestClientException("test"));
+    private void shallApiKeyRequestFromAdminWork(boolean isApiKeyRequestFromAdminWorking) {
+        if (isApiKeyRequestFromAdminWorking)
+            when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
+        else
+            when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new RestClientException("test"));
     }
 
     //localApiKeyVerifierMock
-    private void apiKeyIsValid() {
-        when(localApiKeyVerifierMock.isApiKeyValid(apiKey)).thenReturn(true);
+    private void shallApiKeyBeValid(boolean isApiKeyBeValid) {
+        when(localApiKeyVerifierMock.isApiKeyValid(apiKey)).thenReturn(isApiKeyBeValid);
     }
 
-    private void apiKeyIsInvalid() {
-        when(localApiKeyVerifierMock.isApiKeyValid(apiKey)).thenReturn(false);
-    }
-
-    private void apiKeyIsUnauthorizedConsideringLocalApiKeyList() {
-        when(localApiKeyVerifierMock.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue())).thenReturn(false);
-    }
-
-    private void apiKeyIsAuthorizedConsideringLocalApiKeyList() {
-        when(localApiKeyVerifierMock.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue())).thenReturn(true);
+    private void shallApiKeyBeAuthorizedConsideringLocalApiKeyList(boolean isAuthorized) {
+        when(localApiKeyVerifierMock.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()))
+                .thenReturn(isAuthorized);
     }
 
     //localApiKeyManagerMock
-    private void apiKeyWasFoundInLocalApiKeyList() {
-        when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
-    }
-
-    private void apiKeyNotFoundInLocalApiKeyList() {
-        when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(null);
+    private void shallApiKeyBeFoundInLocalApiKeyList(boolean isFoundInLocalApiKeyList) {
+        if (isFoundInLocalApiKeyList)
+            when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
+        else
+            when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(null);
     }
 }
