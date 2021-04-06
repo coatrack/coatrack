@@ -128,7 +128,7 @@ public class MetricsTransmitter implements GaugeWriter {
             */
 
         } catch (Exception e) {
-            log.error("Exception when communicating with CoatRack admin server", e);
+            log.debug("Exception when communicating with CoatRack admin server", e);
         }
     }
 
