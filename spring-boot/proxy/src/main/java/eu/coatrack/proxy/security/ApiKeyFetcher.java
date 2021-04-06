@@ -44,19 +44,19 @@ public class ApiKeyFetcher {
 
     private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.ApiKeyFetcher.class);
 
-    private final ApiKeyFetchConfigurations configs;
+    private final UrlResourcesProvider urlResourcesProvider;
     private final RestTemplate restTemplate;
 
-    public ApiKeyFetcher(RestTemplate restTemplate, ApiKeyFetchConfigurations configs) {
+    public ApiKeyFetcher(RestTemplate restTemplate, UrlResourcesProvider urlResourcesProvider) {
         this.restTemplate = restTemplate;
-        this.configs = configs;
+        this.urlResourcesProvider = urlResourcesProvider;
     }
 
     public List<ApiKey> requestLatestApiKeyListFromAdmin() throws RestClientException {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
         ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
-                configs.getApiKeyListRequestUrl(), ApiKey[].class, configs.getGatewayId());
+                urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class, urlResourcesProvider.getGatewayId());
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("Successfully requested latest API key list from CoatRack admin.");
@@ -72,7 +72,7 @@ public class ApiKeyFetcher {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
         ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
-                configs.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+                urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);

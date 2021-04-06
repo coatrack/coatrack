@@ -33,7 +33,7 @@ import javax.annotation.PostConstruct;
  */
 
 @Service("securityUtil")
-public class ApiKeyFetchConfigurations {
+public class UrlResourcesProvider {
 
     @Value("${proxy-id}")
     private String myProxyID;
@@ -65,8 +65,8 @@ public class ApiKeyFetchConfigurations {
     }
 
     public String attachGatewayIdToUrl(String urlWithoutApiKey) {
-
         String url = urlWithoutApiKey;
+
         if (!urlWithoutApiKey.contains("?")) {
             url += "?";
         } else {
