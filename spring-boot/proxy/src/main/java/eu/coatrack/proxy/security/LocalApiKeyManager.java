@@ -111,8 +111,7 @@ public class LocalApiKeyManager {
         try {
             apiKeys = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
         } catch (Exception e) {
-            log.info("Trying to update the local API key list, the connection to CoatRack admin failed. Probably " +
-                    "the server is temporarily down.");
+            log.info("Trying to update the local API key list, the connection to CoatRack admin failed.");
             log.debug("Following error occurred: " + e);
             return;
         }

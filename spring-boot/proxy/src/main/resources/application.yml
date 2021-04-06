@@ -19,7 +19,7 @@ ygg.admin:
     metricsTransmission: metricsTransmission
     api-keys: api-keys
     search-api-keys-by-token-value: api-keys/search/findByKeyValue?keyValue=
-    search-api-key-list: gateways/{gatewayId}/apiKeys
+    get-api-key-list-by-gatewayId: gateways/{gatewayId}/apiKeys
 
 custom-metrics:
   prefix.counter: CUSTOM.

@@ -20,6 +20,7 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
+import com.netflix.niws.client.http.RestClient;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.client.RestClientException;
 
 import java.util.*;
 
@@ -110,9 +112,9 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
             isApiKeyValid = localApiKeyVerifier.isApiKeyValid(apiKey);
-        } catch (Exception e) {
-            log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
-                    "failed. Probably the server is temporarily down.", apiKeyValue);
+        } catch (RestClientException e) {
+            log.info("Trying to verify consumers API key with the value {}, the connection to admin failed.",
+                    apiKeyValue);
             apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
 
             if(apiKey == null)

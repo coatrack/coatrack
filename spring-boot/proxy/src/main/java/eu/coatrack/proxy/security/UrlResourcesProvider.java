@@ -44,7 +44,7 @@ public class UrlResourcesProvider {
     @Value("${ygg.admin.api-base-url}")
     private String adminBaseUrl;
 
-    @Value("${ygg.admin.resources.search-api-key-list}")
+    @Value("${ygg.admin.resources.get-api-key-list-by-gatewayId}")
     private String adminResourceToFetchApiKeyList;
 
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")

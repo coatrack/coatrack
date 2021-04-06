@@ -81,7 +81,7 @@ public class GatewayApiController {
             if (proxy == null)
                 log.info(apiKeyListCreationFailedMessage + "The gateway is not known.", gatewayId);
             else if (proxy.getServiceApis() == null)
-                log.info(apiKeyListCreationFailedMessage + "The gateway does not provide any service.", gatewayId);
+                log.info(apiKeyListCreationFailedMessage + "The gateway does not provide any services.", gatewayId);
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         } catch (Exception e){
             log.info(apiKeyListCreationFailedMessage + "An unknown error occurred: {}", gatewayId, e);

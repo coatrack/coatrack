@@ -78,7 +78,7 @@ public class ApiKeyFetcher {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);
             return responseEntity.getBody();
         } else {
-            log.info("The API key with the value {} was not found by CoatRack admin.", apiKeyValue);
+            log.info("Fetching the API key with value {} from CoatRack admin failed.", apiKeyValue);
             return null;
         }
     }
