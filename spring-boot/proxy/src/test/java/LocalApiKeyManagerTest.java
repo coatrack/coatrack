@@ -22,15 +22,16 @@ public class LocalApiKeyManagerTest {
 
     @BeforeEach
     public void setup(){
-        apiKeyFetcherMock = mock(ApiKeyFetcher.class);
-        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, oneHourInMinutes);
-
         apiKey = new ApiKey();
         apiKey.setKeyValue(someValidApiKeyValue);
+
         localApiKeyList = new ArrayList<>();
         localApiKeyList.add(apiKey);
 
+        apiKeyFetcherMock = mock(ApiKeyFetcher.class);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(localApiKeyList);
+
+        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, oneHourInMinutes);
         localApiKeyManager.updateLocalApiKeyList();
     }
 
