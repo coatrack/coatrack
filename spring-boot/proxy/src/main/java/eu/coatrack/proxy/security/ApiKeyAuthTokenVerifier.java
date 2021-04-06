@@ -41,15 +41,15 @@ import java.util.*;
  */
 
 @Service
-public class ApiKeyAuthTokenProvider implements AuthenticationManager {
+public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
     private final LocalApiKeyVerifier localApiKeyVerifier;
 
-    public ApiKeyAuthTokenProvider(LocalApiKeyManager localApiKeyManager,
+    public ApiKeyAuthTokenVerifier(LocalApiKeyManager localApiKeyManager,
                                    ApiKeyFetcher apiKeyFetcher, LocalApiKeyVerifier localApiKeyVerifier) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
@@ -58,8 +58,8 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        log.debug("Verifying the authentication {}.", authentication.getName());
         try {
+            log.debug("Verifying the authentication {}.", authentication.getName());
             return createApiKeyAuthToken(authentication);
         } catch (Exception e) {
             log.info("During the authentication process this exception occurred: ", e);
@@ -105,7 +105,7 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
 
         boolean isApiKeyValid;
-        ApiKey apiKey = null;
+        ApiKey apiKey;
 
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
@@ -114,8 +114,11 @@ public class ApiKeyAuthTokenProvider implements AuthenticationManager {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin " +
                     "failed. Probably the server is temporarily down.", apiKeyValue);
             apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-            //TODO what if apiKey == null?
-            isApiKeyValid = localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
+
+            if(apiKey == null)
+                return null;
+            else
+                isApiKeyValid = localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
         }
 
         if (isApiKeyValid) {

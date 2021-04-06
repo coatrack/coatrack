@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LocalApiKeyVerifier {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenProvider.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
 
     private final LocalApiKeyManager localApiKeyManager;
 
