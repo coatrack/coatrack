@@ -30,7 +30,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +50,7 @@ public class LocalApiKeyManager {
 
     private List<ApiKey> localApiKeyList = new ArrayList<>();
     private LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
+    private LocalDateTime deadline = LocalDateTime.now();
 
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
@@ -87,15 +87,10 @@ public class LocalApiKeyManager {
         }
     }
 
-    public boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline(ApiKey apiKey) {
-        LocalDateTime deadline = latestLocalApiKeyListUpdate.plusMinutes(
-                numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
+    public boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline() {
         boolean wasLatestUpdateWithinDeadline = LocalDateTime.now().isBefore(deadline);
 
-        if (wasLatestUpdateWithinDeadline)
-            log.info("The API key with the value {} is valid considering the local API key list and is " +
-                    "therefore accepted.", apiKey.getKeyValue());
-        else
+        if (!wasLatestUpdateWithinDeadline)
             log.info("The CoatRack admin server was not reachable for longer than {} minutes. Since this " +
                     "predefined threshold was exceeded, this and all subsequent service API requests are " +
                     "rejected until a connection to CoatRack admin could be re-established.",
@@ -118,5 +113,6 @@ public class LocalApiKeyManager {
         }
         localApiKeyList = apiKeys;
         latestLocalApiKeyListUpdate = LocalDateTime.now();
+        deadline = latestLocalApiKeyListUpdate.plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
     }
 }

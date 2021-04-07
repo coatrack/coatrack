@@ -98,7 +98,7 @@ public class LocalApiKeyManagerTest {
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteAfterNow);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertTrue(localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey));
+        assertTrue(localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline());
     }
 
     @Test
@@ -108,6 +108,6 @@ public class LocalApiKeyManagerTest {
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteBeforeNow);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertFalse(localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey));
+        assertFalse(localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline());
     }
 }

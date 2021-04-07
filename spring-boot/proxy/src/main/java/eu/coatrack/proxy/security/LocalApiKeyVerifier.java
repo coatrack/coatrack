@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * This class provides a method to determine an API keys validity.
+ * This class provides methods to determine the validity or authorization of an API key.
  *
  * @author Christoph Baier
  */
@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class LocalApiKeyVerifier {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyVerifier.class);
 
     private final LocalApiKeyManager localApiKeyManager;
 
@@ -50,7 +50,7 @@ public class LocalApiKeyVerifier {
         if (apiKey == null) {
             return false;
         } else {
-            return isApiKeyValid(apiKey) && localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey);
+            return isApiKeyValid(apiKey) && localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline();
         }
     }
 

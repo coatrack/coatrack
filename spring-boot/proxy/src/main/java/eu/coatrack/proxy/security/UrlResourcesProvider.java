@@ -36,9 +36,6 @@ import javax.annotation.PostConstruct;
 public class UrlResourcesProvider {
 
     @Value("${proxy-id}")
-    private String myProxyID;
-
-    @Value("${proxy-id}")
     private String gatewayId = "";
 
     @Value("${ygg.admin.api-base-url}")
@@ -72,7 +69,7 @@ public class UrlResourcesProvider {
         } else {
             url += "&";
         }
-        url += Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + myProxyID;
+        url += Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + gatewayId;
 
         return url;
     }
@@ -81,7 +78,7 @@ public class UrlResourcesProvider {
         return apiKeyListRequestUrl;
     }
 
-    public Object getGatewayId() {
+    public String getGatewayId() {
         return gatewayId;
     }
 }
