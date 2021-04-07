@@ -105,27 +105,29 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private Authentication verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(String apiKeyValue) {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
 
-        boolean isApiKeyValid;
-        ApiKey apiKey;
+        ApiKeyAndAuth apiKeyAndAuth = findApiKeyAndCheckAuthorization(apiKeyValue);
+
+        if (apiKeyAndAuth.isAuthorized) {
+            return createConsumersAuthToken(apiKeyAndAuth.apiKey);
+        } else
+            return null;
+    }
+
+    private ApiKeyAndAuth findApiKeyAndCheckAuthorization(String apiKeyValue) {
+        ApiKeyAndAuth apiKeyAndAuth = new ApiKeyAndAuth();
 
         try {
-            apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
-            isApiKeyValid = localApiKeyVerifier.isApiKeyValid(apiKey);
+            apiKeyAndAuth.apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
+            apiKeyAndAuth.isAuthorized = localApiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
         } catch (ConnectException e) {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin failed.",
                     apiKeyValue);
-            apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-
-            if(apiKey == null)
-                return null;
-            else
-                isApiKeyValid = localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
+            apiKeyAndAuth.apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+            if(apiKeyAndAuth.apiKey != null)
+                apiKeyAndAuth.isAuthorized = localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
         }
 
-        if (isApiKeyValid) {
-            return createConsumersAuthToken(apiKey);
-        } else
-            return null;
+        return apiKeyAndAuth;
     }
 
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {
@@ -138,5 +140,10 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
                         ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
         apiKeyAuthToken.setAuthenticated(true);
         return apiKeyAuthToken;
+    }
+
+    private class ApiKeyAndAuth {
+        public ApiKey apiKey = null;
+        public boolean isAuthorized = false;
     }
 }
