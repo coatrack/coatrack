@@ -30,6 +30,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.net.ConnectException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +111,7 @@ public class LocalApiKeyManager {
         List<ApiKey> apiKeys;
         try {
             apiKeys = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
-        } catch (Exception e) {
+        } catch (ConnectException e) {
             log.info("Trying to update the local API key list, the connection to CoatRack admin failed.");
             log.debug("Following error occurred: " + e);
             return;

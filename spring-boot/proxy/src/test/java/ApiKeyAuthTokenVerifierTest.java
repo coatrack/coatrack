@@ -25,6 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.web.authentication.session.SessionAuthenticationException;
 import org.springframework.web.client.RestClientException;
 
+import java.net.ConnectException;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -92,7 +94,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void validApiKeyFromAdminShouldBeAuthenticated(){
+    public void validApiKeyFromAdminShouldBeAuthenticated() throws ConnectException {
         setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin.API_KEY);
         shallApiKeyBeValid(true);
 
@@ -100,7 +102,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void invalidApiKeyFromAdminShouldBeRejected(){
+    public void invalidApiKeyFromAdminShouldBeRejected() throws ConnectException {
         setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin.API_KEY);
         shallApiKeyBeValid(false);
 
@@ -108,7 +110,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void nullApiKeyReceivedFromAdminShouldBeRejected(){
+    public void nullApiKeyReceivedFromAdminShouldBeRejected() throws ConnectException {
         setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin.NULL);
         shallApiKeyBeValid(false);
 
@@ -116,7 +118,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected(){
+    public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected() throws ConnectException {
         setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallApiKeyBeFoundInLocalApiKeyList(false);
 
@@ -124,7 +126,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized(){
+    public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ConnectException {
         setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallApiKeyBeFoundInLocalApiKeyList(true);
         shallApiKeyBeAuthorizedConsideringLocalApiKeyList(true);
@@ -133,7 +135,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyNotAuthorizedByLocalApiKeyListAndShouldNotBeAuthorized(){
+    public void apiKeyNotAuthorizedByLocalApiKeyListAndShouldNotBeAuthorized() throws ConnectException {
         setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallApiKeyBeFoundInLocalApiKeyList(true);
         shallApiKeyBeAuthorizedConsideringLocalApiKeyList(false);
@@ -145,7 +147,7 @@ public class ApiKeyAuthTokenVerifierTest {
     //Behavior of the mock objects
 
     //apiKeyFetcherMock
-    private void setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin) {
+    private void setResultOfApiKeyRequestToAdmin(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin) throws ConnectException {
         switch (resultOfApiKeyRequestToAdmin){
             case NULL:
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
@@ -154,7 +156,7 @@ public class ApiKeyAuthTokenVerifierTest {
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
                 break;
             case EXCEPTION:
-                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new RestClientException("test"));
+                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ConnectException("test"));
                 break;
         }
     }

@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,7 +43,7 @@ import java.util.List;
 @Service
 public class ApiKeyFetcher {
 
-    private static final Logger log = LoggerFactory.getLogger(eu.coatrack.proxy.security.ApiKeyFetcher.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyFetcher.class);
 
     private final UrlResourcesProvider urlResourcesProvider;
     private final RestTemplate restTemplate;
@@ -52,11 +53,23 @@ public class ApiKeyFetcher {
         this.urlResourcesProvider = urlResourcesProvider;
     }
 
-    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws RestClientException {
+    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws ConnectException {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
-        ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
-                urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class, urlResourcesProvider.getGatewayId());
+        ResponseEntity<ApiKey[]> responseEntity;
+        try {
+            responseEntity = restTemplate.getForEntity(
+                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class, urlResourcesProvider.getGatewayId());
+        } catch (RestClientException e){
+            throw new ConnectException();
+        }
+
+        return verifyAndExtractApiKeyListFromResponseEntity(responseEntity);
+    }
+
+    private List<ApiKey> verifyAndExtractApiKeyListFromResponseEntity(ResponseEntity<ApiKey[]> responseEntity) {
+        if(responseEntity == null)
+            return null;
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("Successfully requested latest API key list from CoatRack admin.");
@@ -68,11 +81,23 @@ public class ApiKeyFetcher {
         }
     }
 
-    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws RestClientException {
+    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws ConnectException {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
-        ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
+        ResponseEntity<ApiKey> responseEntity;
+        try {
+            responseEntity = restTemplate.getForEntity(
                 urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+        } catch (RestClientException e){
+            throw new ConnectException();
+        }
+
+        return verifyAndExtractApiKeyResponseEntity(responseEntity, apiKeyValue);
+    }
+
+    private ApiKey verifyAndExtractApiKeyResponseEntity(ResponseEntity<ApiKey> responseEntity, String apiKeyValue) {
+        if(responseEntity == null)
+            return null;
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);
