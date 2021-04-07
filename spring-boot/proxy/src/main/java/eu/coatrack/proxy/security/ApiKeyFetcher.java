@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,14 +60,14 @@ public class ApiKeyFetcher {
         try {
             responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class, urlResourcesProvider.getGatewayId());
-            return verifyAndExtractApiKeyListFromResponseEntity(responseEntity);
+            return extractApiKeyListFromResponseEntity(responseEntity);
         } catch (RestClientException e){
             throw new ApiKeyFetchingException("Trying to request the latest API key list from Admin, the " +
                     "connection failed.");
         }
     }
 
-    private List<ApiKey> verifyAndExtractApiKeyListFromResponseEntity(ResponseEntity<ApiKey[]> responseEntity) {
+    private List<ApiKey> extractApiKeyListFromResponseEntity(ResponseEntity<ApiKey[]> responseEntity) {
         if(responseEntity == null)
             throw new RestClientException("");
 

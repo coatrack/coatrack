@@ -20,9 +20,7 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-import java.net.ConnectException;
-
-public class ApiKeyFetchingException extends ConnectException {
+public class ApiKeyFetchingException extends Exception {
 
     public ApiKeyFetchingException(String msg) {
         super(msg);
