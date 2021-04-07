@@ -50,7 +50,7 @@ public class LocalApiKeyVerifier {
         if (apiKey == null) {
             return false;
         } else {
-            return isApiKeyValid(apiKey) && localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline(apiKey);
+            return isApiKeyValid(apiKey) && localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline();
         }
     }
 
