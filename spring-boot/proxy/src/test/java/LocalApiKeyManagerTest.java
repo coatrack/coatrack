@@ -23,6 +23,7 @@ import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +41,7 @@ public class LocalApiKeyManagerTest {
     private LocalApiKeyManager localApiKeyManager;
 
     @BeforeEach
-    public void setup(){
+    public void setup() throws ConnectException {
         apiKey = new ApiKey();
         apiKey.setKeyValue(someValidApiKeyValue);
 
@@ -65,7 +66,7 @@ public class LocalApiKeyManagerTest {
     }
 
     @Test
-    public void apiKeyIsNotFoundInLocalApiKeyListAndThereforeNullIsReturned(){
+    public void apiKeyIsNotFoundInLocalApiKeyListAndThereforeNullIsReturned() throws ConnectException {
         List<ApiKey> apiKeyListNotContainingTheIncomingApiKey = createApiKeyListNotContainingTheIncomingApiKey();
 
         reset(apiKeyFetcherMock);
