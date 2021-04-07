@@ -60,16 +60,15 @@ public class ApiKeyFetcher {
         try {
             responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class, urlResourcesProvider.getGatewayId());
+            return verifyAndExtractApiKeyListFromResponseEntity(responseEntity);
         } catch (RestClientException e){
             throw new ApiKeyFetchingException();
         }
-
-        return verifyAndExtractApiKeyListFromResponseEntity(responseEntity);
     }
 
     private List<ApiKey> verifyAndExtractApiKeyListFromResponseEntity(ResponseEntity<ApiKey[]> responseEntity) {
         if(responseEntity == null)
-            return null;
+            throw new RestClientException("");
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("Successfully requested latest API key list from CoatRack admin.");
@@ -91,16 +90,15 @@ public class ApiKeyFetcher {
         try {
             responseEntity = restTemplate.getForEntity(
                 urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+            return verifyAndExtractApiKeyResponseEntity(responseEntity, apiKeyValue);
         } catch (RestClientException e){
             throw new ApiKeyFetchingException();
         }
-
-        return verifyAndExtractApiKeyResponseEntity(responseEntity, apiKeyValue);
     }
 
     private ApiKey verifyAndExtractApiKeyResponseEntity(ResponseEntity<ApiKey> responseEntity, String apiKeyValue) {
         if(responseEntity == null)
-            return null;
+            throw new RestClientException("");
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);
