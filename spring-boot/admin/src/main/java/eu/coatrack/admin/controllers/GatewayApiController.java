@@ -26,6 +26,7 @@ import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
+import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -68,24 +71,27 @@ public class GatewayApiController {
 
     @GetMapping( "/api/gateways/{gatewayId}/apiKeys")
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@PathVariable("gatewayId") String gatewayId) {
-        Proxy proxy = null;
-        List<ApiKey> apiKeyList;
-        String apiKeyListCreationFailedMessage = "Creation of API key list for requesting gateway failed. " +
-                "This concerns the gateway with the ID {}. ";
+        log.debug("The gateway with the ID {} requests its latest API key list.", gatewayId);
         try {
-            proxy = proxyRepository.findById(gatewayId);
-            apiKeyList = proxy.getServiceApis().stream().flatMap(serviceApi -> serviceApi.getApiKeys()
+            Proxy proxy = proxyRepository.findById(gatewayId);
+            if(proxy != null)
+                return createApiKeyListResponseEntity(proxy);
+            else
+                throw new NotFoundException("The gateway with the ID " + gatewayId + " was not found.");
+        } catch (Exception e) {
+            log.debug(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private ResponseEntity<List<ApiKey>> createApiKeyListResponseEntity(Proxy proxy) {
+        if(proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
+            log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        } else{
+            List<ApiKey> apiKeyList = proxy.getServiceApis().stream().flatMap(serviceApi -> serviceApi.getApiKeys()
                     .stream()).collect(Collectors.toList());
             return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
-        } catch (NullPointerException e){
-            if (proxy == null)
-                log.info(apiKeyListCreationFailedMessage + "The gateway is not known.", gatewayId);
-            else if (proxy.getServiceApis() == null)
-                log.info(apiKeyListCreationFailedMessage + "The gateway does not provide any services.", gatewayId);
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-        } catch (Exception e){
-            log.info(apiKeyListCreationFailedMessage + "An unknown error occurred: {}", gatewayId, e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

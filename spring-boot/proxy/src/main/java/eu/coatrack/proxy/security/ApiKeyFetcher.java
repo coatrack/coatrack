@@ -30,6 +30,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -62,7 +63,8 @@ public class ApiKeyFetcher {
                     urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class, urlResourcesProvider.getGatewayId());
             return verifyAndExtractApiKeyListFromResponseEntity(responseEntity);
         } catch (RestClientException e){
-            throw new ApiKeyFetchingException();
+            throw new ApiKeyFetchingException("Trying to request the latest API key list from Admin, the " +
+                    "connection failed.");
         }
     }
 
@@ -71,12 +73,12 @@ public class ApiKeyFetcher {
             throw new RestClientException("");
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
-            log.info("Successfully requested latest API key list from CoatRack admin.");
-            return Arrays.asList(responseEntity.getBody());
+            log.debug("Successfully requested latest API key list from CoatRack admin.");
+            return new ArrayList<>(Arrays.asList(responseEntity.getBody()));
         } else {
             log.warn("Request of latest API key list from CoatRack admin failed. Received http status {} from " +
                     "CoatRack admin.", responseEntity.getStatusCode());
-            return null;
+            throw new RestClientException("");
         }
     }
 
@@ -92,7 +94,8 @@ public class ApiKeyFetcher {
                 urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
             return verifyAndExtractApiKeyResponseEntity(responseEntity, apiKeyValue);
         } catch (RestClientException e){
-            throw new ApiKeyFetchingException();
+            throw new ApiKeyFetchingException("Trying to request the API key with the value {} from CoatRack admin, " +
+                    "the connection failed.");
         }
     }
 
