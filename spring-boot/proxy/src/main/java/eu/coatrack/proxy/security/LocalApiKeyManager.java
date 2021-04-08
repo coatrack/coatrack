@@ -66,50 +66,35 @@ public class LocalApiKeyManager {
                 apiKeyValue);
 
         if (apiKeyValue == null) {
-            log.info("The passed API key value is null and can therefore not be checked for validity. " +
+            log.debug("The passed API key value is null and can therefore not be checked for validity. " +
                     "It is therefore rejected.");
             return null;
         }
+
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)).findFirst();
-        return extractOptionalApiKey(optionalApiKey);
-    }
-
-    private ApiKey extractOptionalApiKey(Optional<ApiKey> optionalApiKey) {
-        if (optionalApiKey.isPresent()) {
-            log.debug("The API key is found in the local API key list.");
-            return optionalApiKey.get();
-        } else {
-            log.debug("The API key can not be found within the local API key list.");
-            return null;
-        }
+        return optionalApiKey.isPresent() ? optionalApiKey.get() : null;
     }
 
     public boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline() {
-        boolean wasLatestUpdateWithinDeadline = LocalDateTime.now().isBefore(deadline);
-
-        if (!wasLatestUpdateWithinDeadline)
-            log.info("The CoatRack admin server was not reachable for longer than {} minutes. Since this " +
-                    "predefined threshold was exceeded, this and all subsequent service API requests are " +
-                    "rejected until a connection to CoatRack admin could be re-established.",
-                    numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
-
-        return wasLatestUpdateWithinDeadline;
+        return LocalDateTime.now().isBefore(deadline);
     }
 
     @Async
     @PostConstruct
     @Scheduled(fixedRateString = "${local-api-key-list-update-interval-in-millis}")
     public void updateLocalApiKeyList() {
-        List<ApiKey> apiKeys;
+        log.debug("Trying to update the local API key list by contacting CoatRack admin.");
+
+        List<ApiKey> fetchedApiKeyList;
         try {
-            apiKeys = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
+            fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
         } catch (ApiKeyFetchingException e) {
-            log.info("Trying to update the local API key list, the connection to CoatRack admin failed.");
             log.debug("Following error occurred: " + e);
             return;
         }
-        localApiKeyList = apiKeys;
+
+        localApiKeyList = fetchedApiKeyList;
         deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
     }
 }

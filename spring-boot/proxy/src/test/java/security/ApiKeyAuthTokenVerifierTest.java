@@ -67,7 +67,7 @@ public class ApiKeyAuthTokenVerifierTest {
 
     private ApiKey createSampleApiKeyForTesting() {
         ServiceApi serviceApi = new ServiceApi();
-        serviceApi.setUriIdentifier("my-service");
+        serviceApi.setUriIdentifier("weather-data-service");
 
         apiKey = new ApiKey();
         apiKey.setKeyValue(someValidApiKeyValue);

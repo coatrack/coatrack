@@ -21,7 +21,6 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.api.ServiceApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,7 +34,8 @@ import org.springframework.util.Assert;
 import java.util.*;
 
 /**
- * Checks if the API key token value sent by the service consumer is valid.
+ * Checks if the API key token value sent by the client is valid. If so, the client
+ * is forwarded to the requested service API.
  *
  * @author gr-hovest, Christoph Baier
  */
@@ -78,10 +78,10 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private String getApiKeyValue(Authentication authentication) {
         log.debug("Getting API key value from authentication {}.", authentication.getName());
-        Assert.notNull(authentication.getCredentials());
+        Assert.notNull(authentication.getCredentials(), "The credentials were null.");
         Assert.isInstanceOf(String.class, authentication.getCredentials());
         String apiKeyValue = (String) authentication.getCredentials();
-        Assert.hasText(apiKeyValue);
+        Assert.hasText(apiKeyValue, "The credentials di not contain any letters.");
         return apiKeyValue;
     }
 
@@ -92,38 +92,36 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private Authentication createAdminsAuthToken(String apiKeyValue) {
         log.debug("Creating admins authentication token using API key with the value {}.", apiKeyValue);
+
         Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
         authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
                 ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
         ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
         apiKeyAuthToken.setAuthenticated(true);
-        log.info("Admin is successfully authenticated using the API key with the value {}.", apiKeyValue);
+
         return apiKeyAuthToken;
     }
 
     private Authentication verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(String apiKeyValue) {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
 
-        ApiKeyAndAuth apiKeyAndAuth = findApiKeyAndCheckAuthorization(apiKeyValue);
-
-        if (apiKeyAndAuth.isAuthorized) {
-            return createConsumersAuthToken(apiKeyAndAuth.apiKey);
-        } else
-            return null;
+        ApiKeyAndAuth apiKeyAndAuth = getApiKeyAndCheckAuthorization(apiKeyValue);
+        return apiKeyAndAuth.isApiKeyAuthorized ? createConsumersAuthToken(apiKeyAndAuth.apiKey) : null;
     }
 
-    private ApiKeyAndAuth findApiKeyAndCheckAuthorization(String apiKeyValue) {
+    private ApiKeyAndAuth getApiKeyAndCheckAuthorization(String apiKeyValue) {
         ApiKeyAndAuth apiKeyAndAuth = new ApiKeyAndAuth();
 
         try {
             apiKeyAndAuth.apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
-            apiKeyAndAuth.isAuthorized = apiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
+            if (apiKeyAndAuth.apiKey != null)
+                apiKeyAndAuth.isApiKeyAuthorized = apiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
         } catch (ApiKeyFetchingException e) {
-            log.info("Trying to verify consumers API key with the value {}, the connection to admin failed.",
+            log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed.",
                     apiKeyValue);
             apiKeyAndAuth.apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
             if(apiKeyAndAuth.apiKey != null)
-                apiKeyAndAuth.isAuthorized = apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKeyValue);
+                apiKeyAndAuth.isApiKeyAuthorized = apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKeyValue);
         }
 
         return apiKeyAndAuth;
@@ -131,18 +129,18 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {
         log.debug("Create consumers authentication token using API key with the value {}.", apiKey.getKeyValue());
-        ServiceApi serviceApi = apiKey.getServiceApi();
-        String uriIdentifier = serviceApi.getUriIdentifier();
 
+        String uriIdentifier = apiKey.getServiceApi().getUriIdentifier();
         ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKey.getKeyValue(), Collections.singleton(
                 new SimpleGrantedAuthority(
                         ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
         apiKeyAuthToken.setAuthenticated(true);
+
         return apiKeyAuthToken;
     }
 
     private class ApiKeyAndAuth {
         public ApiKey apiKey = null;
-        public boolean isAuthorized = false;
+        public boolean isApiKeyAuthorized = false;
     }
 }

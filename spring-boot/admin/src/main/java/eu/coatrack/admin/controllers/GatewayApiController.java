@@ -69,7 +69,7 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    @GetMapping( "/api/gateways/{gatewayId}/apiKeys")
+    @GetMapping( "/api/gateways/{gatewayId}/api-keys")
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@PathVariable("gatewayId") String gatewayId) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayId);
         try {
