@@ -24,7 +24,6 @@ import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,9 +31,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class LocalApiKeyManagerTest {
-
-    private final long oneHourInMinutes = 60;
-    private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
 
     private ApiKey apiKey;
     private List<ApiKey> localApiKeyList;
@@ -44,7 +40,7 @@ public class LocalApiKeyManagerTest {
     @BeforeEach
     public void setup() throws ApiKeyFetchingException {
         apiKey = new ApiKey();
-        apiKey.setKeyValue(someValidApiKeyValue);
+        apiKey.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
 
         localApiKeyList = new ArrayList<>();
         localApiKeyList.add(apiKey);
@@ -52,7 +48,8 @@ public class LocalApiKeyManagerTest {
         apiKeyFetcherMock = mock(ApiKeyFetcher.class);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(localApiKeyList);
 
-        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, oneHourInMinutes);
+        long timeInMinutesTheGatewayWorksWithoutConnectionToAdmin = 60;
+        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, timeInMinutesTheGatewayWorksWithoutConnectionToAdmin);
         localApiKeyManager.updateLocalApiKeyList();
     }
 

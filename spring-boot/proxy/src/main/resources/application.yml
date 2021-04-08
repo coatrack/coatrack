@@ -39,9 +39,9 @@ logging:
 # The gateway has the ability to work even if the CoatRack admin server is not reachable. If admin is not reachable
 # for longer than this period of time, the gateway will reject all service API requests until a connection could
 # be re-established.
-number-of-minutes-the-gateway-works-without-connection-to-admin: 60
+number-of-minutes-the-gateway-shall-work-without-connection-to-admin: 60
 
 # The gateway periodically updates its local API key list which is used for authorization of incoming service
 # requests if the connection to the CoatRack admin server does not work. This is the time interval for these
-# updates. The default value is 300,000 = 5 minutes.
+# updates in milliseconds.
 local-api-key-list-update-interval-in-millis: 300_000

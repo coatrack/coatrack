@@ -32,54 +32,40 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class LocalApiKeyVerifier {
+public class ApiKeyVerifier {
 
-    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyVerifier.class);
 
     private final LocalApiKeyManager localApiKeyManager;
 
-    public LocalApiKeyVerifier(LocalApiKeyManager localApiKeyManager) {
+    public ApiKeyVerifier(LocalApiKeyManager localApiKeyManager) {
         this.localApiKeyManager = localApiKeyManager;
     }
 
-    public boolean isApiKeyAuthorizedConsideringLocalApiKeyList(String apiKeyValue) {
+    public boolean isApiKeyAuthorizedToAccessItsService(String apiKeyValue) {
         log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
                 apiKeyValue);
+
+        if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline())
+            return false;
 
         ApiKey apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
         if (apiKey == null) {
             return false;
         } else {
-            return isApiKeyValid(apiKey) && localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline();
+            return isApiKeyValid(apiKey);
         }
     }
 
     public boolean isApiKeyValid(ApiKey apiKey) {
-        if(apiKey == null){
-            log.info("The argument was null.");
-            return false;
-        } else
-            log.info("Checking validity of API key with the value {}.", apiKey.getKeyValue());
-            return isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
+        return apiKey == null ? false : isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {
-        boolean isNotDeleted = apiKey.getDeletedWhen() == null;
-        if (isNotDeleted) {
-            return true;
-        } else {
-            log.info("The API key with the value {} is deleted and therefore rejected.", apiKey.getKeyValue());
-            return false;
-        }
+        return apiKey.getDeletedWhen() == null;
     }
 
     private boolean isApiKeyNotExpired(ApiKey apiKey) {
-        boolean isNotExpired = apiKey.getValidUntil().getTime() > System.currentTimeMillis();
-        if (isNotExpired) {
-            return true;
-        } else {
-            log.info("The API key with the value {} is expired and therefore rejected.", apiKey.getKeyValue());
-            return false;
-        }
+        return apiKey.getValidUntil().getTime() > System.currentTimeMillis();
     }
 }

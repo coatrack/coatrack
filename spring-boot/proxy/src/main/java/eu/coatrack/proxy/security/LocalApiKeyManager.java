@@ -49,7 +49,6 @@ public class LocalApiKeyManager {
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
     private List<ApiKey> localApiKeyList = new ArrayList<>();
-    private LocalDateTime latestLocalApiKeyListUpdate = LocalDateTime.now();
     private LocalDateTime deadline = LocalDateTime.now();
 
     private final ApiKeyFetcher apiKeyFetcher;
@@ -57,7 +56,7 @@ public class LocalApiKeyManager {
 
     public LocalApiKeyManager(
             ApiKeyFetcher apiKeyFetcher,
-            @Value("${number-of-minutes-the-gateway-works-without-connection-to-admin}") long minutes) {
+            @Value("${number-of-minutes-the-gateway-shall-work-without-connection-to-admin}") long minutes) {
         this.apiKeyFetcher = apiKeyFetcher;
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
@@ -73,16 +72,15 @@ public class LocalApiKeyManager {
         }
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)).findFirst();
-        return extractOptionalApiKeyAndLogPossibleErrors(optionalApiKey, apiKeyValue);
+        return extractOptionalApiKey(optionalApiKey);
     }
 
-    private ApiKey extractOptionalApiKeyAndLogPossibleErrors(Optional<ApiKey> optionalApiKey, String apiKeyValue) {
+    private ApiKey extractOptionalApiKey(Optional<ApiKey> optionalApiKey) {
         if (optionalApiKey.isPresent()) {
-            log.debug("The API key with the value {} is found in the local API key list.", apiKeyValue);
+            log.debug("The API key is found in the local API key list.");
             return optionalApiKey.get();
         } else {
-            log.info("The API key with the value {} can not be found within the local API key list " +
-                    "and is therefore rejected.", apiKeyValue);
+            log.debug("The API key can not be found within the local API key list.");
             return null;
         }
     }
@@ -112,7 +110,6 @@ public class LocalApiKeyManager {
             return;
         }
         localApiKeyList = apiKeys;
-        latestLocalApiKeyListUpdate = LocalDateTime.now();
-        deadline = latestLocalApiKeyListUpdate.plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
+        deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
     }
 }

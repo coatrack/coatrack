@@ -18,7 +18,7 @@
  * #L%
  */
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.LocalApiKeyVerifier;
+import eu.coatrack.proxy.security.ApiKeyVerifier;
 import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,11 +30,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class LocalApiKeyVerifierTest {
+public class ApiKeyVerifierTest {
 
     private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
     private ApiKey apiKey;
-    private LocalApiKeyVerifier localApiKeyVerifier;
+    private ApiKeyVerifier apiKeyVerifier;
     private LocalApiKeyManager localApiKeyManagerMock;
 
     private final long
@@ -49,7 +49,7 @@ public class LocalApiKeyVerifierTest {
     public void createAnAcceptingDefaultSetup(){
         apiKey = createValidApiKey();
         localApiKeyManagerMock = createWorkingLocalApiKeyManagerMock();
-        localApiKeyVerifier = new LocalApiKeyVerifier(localApiKeyManagerMock);
+        apiKeyVerifier = new ApiKeyVerifier(localApiKeyManagerMock);
     }
 
     private ApiKey createValidApiKey() {
@@ -69,8 +69,8 @@ public class LocalApiKeyVerifierTest {
 
     @Test
     public void validDefaultApiKeyShouldBeAccepted(){
-        assertTrue(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()));
-        assertTrue(localApiKeyVerifier.isApiKeyValid(apiKey));
+        assertTrue(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
+        assertTrue(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
@@ -78,29 +78,29 @@ public class LocalApiKeyVerifierTest {
         reset(localApiKeyManagerMock);
         when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(null);
 
-        assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()));
+        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
     }
 
     @Test
     public void nullArgumentsShouldBeDenied(){
-        assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(null));
-        assertFalse(localApiKeyVerifier.isApiKeyValid(null));
+        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(null));
+        assertFalse(apiKeyVerifier.isApiKeyValid(null));
     }
 
     @Test
     public void deletedApiKeyShouldBeDenied(){
         apiKey.setDeletedWhen(oneMinuteBeforeNow);
 
-        assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()));
-        assertFalse(localApiKeyVerifier.isApiKeyValid(apiKey));
+        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
+        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
     public void expiredApiKeyShouldBeDenied(){
         apiKey.setValidUntil(oneMinuteBeforeNow);
 
-        assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()));
-        assertFalse(localApiKeyVerifier.isApiKeyValid(apiKey));
+        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
+        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
@@ -108,6 +108,6 @@ public class LocalApiKeyVerifierTest {
         reset(localApiKeyManagerMock);
         when(localApiKeyManagerMock.wasLatestUpdateOfLocalApiKeyListWithinDeadline()).thenReturn(false);
 
-        assertFalse(localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKey.getKeyValue()));
+        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
     }
 }

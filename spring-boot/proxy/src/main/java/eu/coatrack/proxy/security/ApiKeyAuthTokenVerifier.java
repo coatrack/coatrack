@@ -32,7 +32,6 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.net.ConnectException;
 import java.util.*;
 
 /**
@@ -48,13 +47,13 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
-    private final LocalApiKeyVerifier localApiKeyVerifier;
+    private final ApiKeyVerifier apiKeyVerifier;
 
     public ApiKeyAuthTokenVerifier(LocalApiKeyManager localApiKeyManager,
-                                   ApiKeyFetcher apiKeyFetcher, LocalApiKeyVerifier localApiKeyVerifier) {
+                                   ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
-        this.localApiKeyVerifier = localApiKeyVerifier;
+        this.apiKeyVerifier = apiKeyVerifier;
     }
 
     @Override
@@ -118,13 +117,13 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
         try {
             apiKeyAndAuth.apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
-            apiKeyAndAuth.isAuthorized = localApiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
+            apiKeyAndAuth.isAuthorized = apiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
         } catch (ApiKeyFetchingException e) {
             log.info("Trying to verify consumers API key with the value {}, the connection to admin failed.",
                     apiKeyValue);
             apiKeyAndAuth.apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
             if(apiKeyAndAuth.apiKey != null)
-                apiKeyAndAuth.isAuthorized = localApiKeyVerifier.isApiKeyAuthorizedConsideringLocalApiKeyList(apiKeyValue);
+                apiKeyAndAuth.isAuthorized = apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKeyValue);
         }
 
         return apiKeyAndAuth;
