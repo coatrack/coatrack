@@ -48,12 +48,16 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
     private final ApiKeyVerifier apiKeyVerifier;
+    private final Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
 
     public ApiKeyAuthTokenVerifier(LocalApiKeyManager localApiKeyManager,
                                    ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
         this.apiKeyVerifier = apiKeyVerifier;
+
+        authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
+                ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
     }
 
     @Override
@@ -68,15 +72,13 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private Authentication createApiKeyAuthToken(Authentication authentication) {
-        String apiKeyValue = getApiKeyValue(authentication);
+        String apiKeyValue = extractApiKeyValueFromAuthentication(authentication);
         //TODO this is just a workaround for now: check for fixed API key to allow CoatRack admin access
-        if (isAdminsKey(apiKeyValue)) {
-            return createAdminsAuthToken(apiKeyValue);
-        } else
-            return verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(apiKeyValue);
+        return isApiKeyOfAdminApp(apiKeyValue) ? createAdminAuthTokenFromApiKey(apiKeyValue)
+                : createConsumerAuthTokenIfApiKeyIsAuthorized(apiKeyValue);
     }
 
-    private String getApiKeyValue(Authentication authentication) {
+    private String extractApiKeyValueFromAuthentication(Authentication authentication) {
         log.debug("Getting API key value from authentication {}.", authentication.getName());
         Assert.notNull(authentication.getCredentials(), "The credentials were null.");
         Assert.isInstanceOf(String.class, authentication.getCredentials());
@@ -85,24 +87,21 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         return apiKeyValue;
     }
 
-    private boolean isAdminsKey(String apiKeyValue) {
-        log.debug("Checking if the API with the value {} is admins API key.", apiKeyValue);
+    private boolean isApiKeyOfAdminApp(String apiKeyValue) {
+        log.debug("Checking if '{}' is an API key of the admin application.", apiKeyValue);
         return apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES);
     }
 
-    private Authentication createAdminsAuthToken(String apiKeyValue) {
+    private Authentication createAdminAuthTokenFromApiKey(String apiKeyValue) {
         log.debug("Creating admins authentication token using API key with the value {}.", apiKeyValue);
 
-        Set<SimpleGrantedAuthority> authoritiesGrantedToYggAdmin = new HashSet<>();
-        authoritiesGrantedToYggAdmin.add(new SimpleGrantedAuthority(
-                ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
         ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
         apiKeyAuthToken.setAuthenticated(true);
 
         return apiKeyAuthToken;
     }
 
-    private Authentication verifyApiKeyAndIfAuthorizedCreateConsumerAuthToken(String apiKeyValue) {
+    private Authentication createConsumerAuthTokenIfApiKeyIsAuthorized(String apiKeyValue) {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
 
         ApiKeyAndAuth apiKeyAndAuth = getApiKeyAndCheckAuthorization(apiKeyValue);
