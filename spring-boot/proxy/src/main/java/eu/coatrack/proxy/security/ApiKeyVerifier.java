@@ -43,18 +43,14 @@ public class ApiKeyVerifier {
     }
 
     public boolean isApiKeyAuthorizedToAccessItsService(String apiKeyValue) {
-        log.debug("Begin checking if the API key with the value {} is valid using the local API key list.",
+        log.debug("Begin checking if the API key with the value {} is authorized using the local API key list.",
                 apiKeyValue);
 
         if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline())
             return false;
 
         ApiKey apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-        if (apiKey == null) {
-            return false;
-        } else {
-            return isApiKeyValid(apiKey);
-        }
+        return apiKey == null ? false : isApiKeyValid(apiKey);
     }
 
     public boolean isApiKeyValid(ApiKey apiKey) {

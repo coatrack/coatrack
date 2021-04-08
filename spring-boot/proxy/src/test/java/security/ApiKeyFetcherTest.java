@@ -1,4 +1,4 @@
-/*-
+package security;/*-
  * #%L
  * coatrack-proxy
  * %%

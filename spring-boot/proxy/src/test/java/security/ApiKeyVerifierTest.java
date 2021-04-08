@@ -1,4 +1,4 @@
-/*-
+package security;/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -107,6 +107,7 @@ public class ApiKeyVerifierTest {
     public void localApiKeyListWasNotUpdatedWithinDeadlineAndApiKeyShouldThereforeBeRejected(){
         reset(localApiKeyManagerMock);
         when(localApiKeyManagerMock.wasLatestUpdateOfLocalApiKeyListWithinDeadline()).thenReturn(false);
+        when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
 
         assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
     }
