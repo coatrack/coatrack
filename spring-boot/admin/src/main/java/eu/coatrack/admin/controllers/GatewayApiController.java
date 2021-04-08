@@ -79,7 +79,7 @@ public class GatewayApiController {
             else
                 throw new NotFoundException("The gateway with the ID " + gatewayId + " was not found.");
         } catch (Exception e) {
-            log.debug(e.getMessage());
+            log.debug("The creation of the API key list failed. {}" , gatewayId, e);
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
@@ -89,8 +89,10 @@ public class GatewayApiController {
             log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
         } else{
-            List<ApiKey> apiKeyList = proxy.getServiceApis().stream().flatMap(serviceApi -> serviceApi.getApiKeys()
-                    .stream()).collect(Collectors.toList());
+            List<ApiKey> apiKeyList = proxy.getServiceApis().stream()
+                    .flatMap(
+                            serviceApi -> serviceApi.getApiKeys().stream()
+                    ).collect(Collectors.toList());
             return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
         }
     }
