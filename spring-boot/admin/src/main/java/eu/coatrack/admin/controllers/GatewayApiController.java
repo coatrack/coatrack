@@ -80,7 +80,7 @@ public class GatewayApiController {
                 throw new NotFoundException("The gateway with the ID " + gatewayId + " was not found.");
         } catch (Exception e) {
             log.debug("The creation of the API key list failed. {}" , gatewayId, e);
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
