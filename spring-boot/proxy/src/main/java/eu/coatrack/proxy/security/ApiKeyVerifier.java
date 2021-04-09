@@ -33,7 +33,7 @@ import org.springframework.stereotype.Service;
 public class ApiKeyVerifier {
 
     public boolean isApiKeyValid(ApiKey apiKey) {
-        return apiKey == null ? false : isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
+        return apiKey != null && isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);
     }
 
     private boolean isApiKeyNotDeleted(ApiKey apiKey) {

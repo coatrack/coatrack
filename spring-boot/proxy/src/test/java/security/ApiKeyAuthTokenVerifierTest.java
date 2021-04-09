@@ -162,7 +162,7 @@ public class ApiKeyAuthTokenVerifierTest {
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
                 break;
             case EXCEPTION:
-                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ApiKeyFetchingException("test"));
+                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ApiKeyFetchingException());
                 break;
         }
     }

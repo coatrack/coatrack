@@ -22,11 +22,5 @@ package eu.coatrack.proxy.security;
 
 public class ApiKeyFetchingException extends Exception {
 
-    public ApiKeyFetchingException(String msg) {
-        super(msg);
-    }
-
-    public ApiKeyFetchingException() {
-
-    }
+    public ApiKeyFetchingException() {}
 }

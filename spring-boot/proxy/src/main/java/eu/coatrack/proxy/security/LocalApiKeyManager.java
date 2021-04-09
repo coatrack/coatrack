@@ -65,15 +65,12 @@ public class LocalApiKeyManager {
         log.debug("Trying to find the service API associated to the API key with the value {} from the local list.",
                 apiKeyValue);
 
-        if (apiKeyValue == null) {
-            log.debug("The passed API key value is null and can therefore not be checked for validity. " +
-                    "It is therefore rejected.");
+        if (apiKeyValue == null)
             return null;
-        }
 
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)).findFirst();
-        return optionalApiKey.isPresent() ? optionalApiKey.get() : null;
+        return optionalApiKey.orElse(null);
     }
 
     public boolean wasLatestUpdateOfLocalApiKeyListWithinDeadline() {
