@@ -54,8 +54,8 @@ public class LocalApiKeyManager {
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
 
-    private GatewayMode previousMode = GatewayMode.OFFLINE;
-    private GatewayMode currentMode = GatewayMode.OFFLINE;
+    private GatewayMode modeOfPreviousUpdateInterval = GatewayMode.OFFLINE;
+    private GatewayMode modeOfCurrentUpdateInterval = GatewayMode.OFFLINE;
 
     public LocalApiKeyManager(
             ApiKeyFetcher apiKeyFetcher,
@@ -90,30 +90,25 @@ public class LocalApiKeyManager {
         try {
             fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
         } catch (ApiKeyFetchingException e) {
-            switchToOfflineMode();
+            setCurrentGatewayMode(GatewayMode.OFFLINE);
             log.debug("Following error occurred: " + e);
             return;
         }
 
         localApiKeyList = fetchedApiKeyList;
         deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
-        switchToOnlineMode();
+        setCurrentGatewayMode(GatewayMode.ONLINE);
     }
 
-    private void switchToOfflineMode() {
-        if (previousMode == GatewayMode.ONLINE && currentMode == GatewayMode.ONLINE){
-            log.info("Connection to the CoatRack admin server is lost. Switching to offline mode.");
-        }
-        previousMode = currentMode;
-        currentMode = GatewayMode.OFFLINE;
-    }
 
-    private void switchToOnlineMode() {
-        if (previousMode == GatewayMode.OFFLINE && currentMode == GatewayMode.OFFLINE){
+    private void setCurrentGatewayMode(GatewayMode newModeOfCurrentUpdateInterval) {
+        if (modeOfPreviousUpdateInterval == GatewayMode.OFFLINE && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE)
             log.info("Connection to the CoatRack admin server could be established. Switching to online mode.");
-        }
-        previousMode = currentMode;
-        currentMode = GatewayMode.ONLINE;
+        else if (modeOfPreviousUpdateInterval == GatewayMode.ONLINE && modeOfCurrentUpdateInterval == GatewayMode.ONLINE)
+            log.info("Connection to the CoatRack admin server is lost. Switching to offline mode.");
+
+        modeOfPreviousUpdateInterval = modeOfCurrentUpdateInterval;
+        modeOfCurrentUpdateInterval = newModeOfCurrentUpdateInterval;
     }
 
     private enum GatewayMode{
