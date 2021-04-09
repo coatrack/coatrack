@@ -54,6 +54,9 @@ public class LocalApiKeyManager {
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
 
+    private GatewayMode previousMode = GatewayMode.OFFLINE;
+    private GatewayMode currentMode = GatewayMode.OFFLINE;
+
     public LocalApiKeyManager(
             ApiKeyFetcher apiKeyFetcher,
             @Value("${number-of-minutes-the-gateway-shall-work-without-connection-to-admin}") long minutes) {
@@ -87,11 +90,33 @@ public class LocalApiKeyManager {
         try {
             fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
         } catch (ApiKeyFetchingException e) {
+            switchToOfflineMode();
             log.debug("Following error occurred: " + e);
             return;
         }
 
         localApiKeyList = fetchedApiKeyList;
         deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
+        switchToOnlineMode();
+    }
+
+    private void switchToOfflineMode() {
+        if (previousMode == GatewayMode.ONLINE && currentMode == GatewayMode.ONLINE){
+            log.info("Connection to the CoatRack admin server is lost. Switching to offline mode.");
+        }
+        previousMode = currentMode;
+        currentMode = GatewayMode.OFFLINE;
+    }
+
+    private void switchToOnlineMode() {
+        if (previousMode == GatewayMode.OFFLINE && currentMode == GatewayMode.OFFLINE){
+            log.info("Connection to the CoatRack admin server could be established. Switching to online mode.");
+        }
+        previousMode = currentMode;
+        currentMode = GatewayMode.ONLINE;
+    }
+
+    private enum GatewayMode{
+        ONLINE, OFFLINE
     }
 }
