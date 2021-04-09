@@ -118,10 +118,22 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         } catch (ApiKeyFetchingException e) {
             log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed.",
                     apiKeyValue);
-            apiKeyAndAuth.apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-            if(apiKeyAndAuth.apiKey != null)
-                apiKeyAndAuth.isApiKeyAuthorized = apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKeyValue);
+            apiKeyAndAuth = createApiKeyAndAuthLocally(apiKeyValue);
         }
+
+        return apiKeyAndAuth;
+    }
+
+    private ApiKeyAndAuth createApiKeyAndAuthLocally(String apiKeyValue) {
+        ApiKeyAndAuth apiKeyAndAuth = new ApiKeyAndAuth();
+
+        if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline()){
+            apiKeyAndAuth.isApiKeyAuthorized = false;
+            return apiKeyAndAuth;
+        }
+
+        apiKeyAndAuth.apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+        apiKeyAndAuth.isApiKeyAuthorized = apiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
 
         return apiKeyAndAuth;
     }

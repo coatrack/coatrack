@@ -35,7 +35,6 @@ public class ApiKeyVerifierTest {
     private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
     private ApiKey apiKey;
     private ApiKeyVerifier apiKeyVerifier;
-    private LocalApiKeyManager localApiKeyManagerMock;
 
     private final long
             oneMinuteInMillis = 1000 * 60;
@@ -48,8 +47,7 @@ public class ApiKeyVerifierTest {
     @BeforeEach
     public void createAnAcceptingDefaultSetup(){
         apiKey = createValidApiKey();
-        localApiKeyManagerMock = createWorkingLocalApiKeyManagerMock();
-        apiKeyVerifier = new ApiKeyVerifier(localApiKeyManagerMock);
+        apiKeyVerifier = new ApiKeyVerifier();
     }
 
     private ApiKey createValidApiKey() {
@@ -60,30 +58,13 @@ public class ApiKeyVerifierTest {
         return apiKeyToBeCreated;
     }
 
-    private LocalApiKeyManager createWorkingLocalApiKeyManagerMock() {
-        LocalApiKeyManager mock = mock(LocalApiKeyManager.class);
-        when(mock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
-        when(mock.wasLatestUpdateOfLocalApiKeyListWithinDeadline()).thenReturn(true);
-        return mock;
-    }
-
     @Test
     public void validDefaultApiKeyShouldBeAccepted(){
-        assertTrue(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
         assertTrue(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
-    public void apiKeyIsNotFoundInLocalApiKeyListAndShouldBeRejected(){
-        reset(localApiKeyManagerMock);
-        when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(null);
-
-        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
-    }
-
-    @Test
     public void nullArgumentsShouldBeDenied(){
-        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(null));
         assertFalse(apiKeyVerifier.isApiKeyValid(null));
     }
 
@@ -91,7 +72,6 @@ public class ApiKeyVerifierTest {
     public void deletedApiKeyShouldBeDenied(){
         apiKey.setDeletedWhen(oneMinuteBeforeNow);
 
-        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
         assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
@@ -99,16 +79,6 @@ public class ApiKeyVerifierTest {
     public void expiredApiKeyShouldBeDenied(){
         apiKey.setValidUntil(oneMinuteBeforeNow);
 
-        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
         assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
-    }
-
-    @Test
-    public void localApiKeyListWasNotUpdatedWithinDeadlineAndApiKeyShouldThereforeBeRejected(){
-        reset(localApiKeyManagerMock);
-        when(localApiKeyManagerMock.wasLatestUpdateOfLocalApiKeyListWithinDeadline()).thenReturn(false);
-        when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(apiKey);
-
-        assertFalse(apiKeyVerifier.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()));
     }
 }

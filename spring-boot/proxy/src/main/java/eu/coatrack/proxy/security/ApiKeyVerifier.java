@@ -21,37 +21,16 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * This class provides methods to determine the validity or authorization of an API key.
+ * This class provides a method to determine the validity of an API key.
  *
  * @author Christoph Baier
  */
 
 @Service
 public class ApiKeyVerifier {
-
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyVerifier.class);
-
-    private final LocalApiKeyManager localApiKeyManager;
-
-    public ApiKeyVerifier(LocalApiKeyManager localApiKeyManager) {
-        this.localApiKeyManager = localApiKeyManager;
-    }
-
-    public boolean isApiKeyAuthorizedToAccessItsService(String apiKeyValue) {
-        log.debug("Begin checking if the API key with the value {} is authorized using the local API key list.",
-                apiKeyValue);
-
-        if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline())
-            return false;
-
-        ApiKey apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-        return apiKey == null ? false : isApiKeyValid(apiKey);
-    }
 
     public boolean isApiKeyValid(ApiKey apiKey) {
         return apiKey == null ? false : isApiKeyNotDeleted(apiKey) && isApiKeyNotExpired(apiKey);

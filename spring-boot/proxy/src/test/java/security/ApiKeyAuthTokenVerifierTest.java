@@ -42,13 +42,24 @@ public class ApiKeyAuthTokenVerifierTest {
 
     @BeforeEach
     public void setup(){
+        apiKey = createSampleApiKeyForTesting();
+
         apiKeyAuthTokenVerifier = createApiKeyAuthTokenVerifier();
 
         // Create an auth token for a valid api key without any granted authorities.
         apiKeyAuthToken = new ApiKeyAuthToken(someValidApiKeyValue, null);
         apiKeyAuthToken.setAuthenticated(false);
+    }
 
-        apiKey = createSampleApiKeyForTesting();
+    private ApiKey createSampleApiKeyForTesting() {
+        ServiceApi serviceApi = new ServiceApi();
+        serviceApi.setUriIdentifier("weather-data-service");
+
+        ApiKey localApiKey = new ApiKey();
+        localApiKey.setKeyValue(someValidApiKeyValue);
+        localApiKey.setServiceApi(serviceApi);
+
+        return localApiKey;
     }
 
     private ApiKeyAuthTokenVerifier createApiKeyAuthTokenVerifier() {
@@ -65,17 +76,6 @@ public class ApiKeyAuthTokenVerifierTest {
         return localApiKeyAuthTokenVerifier;
     }
 
-    private ApiKey createSampleApiKeyForTesting() {
-        ServiceApi serviceApi = new ServiceApi();
-        serviceApi.setUriIdentifier("weather-data-service");
-
-        apiKey = new ApiKey();
-        apiKey.setKeyValue(someValidApiKeyValue);
-        apiKey.setServiceApi(serviceApi);
-
-        return apiKey;
-    }
-
     @Test
     public void nullArgumentShouldCauseException(){
         assertThrows(SessionAuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(null));
@@ -90,31 +90,32 @@ public class ApiKeyAuthTokenVerifierTest {
 
     @Test
     public void validApiKeyFromAdminShouldBeAuthenticated() throws ApiKeyFetchingException {
-        initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
-        initializeApiKeyVerifierMockShallApiKeyBeValid(true);
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
+        initializeApiKeyVerifierMock_ShallApiKeyBeValid(true);
 
         assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     @Test
     public void invalidApiKeyFromAdminShouldBeRejected() throws ApiKeyFetchingException {
-        initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
-        initializeApiKeyVerifierMockShallApiKeyBeValid(false);
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
+        initializeApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void nullApiKeyReceivedFromAdminShouldBeRejected() throws ApiKeyFetchingException {
-        initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.NULL);
-        initializeApiKeyVerifierMockShallApiKeyBeValid(false);
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.NULL);
+        initializeApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected() throws ApiKeyFetchingException {
-        initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        shallDeadlineBeExceeded(false);
         shallApiKeyBeFoundInLocalApiKeyList(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
@@ -122,18 +123,28 @@ public class ApiKeyAuthTokenVerifierTest {
 
     @Test
     public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ApiKeyFetchingException {
-        initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        shallDeadlineBeExceeded(false);
         shallApiKeyBeFoundInLocalApiKeyList(true);
-        initializeApiKeyVerifierMockShallApiKeyBeAuthorized(true);
+        initializeApiKeyVerifierMock_ShallApiKeyBeValid(true);
 
         assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     @Test
+    public void exceedingTheDeadlineShouldRejectRequest() throws ApiKeyFetchingException {
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        shallDeadlineBeExceeded(true);
+
+        assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+    }
+
+    @Test
     public void apiKeyNotAuthorizedByLocalApiKeyListAndShouldNotBeAuthorized() throws ApiKeyFetchingException {
-        initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        shallDeadlineBeExceeded(false);
         shallApiKeyBeFoundInLocalApiKeyList(true);
-        initializeApiKeyVerifierMockShallApiKeyBeAuthorized(false);
+        initializeApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
         assertNull(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
@@ -142,7 +153,7 @@ public class ApiKeyAuthTokenVerifierTest {
     //Behavior of the mock objects
 
     //apiKeyFetcherMock
-    private void initializeAdminMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin) throws ApiKeyFetchingException {
+    private void initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin) throws ApiKeyFetchingException {
         switch (resultOfApiKeyRequestToAdmin){
             case NULL:
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
@@ -161,18 +172,17 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     //apiKeyVerifierMock
-    private void initializeApiKeyVerifierMockShallApiKeyBeValid(boolean shallApiKeyBeValid) {
+    private void initializeApiKeyVerifierMock_ShallApiKeyBeValid(boolean shallApiKeyBeValid) {
         when(apiKeyVerifierMock.isApiKeyValid(apiKey)).thenReturn(shallApiKeyBeValid);
-    }
-
-    private void initializeApiKeyVerifierMockShallApiKeyBeAuthorized(boolean shallApiKeyBeAuthorized) {
-        when(apiKeyVerifierMock.isApiKeyAuthorizedToAccessItsService(apiKey.getKeyValue()))
-                .thenReturn(shallApiKeyBeAuthorized);
     }
 
     //localApiKeyManagerMock
     private void shallApiKeyBeFoundInLocalApiKeyList(boolean isFoundInLocalApiKeyList) {
         ApiKey expectedReturnValue = isFoundInLocalApiKeyList ? apiKey : null;
         when(localApiKeyManagerMock.findApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
+    }
+
+    private void shallDeadlineBeExceeded(boolean isDeadlineExceeded) {
+        when(localApiKeyManagerMock.wasLatestUpdateOfLocalApiKeyListWithinDeadline()).thenReturn(!isDeadlineExceeded);
     }
 }
