@@ -65,7 +65,7 @@ public class ApiKeyFetcherTest {
     //API key List fetching
 
     @Test
-    public void nullApiKeyListResponseEntityShouldBeAnsweredWithException() throws ApiKeyFetchingException {
+    public void nullApiKeyListResponseEntityShouldBeAnsweredWithNull() throws ApiKeyFetchingException {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), any(Object.class))).thenReturn(null);
         assertNull(apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
@@ -99,7 +99,7 @@ public class ApiKeyFetcherTest {
     }
 
     @Test
-    public void nullApiKeyResponseEntityShouldBeAnsweredWithException() throws ApiKeyFetchingException {
+    public void nullApiKeyResponseEntityShouldBeAnsweredWithNull() throws ApiKeyFetchingException {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class))).thenReturn(null);
         assertNull(apiKeyFetcher.requestApiKeyFromAdmin(someApiKeyValue));
     }

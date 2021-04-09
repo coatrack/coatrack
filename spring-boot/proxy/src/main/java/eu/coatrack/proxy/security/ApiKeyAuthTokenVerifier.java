@@ -80,10 +80,12 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private String extractApiKeyValueFromAuthentication(Authentication authentication) {
         log.debug("Getting API key value from authentication {}.", authentication.getName());
+
         Assert.notNull(authentication.getCredentials(), "The credentials were null.");
         Assert.isInstanceOf(String.class, authentication.getCredentials());
         String apiKeyValue = (String) authentication.getCredentials();
         Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
+
         return apiKeyValue;
     }
 
@@ -120,7 +122,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private ApiKey createApiKeyLocally(String apiKeyValue) {
         if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline()){
             log.warn("The predefined time for working in offline mode is exceeded. The gateway will reject " +
-                    "every request until a connection to CoatRack Admin could be re-established.");
+                    "every request until a connection to CoatRack admin could be re-established.");
             return null;
         }
         return localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
@@ -129,17 +131,12 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {
         log.debug("Create consumers authentication token using API key with the value {}.", apiKey.getKeyValue());
 
-        String uriIdentifier = apiKey.getServiceApi().getUriIdentifier();
+        String serviceUriIdentifier = apiKey.getServiceApi().getUriIdentifier();
         ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKey.getKeyValue(), Collections.singleton(
-                new SimpleGrantedAuthority(
-                        ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + uriIdentifier)));
+                new SimpleGrantedAuthority(ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX
+                        + serviceUriIdentifier)));
         apiKeyAuthToken.setAuthenticated(true);
 
         return apiKeyAuthToken;
-    }
-
-    private class ApiKeyAndAuth {
-        public ApiKey apiKey = null;
-        public boolean isApiKeyAuthorized = false;
     }
 }
