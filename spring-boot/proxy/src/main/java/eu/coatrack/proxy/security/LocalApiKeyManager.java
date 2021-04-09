@@ -82,7 +82,7 @@ public class LocalApiKeyManager {
 
     @Async
     @PostConstruct
-    @Scheduled(fixedRateString = "${local-api-key-list-update-interval-in-millis}")
+    @Scheduled(fixedRate = 60000)//(fixedRateString = "${local-api-key-list-update-interval-in-millis}")
     public void updateLocalApiKeyList() {
         log.debug("Trying to update the local API key list by contacting CoatRack admin.");
 
