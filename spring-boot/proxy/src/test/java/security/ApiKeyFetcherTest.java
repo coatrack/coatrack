@@ -23,7 +23,6 @@ import eu.coatrack.proxy.security.ApiKeyFetchingException;
 import eu.coatrack.proxy.security.UrlResourcesProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -43,23 +42,24 @@ public class ApiKeyFetcherTest {
     private ApiKey apiKey;
     private ApiKey[] apiKeys;
 
-    private ResponseEntity<ApiKey[]> apiKeyListResponseEntity;
-
     @BeforeEach
     public void setup(){
         apiKey = new ApiKey();
+        apiKey.setKeyValue(someApiKeyValue);
+
         apiKeys = new ApiKey[1];
         apiKeys[0] = apiKey;
 
-        apiKeyListResponseEntity = new ResponseEntity<>(apiKeys, HttpStatus.OK);
-
         restTemplateMock = mock(RestTemplate.class);
-        urlResourcesProviderMock = mock(UrlResourcesProvider.class);
-
+        urlResourcesProviderMock = initializeUrlResourcesProviderMock();
         apiKeyFetcher = new ApiKeyFetcher(restTemplateMock, urlResourcesProviderMock);
+    }
 
+    private UrlResourcesProvider initializeUrlResourcesProviderMock() {
+        UrlResourcesProvider urlResourcesProvider = mock(UrlResourcesProvider.class);
         when(urlResourcesProviderMock.getApiKeyListRequestUrl()).thenReturn("");
         when(urlResourcesProviderMock.getApiKeyRequestUrl(anyString())).thenReturn("");
+        return urlResourcesProvider;
     }
 
     //API key List fetching
@@ -69,23 +69,24 @@ public class ApiKeyFetcherTest {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), any(Object.class))).thenReturn(null);
         assertNull(apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
-
-    /*
-    This Test does not work.
-
+/*
     @Test
     public void exceptionAtApiKeyListFetchingShouldBeAnsweredWithException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), any(Object.class))).thenThrow(new RestClientException("test"));
-        assertThrows(ApiKeyFetchingException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
-    }
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), anyString())).thenThrow(new RestClientException("test"));
 
+        assertThrows(ApiKeyFetchingException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
+
+        verify(restTemplateMock).getForEntity(anyString(), eq(ApiKey[].class), any(Object.class));
+    }*/
+
+/*
      This test is not finished yet, because I failed letting restTemplateMock return an object of type ResponseEntity<ApiKey[]>.
         Further tests for the remaining cases should be implemented.
 
     @Test
     public void validDefaultApiKeyListResponseEntityShouldBeReturned() throws ApiKeyFetchingException {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), anyString()))
-                .thenReturn(apiKeyListResponseEntity);
+                .thenReturn(new ResponseEntity<>(apiKeys, HttpStatus.OK));
 
         assertTrue(apiKeyFetcher.requestLatestApiKeyListFromAdmin().contains(apiKey));
     }*/
@@ -106,7 +107,36 @@ public class ApiKeyFetcherTest {
 
     @Test
     public void exceptionAtApiKeyFetchingShouldBeAnsweredWithException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class))).thenThrow(new RestClientException("test"));
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
+                .thenThrow(new RestClientException("test"));
         assertThrows(ApiKeyFetchingException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(someApiKeyValue));
+    }
+
+    @Test
+    public void validApiKeyResponseFromAdminShouldBeAccepted() throws ApiKeyFetchingException {
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
+                .thenReturn(new ResponseEntity<>(apiKey, HttpStatus.OK));
+        assertSame(apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()), apiKey);
+    }
+
+    @Test
+    public void nonOkHttpStatusShouldBeAnsweredWithNull() throws ApiKeyFetchingException {
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
+                .thenReturn(new ResponseEntity<>(apiKey, HttpStatus.INTERNAL_SERVER_ERROR));
+        assertNull(apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
+    }
+
+    @Test
+    public void apiKeyNotFoundByAdminShouldBeAnsweredWithNull() throws ApiKeyFetchingException {
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
+                .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
+        assertNull(apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
+    }
+
+    @Test
+    public void apiKeyNotFoundByAdminAndNonOkHttpStatusShouldBeAnsweredWithNull() throws ApiKeyFetchingException {
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
+                .thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
+        assertNull(apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
     }
 }
