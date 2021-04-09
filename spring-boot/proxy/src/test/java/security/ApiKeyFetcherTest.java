@@ -58,16 +58,16 @@ public class ApiKeyFetcherTest {
 
         apiKeyFetcher = new ApiKeyFetcher(restTemplateMock, urlResourcesProviderMock);
 
-        when(urlResourcesProviderMock.getApiKeyListRequestUrl()).thenReturn(null);
-        when(urlResourcesProviderMock.getApiKeyRequestUrl(anyString())).thenReturn(null);
+        when(urlResourcesProviderMock.getApiKeyListRequestUrl()).thenReturn("");
+        when(urlResourcesProviderMock.getApiKeyRequestUrl(anyString())).thenReturn("");
     }
 
     //API key List fetching
 
     @Test
-    public void nullApiKeyListResponseEntityShouldBeAnsweredWithException() {
+    public void nullApiKeyListResponseEntityShouldBeAnsweredWithException() throws ApiKeyFetchingException {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), any(Object.class))).thenReturn(null);
-        assertThrows(ApiKeyFetchingException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
+        assertNull(apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 
     @Test
@@ -81,17 +81,11 @@ public class ApiKeyFetcherTest {
 
     @Test
     public void validDefaultApiKeyListResponseEntityShouldBeReturned() throws ApiKeyFetchingException {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class), any(Object.class)))
-                .thenAnswer((Answer<ResponseEntity<ApiKey[]>>) apiKeyListResponseEntity);
-
-        //doReturn(apiKeyListResponseEntity).when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class), any(Object.class)));
-
-        //when(apiKeyListResponseEntity.getStatusCode()).thenReturn(HttpStatus.OK);
-        //when(apiKeyListResponseEntity.getBody()).thenReturn(apiKeys);
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), anyString()))
+                .thenReturn(apiKeyListResponseEntity);
 
         assertTrue(apiKeyFetcher.requestLatestApiKeyListFromAdmin().contains(apiKey));
-    }
-     */
+    }*/
 
 
     //Single API key fetching
@@ -110,6 +104,6 @@ public class ApiKeyFetcherTest {
     @Test
     public void exceptionAtApiKeyFetchingShouldBeAnsweredWithException() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class))).thenThrow(new RestClientException("test"));
-        assertThrows(ApiKeyFetchingException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
+        assertThrows(ApiKeyFetchingException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(someApiKeyValue));
     }
 }
