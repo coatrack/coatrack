@@ -57,8 +57,8 @@ public class ApiKeyFetcherTest {
 
     private UrlResourcesProvider initializeUrlResourcesProviderMock() {
         UrlResourcesProvider urlResourcesProvider = mock(UrlResourcesProvider.class);
-        when(urlResourcesProviderMock.getApiKeyListRequestUrl()).thenReturn("");
-        when(urlResourcesProviderMock.getApiKeyRequestUrl(anyString())).thenReturn("");
+        when(urlResourcesProvider.getApiKeyListRequestUrl()).thenReturn("");
+        when(urlResourcesProvider.getApiKeyRequestUrl(anyString())).thenReturn("");
         return urlResourcesProvider;
     }
 
