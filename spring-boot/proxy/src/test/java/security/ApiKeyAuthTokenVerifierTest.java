@@ -89,7 +89,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void validApiKeyFromAdminShouldBeAuthenticated() throws ApiKeyFetchingException {
+    public void validApiKeyFromAdminShouldBeAuthenticated() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
         initializeApiKeyVerifierMock_ShallApiKeyBeValid(true);
 
@@ -97,7 +97,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void invalidApiKeyFromAdminShouldBeRejected() throws ApiKeyFetchingException {
+    public void invalidApiKeyFromAdminShouldBeRejected() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
         initializeApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
@@ -105,7 +105,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void nullApiKeyReceivedFromAdminShouldBeRejected() throws ApiKeyFetchingException {
+    public void nullApiKeyReceivedFromAdminShouldBeRejected() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.NULL);
         initializeApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
@@ -113,7 +113,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected() throws ApiKeyFetchingException {
+    public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallDeadlineBeExceeded(false);
         shallApiKeyBeFoundInLocalApiKeyList(false);
@@ -122,7 +122,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ApiKeyFetchingException {
+    public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallDeadlineBeExceeded(false);
         shallApiKeyBeFoundInLocalApiKeyList(true);
@@ -132,7 +132,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void exceedingTheDeadlineShouldRejectRequest() throws ApiKeyFetchingException {
+    public void exceedingTheDeadlineShouldRejectRequest() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallDeadlineBeExceeded(true);
 
@@ -140,7 +140,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyNotAuthorizedByLocalApiKeyListAndShouldNotBeAuthorized() throws ApiKeyFetchingException {
+    public void apiKeyNotAuthorizedByLocalApiKeyListAndShouldNotBeAuthorized() throws ApiKeyFetchingFailedException {
         initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         shallDeadlineBeExceeded(false);
         shallApiKeyBeFoundInLocalApiKeyList(true);
@@ -153,7 +153,7 @@ public class ApiKeyAuthTokenVerifierTest {
     //Behavior of the mock objects
 
     //apiKeyFetcherMock
-    private void initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin) throws ApiKeyFetchingException {
+    private void initializeApiKeyFetcherMockWithExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin) throws ApiKeyFetchingFailedException {
         switch (resultOfApiKeyRequestToAdmin){
             case NULL:
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
@@ -162,7 +162,7 @@ public class ApiKeyAuthTokenVerifierTest {
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
                 break;
             case EXCEPTION:
-                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ApiKeyFetchingException());
+                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ApiKeyFetchingFailedException());
                 break;
         }
     }

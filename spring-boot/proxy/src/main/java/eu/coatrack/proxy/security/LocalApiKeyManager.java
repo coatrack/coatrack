@@ -89,7 +89,7 @@ public class LocalApiKeyManager {
         List<ApiKey> fetchedApiKeyList;
         try {
             fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
-        } catch (ApiKeyFetchingException e) {
+        } catch (ApiKeyFetchingFailedException e) {
             setCurrentGatewayMode(GatewayMode.OFFLINE);
             log.debug("Following error occurred: " + e);
             return;

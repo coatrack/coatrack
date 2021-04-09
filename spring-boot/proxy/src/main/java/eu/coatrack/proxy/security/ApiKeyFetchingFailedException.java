@@ -20,7 +20,7 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-public class ApiKeyFetchingException extends Exception {
+public class ApiKeyFetchingFailedException extends Exception {
 
-    public ApiKeyFetchingException() {}
+    public ApiKeyFetchingFailedException() {}
 }

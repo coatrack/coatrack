@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -53,7 +52,7 @@ public class ApiKeyFetcher {
         this.urlResourcesProvider = urlResourcesProvider;
     }
 
-    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws ApiKeyFetchingException {
+    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws ApiKeyFetchingFailedException {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
         ResponseEntity<ApiKey[]> responseEntity;
@@ -64,7 +63,7 @@ public class ApiKeyFetcher {
         } catch (RestClientException e){
             log.debug("Trying to request the latest API key list from Admin, the " +
                     "connection failed.", e);
-            throw new ApiKeyFetchingException();
+            throw new ApiKeyFetchingFailedException();
         }
 
         ApiKey[] apiKeys = (ApiKey[]) extractResponseEntity(responseEntity);
@@ -81,7 +80,7 @@ public class ApiKeyFetcher {
         return isResponseEntityOk ? responseEntity.getBody() : null;
     }
 
-    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws ApiKeyFetchingException {
+    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws ApiKeyFetchingFailedException {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
         if(apiKeyValue == null)
@@ -94,7 +93,7 @@ public class ApiKeyFetcher {
         } catch (RestClientException e){
             log.debug("Trying to request the API key with the value {} from CoatRack admin, " +
                     "the connection failed.", apiKeyValue, e);
-            throw new ApiKeyFetchingException();
+            throw new ApiKeyFetchingFailedException();
         }
         return (ApiKey) extractResponseEntity(responseEntity);
     }
