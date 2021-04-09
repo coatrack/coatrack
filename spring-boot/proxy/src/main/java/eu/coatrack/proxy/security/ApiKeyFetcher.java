@@ -92,16 +92,16 @@ public class ApiKeyFetcher {
         try {
             responseEntity = restTemplate.getForEntity(
                 urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
-            return verifyAndExtractApiKeyResponseEntity(responseEntity, apiKeyValue);
         } catch (RestClientException e){
             throw new ApiKeyFetchingException("Trying to request the API key with the value {} from CoatRack admin, " +
                     "the connection failed.");
         }
+        return verifyAndExtractApiKeyResponseEntity(responseEntity, apiKeyValue);
     }
 
     private ApiKey verifyAndExtractApiKeyResponseEntity(ResponseEntity<ApiKey> responseEntity, String apiKeyValue) {
         if(responseEntity == null)
-            throw new RestClientException("");
+            return null;
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             log.info("The API key with the value {} was found by CoatRack admin.", apiKeyValue);

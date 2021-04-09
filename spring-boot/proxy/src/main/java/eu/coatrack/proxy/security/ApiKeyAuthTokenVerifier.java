@@ -83,7 +83,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         Assert.notNull(authentication.getCredentials(), "The credentials were null.");
         Assert.isInstanceOf(String.class, authentication.getCredentials());
         String apiKeyValue = (String) authentication.getCredentials();
-        Assert.hasText(apiKeyValue, "The credentials di not contain any letters.");
+        Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
         return apiKeyValue;
     }
 
@@ -94,50 +94,36 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private Authentication createAdminAuthTokenFromApiKey(String apiKeyValue) {
         log.debug("Creating admins authentication token using API key with the value {}.", apiKeyValue);
-
         ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToYggAdmin);
         apiKeyAuthToken.setAuthenticated(true);
-
         return apiKeyAuthToken;
     }
 
     private Authentication createConsumerAuthTokenIfApiKeyIsAuthorized(String apiKeyValue) {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
-
-        ApiKeyAndAuth apiKeyAndAuth = getApiKeyAndCheckAuthorization(apiKeyValue);
-        return apiKeyAndAuth.isApiKeyAuthorized ? createConsumersAuthToken(apiKeyAndAuth.apiKey) : null;
+        ApiKey apiKey = getApiKey(apiKeyValue);
+        return apiKeyVerifier.isApiKeyValid(apiKey) ? createConsumersAuthToken(apiKey) : null;
     }
 
-    private ApiKeyAndAuth getApiKeyAndCheckAuthorization(String apiKeyValue) {
-        ApiKeyAndAuth apiKeyAndAuth = new ApiKeyAndAuth();
-
+    private ApiKey getApiKey(String apiKeyValue) {
+        ApiKey apiKey;
         try {
-            apiKeyAndAuth.apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
-            if (apiKeyAndAuth.apiKey != null)
-                apiKeyAndAuth.isApiKeyAuthorized = apiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
+            apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
         } catch (ApiKeyFetchingException e) {
             log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed.",
                     apiKeyValue);
-            apiKeyAndAuth = createApiKeyAndAuthLocally(apiKeyValue);
+            apiKey = createApiKeyLocally(apiKeyValue);
         }
-
-        return apiKeyAndAuth;
+        return apiKey;
     }
 
-    private ApiKeyAndAuth createApiKeyAndAuthLocally(String apiKeyValue) {
-        ApiKeyAndAuth apiKeyAndAuth = new ApiKeyAndAuth();
-
+    private ApiKey createApiKeyLocally(String apiKeyValue) {
         if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline()){
-            apiKeyAndAuth.isApiKeyAuthorized = false;
             log.warn("The predefined time for working in offline mode is exceeded. The gateway will reject " +
                     "every request until a connection to CoatRack Admin could be re-established.");
-            return apiKeyAndAuth;
+            return null;
         }
-
-        apiKeyAndAuth.apiKey = localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
-        apiKeyAndAuth.isApiKeyAuthorized = apiKeyVerifier.isApiKeyValid(apiKeyAndAuth.apiKey);
-
-        return apiKeyAndAuth;
+        return localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
     }
 
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {
