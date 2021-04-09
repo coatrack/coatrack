@@ -69,8 +69,8 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    @GetMapping( "/api/gateways/{gatewayId}/api-keys")
-    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@PathVariable("gatewayId") String gatewayId) {
+    @GetMapping( "/api/gateways/api-keys")
+    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayId(@RequestParam("gateway-api-key") String gatewayId) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayId);
         try {
             Proxy proxy = proxyRepository.findById(gatewayId);
