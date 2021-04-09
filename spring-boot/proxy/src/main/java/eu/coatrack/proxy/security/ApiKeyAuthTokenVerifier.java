@@ -129,6 +129,8 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
         if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline()){
             apiKeyAndAuth.isApiKeyAuthorized = false;
+            log.warn("The predefined time for working in offline mode is exceeded. The gateway will reject " +
+                    "every request until a connection to CoatRack Admin could be re-established.");
             return apiKeyAndAuth;
         }
 
