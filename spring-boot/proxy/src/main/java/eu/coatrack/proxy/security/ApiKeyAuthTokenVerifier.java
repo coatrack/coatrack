@@ -66,7 +66,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             log.debug("Verifying the authentication {}.", authentication.getName());
             return createApiKeyAuthToken(authentication);
         } catch (Exception e) {
-            log.info("During the authentication process this exception occurred: ", e);
+            log.debug("During the authentication process this exception occurred: ", e);
         }
         throw new SessionAuthenticationException("The authentication process failed.");
     }
@@ -114,18 +114,18 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         } catch (ApiKeyFetchingException e) {
             log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed.",
                     apiKeyValue);
-            apiKey = createApiKeyLocally(apiKeyValue);
+            apiKey = getLocalApiKey(apiKeyValue);
         }
         return apiKey;
     }
 
-    private ApiKey createApiKeyLocally(String apiKeyValue) {
+    private ApiKey getLocalApiKey(String apiKeyValue) {
         if (!localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline()){
             log.warn("The predefined time for working in offline mode is exceeded. The gateway will reject " +
                     "every request until a connection to CoatRack admin could be re-established.");
             return null;
         }
-        return localApiKeyManager.findApiKeyFromLocalApiKeyList(apiKeyValue);
+        return localApiKeyManager.getApiKeyFromLocalApiKeyList(apiKeyValue);
     }
 
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {

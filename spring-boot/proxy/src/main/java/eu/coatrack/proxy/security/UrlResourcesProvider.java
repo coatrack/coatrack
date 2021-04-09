@@ -61,16 +61,10 @@ public class UrlResourcesProvider {
         return attachGatewayIdToUrl(apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
     }
 
-    public String attachGatewayIdToUrl(String urlWithoutApiKey) {
-        String url = urlWithoutApiKey;
-
-        if (urlWithoutApiKey.contains("?")) {
-            url += "&";
-        } else {
-            url += "?";
-        }
-        url += Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + gatewayId;
-
+    public String attachGatewayIdToUrl(String urlWithoutApiKeyRequestParam) {
+        String queryStringSeparator = urlWithoutApiKeyRequestParam.contains("?") ? "&" : "?";
+        String url = urlWithoutApiKeyRequestParam + queryStringSeparator
+                + Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + gatewayId;
         return url;
     }
 
