@@ -64,9 +64,8 @@ public class LocalApiKeyManager {
         this.numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin = minutes;
     }
 
-    public ApiKey getApiKeyFromLocalApiKeyList(String apiKeyValue) {
-        log.debug("Trying to find the service API associated to the API key with the value {} from the local list.",
-                apiKeyValue);
+    public ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) {
+        log.debug("Trying to get the API key with the value {} from the local list.", apiKeyValue);
 
         if (apiKeyValue == null)
             return null;

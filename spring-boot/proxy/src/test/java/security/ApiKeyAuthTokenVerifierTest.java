@@ -179,7 +179,7 @@ public class ApiKeyAuthTokenVerifierTest {
     //localApiKeyManagerMock
     private void shallApiKeyBeFoundInLocalApiKeyList(boolean isFoundInLocalApiKeyList) {
         ApiKey expectedReturnValue = isFoundInLocalApiKeyList ? apiKey : null;
-        when(localApiKeyManagerMock.getApiKeyFromLocalApiKeyList(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
+        when(localApiKeyManagerMock.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
     }
 
     private void shallDeadlineBeExceeded(boolean isDeadlineExceeded) {

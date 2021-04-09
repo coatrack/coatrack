@@ -55,12 +55,12 @@ public class LocalApiKeyManagerTest {
 
     @Test
     public void nullApiKeyValueShouldBeAnsweredWithNull(){
-        assertNull(localApiKeyManager.getApiKeyFromLocalApiKeyList(null));
+        assertNull(localApiKeyManager.getApiKeyEntityByApiKeyValue(null));
     }
 
     @Test
     public void apiKeyIsFoundInLocalApiKeyListAndThereforeReturned(){
-        assertTrue(apiKey == localApiKeyManager.getApiKeyFromLocalApiKeyList(apiKey.getKeyValue()));
+        assertTrue(apiKey == localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
 
     @Test
@@ -71,7 +71,7 @@ public class LocalApiKeyManagerTest {
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyListNotContainingTheIncomingApiKey);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertNull(localApiKeyManager.getApiKeyFromLocalApiKeyList(apiKey.getKeyValue()));
+        assertNull(localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
 
     private List<ApiKey> createApiKeyListNotContainingTheIncomingApiKey() {

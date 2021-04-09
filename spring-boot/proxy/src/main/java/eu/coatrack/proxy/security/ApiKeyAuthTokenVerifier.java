@@ -125,7 +125,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
                     "every request until a connection to CoatRack admin could be re-established.");
             return null;
         }
-        return localApiKeyManager.getApiKeyFromLocalApiKeyList(apiKeyValue);
+        return localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKeyValue);
     }
 
     private ApiKeyAuthToken createConsumersAuthToken(ApiKey apiKey) {
