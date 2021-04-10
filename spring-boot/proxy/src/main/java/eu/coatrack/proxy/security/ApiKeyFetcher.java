@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class ApiKeyFetcher {
         }
 
         ApiKey[] apiKeys = (ApiKey[]) extractResponseEntity(responseEntity);
-        return apiKeys == null ? null : Arrays.asList(apiKeys);
+        return apiKeys == null ? null : new ArrayList<>(Arrays.asList(apiKeys));
     }
 
     private Object extractResponseEntity(ResponseEntity<?> responseEntity) {
