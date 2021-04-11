@@ -51,15 +51,24 @@ public class ApiKeyFetcherTest {
         apiKeys[0] = apiKey;
 
         restTemplateMock = mock(RestTemplate.class);
-        urlResourcesProviderMock = new UrlResourceProviderMock();
+        urlResourcesProviderMock = createUrlResourcesProviderMock();
+
         apiKeyFetcher = new ApiKeyFetcher(restTemplateMock, urlResourcesProviderMock);
+    }
+
+    private UrlResourcesProvider createUrlResourcesProviderMock() {
+        UrlResourcesProvider mock = mock(UrlResourcesProvider.class);
+        when(mock.getApiKeyListRequestUrl()).thenReturn("test");
+        when(mock.getApiKeyRequestUrl(anyString())).thenReturn("test");
+        when(mock.getGatewayId()).thenReturn("test");
+        return mock;
     }
 
     //API key List fetching
 
     @Test
     public void nullApiKeyListResponseEntityShouldBeAnsweredWithNull() throws ApiKeyFetchingFailedException {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), any(Object.class))).thenReturn(null);
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class), anyString())).thenReturn(null);
         assertNull(apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 
@@ -150,21 +159,6 @@ public class ApiKeyFetcherTest {
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
         assertNull(apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
     }
-
-    class UrlResourceProviderMock extends UrlResourcesProvider {
-
-        @Override
-        public String getApiKeyRequestUrl(String someArgument) {
-            return "test";
-        }
-
-        @Override
-        public String getApiKeyListRequestUrl() {
-            return "test";
-        }
-
-    }
-
 }
 
 
