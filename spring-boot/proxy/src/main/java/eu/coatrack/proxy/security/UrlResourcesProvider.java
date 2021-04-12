@@ -57,7 +57,7 @@ public class UrlResourcesProvider {
         apiKeyRequestUrlWithoutApiKeyValueAndGatewayId = adminBaseUrl + adminResourceToFetchSingleApiKey;
     }
 
-    public String getApiKeyRequestUrl(String apiKeyValue) {
+    public String getApiKeyRequestUrlWithoutGatewayId(String apiKeyValue) {
         return attachGatewayIdToUrl(apiKeyRequestUrlWithoutApiKeyValueAndGatewayId + apiKeyValue);
     }
 
@@ -70,9 +70,5 @@ public class UrlResourcesProvider {
 
     public String getApiKeyListRequestUrl() {
         return apiKeyListRequestUrl;
-    }
-
-    public String getGatewayId() {
-        return gatewayId;
     }
 }

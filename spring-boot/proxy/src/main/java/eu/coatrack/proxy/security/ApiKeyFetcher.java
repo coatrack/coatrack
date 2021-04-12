@@ -59,8 +59,7 @@ public class ApiKeyFetcher {
         ResponseEntity<ApiKey[]> responseEntity;
         try {
             responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class,
-                    urlResourcesProvider.getGatewayId());
+                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
         } catch (RestClientException e){
             log.debug("Trying to request the latest API key list from Admin, the " +
                     "connection failed.", e);
@@ -90,7 +89,7 @@ public class ApiKeyFetcher {
         ResponseEntity<ApiKey> responseEntity;
         try {
             responseEntity = restTemplate.getForEntity(
-                urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+                urlResourcesProvider.getApiKeyRequestUrlWithoutGatewayId(apiKeyValue), ApiKey.class);
         } catch (RestClientException e){
             log.debug("Trying to request the API key with the value {} from CoatRack admin, " +
                     "the connection failed.", apiKeyValue, e);
