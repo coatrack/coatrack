@@ -60,7 +60,7 @@ public class LocalApiKeyManagerTest {
 
     @Test
     public void apiKeyIsFoundInLocalApiKeyListAndThereforeReturned(){
-        assertTrue(apiKey == localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
+        assertSame(apiKey, localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
 
     @Test

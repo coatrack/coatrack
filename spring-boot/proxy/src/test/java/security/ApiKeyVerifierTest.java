@@ -71,14 +71,12 @@ public class ApiKeyVerifierTest {
     @Test
     public void deletedApiKeyShouldBeDenied(){
         apiKey.setDeletedWhen(oneMinuteBeforeNow);
-
         assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
     public void expiredApiKeyShouldBeDenied(){
         apiKey.setValidUntil(oneMinuteBeforeNow);
-
         assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 }

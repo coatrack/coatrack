@@ -1,4 +1,4 @@
-package security.ApiKeyFetcherTest;
+package security.ApiKeyFetcherTests;
 
 /*-
  * #%L
