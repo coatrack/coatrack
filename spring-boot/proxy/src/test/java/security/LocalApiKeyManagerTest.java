@@ -89,6 +89,15 @@ public class LocalApiKeyManagerTest {
     }
 
     @Test
+    public void localApiKeyListShouldNotUpdateWhenApiKeyFetcherDeliversNull() throws ApiKeyFetchingFailedException {
+        reset(apiKeyFetcherMock);
+        when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(null);
+        localApiKeyManager.updateLocalApiKeyList();
+
+        assertSame(apiKey, localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
+    }
+
+    @Test
     public void latestUpdateOfLocalAPiKeyListWasWithinDeadline(){
         long deadlineIsOneMinuteAfterNow = 1;
 

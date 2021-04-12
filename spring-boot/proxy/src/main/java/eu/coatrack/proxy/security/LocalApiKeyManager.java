@@ -54,8 +54,8 @@ public class LocalApiKeyManager {
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin;
 
+    private GatewayMode modeOfPenultimateUpdateInterval = GatewayMode.OFFLINE;
     private GatewayMode modeOfPreviousUpdateInterval = GatewayMode.OFFLINE;
-    private GatewayMode modeOfCurrentUpdateInterval = GatewayMode.OFFLINE;
 
     public LocalApiKeyManager(
             ApiKeyFetcher apiKeyFetcher,
@@ -93,21 +93,30 @@ public class LocalApiKeyManager {
             log.debug("Following error occurred: " + e);
             return;
         }
-
-        localApiKeyList = fetchedApiKeyList;
-        deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
-        setCurrentGatewayMode(GatewayMode.ONLINE);
+        updateLocalApiKeyListAndDeadlineAndGatewayModeDependingOnValidityOf(fetchedApiKeyList);
     }
 
-
-    private void setCurrentGatewayMode(GatewayMode newModeOfCurrentUpdateInterval) {
-        if (modeOfPreviousUpdateInterval == GatewayMode.OFFLINE && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE)
+    private void setCurrentGatewayMode(GatewayMode modeOfCurrentUpdateInterval) {
+        if (modeOfPenultimateUpdateInterval == GatewayMode.OFFLINE && modeOfPreviousUpdateInterval
+                == GatewayMode.OFFLINE && modeOfCurrentUpdateInterval == GatewayMode.ONLINE)
             log.info("Connection to the CoatRack admin server could be established. Switching to online mode.");
-        else if (modeOfPreviousUpdateInterval == GatewayMode.ONLINE && modeOfCurrentUpdateInterval == GatewayMode.ONLINE)
-            log.info("Connection to the CoatRack admin server is lost. Switching to offline mode.");
+        else if (modeOfPenultimateUpdateInterval == GatewayMode.ONLINE && modeOfPreviousUpdateInterval
+                == GatewayMode.ONLINE && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE)
+            log.info("There is a problem with CoatRack admin. Switching to offline mode.");
 
+        modeOfPenultimateUpdateInterval = modeOfPreviousUpdateInterval;
         modeOfPreviousUpdateInterval = modeOfCurrentUpdateInterval;
-        modeOfCurrentUpdateInterval = newModeOfCurrentUpdateInterval;
+    }
+
+    private void updateLocalApiKeyListAndDeadlineAndGatewayModeDependingOnValidityOf(List<ApiKey> fetchedApiKeyList) {
+        if(fetchedApiKeyList != null){
+            localApiKeyList = fetchedApiKeyList;
+            deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
+            setCurrentGatewayMode(GatewayMode.ONLINE);
+        } else {
+            log.debug("CoatRack admin delivered an invalid API key list.");
+            setCurrentGatewayMode(GatewayMode.OFFLINE);
+        }
     }
 
     private enum GatewayMode{
