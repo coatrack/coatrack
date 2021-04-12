@@ -36,8 +36,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Locally stores, periodically refreshes and provides API keys and their
- * associated service APIs belonging to the gateway.
+ * Locally stores, periodically refreshes and provides API keys belonging to the gateway.
  *
  * @author Christoph Baier
  */

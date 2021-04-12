@@ -52,7 +52,7 @@ public abstract class AbstractApiKeyFetcherTestSetup {
     private UrlResourcesProvider createUrlResourcesProviderMock() {
         UrlResourcesProvider mock = mock(UrlResourcesProvider.class);
         when(mock.getApiKeyListRequestUrl()).thenReturn("test");
-        when(mock.getApiKeyRequestUrlWithoutGatewayId(anyString())).thenReturn("test");
+        when(mock.getApiKeyRequestUrl(anyString())).thenReturn("test");
         return mock;
     }
 }

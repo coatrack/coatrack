@@ -89,7 +89,7 @@ public class ApiKeyFetcher {
         ResponseEntity<ApiKey> responseEntity;
         try {
             responseEntity = restTemplate.getForEntity(
-                urlResourcesProvider.getApiKeyRequestUrlWithoutGatewayId(apiKeyValue), ApiKey.class);
+                urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
         } catch (RestClientException e){
             log.debug("Trying to request the API key with the value {} from CoatRack admin, " +
                     "the connection failed.", apiKeyValue, e);
