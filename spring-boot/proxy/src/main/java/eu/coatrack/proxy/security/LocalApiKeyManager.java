@@ -28,6 +28,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
@@ -87,15 +88,19 @@ public class LocalApiKeyManager {
         List<ApiKey> fetchedApiKeyList;
         try {
             fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
-        } catch (ApiKeyFetchingFailedException e) {
-            displayGatewayModeSwitchesConsideringLatestUpdate(GatewayMode.OFFLINE);
+            Assert.notNull(fetchedApiKeyList, "Fetched API key list must not be null.");
+        } catch (Exception e) {
+            displayGatewayModeSwitchesConsideringCurrentGatewayMode(GatewayMode.OFFLINE);
             log.debug("Following error occurred: " + e);
             return;
         }
-        updateLocalApiKeyListAndGatewayMode(fetchedApiKeyList);
+
+        localApiKeyList = fetchedApiKeyList;
+        deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
+        displayGatewayModeSwitchesConsideringCurrentGatewayMode(GatewayMode.ONLINE);
     }
 
-    private void displayGatewayModeSwitchesConsideringLatestUpdate(GatewayMode modeOfCurrentUpdateInterval) {
+    private void displayGatewayModeSwitchesConsideringCurrentGatewayMode(GatewayMode modeOfCurrentUpdateInterval) {
         if (isSwitchingToOnlineMode(modeOfCurrentUpdateInterval)){
             log.info("Connection to the CoatRack admin server could be established. Switching to online mode.");
             lastModeDisplayedInLog = GatewayMode.ONLINE;
@@ -116,17 +121,6 @@ public class LocalApiKeyManager {
         return modeOfPreviousUpdateInterval == GatewayMode.OFFLINE
                 && lastModeDisplayedInLog == GatewayMode.ONLINE
                 && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE;
-    }
-
-    private void updateLocalApiKeyListAndGatewayMode(List<ApiKey> fetchedApiKeyList) {
-        if(fetchedApiKeyList != null){
-            localApiKeyList = fetchedApiKeyList;
-            deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
-            displayGatewayModeSwitchesConsideringLatestUpdate(GatewayMode.ONLINE);
-        } else {
-            log.debug("CoatRack admin delivered an invalid API key list.");
-            displayGatewayModeSwitchesConsideringLatestUpdate(GatewayMode.OFFLINE);
-        }
     }
 
     private enum GatewayMode{
