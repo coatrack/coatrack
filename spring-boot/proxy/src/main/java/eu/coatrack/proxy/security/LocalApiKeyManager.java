@@ -92,7 +92,7 @@ public class LocalApiKeyManager {
             log.debug("Following error occurred: " + e);
             return;
         }
-        updateLocalApiKeyListAndDeadlineAndGatewayModeDependingOnValidityOf(fetchedApiKeyList);
+        updateLocalApiKeyListAndGatewayMode(fetchedApiKeyList);
     }
 
     private void displayGatewayModeSwitchesConsideringLatestUpdate(GatewayMode modeOfCurrentUpdateInterval) {
@@ -118,7 +118,7 @@ public class LocalApiKeyManager {
                 && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE;
     }
 
-    private void updateLocalApiKeyListAndDeadlineAndGatewayModeDependingOnValidityOf(List<ApiKey> fetchedApiKeyList) {
+    private void updateLocalApiKeyListAndGatewayMode(List<ApiKey> fetchedApiKeyList) {
         if(fetchedApiKeyList != null){
             localApiKeyList = fetchedApiKeyList;
             deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
