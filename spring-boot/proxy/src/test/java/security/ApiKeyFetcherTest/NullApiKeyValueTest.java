@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class NullArgumentTest extends AbstractApiKeyFetcherTestSetup {
+public class NullApiKeyValueTest extends AbstractApiKeyFetcherTestSetup {
 
     @Test
-    public void nullResponseEntityShouldBeAnsweredWithNull() throws ApiKeyFetchingFailedException {
+    public void nullApiKeyValueShouldBeAnsweredWithNull() throws ApiKeyFetchingFailedException {
         assertNull(apiKeyFetcher.requestApiKeyFromAdmin(null));
     }
 
