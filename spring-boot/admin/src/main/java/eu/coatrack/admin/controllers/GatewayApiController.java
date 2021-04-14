@@ -21,24 +21,41 @@ package eu.coatrack.admin.controllers;
  */
 
 import eu.coatrack.admin.model.repository.ApiKeyRepository;
+import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
+import javassist.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
- * Controller that handles HTTP calls by CoatRack gateways
+ *  Controller that handles HTTP calls by CoatRack gateways.
  */
+
 @Controller
 public class GatewayApiController {
+
+    private static final Logger log = LoggerFactory.getLogger(GatewayApiController.class);
 
     @Autowired
     ApiKeyRepository apiKeyRepository;
 
     @Autowired
     ServiceApiRepository serviceApiRepository;
+
+    @Autowired
+    ProxyRepository proxyRepository;
 
     @RequestMapping(value = "/api/api-keys/search/findByKeyValue", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
@@ -50,5 +67,33 @@ public class GatewayApiController {
     @ResponseBody
     public ServiceApi findServiceByApiKeyValue(@RequestParam("apiKeyValue") String apiKeyValue) {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
+    }
+
+    @GetMapping( "/api/gateways/api-keys")
+    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayApiKey) {
+        log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
+        try {
+            Proxy proxy = proxyRepository.findById(gatewayApiKey);
+            if(proxy != null)
+                return createApiKeyListResponseEntity(proxy);
+            else
+                throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
+        } catch (Exception e) {
+            log.debug("The creation of the API key list failed. {}" , gatewayApiKey, e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<List<ApiKey>> createApiKeyListResponseEntity(Proxy proxy) {
+        if(proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
+            log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+        } else{
+            List<ApiKey> apiKeyList = proxy.getServiceApis().stream()
+                    .flatMap(
+                            serviceApi -> serviceApi.getApiKeys().stream()
+                    ).collect(Collectors.toList());
+            return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
+        }
     }
 }

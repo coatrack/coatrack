@@ -53,7 +53,6 @@ public class ApiKey {
     private Date validUntil;
 
     @OneToOne
-    @JsonIgnore
     private ServiceApi serviceApi;
 
     @OneToOne
