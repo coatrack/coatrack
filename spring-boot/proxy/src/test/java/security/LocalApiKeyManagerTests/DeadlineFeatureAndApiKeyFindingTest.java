@@ -1,4 +1,4 @@
-package security;/*-
+package security.LocalApiKeyManagerTests;/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -18,7 +18,6 @@ package security;/*-
  * #L%
  */
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetcher;
 import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
 import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,26 +29,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class LocalApiKeyManagerTest {
-
-    private ApiKey apiKey;
-    private List<ApiKey> localApiKeyList;
-    private ApiKeyFetcher apiKeyFetcherMock;
-    private LocalApiKeyManager localApiKeyManager;
+public class DeadlineFeatureAndApiKeyFindingTest extends AbstractLocalApiKeyManagerSetup{
 
     @BeforeEach
-    public void setup() throws ApiKeyFetchingFailedException {
-        apiKey = new ApiKey();
-        apiKey.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
-
-        localApiKeyList = new ArrayList<>();
-        localApiKeyList.add(apiKey);
-
-        apiKeyFetcherMock = mock(ApiKeyFetcher.class);
-        when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(localApiKeyList);
-
-        long timeInMinutesTheGatewayWorksWithoutConnectionToAdmin = 60;
-        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, timeInMinutesTheGatewayWorksWithoutConnectionToAdmin);
+    public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {
+        super.setupLocalApiKeyManagerAndApiKeyList();
+        when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyList);
         localApiKeyManager.updateLocalApiKeyList();
     }
 

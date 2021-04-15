@@ -90,34 +90,34 @@ public class LocalApiKeyManager {
             fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
             Assert.notNull(fetchedApiKeyList, "Fetched API key list must not be null.");
         } catch (Exception e) {
-            displayGatewayModeSwitchesConsideringCurrentGatewayMode(GatewayMode.OFFLINE);
             log.debug("Following error occurred: " + e);
+            switchToThisModeAndMaybeDisplayIt(GatewayMode.OFFLINE);
             return;
         }
 
         localApiKeyList = fetchedApiKeyList;
         deadline = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkWithoutConnectionToAdmin);
-        displayGatewayModeSwitchesConsideringCurrentGatewayMode(GatewayMode.ONLINE);
+        switchToThisModeAndMaybeDisplayIt(GatewayMode.ONLINE);
     }
 
-    private void displayGatewayModeSwitchesConsideringCurrentGatewayMode(GatewayMode modeOfCurrentUpdateInterval) {
-        if (isSwitchingToOnlineMode(modeOfCurrentUpdateInterval)){
+    private void switchToThisModeAndMaybeDisplayIt(GatewayMode modeOfCurrentUpdateInterval) {
+        if (shouldSwitchingToOnlineModeBeDisplayed(modeOfCurrentUpdateInterval)){
             log.info("Connection to the CoatRack admin server could be established. Switching to online mode.");
             lastModeDisplayedInLog = GatewayMode.ONLINE;
         }
-        else if (isSwitchingToOfflineMode(modeOfCurrentUpdateInterval)){
+        else if (shouldSwitchingToOfflineModeBeDisplayed(modeOfCurrentUpdateInterval)){
             log.info("There is a problem with CoatRack admin. Switching to offline mode.");
             lastModeDisplayedInLog = GatewayMode.OFFLINE;
         }
         modeOfPreviousUpdateInterval = modeOfCurrentUpdateInterval;
     }
 
-    private boolean isSwitchingToOnlineMode(GatewayMode modeOfCurrentUpdateInterval) {
+    private boolean shouldSwitchingToOnlineModeBeDisplayed(GatewayMode modeOfCurrentUpdateInterval) {
         return lastModeDisplayedInLog == GatewayMode.OFFLINE
                 && modeOfCurrentUpdateInterval == GatewayMode.ONLINE;
     }
 
-    private boolean isSwitchingToOfflineMode(GatewayMode modeOfCurrentUpdateInterval) {
+    private boolean shouldSwitchingToOfflineModeBeDisplayed(GatewayMode modeOfCurrentUpdateInterval) {
         return modeOfPreviousUpdateInterval == GatewayMode.OFFLINE
                 && lastModeDisplayedInLog == GatewayMode.ONLINE
                 && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE;
