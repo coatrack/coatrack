@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,8 +75,11 @@ public class GatewayApiController {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
         try {
             Proxy proxy = proxyRepository.findById(gatewayApiKey);
-            if(proxy != null)
+            if(proxy != null) {
+                proxy.setLastCallTimeToAdmin(new Timestamp(System.currentTimeMillis()).getTime());
+                proxyRepository.save(proxy);
                 return createApiKeyListResponseEntity(proxy);
+            }
             else
                 throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
         } catch (Exception e) {
