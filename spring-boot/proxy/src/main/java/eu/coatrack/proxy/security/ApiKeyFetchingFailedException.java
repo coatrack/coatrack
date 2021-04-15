@@ -4,7 +4,7 @@ package eu.coatrack.proxy.security;
  * #%L
  * coatrack-proxy
  * %%
- * Copyright (C) 2013 - 2020 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
+ * Copyright (C) 2013 - 2021 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,7 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-import eu.coatrack.api.Proxy;
-import org.springframework.beans.factory.annotation.Value;
+public class ApiKeyFetchingFailedException extends Exception {
 
-public class SecurityUtil {
-
-    @Value("${proxy-id}")
-    private String myProxyID;
-
-    public String attachGatewayApiKeyToUrl(String urlWithoutApiKey) {
-
-        String url = urlWithoutApiKey;
-        if (!urlWithoutApiKey.contains("?")) {
-            url += "?";
-        } else {
-            url += "&";
-        }
-        url += Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + myProxyID;
-
-        return url;
-    }
+    public ApiKeyFetchingFailedException() {}
 }

@@ -1,0 +1,55 @@
+.neutral-state-symbol{
+    height: 20px;
+    width: 20px;
+    background-color: grey;
+    border-radius: 50%;
+    display: inline-block;
+    border:1px solid black;
+    vertical-align: sub;
+}
+
+.everything-ok-symbol{
+    color: #23ac23;
+    font-size: 20px;
+}
+
+.warning-exclamation-mark{
+    color: #ff9847;
+    font-size: 20px;
+}
+
+.critical-exclamation-mark{
+    color: #ff2f2f;
+    font-size: 20px;
+}
+
+.ok-state{
+    background-color: #23ac23;
+}
+
+.warning-state{
+    background-color: #ff9847;
+}
+
+.critical-state{
+    background-color: #ff2f2f;
+}
+
+.health-monitor-data-table{
+    border-collapse: separate;
+    border-spacing: 20px;
+}
+
+.health-monitor-data-table td:nth-child(2){
+    text-align: center;
+}
+
+.health-monitor-introduction-table{
+    border-collapse: separate;
+    border-spacing: 30px 0;
+}
+
+.health-monitor-introduction-table p {
+    text-align: justify;
+    padding: 10px;
+}

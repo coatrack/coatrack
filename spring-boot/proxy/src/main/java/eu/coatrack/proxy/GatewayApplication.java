@@ -26,9 +26,7 @@ import eu.coatrack.proxy.filters.pre.ApiKeyAuthFilter;
 import eu.coatrack.proxy.filters.pre.RequestLoggingFilter;
 import eu.coatrack.proxy.metrics.MetricsCounterService;
 import eu.coatrack.proxy.metrics.MetricsTransmitter;
-import eu.coatrack.proxy.security.ApiKeyAuthTokenVerifier;
 import eu.coatrack.proxy.security.SecurityConfigurer;
-import eu.coatrack.proxy.security.SecurityUtil;
 import eu.coatrack.proxy.security.ServiceApiAccessRightsVoter;
 import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -117,11 +115,6 @@ public class GatewayApplication {
     }
 
     @Bean
-    public ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier() {
-        return new ApiKeyAuthTokenVerifier();
-    }
-
-    @Bean
     public SecurityConfigurer securityConfigurer() {
         return new SecurityConfigurer();
     }
@@ -130,7 +123,7 @@ public class GatewayApplication {
      * Rest template to be used for communication with CoatRack admin,
      * configured with auth credentials.
      */
-    @Bean
+    @Bean("restTemplate")
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(
@@ -154,10 +147,5 @@ public class GatewayApplication {
                 new ServiceApiAccessRightsVoter()
         );
         return new UnanimousBased(accessDecisionVoters);
-    }
-
-    @Bean
-    public SecurityUtil securityUtil() {
-        return new SecurityUtil();
     }
 }

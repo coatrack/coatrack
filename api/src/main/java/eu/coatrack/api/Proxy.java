@@ -55,6 +55,8 @@ public class Proxy {
 
     private String configServerPassword;
 
+    private Long lastCallTimeToAdmin;
+
     @OneToOne
     private User owner;
 
@@ -66,6 +68,9 @@ public class Proxy {
 
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
+
+    @Enumerated(EnumType.STRING)
+    private ProxyStates proxyStates;
 
     public String getCredentialName() {
         return configServerName;
@@ -82,8 +87,8 @@ public class Proxy {
     public void setConfigServerPassword(String credential_password) {
         this.configServerPassword = credential_password;
     }
-    
-    
+
+
 
     public User getOwner() {
         return owner;
@@ -155,6 +160,14 @@ public class Proxy {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public Long getLastCallTimeToAdmin() {
+        return lastCallTimeToAdmin;
+    }
+
+    public void setLastCallTimeToAdmin(Long lastCallTime) {
+        this.lastCallTimeToAdmin = lastCallTime;
     }
 
     @Override
