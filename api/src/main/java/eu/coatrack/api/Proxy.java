@@ -55,6 +55,8 @@ public class Proxy {
 
     private String configServerPassword;
 
+    private Long lastCallTimeToAdmin;
+
     @OneToOne
     private User owner;
 
@@ -85,8 +87,8 @@ public class Proxy {
     public void setConfigServerPassword(String credential_password) {
         this.configServerPassword = credential_password;
     }
-    
-    
+
+
 
     public User getOwner() {
         return owner;
@@ -158,6 +160,14 @@ public class Proxy {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public Long getLastCallTimeToAdmin() {
+        return lastCallTimeToAdmin;
+    }
+
+    public void setLastCallTimeToAdmin(Long lastCallTime) {
+        this.lastCallTimeToAdmin = lastCallTime;
     }
 
     @Override
