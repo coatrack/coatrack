@@ -66,6 +66,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -76,6 +77,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
+ * @author Bruno Silva <silva@atb-bremen.de>
  */
 @Controller
 @RequestMapping(value = "/admin")
@@ -120,6 +122,28 @@ public class AdminController {
         colorMap.put(503, Color.ORANGE_RED);
         colorMap.put(504, Color.DARK_RED);
         chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
+    }
+
+    private static final int convertTimestampMilisecondsToMinutes = 60000;
+
+    private void gatewayHealthMonitor() {
+
+        Long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
+        List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
+        proxiesToBeChanged.forEach((proxy) -> {
+            if (proxy.getLastCallTimeToAdmin() != null) {
+                Long minutesPastSinceLastContact = (currentTime - proxy.getLastCallTimeToAdmin()) / convertTimestampMilisecondsToMinutes;
+
+                proxy.setMinutesPastSinceLastContact(minutesPastSinceLastContact);
+
+                if (minutesPastSinceLastContact > 60) {
+                    proxy.setStatus(ProxyStates.CRITICAL);
+                } else if (minutesPastSinceLastContact > 5) {
+                    proxy.setStatus(ProxyStates.WARNING);
+                } else proxy.setStatus(ProxyStates.OK);
+                proxyRepository.save(proxy);
+            }
+        });
     }
 
     /* REPOSITORIES */
@@ -191,6 +215,8 @@ public class AdminController {
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
+                    gatewayHealthMonitor();
+                    mav.addObject("proxies", proxyRepository.findAvailable());
                     mav.addObject("stats", loadGeneralStatistics(
                             session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
                     mav.addObject("userStatistics", getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(

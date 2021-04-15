@@ -57,6 +57,8 @@ public class Proxy {
 
     private Long lastCallTimeToAdmin;
 
+    private Long minutesPastSinceLastContact;
+
     @OneToOne
     private User owner;
 
@@ -70,7 +72,7 @@ public class Proxy {
     private Date deletedWhen;
 
     @Enumerated(EnumType.STRING)
-    private ProxyStates proxyStates;
+    private ProxyStates status;
 
     public String getCredentialName() {
         return configServerName;
@@ -168,6 +170,22 @@ public class Proxy {
 
     public void setLastCallTimeToAdmin(Long lastCallTime) {
         this.lastCallTimeToAdmin = lastCallTime;
+    }
+
+    public Long getMinutesPastSinceLastContact() {
+        return minutesPastSinceLastContact;
+    }
+
+    public void setMinutesPastSinceLastContact(Long minutesPastSinceLastContact) {
+        this.minutesPastSinceLastContact = minutesPastSinceLastContact;
+    }
+
+    public ProxyStates getStatus() {
+        return status;
+    }
+
+    public void setStatus(ProxyStates status) {
+        this.status = status;
     }
 
     @Override
