@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class NullApiKeyValueTest extends AbstractApiKeyFetcherTestSetup {
 
     @Test
-    public void nullApiKeyValueShouldBeAnsweredWithException() {
+    public void nullApiKeyValueShouldCauseException() {
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(null));
     }
 

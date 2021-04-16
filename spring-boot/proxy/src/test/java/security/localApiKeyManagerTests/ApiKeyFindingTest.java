@@ -29,7 +29,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class DeadlineFeatureAndApiKeyFindingTest extends AbstractLocalApiKeyManagerSetup{
+public class ApiKeyFindingTest extends AbstractLocalApiKeyManagerSetup{
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {

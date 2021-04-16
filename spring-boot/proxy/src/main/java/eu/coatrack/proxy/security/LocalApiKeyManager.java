@@ -50,12 +50,11 @@ public class LocalApiKeyManager {
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
     private List<ApiKey> localApiKeyList = new ArrayList<>();
-    private LocalDateTime timeTheOfflineModeShallStopWorking = LocalDateTime.now();
+    private LocalDateTime deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now();
 
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkInOfflineMode;
 
-    private GatewayMode modeOfPreviousUpdateInterval = GatewayMode.OFFLINE;
     private GatewayMode lastModeDisplayedInLog = GatewayMode.OFFLINE;
 
     public LocalApiKeyManager(
@@ -67,6 +66,7 @@ public class LocalApiKeyManager {
 
     public ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) {
         log.debug("Trying to get the API key with the value {} from the local list.", apiKeyValue);
+        updateGatewayMode(GatewayMode.OFFLINE);
 
         return localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)
@@ -74,7 +74,7 @@ public class LocalApiKeyManager {
     }
 
     public boolean isMaxDurationOfOfflineModeExceeded() {
-        return LocalDateTime.now().isBefore(timeTheOfflineModeShallStopWorking);
+        return LocalDateTime.now().isBefore(deadlineWhenOfflineModeShallStopWorking);
     }
 
     @Async
@@ -94,31 +94,15 @@ public class LocalApiKeyManager {
         }
 
         localApiKeyList = fetchedApiKeyList;
-        timeTheOfflineModeShallStopWorking = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkInOfflineMode);
+        deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkInOfflineMode);
         updateGatewayMode(GatewayMode.ONLINE);
     }
 
     private void updateGatewayMode(GatewayMode modeAfterLatestCallToAdmin) {
-        if (shouldSwitchingToOnlineModeBeDisplayed(modeAfterLatestCallToAdmin)){
-            log.info("Connection to the CoatRack admin server could be established. Switching to online mode.");
-            lastModeDisplayedInLog = GatewayMode.ONLINE;
+        if (lastModeDisplayedInLog != modeAfterLatestCallToAdmin){
+           log.info("Gateway is switching to " + modeAfterLatestCallToAdmin + " mode.");
+           lastModeDisplayedInLog = modeAfterLatestCallToAdmin;
         }
-        else if (shouldSwitchingToOfflineModeBeDisplayed(modeAfterLatestCallToAdmin)){
-            log.info("There is a problem with CoatRack admin. Switching to offline mode.");
-            lastModeDisplayedInLog = GatewayMode.OFFLINE;
-        }
-        modeOfPreviousUpdateInterval = modeAfterLatestCallToAdmin;
-    }
-
-    private boolean shouldSwitchingToOnlineModeBeDisplayed(GatewayMode modeOfCurrentUpdateInterval) {
-        return lastModeDisplayedInLog == GatewayMode.OFFLINE
-                && modeOfCurrentUpdateInterval == GatewayMode.ONLINE;
-    }
-
-    private boolean shouldSwitchingToOfflineModeBeDisplayed(GatewayMode modeOfCurrentUpdateInterval) {
-        return modeOfPreviousUpdateInterval == GatewayMode.OFFLINE
-                && lastModeDisplayedInLog == GatewayMode.ONLINE
-                && modeOfCurrentUpdateInterval == GatewayMode.OFFLINE;
     }
 
     /*
@@ -127,6 +111,15 @@ public class LocalApiKeyManager {
      */
 
     private enum GatewayMode{
-        ONLINE, OFFLINE
+        ONLINE, OFFLINE;
+
+        @Override
+        public String toString() {
+            switch(this) {
+                case OFFLINE: return "offline";
+                case ONLINE: return "online";
+                default: throw new IllegalArgumentException();
+            }
+        }
     }
 }

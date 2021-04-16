@@ -97,7 +97,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void invalidApiKeyFromAdminShouldBeRejected() throws ApiKeyFetchingFailedException {
+    public void invalidApiKeyFromAdminShouldCauseException() throws ApiKeyFetchingFailedException {
         extendApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
         extendApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
@@ -105,7 +105,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void nullApiKeyReceivedFromAdminShouldBeRejected() throws ApiKeyFetchingFailedException {
+    public void nullApiKeyReceivedFromAdminShouldCauseException() throws ApiKeyFetchingFailedException {
         extendApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.NULL);
         extendApiKeyVerifierMock_ShallApiKeyBeValid(false);
 
@@ -113,7 +113,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void apiKeyNotFoundInLocalApiKeyListShouldBeRejected() throws ApiKeyFetchingFailedException {
+    public void apiKeyNotFoundInLocalApiKeyListShouldCauseException() throws ApiKeyFetchingFailedException {
         extendApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         extendApiKeyManagerMock_ShallDeadlineBeExceeded(false);
         extendApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(false);
@@ -132,7 +132,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void exceedingTheDeadlineShouldRejectRequest() throws ApiKeyFetchingFailedException {
+    public void exceedingTheDeadlineShouldCauseException() throws ApiKeyFetchingFailedException {
         extendApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         extendApiKeyManagerMock_ShallDeadlineBeExceeded(true);
 
@@ -140,7 +140,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void invalidApiKeyFromLocalApiKeyListAndShouldNotBeAuthorized() throws ApiKeyFetchingFailedException {
+    public void invalidApiKeyFromLocalApiKeyListAndShouldCauseException() throws ApiKeyFetchingFailedException {
         extendApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         extendApiKeyManagerMock_ShallDeadlineBeExceeded(false);
         extendApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
@@ -168,7 +168,7 @@ public class ApiKeyAuthTokenVerifierTest {
         }
     }
 
-    enum ResultOfApiKeyRequestToAdmin {
+    private enum ResultOfApiKeyRequestToAdmin {
         NULL, API_KEY, EXCEPTION
     }
 

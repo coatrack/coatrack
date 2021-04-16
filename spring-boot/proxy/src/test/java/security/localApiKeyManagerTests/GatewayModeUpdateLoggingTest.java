@@ -37,17 +37,16 @@ import static org.mockito.Mockito.when;
 
 public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetup{
 
-    private final static String onlineModeMessage = "Switching to online mode.";
-    private final static String offlineModeMessage = "Switching to offline mode.";
+    private final static String onlineModeMessage = "online mode";
+    private final static String offlineModeMessage = "offline mode";
 
     private LogEventStorage logEventStorage;
-    private Logger log;
 
     @BeforeEach
     public void setup(){
         super.setupLocalApiKeyManagerAndApiKeyList();
 
-        log = (Logger) LoggerFactory.getLogger(LocalApiKeyManager.class);
+        Logger log = (Logger) LoggerFactory.getLogger(LocalApiKeyManager.class);
         logEventStorage = new LogEventStorage();
         logEventStorage.setContext((LoggerContext) LoggerFactory.getILoggerFactory());
         log.setLevel(Level.DEBUG);
@@ -57,53 +56,78 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
 
     @Test
     public void NoAction_ShouldNotSwitchToAnyMode() {
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(offlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
     }
 
     @Test
-    public void ON_ShouldDisplaySwitchToOnlineModeOnce() throws ApiKeyFetchingFailedException {
+    public void ON() throws ApiKeyFetchingFailedException {
         switchToOnlineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
     }
 
     @Test
-    public void OFF_ShouldNotSwitchToAnyMode() throws ApiKeyFetchingFailedException {
+    public void OFF() throws ApiKeyFetchingFailedException {
+        //Gateway starts in offline and does therefore not switch modes.
         switchToOfflineMode();
 
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(offlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
     }
 
     @Test
-    public void ON_OFF_ShouldDisplaySwitchToOnlineModeOnce() throws ApiKeyFetchingFailedException {
+    public void ON_OFF() throws ApiKeyFetchingFailedException {
         switchToOnlineMode();
         switchToOfflineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
     }
 
     @Test
-    public void ON_OFF_OFF_ShouldDisplaySwitchToOnlineAndOfflineModeOnce() throws ApiKeyFetchingFailedException {
+    public void OFF_ON() throws ApiKeyFetchingFailedException {
+        switchToOfflineMode();
         switchToOnlineMode();
-        switchToOfflineMode();
-        switchToOfflineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfEventsContaining(onlineModeMessage));
-        assertEquals(1, logEventStorage.getNumberOfEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
     }
 
     @Test
-    public void ON_OFF_ON_ShouldDisplaySwitchToOnlineModeOnce() throws ApiKeyFetchingFailedException {
+    public void ON_ON() throws ApiKeyFetchingFailedException {
         switchToOnlineMode();
-        switchToOfflineMode();
         switchToOnlineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+    }
+
+    @Test
+    public void OFF_OFF() throws ApiKeyFetchingFailedException {
+        switchToOfflineMode();
+        switchToOfflineMode();
+
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+    }
+
+    @Test
+    public void localApiKeySearchShouldNotTriggerSwitchToOnlineMode() {
+        localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue());
+
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+    }
+
+    @Test
+    public void localApiKeySearchShouldTriggerSwitchFromOnlineToOfflineMode() throws ApiKeyFetchingFailedException {
+        switchToOnlineMode();
+        localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue());
+
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
     }
 
     public void switchToOnlineMode() throws ApiKeyFetchingFailedException {
@@ -119,7 +143,7 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
     }
 
     class LogEventStorage extends ListAppender<ILoggingEvent> {
-        public long getNumberOfEventsContaining(String phrase){
+        public long getNumberOfLogEventsContaining(String phrase){
             return list.stream().filter(logEntry -> logEntry.getMessage().contains(phrase)).count();
         }
     }
