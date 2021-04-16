@@ -1,4 +1,4 @@
-package security.LocalApiKeyManagerTests;/*-
+package security.localApiKeyManagerTests;/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -89,7 +89,7 @@ public class DeadlineFeatureAndApiKeyFindingTest extends AbstractLocalApiKeyMana
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteAfterNow);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertTrue(localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline());
+        assertTrue(localApiKeyManager.isMaxDurationOfOfflineModeExceeded());
     }
 
     @Test
@@ -99,6 +99,6 @@ public class DeadlineFeatureAndApiKeyFindingTest extends AbstractLocalApiKeyMana
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteBeforeNow);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertFalse(localApiKeyManager.wasLatestUpdateOfLocalApiKeyListWithinDeadline());
+        assertFalse(localApiKeyManager.isMaxDurationOfOfflineModeExceeded());
     }
 }

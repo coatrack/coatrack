@@ -74,26 +74,25 @@ public class GatewayApiController {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
         try {
             Proxy proxy = proxyRepository.findById(gatewayApiKey);
-            if(proxy != null)
-                return createApiKeyListResponseEntity(proxy);
+            if (proxy != null)
+                return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
             else
                 throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
         } catch (Exception e) {
-            log.debug("The creation of the API key list failed. {}" , gatewayApiKey, e);
+            log.info("The creation of the API key list for the gateway {} failed." , gatewayApiKey, e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private ResponseEntity<List<ApiKey>> createApiKeyListResponseEntity(Proxy proxy) {
+    private List<ApiKey> getApiKeysBelongingToServicesOf(Proxy proxy) {
         if(proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
             log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
-            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.OK);
+            return new ArrayList<>();
         } else{
-            List<ApiKey> apiKeyList = proxy.getServiceApis().stream()
+            return proxy.getServiceApis().stream()
                     .flatMap(
                             serviceApi -> serviceApi.getApiKeys().stream()
                     ).collect(Collectors.toList());
-            return new ResponseEntity<>(apiKeyList, HttpStatus.OK);
         }
     }
 }

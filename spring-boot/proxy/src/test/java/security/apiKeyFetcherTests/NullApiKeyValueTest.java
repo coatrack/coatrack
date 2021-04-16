@@ -1,4 +1,4 @@
-package security.ApiKeyFetcherTests;
+package security.apiKeyFetcherTests;
 
 /*-
  * #%L
@@ -23,13 +23,13 @@ package security.ApiKeyFetcherTests;
 import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class NullApiKeyValueTest extends AbstractApiKeyFetcherTestSetup {
 
     @Test
-    public void nullApiKeyValueShouldBeAnsweredWithNull() throws ApiKeyFetchingFailedException {
-        assertNull(apiKeyFetcher.requestApiKeyFromAdmin(null));
+    public void nullApiKeyValueShouldBeAnsweredWithException() {
+        assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(null));
     }
 
 }

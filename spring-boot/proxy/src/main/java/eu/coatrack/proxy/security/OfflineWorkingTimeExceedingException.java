@@ -20,12 +20,9 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-/**
- * "Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application."
- */
-public class ApiKeyFetchingFailedException extends Exception {
+public class OfflineWorkingTimeExceedingException extends Exception {
 
-    public ApiKeyFetchingFailedException(String message) {
+    public OfflineWorkingTimeExceedingException(String message) {
         super(message);
     }
 }
