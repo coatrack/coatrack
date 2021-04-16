@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+>
 
     <body>
         <div th:fragment="body">
@@ -151,7 +151,10 @@
                                                   th:class="${'neutral-state-symbol ' + proxy.status.displayStringVerbose}"></span>
                                             <span th:case="*" class="neutral-state-symbol"></span>
                                         </td>
-                                        <td th:text="${proxy.lastCallTimeToAdmin != null ? proxy.minutesPastSinceLastContact + ' min ago' : 'No connection done'}"></td>
+                                        <td th:if="${proxy.lastCallTimeToAdmin != null}">
+                                            <span th:text="${proxy.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : proxy.minutesPastSinceLastContact + ' min ago'}"></span>
+                                        </td>
+                                        <td th:if="${proxy.lastCallTimeToAdmin == null}" th:text="${'No sign of activity'}"></td>
                                     </tr>
                                 </table>
                             </div>

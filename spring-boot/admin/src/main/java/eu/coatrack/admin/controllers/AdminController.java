@@ -125,6 +125,8 @@ public class AdminController {
     }
 
     private static final int convertTimestampMilisecondsToMinutes = 60000;
+    private static final int criticalThreshold = 60;
+    private static final int warningThreshold = 5;
 
     private void gatewayHealthMonitor() {
 
@@ -136,9 +138,9 @@ public class AdminController {
 
                 proxy.setMinutesPastSinceLastContact(minutesPastSinceLastContact);
 
-                if (minutesPastSinceLastContact > 60) {
+                if (minutesPastSinceLastContact > criticalThreshold) {
                     proxy.setStatus(ProxyStates.CRITICAL);
-                } else if (minutesPastSinceLastContact > 5) {
+                } else if (minutesPastSinceLastContact > warningThreshold) {
                     proxy.setStatus(ProxyStates.WARNING);
                 } else proxy.setStatus(ProxyStates.OK);
                 proxyRepository.save(proxy);
