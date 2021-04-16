@@ -128,6 +128,15 @@ public class AdminController {
     private static final int criticalThreshold = 60;
     private static final int warningThreshold = 5;
 
+    private String gatewayHealthStatusSummary(){
+        List<Proxy> proxiesList = proxyRepository.findAvailable();
+        if (proxiesList.stream().map(Proxy::getStatus).anyMatch(status -> status == ProxyStates.CRITICAL))
+            return "Critical";
+        else if(proxiesList.stream().map(Proxy::getStatus).anyMatch(status -> status == ProxyStates.WARNING))
+            return "Warning";
+        return "Ok";
+    }
+
     private void gatewayHealthMonitor() {
 
         Long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
@@ -218,6 +227,7 @@ public class AdminController {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
                     gatewayHealthMonitor();
+                    mav.addObject("gatewayHealthStatusSummary", gatewayHealthStatusSummary());
                     mav.addObject("proxies", proxyRepository.findAvailable());
                     mav.addObject("stats", loadGeneralStatistics(
                             session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));

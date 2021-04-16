@@ -134,6 +134,18 @@
                         <div class="x_content">
                             <div class="demo-container" style="height:300px">
 
+                                <div th:switch="${gatewayHealthStatusSummary}">
+                                    <span th:case="'Warning'">
+                                    <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
+                                    <span class="warning-exclamation-mark">&#9888;</span></span>
+                                    <span th:case="'Critical'">
+                                    <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
+                                    <span class="critical-exclamation-mark">&#9888;</span></span>
+                                    <span th:case="'Ok'">
+                                    <span th:text="#{admin.dashboard.gatewayhealthmonitor.okstate}"></span>
+                                    <span class="everything-ok-symbol">&#10004;</span></span>
+                                </div>
+
                                 <table class="health-monitor-data-table">
                                     <tr>
                                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.gatewayname}"></th>
@@ -154,7 +166,8 @@
                                         <td th:if="${proxy.lastCallTimeToAdmin != null}">
                                             <span th:text="${proxy.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : proxy.minutesPastSinceLastContact + ' min ago'}"></span>
                                         </td>
-                                        <td th:if="${proxy.lastCallTimeToAdmin == null}" th:text="${'No sign of activity'}"></td>
+                                        <td th:if="${proxy.lastCallTimeToAdmin == null}"
+                                            th:text="${'No sign of activity'}"></td>
                                     </tr>
                                 </table>
                             </div>
