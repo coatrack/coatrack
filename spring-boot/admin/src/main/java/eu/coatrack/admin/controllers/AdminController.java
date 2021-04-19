@@ -137,7 +137,7 @@ public class AdminController {
         return "Ok";
     }
 
-    private void gatewayHealthMonitor() {
+    private void updateProxyInfoForGatewayHealthMonitor() {
 
         Long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
         List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
@@ -226,7 +226,7 @@ public class AdminController {
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
-                    gatewayHealthMonitor();
+                    updateProxyInfoForGatewayHealthMonitor();
                     mav.addObject("gatewayHealthStatusSummary", gatewayHealthStatusSummary());
                     mav.addObject("proxies", proxyRepository.findAvailable());
                     mav.addObject("stats", loadGeneralStatistics(
