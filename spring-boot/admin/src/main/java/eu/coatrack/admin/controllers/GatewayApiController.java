@@ -75,8 +75,11 @@ public class GatewayApiController {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
         try {
             Proxy proxy = proxyRepository.findById(gatewayApiKey);
-            if (proxy != null)
+            if (proxy != null) {
+                proxy.setLastCallTimeToAdmin(new Timestamp(System.currentTimeMillis()).getTime());
+                proxyRepository.save(proxy);
                 return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
+            }
             else
                 throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
         } catch (Exception e) {
