@@ -115,7 +115,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr>
+                                            <tr th:if="${testService != null}">>
                                                 <td th:text="${testService.name}"></td>
                                                 <td th:text="${testService.serviceAccessPaymentPolicy} == null ? '' : ${testService.serviceAccessPaymentPolicy.displayStringShort}"></td>
                                                 <td th:text="${testService.description}"></td>
@@ -150,7 +150,7 @@
                                             <p>
                                                 To test the access to the service with your API key, please click on the following link (a new tab will be opened with the service response). Please return to this tab afterwards.
                                             </p>
-                                            <p>
+                                            <p th:if="${testService != null}">
                                                 <span id="url" th:fragment="gatewayCallURL">
                                                     <strong><a th:href="(${proxiesPerApiKey?.get(apiKeys?.keyValue)+ '/' + testService.uriIdentifier + '?api-key=' + apiKeys?.keyValue})" target="_blank"><span th:text=" ${proxiesPerApiKey?.get(apiKeys?.keyValue) + '/' + testService.uriIdentifier}"/>?api-key=<span th:text=" ${apiKeys?.keyValue}">KEY</span></a></strong>
                                                 </span>
@@ -233,7 +233,7 @@
     // Post call to subscribe the test service
     function subscribeButtonClicked() {
         $.post("/admin/services/consumer/subscribe", {
-            selectedServiceId: [[${testService.id}]]
+            selectedServiceId: [[${ testService != null ? testService.id: 0 }]]
         }).done(function ChangeHTML() {
             console.log("Data sent");
             var serviceSubscribed = '<p id="ButtonClicked" clicked="1" class="byline"> Your API key was generated. To display your API key, please continue to the next step. </p>';
