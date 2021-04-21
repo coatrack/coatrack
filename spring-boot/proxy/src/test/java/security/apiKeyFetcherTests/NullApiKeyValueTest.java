@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security;
+package security.apiKeyFetcherTests;
 
 /*-
  * #%L
@@ -20,12 +20,16 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-/**
- * "Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application."
- */
-public class ApiKeyFetchingFailedException extends Exception {
+import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
+import org.junit.jupiter.api.Test;
 
-    public ApiKeyFetchingFailedException(String message) {
-        super(message);
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+public class NullApiKeyValueTest extends AbstractApiKeyFetcherTestSetup {
+
+    @Test
+    public void nullApiKeyValueShouldCauseException() {
+        assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(null));
     }
+
 }

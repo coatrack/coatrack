@@ -1,4 +1,4 @@
-package security.ApiKeyFetcherTests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -20,16 +20,9 @@ package security.ApiKeyFetcherTests;
  * #L%
  */
 
-import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
-import org.junit.jupiter.api.Test;
+public class OfflineWorkingTimeExceedingException extends Exception {
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-public class NullApiKeyValueTest extends AbstractApiKeyFetcherTestSetup {
-
-    @Test
-    public void nullApiKeyValueShouldBeAnsweredWithNull() throws ApiKeyFetchingFailedException {
-        assertNull(apiKeyFetcher.requestApiKeyFromAdmin(null));
+    public OfflineWorkingTimeExceedingException(String message) {
+        super(message);
     }
-
 }

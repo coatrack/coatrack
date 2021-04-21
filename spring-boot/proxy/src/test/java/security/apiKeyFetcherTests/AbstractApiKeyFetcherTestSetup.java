@@ -1,4 +1,4 @@
-package security.ApiKeyFetcherTests;/*-
+package security.apiKeyFetcherTests;/*-
  * #%L
  * coatrack-proxy
  * %%
