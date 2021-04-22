@@ -85,14 +85,13 @@ public class GatewayApiController {
     }
 
     private List<ApiKey> getApiKeysBelongingToServicesOf(Proxy proxy) {
-        if(proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
+        if (proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
             log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
             return new ArrayList<>();
-        } else{
+        } else
             return proxy.getServiceApis().stream()
                     .flatMap(
                             serviceApi -> serviceApi.getApiKeys().stream()
                     ).collect(Collectors.toList());
-        }
     }
 }
