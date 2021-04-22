@@ -115,11 +115,7 @@ public class LocalApiKeyManager {
 
         @Override
         public String toString() {
-            switch(this) {
-                case OFFLINE: return "offline";
-                case ONLINE: return "online";
-                default: throw new IllegalArgumentException();
-            }
+            return this == GatewayMode.ONLINE ? "online" : "offline";
         }
     }
 }

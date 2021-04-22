@@ -47,7 +47,7 @@ public class ApiKeyAuthTokenVerifierTest {
         apiKeyAuthTokenVerifier = createApiKeyAuthTokenVerifier();
 
         // Create an auth token for a valid api key without any granted authorities.
-        apiKeyAuthToken = new ApiKeyAuthToken(someValidApiKeyValue, null);
+        apiKeyAuthToken = new ApiKeyAuthToken(apiKey.getKeyValue(), null);
         apiKeyAuthToken.setAuthenticated(false);
     }
 
@@ -149,6 +149,13 @@ public class ApiKeyAuthTokenVerifierTest {
         assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
+    @Test
+    public void tokenWithAdminsAccessKeyShouldBeAccepted() {
+        apiKeyAuthToken = new ApiKeyAuthToken(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES, null);
+        apiKeyAuthToken.setAuthenticated(false);
+
+        assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
+    }
 
     //Behavior of the mock objects
 
