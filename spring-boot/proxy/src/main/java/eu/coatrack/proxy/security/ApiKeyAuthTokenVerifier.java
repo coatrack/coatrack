@@ -118,12 +118,11 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
-        if (localApiKeyManager.isMaxDurationOfOfflineModeExceeded())
-            return localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKeyValue);
-        else {
+        if (localApiKeyManager.isOfflineWorkingTimeExceeded())
             throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
                     "gateway will reject every request until a connection to CoatRack admin could be re-established.");
-        }
+        else
+            return localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKeyValue);
     }
 
     private ApiKeyAuthToken createAuthTokenGrantingAccessToServiceApi(ApiKey apiKey) {

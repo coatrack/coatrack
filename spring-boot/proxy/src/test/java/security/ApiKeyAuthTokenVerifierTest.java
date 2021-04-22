@@ -112,7 +112,7 @@ public class ApiKeyAuthTokenVerifierTest {
     @Test
     public void apiKeyNotFoundInLocalApiKeyListShouldCauseException() throws ApiKeyFetchingFailedException {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
-        addBehaviorToApiKeyManagerMock_ShallOfflineModeDeadlineBeExceeded(false);
+        addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(false);
 
         assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
@@ -121,7 +121,7 @@ public class ApiKeyAuthTokenVerifierTest {
     @Test
     public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ApiKeyFetchingFailedException {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
-        addBehaviorToApiKeyManagerMock_ShallOfflineModeDeadlineBeExceeded(false);
+        addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(true);
 
@@ -129,9 +129,9 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void exceedingTheDeadlineShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void exceedingTheOfflineWorkingTimeShouldCauseException() throws ApiKeyFetchingFailedException {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
-        addBehaviorToApiKeyManagerMock_ShallOfflineModeDeadlineBeExceeded(true);
+        addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(true);
 
         assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
@@ -139,7 +139,7 @@ public class ApiKeyAuthTokenVerifierTest {
     @Test
     public void invalidApiKeyFromLocalApiKeyListAndShouldCauseException() throws ApiKeyFetchingFailedException {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
-        addBehaviorToApiKeyManagerMock_ShallOfflineModeDeadlineBeExceeded(false);
+        addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
@@ -187,7 +187,7 @@ public class ApiKeyAuthTokenVerifierTest {
         when(localApiKeyManagerMock.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
     }
 
-    private void addBehaviorToApiKeyManagerMock_ShallOfflineModeDeadlineBeExceeded(boolean isDeadlineExceeded) {
-        when(localApiKeyManagerMock.isMaxDurationOfOfflineModeExceeded()).thenReturn(!isDeadlineExceeded);
+    private void addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(boolean isOfflineWorkingTimeExceeded) {
+        when(localApiKeyManagerMock.isOfflineWorkingTimeExceeded()).thenReturn(isOfflineWorkingTimeExceeded);
     }
 }

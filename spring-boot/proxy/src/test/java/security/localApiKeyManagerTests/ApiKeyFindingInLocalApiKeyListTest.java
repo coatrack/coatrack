@@ -29,7 +29,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ApiKeyFindingTest extends AbstractLocalApiKeyManagerSetup{
+public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManagerSetup{
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {
@@ -63,11 +63,11 @@ public class ApiKeyFindingTest extends AbstractLocalApiKeyManagerSetup{
         List<ApiKey> listWithoutTheIncomingApiKey = new ArrayList<>();
 
         ApiKey wrongApiKey1 = new ApiKey();
-        wrongApiKey1.setKeyValue("wrong value 1");
+        wrongApiKey1.setKeyValue("not matching value 1");
         listWithoutTheIncomingApiKey.add(wrongApiKey1);
 
         ApiKey wrongApiKey2 = new ApiKey();
-        wrongApiKey2.setKeyValue("wrong value 2");
+        wrongApiKey2.setKeyValue("not matching value 2");
         listWithoutTheIncomingApiKey.add(wrongApiKey2);
 
         return listWithoutTheIncomingApiKey;
@@ -83,22 +83,22 @@ public class ApiKeyFindingTest extends AbstractLocalApiKeyManagerSetup{
     }
 
     @Test
-    public void latestUpdateOfLocalAPiKeyListWasWithinDeadline(){
+    public void offlineWorkingTimeIsNotExceeded(){
         long deadlineIsOneMinuteAfterNow = 1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteAfterNow);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertTrue(localApiKeyManager.isMaxDurationOfOfflineModeExceeded());
+        assertFalse(localApiKeyManager.isOfflineWorkingTimeExceeded());
     }
 
     @Test
-    public void latestUpdateOfLocalApiKeyListWasNotWithinDeadline(){
+    public void offlineWorkingTimeIsExceeded(){
         long deadlineIsOneMinuteBeforeNow = -1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteBeforeNow);
         localApiKeyManager.updateLocalApiKeyList();
 
-        assertFalse(localApiKeyManager.isMaxDurationOfOfflineModeExceeded());
+        assertTrue(localApiKeyManager.isOfflineWorkingTimeExceeded());
     }
 }

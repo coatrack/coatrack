@@ -73,8 +73,8 @@ public class LocalApiKeyManager {
         ).findFirst().orElse(null);
     }
 
-    public boolean isMaxDurationOfOfflineModeExceeded() {
-        return LocalDateTime.now().isBefore(deadlineWhenOfflineModeShallStopWorking);
+    public boolean isOfflineWorkingTimeExceeded() {
+        return LocalDateTime.now().isAfter(deadlineWhenOfflineModeShallStopWorking);
     }
 
     @Async
@@ -88,7 +88,7 @@ public class LocalApiKeyManager {
             fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
             Assert.notNull(fetchedApiKeyList, "Fetched API key list must not be null.");
         } catch (Exception e) {
-            log.error("Following error occurred: " + e);
+            log.error("API key list fetching process failed." + e);
             updateGatewayMode(GatewayMode.OFFLINE);
             return;
         }
@@ -98,16 +98,16 @@ public class LocalApiKeyManager {
         updateGatewayMode(GatewayMode.ONLINE);
     }
 
-    private void updateGatewayMode(GatewayMode modeAfterLatestCallToAdmin) {
-        if (lastModeDisplayedInLog != modeAfterLatestCallToAdmin){
-           log.info("Gateway is switching to " + modeAfterLatestCallToAdmin + " mode.");
-           lastModeDisplayedInLog = modeAfterLatestCallToAdmin;
+    private void updateGatewayMode(GatewayMode currentGatewayMode) {
+        if (lastModeDisplayedInLog != currentGatewayMode){
+           log.info("Gateway is switching to " + currentGatewayMode + " mode.");
+           lastModeDisplayedInLog = currentGatewayMode;
         }
     }
 
     /*
         If the gateway successfully receives the latest list of API keys from CoatRack admin, it goes to online mode.
-        If that connection attempt failed, it goes to the temporally limited functioning offline mode.
+        If that connection attempt failed, it goes to the time-limited functioning offline mode.
      */
 
     private enum GatewayMode{
