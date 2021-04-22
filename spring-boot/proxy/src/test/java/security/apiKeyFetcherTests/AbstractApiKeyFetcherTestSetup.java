@@ -36,7 +36,7 @@ public abstract class AbstractApiKeyFetcherTestSetup {
     protected ApiKey[] apiKeys;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         apiKey = new ApiKey();
         apiKey.setKeyValue(someApiKeyValue);
 

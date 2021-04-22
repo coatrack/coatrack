@@ -91,13 +91,15 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     private Authentication createAdminAuthTokenFromApiKey(String apiKeyValue) {
         log.debug("Creating admins authentication token using API key with the value {}.", apiKeyValue);
-        ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToCoatRackAdminApp);
-        apiKeyAuthToken.setAuthenticated(true);
-        return apiKeyAuthToken;
+        ApiKeyAuthToken apiKeyAuthTokenForValidApiKey = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToCoatRackAdminApp);
+        apiKeyAuthTokenForValidApiKey.setAuthenticated(true);
+        return apiKeyAuthTokenForValidApiKey;
     }
 
-    private Authentication createConsumerAuthTokenIfApiKeyIsAuthorized(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
+    private Authentication createConsumerAuthTokenIfApiKeyIsAuthorized(String apiKeyValue) throws
+            BadCredentialsException, OfflineWorkingTimeExceedingException {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
+
         ApiKey apiKey = getApiKeyEntityByApiKeyValue(apiKeyValue);
         if (apiKeyVerifier.isApiKeyValid(apiKey))
             return createAuthTokenGrantingAccessToServiceApi(apiKey);

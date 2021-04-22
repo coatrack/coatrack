@@ -40,7 +40,7 @@ public class ApiKeyAuthTokenVerifierTest {
     private ApiKeyVerifier apiKeyVerifierMock;
 
     @BeforeEach
-    public void setupInstanceVariables(){
+    public void setup() {
         apiKey = createSampleApiKeyForTesting();
 
         apiKeyAuthTokenVerifier = createMockedApiKeyAuthTokenVerifier();

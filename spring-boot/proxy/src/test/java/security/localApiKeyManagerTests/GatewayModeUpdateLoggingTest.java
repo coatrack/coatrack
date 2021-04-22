@@ -43,7 +43,7 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
     private LogEventStorage logEventStorage;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         super.setupLocalApiKeyManagerAndApiKeyList();
 
         Logger log = (Logger) LoggerFactory.getLogger(LocalApiKeyManager.class);
