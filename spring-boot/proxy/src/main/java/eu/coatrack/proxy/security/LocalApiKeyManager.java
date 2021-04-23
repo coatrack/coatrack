@@ -99,9 +99,9 @@ public class LocalApiKeyManager {
     }
 
     private void updateGatewayMode(GatewayMode currentGatewayMode) {
-        if (lastModeDisplayedInLog != currentGatewayMode){
-           log.info("Gateway is switching to " + currentGatewayMode + " mode.");
-           lastModeDisplayedInLog = currentGatewayMode;
+        if (lastModeDisplayedInLog != currentGatewayMode) {
+            log.info("Gateway is switching to " + currentGatewayMode + " mode.");
+            lastModeDisplayedInLog = currentGatewayMode;
         }
     }
 
@@ -110,7 +110,7 @@ public class LocalApiKeyManager {
         If that connection attempt failed, it goes to the time-limited functioning offline mode.
      */
 
-    private enum GatewayMode{
+    private enum GatewayMode {
         ONLINE, OFFLINE;
 
         @Override

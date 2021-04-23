@@ -7,9 +7,9 @@ package eu.coatrack.proxy.security.local_api_key_manager_tests;/*-
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,6 +17,7 @@ package eu.coatrack.proxy.security.local_api_key_manager_tests;/*-
  * limitations under the License.
  * #L%
  */
+
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import eu.coatrack.proxy.security.LocalApiKeyManager;
@@ -29,7 +30,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManagerSetup{
+public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManagerSetup {
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {
@@ -39,12 +40,12 @@ public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManag
     }
 
     @Test
-    public void nullApiKeyValueShouldBeAnsweredWithNull(){
+    public void nullApiKeyValueShouldBeAnsweredWithNull() {
         assertNull(localApiKeyManager.getApiKeyEntityByApiKeyValue(null));
     }
 
     @Test
-    public void apiKeyIsFoundInLocalApiKeyListAndThereforeReturned(){
+    public void apiKeyIsFoundInLocalApiKeyListAndThereforeReturned() {
         assertSame(apiKey, localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
 
@@ -83,7 +84,7 @@ public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManag
     }
 
     @Test
-    public void offlineWorkingTimeIsNotExceeded(){
+    public void offlineWorkingTimeIsNotExceeded() {
         long deadlineIsOneMinuteAfterNow = 1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteAfterNow);
@@ -93,7 +94,7 @@ public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManag
     }
 
     @Test
-    public void offlineWorkingTimeIsExceeded(){
+    public void offlineWorkingTimeIsExceeded() {
         long deadlineIsOneMinuteBeforeNow = -1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteBeforeNow);

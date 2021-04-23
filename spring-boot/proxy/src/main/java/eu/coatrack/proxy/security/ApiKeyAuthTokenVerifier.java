@@ -34,7 +34,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Checks if the API key token value sent by the client is valid. If so, the client
@@ -119,7 +121,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
         } catch (ApiKeyFetchingFailedException e) {
             log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed. " +
-                            "Therefore checking the local API key list as fallback solution.", apiKeyValue);
+                    "Therefore checking the local API key list as fallback solution.", apiKeyValue);
             apiKey = getApiKeyEntityFromLocalCache(apiKeyValue);
         }
         return apiKey;

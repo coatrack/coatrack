@@ -7,9 +7,9 @@ package eu.coatrack.proxy.security.api_key_fetcher_tests;/*-
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,11 +17,13 @@ package eu.coatrack.proxy.security.api_key_fetcher_tests;/*-
  * limitations under the License.
  * #L%
  */
+
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.ApiKeyFetcher;
 import eu.coatrack.proxy.security.UrlResourcesProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.web.client.RestTemplate;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 

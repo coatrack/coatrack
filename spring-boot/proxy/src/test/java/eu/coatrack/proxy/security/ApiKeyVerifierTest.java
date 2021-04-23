@@ -8,9 +8,9 @@ package eu.coatrack.proxy.security;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package eu.coatrack.proxy.security;
  * limitations under the License.
  * #L%
  */
+
 import eu.coatrack.api.ApiKey;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApiKeyVerifierTest {
 
-    private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
     private ApiKey apiKey;
     private ApiKeyVerifier apiKeyVerifier;
 
@@ -42,7 +42,7 @@ public class ApiKeyVerifierTest {
             oneMinuteBeforeNow = new Timestamp(now.getTime() - oneMinuteInMillis);
 
     @BeforeEach
-    public void createAnAcceptingDefaultSetup(){
+    public void createAnAcceptingDefaultSetup() {
         apiKey = createValidApiKey();
         apiKeyVerifier = new ApiKeyVerifier();
     }
@@ -50,29 +50,29 @@ public class ApiKeyVerifierTest {
     private ApiKey createValidApiKey() {
         ApiKey apiKeyToBeCreated = new ApiKey();
         apiKeyToBeCreated.setDeletedWhen(null);
-        apiKeyToBeCreated.setKeyValue(someValidApiKeyValue);
+        apiKeyToBeCreated.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
         apiKeyToBeCreated.setValidUntil(oneMinuteAfterNow);
         return apiKeyToBeCreated;
     }
 
     @Test
-    public void validDefaultApiKeyShouldBeAccepted(){
+    public void validDefaultApiKeyShouldBeAccepted() {
         assertTrue(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
-    public void nullArgumentsShouldBeDenied(){
+    public void nullArgumentsShouldBeDenied() {
         assertFalse(apiKeyVerifier.isApiKeyValid(null));
     }
 
     @Test
-    public void deletedApiKeyShouldBeDenied(){
+    public void deletedApiKeyShouldBeDenied() {
         apiKey.setDeletedWhen(oneMinuteBeforeNow);
         assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }
 
     @Test
-    public void expiredApiKeyShouldBeDenied(){
+    public void expiredApiKeyShouldBeDenied() {
         apiKey.setValidUntil(oneMinuteBeforeNow);
         assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
     }

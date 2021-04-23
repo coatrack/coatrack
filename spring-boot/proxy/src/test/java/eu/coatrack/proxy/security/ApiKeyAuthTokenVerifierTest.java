@@ -129,7 +129,7 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void exceedingTheOfflineWorkingTimeShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void exceedingOfflineWorkingTimeShouldCauseException() throws ApiKeyFetchingFailedException {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(true);
 
