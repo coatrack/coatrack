@@ -76,7 +76,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             if (e instanceof AuthenticationException)
                 throw e;
             else
-                log.debug("During the authentication process this exception occurred: ", e);
+                log.debug("During the authentication process this unexpected exception occurred: ", e);
         }
         throw new AuthenticationProcessFailedException("The authentication process failed due to an unknown error.");
     }

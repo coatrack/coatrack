@@ -17,14 +17,18 @@ package eu.coatrack.proxy.security;/*-
  * limitations under the License.
  * #L%
  */
+
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.AuthenticationProcessFailedException;
+import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.BadCredentialsException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -74,15 +78,15 @@ public class ApiKeyAuthTokenVerifierTest {
     }
 
     @Test
-    public void nullArgumentShouldCauseException(){
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(null));
+    public void nullArgumentShouldCauseException() {
+        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthTokenVerifier.authenticate(null));
     }
 
     @Test
-    public void nullCredentialsInAuthTokenShouldCauseException(){
+    public void nullCredentialsInAuthTokenShouldCauseException() {
         ApiKeyAuthToken nullToken = new ApiKeyAuthToken(null, null);
 
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(nullToken));
+        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthTokenVerifier.authenticate(nullToken));
     }
 
     @Test
@@ -98,7 +102,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -106,21 +110,21 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.NULL);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void apiKeyNotFoundInLocalApiKeyListShouldCauseException() throws ApiKeyFetchingFailedException {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(false);
 
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ApiKeyFetchingFailedException {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(true);
@@ -130,20 +134,20 @@ public class ApiKeyAuthTokenVerifierTest {
 
     @Test
     public void exceedingOfflineWorkingTimeShouldCauseException() throws ApiKeyFetchingFailedException {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(true);
 
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(OfflineWorkingTimeExceedingException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void invalidApiKeyFromLocalApiKeyListAndShouldCauseException() throws ApiKeyFetchingFailedException {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
-        assertThrows(AuthenticationException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -159,21 +163,21 @@ public class ApiKeyAuthTokenVerifierTest {
     //apiKeyFetcherMock
     private void addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin)
             throws ApiKeyFetchingFailedException {
-        switch (resultOfApiKeyRequestToAdmin){
+        switch (resultOfApiKeyRequestToAdmin) {
             case NULL:
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
                 break;
             case API_KEY:
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
                 break;
-            case EXCEPTION:
+            case API_KEY_FETCHING_FAILED_EXCEPTION:
                 when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ApiKeyFetchingFailedException("test"));
                 break;
         }
     }
 
     private enum ResultOfApiKeyRequestToAdmin {
-        NULL, API_KEY, EXCEPTION
+        NULL, API_KEY, API_KEY_FETCHING_FAILED_EXCEPTION
     }
 
     //apiKeyVerifierMock
