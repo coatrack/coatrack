@@ -1,4 +1,4 @@
-package security.localApiKeyManagerTests;/*-
+package eu.coatrack.proxy.security.local_api_key_manager_tests;/*-
  * #%L
  * coatrack-proxy
  * %%

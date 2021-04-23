@@ -1,4 +1,4 @@
-package security;/*-
+package eu.coatrack.proxy.security;/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -19,7 +19,6 @@ package security;/*-
  */
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
-import eu.coatrack.proxy.security.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.AuthenticationException;

@@ -1,4 +1,4 @@
-package security.apiKeyFetcherTests;/*-
+package eu.coatrack.proxy.security.api_key_fetcher_tests;/*-
  * #%L
  * coatrack-proxy
  * %%
