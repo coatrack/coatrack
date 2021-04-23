@@ -63,9 +63,8 @@ public class UrlResourcesProvider {
 
     public String attachGatewayIdToUrl(String urlWithoutApiKeyRequestParam) {
         String queryStringSeparator = urlWithoutApiKeyRequestParam.contains("?") ? "&" : "?";
-        String url = urlWithoutApiKeyRequestParam + queryStringSeparator
+        return urlWithoutApiKeyRequestParam + queryStringSeparator
                 + Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + gatewayId;
-        return url;
     }
 
     public String getApiKeyListRequestUrl() {

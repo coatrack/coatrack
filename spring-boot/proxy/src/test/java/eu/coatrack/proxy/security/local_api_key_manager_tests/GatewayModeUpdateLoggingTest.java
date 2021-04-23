@@ -142,7 +142,7 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         localApiKeyManager.updateLocalApiKeyList();
     }
 
-    class LogEventStorage extends ListAppender<ILoggingEvent> {
+    static class LogEventStorage extends ListAppender<ILoggingEvent> {
         public long getNumberOfLogEventsContaining(String phrase) {
             return list.stream().filter(logEntry -> logEntry.getMessage().contains(phrase)).count();
         }

@@ -33,7 +33,7 @@ public class ApiKeyVerifierTest {
     private ApiKey apiKey;
     private ApiKeyVerifier apiKeyVerifier;
 
-    private final long
+    private static final long
             oneMinuteInMillis = 1000 * 60;
 
     private final Timestamp

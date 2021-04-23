@@ -49,7 +49,7 @@ public class ServiceApiAccessRightsVoter implements AccessDecisionVoter<FilterIn
     private static final Pattern PATTERN_TO_GET_SERVICE_API_ID = Pattern.compile("^/?([^/?]+).*");
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
 
-    Logger log = LoggerFactory.getLogger(ServiceApiAccessRightsVoter.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceApiAccessRightsVoter.class);
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -66,7 +66,7 @@ public class ServiceApiAccessRightsVoter implements AccessDecisionVoter<FilterIn
     @Override
     public int vote(Authentication authentication, FilterInvocation filterInvocation, Collection<ConfigAttribute> attributes) {
         log.debug("authentication '{}' filter invocation '{}' attributes '{}'",
-                authentication, filterInvocation, attributes.stream().map(a -> a.toString()).toString());
+                authentication, filterInvocation, attributes.stream().map(Object::toString));
 
         HttpServletRequest httpServletRequest = filterInvocation.getHttpRequest();
 
