@@ -206,14 +206,6 @@ public class ServiceApi implements ServiceApiInterface{
         this.entryPoints = entryPoints;
     }
 
-    /**
-     *
-     * @return a simple String to display the Service API in a GUI
-     */
-    public String getGuiStringRepresentation() {
-        return String.format("%s / %s (%s)", name, uriIdentifier, localUrl);
-    }
-
     @Override
     public int hashCode() {
         int hash = 3;
