@@ -43,9 +43,9 @@ public class SingleApiKeyFetchingTest extends AbstractApiKeyFetcherTestSetup {
     }
 
     @Test
-    public void nullApiKeyResponseEntityShouldBeAnsweredWithNull() throws ApiKeyFetchingFailedException {
+    public void nullApiKeyResponseEntityShouldCauseException() throws ApiKeyFetchingFailedException {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class))).thenReturn(null);
-        assertNull(apiKeyFetcher.requestApiKeyFromAdmin(someApiKeyValue));
+        assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(someApiKeyValue));
     }
 
     @Test

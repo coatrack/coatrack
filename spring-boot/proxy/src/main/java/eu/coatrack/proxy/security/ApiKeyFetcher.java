@@ -76,7 +76,7 @@ public class ApiKeyFetcher {
     private Object extractBodyFromResponseEntity(ResponseEntity<?> responseEntity) {
         log.debug("Extracting ResponseEntity.");
         if (responseEntity == null)
-            return null;
+            throw new ApiKeyFetchingFailedException("The response entity is null.");
 
         boolean isResponseEntityOk = responseEntity.getStatusCode() == HttpStatus.OK
                 && responseEntity.getBody() != null;
