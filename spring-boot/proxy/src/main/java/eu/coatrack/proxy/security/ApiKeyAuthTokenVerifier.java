@@ -21,6 +21,9 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.AuthenticationProcessFailedException;
+import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -68,9 +71,12 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             return doesApiKeyBelongToAdminApp(apiKeyValue) ? createAdminAuthTokenFromApiKey(apiKeyValue)
                     : createConsumerAuthTokenIfApiKeyIsAuthorized(apiKeyValue);
         } catch (Exception e) {
-            log.debug("During the authentication process this exception occurred: ", e);
+            if (e instanceof AuthenticationException)
+                throw e;
+            else
+                log.debug("During the authentication process this exception occurred: ", e);
         }
-        throw new BadCredentialsException("The authentication process failed.");
+        throw new AuthenticationProcessFailedException("The authentication process failed due to an unknown error.");
     }
 
     private String extractApiKeyValueFromAuthentication(Authentication authentication) {

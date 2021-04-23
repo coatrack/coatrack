@@ -21,7 +21,7 @@ package eu.coatrack.proxy.security.api_key_fetcher_tests;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

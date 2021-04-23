@@ -19,6 +19,7 @@ package eu.coatrack.proxy.security;/*-
  */
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.AuthenticationException;

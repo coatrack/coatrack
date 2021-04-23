@@ -18,7 +18,7 @@ package eu.coatrack.proxy.security.local_api_key_manager_tests;/*-
  * #L%
  */
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

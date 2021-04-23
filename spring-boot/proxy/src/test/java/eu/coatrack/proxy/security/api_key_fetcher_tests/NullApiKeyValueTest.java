@@ -20,7 +20,7 @@ package eu.coatrack.proxy.security.api_key_fetcher_tests;
  * #L%
  */
 
-import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;

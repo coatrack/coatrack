@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security;
+package eu.coatrack.proxy.security.exceptions;
 
 /*-
  * #%L
@@ -20,9 +20,14 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-public class OfflineWorkingTimeExceedingException extends Exception {
+import org.springframework.security.core.AuthenticationException;
 
-    public OfflineWorkingTimeExceedingException(String message) {
+/**
+ * "Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application."
+ */
+public class ApiKeyFetchingFailedException extends AuthenticationException {
+
+    public ApiKeyFetchingFailedException(String message) {
         super(message);
     }
 }
