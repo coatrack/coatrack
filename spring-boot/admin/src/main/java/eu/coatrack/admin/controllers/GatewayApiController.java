@@ -36,6 +36,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ public class GatewayApiController {
         try {
             Proxy proxy = proxyRepository.findById(gatewayApiKey);
             if (proxy != null) {
-                proxy.setLastCallTimeToAdmin(new Timestamp(System.currentTimeMillis()).getTime());
+                proxy.setLastCallTimeToAdmin(LocalDateTime.now());
                 proxyRepository.save(proxy);
                 return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
             }

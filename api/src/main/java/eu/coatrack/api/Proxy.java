@@ -21,6 +21,7 @@ package eu.coatrack.api;
  */
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -55,7 +56,7 @@ public class Proxy {
 
     private String configServerPassword;
 
-    private Long lastCallTimeToAdmin;
+    private LocalDateTime lastCallTimeToAdmin;
 
     private Long minutesPastSinceLastContact;
 
@@ -164,11 +165,11 @@ public class Proxy {
         this.port = port;
     }
 
-    public Long getLastCallTimeToAdmin() {
+    public LocalDateTime getLastCallTimeToAdmin() {
         return lastCallTimeToAdmin;
     }
 
-    public void setLastCallTimeToAdmin(Long lastCallTime) {
+    public void setLastCallTimeToAdmin(LocalDateTime lastCallTime) {
         this.lastCallTimeToAdmin = lastCallTime;
     }
 

@@ -66,8 +66,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Date;
-import java.sql.Timestamp;
+import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -139,12 +140,11 @@ public class AdminController {
 
     private void updateProxyInfoForGatewayHealthMonitor() {
 
-        Long currentTime = new Timestamp(System.currentTimeMillis()).getTime();
+        LocalDateTime currentTime = LocalDateTime.now();
         List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
         proxiesToBeChanged.forEach((proxy) -> {
             if (proxy.getLastCallTimeToAdmin() != null) {
-                Long minutesPastSinceLastContact = (currentTime - proxy.getLastCallTimeToAdmin()) / oneMinuteToMilliseconds;
-
+                Long minutesPastSinceLastContact = Duration.between(proxy.getLastCallTimeToAdmin(), currentTime).toMinutes();
                 proxy.setMinutesPastSinceLastContact(minutesPastSinceLastContact);
 
                 if (minutesPastSinceLastContact > criticalThresholdInMinutes) {
