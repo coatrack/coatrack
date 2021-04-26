@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.exceptions.LocalApiKeyListWasNotInitializedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +51,7 @@ public class LocalApiKeyManager {
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
     private List<ApiKey> localApiKeyList = new ArrayList<>();
-    private LocalDateTime deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now();
+    private LocalDateTime deadlineWhenOfflineModeShallStopWorking = LocalDateTime.MIN;
 
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkInOfflineMode;
@@ -74,6 +75,9 @@ public class LocalApiKeyManager {
     }
 
     public boolean isOfflineWorkingTimeExceeded() {
+        if (deadlineWhenOfflineModeShallStopWorking == LocalDateTime.MIN)
+            throw new LocalApiKeyListWasNotInitializedException("The offline mode does not work without a local " +
+                    "copy of the API key list.");
         return LocalDateTime.now().isAfter(deadlineWhenOfflineModeShallStopWorking);
     }
 
