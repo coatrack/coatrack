@@ -124,9 +124,9 @@ public class AdminController {
         chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
     }
 
-    private static final int convertTimestampMilisecondsToMinutes = 60000;
-    private static final int criticalThreshold = 60;
-    private static final int warningThreshold = 5;
+    private static final int oneMinuteToMilliseconds = 60000;
+    private static final int criticalThresholdInMinutes = 60;
+    private static final int warningThresholdInMinutes = 5;
 
     private String gatewayHealthStatusSummary(){
         List<Proxy> proxiesList = proxyRepository.findAvailable();
@@ -143,13 +143,13 @@ public class AdminController {
         List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
         proxiesToBeChanged.forEach((proxy) -> {
             if (proxy.getLastCallTimeToAdmin() != null) {
-                Long minutesPastSinceLastContact = (currentTime - proxy.getLastCallTimeToAdmin()) / convertTimestampMilisecondsToMinutes;
+                Long minutesPastSinceLastContact = (currentTime - proxy.getLastCallTimeToAdmin()) / oneMinuteToMilliseconds;
 
                 proxy.setMinutesPastSinceLastContact(minutesPastSinceLastContact);
 
-                if (minutesPastSinceLastContact > criticalThreshold) {
+                if (minutesPastSinceLastContact > criticalThresholdInMinutes) {
                     proxy.setStatus(ProxyStates.CRITICAL);
-                } else if (minutesPastSinceLastContact > warningThreshold) {
+                } else if (minutesPastSinceLastContact > warningThresholdInMinutes) {
                     proxy.setStatus(ProxyStates.WARNING);
                 } else proxy.setStatus(ProxyStates.OK);
                 proxyRepository.save(proxy);
