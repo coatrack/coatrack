@@ -56,7 +56,7 @@ public class Proxy {
 
     private String configServerPassword;
 
-    private LocalDateTime lastCallTimeToAdmin;
+    private LocalDateTime timeOfLastSuccessfulCallToAdmin;
 
     private Long minutesPastSinceLastContact;
 
