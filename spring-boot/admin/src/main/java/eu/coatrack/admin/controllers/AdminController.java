@@ -97,6 +97,15 @@ public class AdminController {
     @Value("${ygg.admin.gettingStarted.consumer.testService.uriIdentifier}")
     private String gettingStartedTestServiceIdentifier;
 
+    @Value("${gateway_health_monitor.warning.threshold.minutes}")
+    private int warningThresholdInMinutes;
+
+    @Value("${gateway_health_monitor.critical.threshold.minutes}")
+    private int criticalThresholdInMinutes;
+
+    @Value("${gateway_health_monitor.one_minute_to_miliseconds}")
+    private int oneMinuteToMilliseconds;
+
     private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
 
     private static final String ADMIN_WIZARD_VIEW = "admin/wizard/wizard";
@@ -124,10 +133,6 @@ public class AdminController {
         colorMap.put(504, Color.DARK_RED);
         chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
     }
-
-    private static final int oneMinuteToMilliseconds = 60000;
-    private static final int criticalThresholdInMinutes = 60;
-    private static final int warningThresholdInMinutes = 5;
 
     private String gatewayHealthStatusSummary(){
         List<Proxy> proxiesList = proxyRepository.findAvailable();
