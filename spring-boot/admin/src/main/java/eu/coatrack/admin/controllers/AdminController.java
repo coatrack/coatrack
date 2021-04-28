@@ -134,13 +134,13 @@ public class AdminController {
         chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
     }
 
-    private String gatewayHealthStatusSummary(){
+    private Enum gatewayHealthStatusSummary(){
         List<Proxy> proxiesList = proxyRepository.findAvailable();
         if (proxiesList.stream().map(Proxy::getStatus).anyMatch(status -> status == ProxyStates.CRITICAL))
-            return "Critical";
+            return ProxyStates.CRITICAL;
         else if(proxiesList.stream().map(Proxy::getStatus).anyMatch(status -> status == ProxyStates.WARNING))
-            return "Warning";
-        return "Ok";
+            return ProxyStates.WARNING;
+        return ProxyStates.OK;
     }
 
     private void updateProxyInfoForGatewayHealthMonitor() {
