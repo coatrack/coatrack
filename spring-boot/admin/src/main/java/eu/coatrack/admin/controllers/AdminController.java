@@ -143,8 +143,8 @@ public class AdminController {
         LocalDateTime currentTime = LocalDateTime.now();
         List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
         proxiesToBeChanged.forEach((proxy) -> {
-            if (proxy.getLastCallTimeToAdmin() != null) {
-                Long minutesPastSinceLastContact = Duration.between(proxy.getLastCallTimeToAdmin(), currentTime).toMinutes();
+            if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
+                Long minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), currentTime).toMinutes();
                 proxy.setMinutesPastSinceLastContact(minutesPastSinceLastContact);
 
                 if (minutesPastSinceLastContact > criticalThresholdInMinutes) {

@@ -163,10 +163,10 @@
                                                   th:class="${'neutral-state-symbol ' + proxy.status.displayStringVerbose}"></span>
                                             <span th:case="*" class="neutral-state-symbol"></span>
                                         </td>
-                                        <td th:if="${proxy.lastCallTimeToAdmin != null}">
+                                        <td th:if="${proxy.timeOfLastSuccessfulCallToAdmin != null}">
                                             <span th:text="${proxy.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : proxy.minutesPastSinceLastContact + ' min ago'}"></span>
                                         </td>
-                                        <td th:if="${proxy.lastCallTimeToAdmin == null}"
+                                        <td th:if="${proxy.timeOfLastSuccessfulCallToAdmin == null}"
                                             th:text="${'No sign of activity'}"></td>
                                     </tr>
                                 </table>

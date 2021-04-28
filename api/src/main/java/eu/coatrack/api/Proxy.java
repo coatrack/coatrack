@@ -165,12 +165,12 @@ public class Proxy {
         this.port = port;
     }
 
-    public LocalDateTime getLastCallTimeToAdmin() {
-        return lastCallTimeToAdmin;
+    public LocalDateTime getTimeOfLastSuccessfulCallToAdmin() {
+        return timeOfLastSuccessfulCallToAdmin;
     }
 
-    public void setLastCallTimeToAdmin(LocalDateTime lastCallTime) {
-        this.lastCallTimeToAdmin = lastCallTime;
+    public void setTimeOfLastSuccessfulCallToAdmin(LocalDateTime timeOfLastSuccessfulCallToAdmin) {
+        this.timeOfLastSuccessfulCallToAdmin = timeOfLastSuccessfulCallToAdmin;
     }
 
     public Long getMinutesPastSinceLastContact() {

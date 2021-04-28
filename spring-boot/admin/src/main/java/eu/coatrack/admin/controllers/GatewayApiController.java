@@ -77,7 +77,7 @@ public class GatewayApiController {
         try {
             Proxy proxy = proxyRepository.findById(gatewayApiKey);
             if (proxy != null) {
-                proxy.setLastCallTimeToAdmin(LocalDateTime.now());
+                proxy.setTimeOfLastSuccessfulCallToAdmin(LocalDateTime.now());
                 proxyRepository.save(proxy);
                 return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
             }
