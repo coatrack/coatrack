@@ -22,24 +22,17 @@ package eu.coatrack.api;
 
 public enum ProxyStates {
 
-    CRITICAL("Critical State", "critical-state"),
-    WARNING("Warning State", "warning-state"),
-    OK("Ok State", "ok-state");
+    CRITICAL("critical-state"),
+    WARNING("warning-state"),
+    OK("ok-state");
 
-    private final String displayStringShort;
     private final String displayStringVerbose;
 
-    ProxyStates(String displayStringShort, String displayStringVerbose) {
-        this.displayStringShort = displayStringShort;
+    ProxyStates(String displayStringVerbose) {
         this.displayStringVerbose = displayStringVerbose;
-    }
-
-    public String getDisplayStringShort() {
-        return displayStringShort;
     }
 
     public String getDisplayStringVerbose() {
         return displayStringVerbose;
     }
-
     }
