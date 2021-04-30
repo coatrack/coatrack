@@ -50,6 +50,9 @@ public class LocalApiKeyManager {
 
     private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
+    public final static String switchingToOfflineModeMessage = "Gateway is switching to offline mode.";
+    public final static String switchingToOnlineModeMessage = "Gateway is switching to online mode.";
+
     private List<ApiKey> localApiKeyList = new ArrayList<>();
     private LocalDateTime deadlineWhenOfflineModeShallStopWorking = LocalDateTime.MIN;
 
@@ -104,9 +107,16 @@ public class LocalApiKeyManager {
 
     private void updateGatewayMode(GatewayMode currentGatewayMode) {
         if (lastModeDisplayedInLog != currentGatewayMode) {
-            log.info("Gateway is switching to " + currentGatewayMode + " mode.");
+            logStuff(currentGatewayMode);
             lastModeDisplayedInLog = currentGatewayMode;
         }
+    }
+
+    private void logStuff(GatewayMode currentGatewayMode) {
+        if (currentGatewayMode == GatewayMode.ONLINE)
+            log.info(switchingToOnlineModeMessage);
+        else
+            log.info(switchingToOfflineModeMessage);
     }
 
     /*
@@ -116,10 +126,5 @@ public class LocalApiKeyManager {
 
     private enum GatewayMode {
         ONLINE, OFFLINE;
-
-        @Override
-        public String toString() {
-            return this == GatewayMode.ONLINE ? "online" : "offline";
-        }
     }
 }

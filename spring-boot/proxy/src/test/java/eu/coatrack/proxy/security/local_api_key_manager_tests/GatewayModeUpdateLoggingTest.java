@@ -37,8 +37,8 @@ import static org.mockito.Mockito.when;
 
 public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetup {
 
-    private final static String onlineModeMessage = "online mode";
-    private final static String offlineModeMessage = "offline mode";
+    private final static String switchingToOnlineModeMessage = LocalApiKeyManager.switchingToOnlineModeMessage;
+    private final static String switchingToOfflineModeMessage = LocalApiKeyManager.switchingToOfflineModeMessage;
 
     private LogEventStorage logEventStorage;
 
@@ -56,16 +56,16 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
 
     @Test
     public void NoAction_ShouldNotSwitchToAnyMode() {
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
     public void ON() throws ApiKeyFetchingFailedException {
         switchToOnlineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
@@ -73,8 +73,8 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         //Gateway starts in offline and does therefore not switch modes.
         switchToOfflineMode();
 
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
@@ -82,8 +82,8 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         switchToOnlineMode();
         switchToOfflineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
@@ -91,8 +91,8 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         switchToOfflineMode();
         switchToOnlineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
@@ -100,8 +100,8 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         switchToOnlineMode();
         switchToOnlineMode();
 
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
@@ -109,16 +109,16 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         switchToOfflineMode();
         switchToOfflineMode();
 
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
     public void localApiKeySearchShouldNotTriggerSwitchToOnlineMode() {
         localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue());
 
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     @Test
@@ -126,8 +126,8 @@ public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetu
         switchToOnlineMode();
         localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue());
 
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(onlineModeMessage));
-        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(offlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
+        assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
     }
 
     public void switchToOnlineMode() throws ApiKeyFetchingFailedException {
