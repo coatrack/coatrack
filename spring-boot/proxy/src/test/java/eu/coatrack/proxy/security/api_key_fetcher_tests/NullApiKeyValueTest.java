@@ -29,7 +29,7 @@ public class NullApiKeyValueTest extends AbstractApiKeyFetcherTestSetup {
 
     @Test
     public void nullApiKeyValueShouldCauseException() {
-        assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(null));
+        assertThrows(IllegalArgumentException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(null));
     }
 
 }

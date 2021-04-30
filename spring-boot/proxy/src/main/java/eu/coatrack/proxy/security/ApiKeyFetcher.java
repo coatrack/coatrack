@@ -57,15 +57,17 @@ public class ApiKeyFetcher {
     public List<ApiKey> requestLatestApiKeyListFromAdmin() throws ApiKeyFetchingFailedException {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
-        ResponseEntity<ApiKey[]> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(
+            ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
+            return createApiKeyListFromResponseEntity(responseEntity);
         } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
                     "connection failed." + e.getMessage() + e);
         }
+    }
 
+    private List<ApiKey> createApiKeyListFromResponseEntity(ResponseEntity<ApiKey[]> responseEntity) {
         ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
         if (apiKeys == null)
             throw new ApiKeyFetchingFailedException("Received null instead of an API key list.");
@@ -87,16 +89,15 @@ public class ApiKeyFetcher {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
         if (apiKeyValue == null)
-            throw new ApiKeyFetchingFailedException("Provided API key was null.");
+            throw new IllegalArgumentException("Provided API key value was null.");
 
-        ResponseEntity<ApiKey> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(
+            ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+            return (ApiKey) extractBodyFromResponseEntity(responseEntity);
         } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the API key with the value " + apiKeyValue +
                     " from CoatRack admin, the connection failed." + e.getMessage() + e);
         }
-        return (ApiKey) extractBodyFromResponseEntity(responseEntity);
     }
 }
