@@ -90,29 +90,30 @@ public class LocalApiKeyManager {
     public void updateLocalApiKeyList() {
         log.debug("Trying to update the local API key list by contacting CoatRack admin.");
 
-        List<ApiKey> fetchedApiKeyList;
         try {
-            fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
-            Assert.notNull(fetchedApiKeyList, "Fetched API key list must not be null.");
+            List<ApiKey> fetchedApiKeyList = apiKeyFetcher.requestLatestApiKeyListFromAdmin();
+            updateApiKeyList(fetchedApiKeyList);
+            updateGatewayMode(GatewayMode.ONLINE);
         } catch (Exception e) {
             log.error("API key list fetching process failed." + e);
             updateGatewayMode(GatewayMode.OFFLINE);
-            return;
         }
+    }
 
+    private void updateApiKeyList(List<ApiKey> fetchedApiKeyList) {
+        Assert.notNull(fetchedApiKeyList, "Fetched API key list was null.");
         localApiKeyList = fetchedApiKeyList;
         deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkInOfflineMode);
-        updateGatewayMode(GatewayMode.ONLINE);
     }
 
     private void updateGatewayMode(GatewayMode currentGatewayMode) {
         if (lastModeDisplayedInLog != currentGatewayMode) {
-            logStuff(currentGatewayMode);
+            logGatewayMode(currentGatewayMode);
             lastModeDisplayedInLog = currentGatewayMode;
         }
     }
 
-    private void logStuff(GatewayMode currentGatewayMode) {
+    private void logGatewayMode(GatewayMode currentGatewayMode) {
         if (currentGatewayMode == GatewayMode.ONLINE)
             log.info(switchingToOnlineModeMessage);
         else
