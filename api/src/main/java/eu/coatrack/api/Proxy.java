@@ -58,8 +58,6 @@ public class Proxy {
 
     private LocalDateTime timeOfLastSuccessfulCallToAdmin;
 
-    private Long minutesPastSinceLastContact;
-
     @OneToOne
     private User owner;
 
@@ -71,9 +69,6 @@ public class Proxy {
 
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
-
-    @Enumerated(EnumType.STRING)
-    private ProxyStates status;
 
     public String getCredentialName() {
         return configServerName;
@@ -165,22 +160,6 @@ public class Proxy {
 
     public LocalDateTime getTimeOfLastSuccessfulCallToAdmin() {
         return timeOfLastSuccessfulCallToAdmin;
-    }
-
-    public Long getMinutesPastSinceLastContact() {
-        return minutesPastSinceLastContact;
-    }
-
-    public void setMinutesPastSinceLastContact(Long minutesPastSinceLastContact) {
-        this.minutesPastSinceLastContact = minutesPastSinceLastContact;
-    }
-
-    public ProxyStates getStatus() {
-        return status;
-    }
-
-    public void setStatus(ProxyStates status) {
-        this.status = status;
     }
 
     public void updateTimeOfLastSuccessfulCallToAdmin() {
