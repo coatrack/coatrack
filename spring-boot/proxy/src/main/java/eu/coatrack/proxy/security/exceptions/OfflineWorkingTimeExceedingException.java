@@ -22,6 +22,10 @@ package eu.coatrack.proxy.security.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 
+/**
+ * If the gateway works for a specific time without connection to the Coatrack admin server.
+ * If this time is passed, every incoming request is rejected because this exception is thrown.
+ */
 public class OfflineWorkingTimeExceedingException extends AuthenticationException {
 
     public OfflineWorkingTimeExceedingException(String message) {

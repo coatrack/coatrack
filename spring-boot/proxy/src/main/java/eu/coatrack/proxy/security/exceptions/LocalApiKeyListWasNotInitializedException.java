@@ -22,6 +22,9 @@ package eu.coatrack.proxy.security.exceptions;
 
 import org.springframework.security.core.AuthenticationException;
 
+/**
+ * Is thrown, when the local API key list shall be used but it has not been initialized, yet.
+ */
 public class LocalApiKeyListWasNotInitializedException extends AuthenticationException {
     public LocalApiKeyListWasNotInitializedException(String msg) {
         super(msg);
