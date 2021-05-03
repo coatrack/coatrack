@@ -91,8 +91,6 @@ public class Proxy {
         this.configServerPassword = credential_password;
     }
 
-
-
     public User getOwner() {
         return owner;
     }
@@ -169,10 +167,6 @@ public class Proxy {
         return timeOfLastSuccessfulCallToAdmin;
     }
 
-    public void setTimeOfLastSuccessfulCallToAdmin(LocalDateTime timeOfLastSuccessfulCallToAdmin) {
-        this.timeOfLastSuccessfulCallToAdmin = timeOfLastSuccessfulCallToAdmin;
-    }
-
     public Long getMinutesPastSinceLastContact() {
         return minutesPastSinceLastContact;
     }
@@ -187,6 +181,10 @@ public class Proxy {
 
     public void setStatus(ProxyStates status) {
         this.status = status;
+    }
+
+    public void updateTimeOfLastSuccessfulCallToAdmin() {
+        this.timeOfLastSuccessfulCallToAdmin = LocalDateTime.now();
     }
 
     @Override
