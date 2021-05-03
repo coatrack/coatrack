@@ -134,32 +134,39 @@ public class AdminController {
         chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
     }
 
-    private Enum gatewayHealthStatusSummary(){
-        List<Proxy> proxiesList = proxyRepository.findAvailable();
-        if (proxiesList.stream().map(Proxy::getStatus).anyMatch(status -> status == ProxyStates.CRITICAL))
+    private static class GatewayDataForTheGatewayHealthMonitor {
+        public String name;
+        public Enum status;
+        public Long minutesPastSinceLastContact;
+    }
+
+    private Enum gatewayHealthStatusSummary(List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForTheGatewayHealthMonitorList){
+        if (gatewayDataForTheGatewayHealthMonitorList.stream().anyMatch(proxy -> proxy.status == ProxyStates.CRITICAL))
             return ProxyStates.CRITICAL;
-        else if(proxiesList.stream().map(Proxy::getStatus).anyMatch(status -> status == ProxyStates.WARNING))
+        else if(gatewayDataForTheGatewayHealthMonitorList.stream().anyMatch(proxy -> proxy.status == ProxyStates.WARNING))
             return ProxyStates.WARNING;
         return ProxyStates.OK;
     }
 
-    private void updateProxyInfoForGatewayHealthMonitor() {
+    private List<GatewayDataForTheGatewayHealthMonitor> updateProxyInfoForGatewayHealthMonitor() {
 
-        LocalDateTime currentTime = LocalDateTime.now();
+        List <GatewayDataForTheGatewayHealthMonitor> proxyDataForGatewayHealthMonitorList = new ArrayList<>();
         List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
         proxiesToBeChanged.forEach((proxy) -> {
+            GatewayDataForTheGatewayHealthMonitor proxyDataForGatewayHealthMonitor = new GatewayDataForTheGatewayHealthMonitor();
+            proxyDataForGatewayHealthMonitor.name = proxy.getName();
             if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
-                Long minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), currentTime).toMinutes();
-                proxy.setMinutesPastSinceLastContact(minutesPastSinceLastContact);
-
+                Long minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes();
+                proxyDataForGatewayHealthMonitor.minutesPastSinceLastContact = minutesPastSinceLastContact;
                 if (minutesPastSinceLastContact > criticalThresholdInMinutes) {
-                    proxy.setStatus(ProxyStates.CRITICAL);
+                    proxyDataForGatewayHealthMonitor.status = ProxyStates.CRITICAL;
                 } else if (minutesPastSinceLastContact > warningThresholdInMinutes) {
-                    proxy.setStatus(ProxyStates.WARNING);
-                } else proxy.setStatus(ProxyStates.OK);
-                proxyRepository.save(proxy);
+                    proxyDataForGatewayHealthMonitor.status = ProxyStates.WARNING;
+                } else proxyDataForGatewayHealthMonitor.status = ProxyStates.OK;
             }
+            proxyDataForGatewayHealthMonitorList.add(proxyDataForGatewayHealthMonitor);
         });
+        return proxyDataForGatewayHealthMonitorList;
     }
 
     /* REPOSITORIES */
@@ -231,9 +238,8 @@ public class AdminController {
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
-                    updateProxyInfoForGatewayHealthMonitor();
-                    mav.addObject("gatewayHealthStatusSummary", gatewayHealthStatusSummary());
-                    mav.addObject("proxies", proxyRepository.findAvailable());
+                    mav.addObject("gatewayHealthMonitorProxyData", updateProxyInfoForGatewayHealthMonitor());
+                    mav.addObject("gatewayHealthStatusSummary", gatewayHealthStatusSummary(updateProxyInfoForGatewayHealthMonitor()));
                     mav.addObject("stats", loadGeneralStatistics(
                             session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
                     mav.addObject("userStatistics", getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
