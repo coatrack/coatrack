@@ -21,16 +21,15 @@ package eu.coatrack.admin.model.repository;
  */
 
 import eu.coatrack.api.Proxy;
-import java.util.List;
-
-import eu.coatrack.api.ServiceApi;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.data.rest.core.annotation.RestResource;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PostFilter;
-import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.util.List;
 
 /**
  *
@@ -42,7 +41,7 @@ public interface ProxyRepository extends PagingAndSortingRepository<Proxy, Strin
     @PostFilter("filterObject.owner != null and filterObject.owner.username == authentication.name")
     List<Proxy> findByName(@Param("name") String name);
 
-    @PreAuthorize("#id == authentication.name")
+    @PostAuthorize("#id == authentication.name or returnObject.owner.username == authentication.name")
     Proxy findById(@Param("id") String id);
 
     @PostFilter("filterObject.owner != null and filterObject.owner.username == authentication.name")
