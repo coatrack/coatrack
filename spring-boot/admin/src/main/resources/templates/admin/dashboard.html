@@ -143,6 +143,14 @@
                 loadChartsForNewDateRange(dateRangeUrlSuffix);
             });
 
+            function sendProxyIdToChangeNotificationMonitoringValue(proxyId)
+            {
+                $.ajax({
+                    type: "POST",
+                    url: "admin/gatewayhealthmonitor/notification",
+                    data: {proxyId: proxyId},
+                })
+            }
             /*]]>*/
         </script>
 

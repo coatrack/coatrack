@@ -24,7 +24,8 @@ public enum ProxyStates {
 
     CRITICAL("critical-state"),
     WARNING("warning-state"),
-    OK("ok-state");
+    OK("ok-state"),
+    IGNORE("neutral-state");
 
     private final String displayStringVerbose;
 

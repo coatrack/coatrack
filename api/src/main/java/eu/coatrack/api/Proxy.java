@@ -58,6 +58,8 @@ public class Proxy {
 
     private LocalDateTime timeOfLastSuccessfulCallToAdmin;
 
+    private boolean isMonitoringEnabled = true;
+
     @OneToOne
     private User owner;
 
@@ -164,6 +166,14 @@ public class Proxy {
 
     public void updateTimeOfLastSuccessfulCallToAdmin() {
         this.timeOfLastSuccessfulCallToAdmin = LocalDateTime.now();
+    }
+
+    public boolean isMonitoringEnabled() {
+        return isMonitoringEnabled;
+    }
+
+    public void setMonitoringEnabled(boolean monitoringEnabled) {
+        isMonitoringEnabled = monitoringEnabled;
     }
 
     @Override

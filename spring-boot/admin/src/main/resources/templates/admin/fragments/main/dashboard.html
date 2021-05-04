@@ -151,8 +151,9 @@
                                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.gatewayname}"></th>
                                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.status}"></th>
                                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.lastcontact}"></th>
+                                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.notification.switch}"></th>
                                     </tr>
-                                    <tr th:each="proxy : ${proxies}">
+                                    <tr th:each="proxy : ${gatewayHealthMonitorProxyData}">
                                         <td th:text="${proxy.name}"></td>
                                         <td th:switch="${proxy.status}">
                                             <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
@@ -163,11 +164,16 @@
                                                   th:class="${'neutral-state-symbol ' + proxy.status.displayStringVerbose}"></span>
                                             <span th:case="*" class="neutral-state-symbol"></span>
                                         </td>
-                                        <td th:if="${proxy.timeOfLastSuccessfulCallToAdmin != null}">
+                                        <td th:if="${proxy.minutesPastSinceLastContact != null}">
                                             <span th:text="${proxy.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : proxy.minutesPastSinceLastContact + ' min ago'}"></span>
                                         </td>
-                                        <td th:if="${proxy.timeOfLastSuccessfulCallToAdmin == null}"
+                                        <td th:if="${proxy.minutesPastSinceLastContact == null}"
                                             th:text="${'No sign of activity'}"></td>
+                                        <td><label class="switch">
+                                            <input type="checkbox" th:checked="${proxy.isMonitoringEnabled}" th:onchange="'javascript:sendProxyIdToChangeNotificationMonitoringValue(\'' + ${proxy?.proxyId} + '\')'" />
+                                            <span class="slider round"></span>
+                                        </label>
+                                        </td>
                                     </tr>
                                 </table>
                             </div>

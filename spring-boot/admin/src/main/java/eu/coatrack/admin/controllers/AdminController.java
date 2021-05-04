@@ -75,6 +75,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
@@ -135,27 +136,31 @@ public class AdminController {
     }
 
     private static class GatewayDataForTheGatewayHealthMonitor {
+        public String proxyId;
         public String name;
         public Enum status;
         public Long minutesPastSinceLastContact;
+        public boolean isMonitoringEnabled;
     }
 
     private Enum gatewayHealthStatusSummary(List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForTheGatewayHealthMonitorList){
-        if (gatewayDataForTheGatewayHealthMonitorList.stream().anyMatch(proxy -> proxy.status == ProxyStates.CRITICAL))
+        List <GatewayDataForTheGatewayHealthMonitor> proxiesWithMonitoringActivatedList = gatewayDataForTheGatewayHealthMonitorList.stream().filter(proxy -> proxy.isMonitoringEnabled == true).collect(Collectors.toList());
+        if (proxiesWithMonitoringActivatedList.stream().anyMatch(proxy -> proxy.status == ProxyStates.CRITICAL))
             return ProxyStates.CRITICAL;
-        else if(gatewayDataForTheGatewayHealthMonitorList.stream().anyMatch(proxy -> proxy.status == ProxyStates.WARNING))
+        else if(proxiesWithMonitoringActivatedList.stream().anyMatch(proxy -> proxy.status == ProxyStates.WARNING))
             return ProxyStates.WARNING;
         return ProxyStates.OK;
     }
 
     private List<GatewayDataForTheGatewayHealthMonitor> updateProxyInfoForGatewayHealthMonitor() {
-
         List <GatewayDataForTheGatewayHealthMonitor> proxyDataForGatewayHealthMonitorList = new ArrayList<>();
         List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
         proxiesToBeChanged.forEach((proxy) -> {
             GatewayDataForTheGatewayHealthMonitor proxyDataForGatewayHealthMonitor = new GatewayDataForTheGatewayHealthMonitor();
+            proxyDataForGatewayHealthMonitor.proxyId = proxy.getId();
             proxyDataForGatewayHealthMonitor.name = proxy.getName();
-            if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
+            proxyDataForGatewayHealthMonitor.isMonitoringEnabled = proxy.isMonitoringEnabled();
+            if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null && proxy.isMonitoringEnabled()) {
                 Long minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes();
                 proxyDataForGatewayHealthMonitor.minutesPastSinceLastContact = minutesPastSinceLastContact;
                 if (minutesPastSinceLastContact > criticalThresholdInMinutes) {
@@ -163,7 +168,7 @@ public class AdminController {
                 } else if (minutesPastSinceLastContact > warningThresholdInMinutes) {
                     proxyDataForGatewayHealthMonitor.status = ProxyStates.WARNING;
                 } else proxyDataForGatewayHealthMonitor.status = ProxyStates.OK;
-            }
+            } else proxyDataForGatewayHealthMonitor.status = ProxyStates.IGNORE;
             proxyDataForGatewayHealthMonitorList.add(proxyDataForGatewayHealthMonitor);
         });
         return proxyDataForGatewayHealthMonitorList;
@@ -696,4 +701,11 @@ public class AdminController {
         return testServiceApi;
     }
 
+    @RequestMapping(value = "/gatewayhealthmonitor/notification", method = POST)
+    @ResponseBody
+    public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId) {
+        Proxy proxy = proxyRepository.findById(proxyId);
+        proxy.setMonitoringEnabled(!proxy.isMonitoringEnabled());
+        proxyRepository.save(proxy);
+    }
 }
