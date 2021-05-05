@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *  Controller that handles HTTP calls by CoatRack gateways.
+ * Controller that handles HTTP calls by CoatRack gateways.
  */
 
 @Controller
@@ -69,23 +70,26 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    @GetMapping( "/api/gateways/api-keys")
+    @GetMapping("/api/gateways/api-keys")
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayApiKey) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
         try {
             Proxy proxy = proxyRepository.findById(gatewayApiKey);
-            if (proxy != null)
+            if (proxy != null) {
                 return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
-            else
+            } else {
                 throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
+            }
         } catch (Exception e) {
-            log.warn("The creation of the API key list for the gateway {} failed." , gatewayApiKey, e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            String warningMessage = "The creation of the API key list for the gateway " + gatewayApiKey + " failed." + e;
+            log.warn(warningMessage);
+            MultiValueMap<String, String>
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND).;
         }
     }
 
     private List<ApiKey> getApiKeysBelongingToServicesOf(Proxy proxy) {
-        if (proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
+        if (proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()) {
             log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
             return new ArrayList<>();
         } else
