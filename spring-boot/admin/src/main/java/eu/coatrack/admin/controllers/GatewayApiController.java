@@ -81,10 +81,8 @@ public class GatewayApiController {
                 throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
             }
         } catch (Exception e) {
-            String warningMessage = "The creation of the API key list for the gateway " + gatewayApiKey + " failed." + e;
-            log.warn(warningMessage);
-            MultiValueMap<String, String>
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND).;
+            log.info("The creation of the API key list for the gateway {} failed.", gatewayApiKey, e);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
