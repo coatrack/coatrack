@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security.local_api_key_manager_tests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -26,7 +26,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
-import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-public class GatewayModeUpdateLoggingTest extends AbstractLocalApiKeyManagerSetup {
+public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKeyManager_AbstractTestSetup {
 
     private final static String switchingToOnlineModeMessage = LocalApiKeyManager.switchingToOnlineModeMessage;
     private final static String switchingToOfflineModeMessage = LocalApiKeyManager.switchingToOfflineModeMessage;

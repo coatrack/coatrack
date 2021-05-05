@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security.local_api_key_manager_tests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public class NonInitializedApiKeyListTest extends AbstractLocalApiKeyManagerSetup{
+public class LocalApiKeyManager_NonInitializedApiKeyListTest extends LocalApiKeyManager_AbstractTestSetup {
 
     @Test
     public void missingInitialUpdateOfLocalApiKeyListShouldCauseException(){

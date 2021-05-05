@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security.api_key_fetcher_tests;/*-
+package eu.coatrack.proxy.security;/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -27,7 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-public abstract class AbstractApiKeyFetcherTestSetup {
+public abstract class ApiKeyFetcher_AbstractTestSetup {
 
     protected static final String someApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
 

@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security.local_api_key_manager_tests;/*-
+package eu.coatrack.proxy.security;/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -20,7 +20,6 @@ package eu.coatrack.proxy.security.local_api_key_manager_tests;/*-
 
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
-import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ApiKeyFindingInLocalApiKeyListTest extends AbstractLocalApiKeyManagerSetup {
+public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends LocalApiKeyManager_AbstractTestSetup {
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {

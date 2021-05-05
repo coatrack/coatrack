@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security.api_key_fetcher_tests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -35,7 +35,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class SingleApiKeyFetchingTest extends AbstractApiKeyFetcherTestSetup {
+public class ApiKeyFetcher_SingleApiKeyFetchingTest extends ApiKeyFetcher_AbstractTestSetup {
 
     @AfterEach
     public void verifyRestTemplateMockCall() {

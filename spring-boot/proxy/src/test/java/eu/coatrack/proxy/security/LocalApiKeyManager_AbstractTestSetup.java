@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security.local_api_key_manager_tests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -29,7 +29,7 @@ import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
-public class AbstractLocalApiKeyManagerSetup {
+public class LocalApiKeyManager_AbstractTestSetup {
 
     protected ApiKey apiKey;
     protected List<ApiKey> apiKeyList;
