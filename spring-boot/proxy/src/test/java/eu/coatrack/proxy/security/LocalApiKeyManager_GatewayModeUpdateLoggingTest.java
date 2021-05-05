@@ -60,7 +60,7 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
     }
 
     @Test
-    public void ON() throws ApiKeyFetchingFailedException {
+    public void switchingToOnlineModeShouldBeLogged() throws ApiKeyFetchingFailedException {
         switchToOnlineMode();
 
         assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
@@ -68,8 +68,8 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
     }
 
     @Test
-    public void OFF() throws ApiKeyFetchingFailedException {
-        //Gateway starts in offline and does therefore not switch modes.
+    public void stayingInOfflineModeShouldNotBeLogged() throws ApiKeyFetchingFailedException {
+        //Gateway starts in offline mode and does therefore not switch modes.
         switchToOfflineMode();
 
         assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
@@ -132,13 +132,13 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
     public void switchToOnlineMode() throws ApiKeyFetchingFailedException {
         reset(apiKeyFetcherMock);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyList);
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
     }
 
     public void switchToOfflineMode() throws ApiKeyFetchingFailedException {
         reset(apiKeyFetcherMock);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenThrow(new ApiKeyFetchingFailedException("test"));
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
     }
 
     static class LogEventStorage extends ListAppender<ILoggingEvent> {

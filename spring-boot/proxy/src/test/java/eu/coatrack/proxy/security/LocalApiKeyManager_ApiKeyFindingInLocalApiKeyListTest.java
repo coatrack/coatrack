@@ -35,7 +35,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {
         super.setupLocalApiKeyManagerAndApiKeyList();
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyList);
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
     }
 
     @Test
@@ -54,7 +54,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
 
         reset(apiKeyFetcherMock);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyListNotContainingTheIncomingApiKey);
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
         assertNull(localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
@@ -77,7 +77,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
     public void localApiKeyListShouldNotUpdateWhenApiKeyFetcherDeliversNull() throws ApiKeyFetchingFailedException {
         reset(apiKeyFetcherMock);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(null);
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
         assertSame(apiKey, localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
@@ -87,7 +87,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
         long deadlineIsOneMinuteAfterNow = 1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteAfterNow);
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
         assertFalse(localApiKeyManager.isOfflineWorkingTimeExceeded());
     }
@@ -97,7 +97,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
         long deadlineIsOneMinuteBeforeNow = -1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteBeforeNow);
-        localApiKeyManager.updateLocalApiKeyList();
+        localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
         assertTrue(localApiKeyManager.isOfflineWorkingTimeExceeded());
     }
