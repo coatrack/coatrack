@@ -21,22 +21,20 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetcher;
-import eu.coatrack.proxy.security.LocalApiKeyManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
-public class LocalApiKeyManager_AbstractTestSetup {
+public abstract class LocalApiKeyManager_AbstractTestSetupProvider {
 
     protected ApiKey apiKey;
     protected List<ApiKey> apiKeyList;
     protected ApiKeyFetcher apiKeyFetcherMock;
     protected LocalApiKeyManager localApiKeyManager;
 
-    public void setupLocalApiKeyManagerAndApiKeyList() {
+    public void setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList() {
         apiKey = new ApiKey();
         apiKey.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
 
@@ -47,4 +45,5 @@ public class LocalApiKeyManager_AbstractTestSetup {
         long timeInMinutesTheGatewayWorksWithoutConnectionToAdmin = 60;
         localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, timeInMinutesTheGatewayWorksWithoutConnectionToAdmin);
     }
+
 }

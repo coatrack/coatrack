@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.exceptions.ApiKeyNotFoundInLocalApiKeyListException;
 import eu.coatrack.proxy.security.exceptions.LocalApiKeyListWasNotInitializedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,7 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Provides a local cache for API keys, allowing the gateway to validate API keys without connection to CoatRack
@@ -70,17 +72,30 @@ public class LocalApiKeyManager {
 
     public ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) {
         log.debug("Trying to get the API key with the value {} from the local list.", apiKeyValue);
+
+        if (deadlineWhenOfflineModeShallStopWorking == LocalDateTime.MIN)
+            throw new LocalApiKeyListWasNotInitializedException("The API key with the value " + apiKeyValue + " was " +
+                    "requested without initialization of local API key list.");
+
         updateGatewayMode(GatewayMode.OFFLINE);
 
-        return localApiKeyList.stream().filter(
+        return extractApiKeyFromLocalApiKeyList(apiKeyValue);
+    }
+
+    private ApiKey extractApiKeyFromLocalApiKeyList(String apiKeyValue) {
+        Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)
-        ).findFirst().orElse(null);
+        ).findFirst();
+
+        if (optionalApiKey.isPresent()) {
+            return optionalApiKey.get();
+        } else {
+            throw new ApiKeyNotFoundInLocalApiKeyListException("The API key with the value " + apiKeyValue + " could not be " +
+                    "found in the local API key list.");
+        }
     }
 
     public boolean isOfflineWorkingTimeExceeded() {
-        if (deadlineWhenOfflineModeShallStopWorking == LocalDateTime.MIN)
-            throw new LocalApiKeyListWasNotInitializedException("The offline mode does not work without a local " +
-                    "copy of the API key list.");
         return LocalDateTime.now().isAfter(deadlineWhenOfflineModeShallStopWorking);
     }
 
@@ -114,15 +129,12 @@ public class LocalApiKeyManager {
     }
 
     private void logGatewayMode(GatewayMode currentGatewayMode) {
-        if (currentGatewayMode == GatewayMode.ONLINE)
-            log.info(switchingToOnlineModeMessage);
-        else
-            log.info(switchingToOfflineModeMessage);
+        log.info(currentGatewayMode == GatewayMode.ONLINE ? switchingToOnlineModeMessage : switchingToOfflineModeMessage);
     }
 
     /*
         If the gateway successfully receives the latest list of API keys from CoatRack admin, it goes to online mode.
-        If that connection attempt failed, it goes to the time-limited functioning offline mode.
+        If a connection attempt to CoatRack admin server failed, it goes to the time-limited functioning offline mode.
      */
 
     private enum GatewayMode {

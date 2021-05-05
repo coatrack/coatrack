@@ -20,6 +20,7 @@ package eu.coatrack.proxy.security;/*-
 
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.ApiKeyNotFoundInLocalApiKeyListException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,18 +30,18 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends LocalApiKeyManager_AbstractTestSetup {
+public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTestProvider extends LocalApiKeyManager_AbstractTestSetupProvider {
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {
-        super.setupLocalApiKeyManagerAndApiKeyList();
+        super.setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList();
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyList);
         localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
     }
 
     @Test
-    public void nullApiKeyValueShouldBeAnsweredWithNull() {
-        assertNull(localApiKeyManager.getApiKeyEntityByApiKeyValue(null));
+    public void nullApiKeyValueShouldCauseException() {
+        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class, () -> localApiKeyManager.getApiKeyEntityByApiKeyValue(null));
     }
 
     @Test
@@ -56,7 +57,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyListNotContainingTheIncomingApiKey);
         localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
-        assertNull(localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
+        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class, () -> localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
     }
 
     private List<ApiKey> createApiKeyListNotContainingTheIncomingApiKey() {

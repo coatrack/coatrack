@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
-public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKeyManager_AbstractTestSetup {
+public class LocalApiKeyManager_GatewayModeUpdateLoggingTestProvider extends LocalApiKeyManager_AbstractTestSetupProvider {
 
     private final static String switchingToOnlineModeMessage = LocalApiKeyManager.switchingToOnlineModeMessage;
     private final static String switchingToOfflineModeMessage = LocalApiKeyManager.switchingToOfflineModeMessage;
@@ -43,7 +43,7 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
 
     @BeforeEach
     public void setup() {
-        super.setupLocalApiKeyManagerAndApiKeyList();
+        super.setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList();
 
         Logger log = (Logger) LoggerFactory.getLogger(LocalApiKeyManager.class);
         logEventStorage = new LogEventStorage();
@@ -107,14 +107,6 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
     public void OFF_OFF() throws ApiKeyFetchingFailedException {
         switchToOfflineMode();
         switchToOfflineMode();
-
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
-        assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));
-    }
-
-    @Test
-    public void localApiKeySearchShouldNotTriggerSwitchToOnlineMode() {
-        localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue());
 
         assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
         assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));

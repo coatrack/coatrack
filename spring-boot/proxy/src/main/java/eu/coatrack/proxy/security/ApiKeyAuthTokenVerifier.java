@@ -73,12 +73,12 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             return doesApiKeyBelongToAdminApp(apiKeyValue) ? createAdminAuthTokenFromApiKey(apiKeyValue)
                     : createConsumerAuthTokenIfApiKeyIsAuthorized(apiKeyValue);
         } catch (Exception e) {
-            if (e instanceof AuthenticationException)
+            if (e instanceof AuthenticationException) {
                 throw e;
-            else
+            } else {
                 log.error("During the authentication process this unexpected exception occurred: ", e);
-
-            throw new AuthenticationProcessFailedException("The authentication process failed due to an unknown error.");
+                throw new AuthenticationProcessFailedException("The authentication process failed due to an unknown error.");
+            }
         }
     }
 
@@ -116,7 +116,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
             throw new BadCredentialsException("The API key " + apiKeyValue + " is not valid.");
     }
 
-    private ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
+    private ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) {
         ApiKey apiKey;
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
@@ -128,7 +128,7 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         return apiKey;
     }
 
-    private ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
+    private ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
         if (localApiKeyManager.isOfflineWorkingTimeExceeded())
             throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
                     "gateway will reject every request until a connection to CoatRack admin could be re-established.");

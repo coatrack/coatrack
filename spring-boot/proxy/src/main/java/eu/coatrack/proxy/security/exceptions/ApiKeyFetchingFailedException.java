@@ -23,10 +23,9 @@ package eu.coatrack.proxy.security.exceptions;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * "Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application."
+ * Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application.
  */
 public class ApiKeyFetchingFailedException extends AuthenticationException {
-
     public ApiKeyFetchingFailedException(String message) {
         super(message);
     }
