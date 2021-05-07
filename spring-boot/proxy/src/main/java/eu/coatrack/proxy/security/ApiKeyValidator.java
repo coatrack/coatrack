@@ -30,7 +30,7 @@ import org.springframework.stereotype.Service;
  */
 
 @Service
-public class ApiKeyVerifier {
+public class ApiKeyValidator {
 
     public boolean isApiKeyValid(ApiKey apiKey) {
         return apiKey != null

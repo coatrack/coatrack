@@ -23,7 +23,6 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import eu.coatrack.proxy.security.exceptions.AuthenticationProcessFailedException;
-import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,14 +51,14 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
-    private final ApiKeyVerifier apiKeyVerifier;
+    private final ApiKeyValidator apiKeyValidator;
     private final Set<SimpleGrantedAuthority> authoritiesGrantedToCoatRackAdminApp = new HashSet<>();
 
     public ApiKeyAuthenticator(LocalApiKeyManager localApiKeyManager,
-                               ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
+                               ApiKeyFetcher apiKeyFetcher, ApiKeyValidator apiKeyValidator) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
-        this.apiKeyVerifier = apiKeyVerifier;
+        this.apiKeyValidator = apiKeyValidator;
 
         authoritiesGrantedToCoatRackAdminApp.add(new SimpleGrantedAuthority(
                 ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
@@ -110,7 +109,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
 
         ApiKey apiKey = getApiKeyEntityByApiKeyValue(apiKeyValue);
-        if (apiKeyVerifier.isApiKeyValid(apiKey))
+        if (apiKeyValidator.isApiKeyValid(apiKey))
             return createAuthTokenGrantingAccessToServiceApi(apiKey);
         else
             throw new BadCredentialsException("The API key " + apiKeyValue + " is not valid.");

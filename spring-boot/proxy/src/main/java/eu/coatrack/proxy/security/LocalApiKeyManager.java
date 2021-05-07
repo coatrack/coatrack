@@ -35,7 +35,6 @@ import org.springframework.util.Assert;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,13 +50,14 @@ import java.util.Optional;
 @Service
 public class LocalApiKeyManager {
 
-    private static final Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
+    private final static Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);
 
     public final static String switchingToOfflineModeMessage = "Gateway is switching to offline mode.";
     public final static String switchingToOnlineModeMessage = "Gateway is switching to online mode.";
 
-    private List<ApiKey> localApiKeyList = new ArrayList<>();
-    private LocalDateTime deadlineWhenOfflineModeShallStopWorking = LocalDateTime.MIN;
+    private List<ApiKey> localApiKeyList;
+    private LocalDateTime deadlineWhenOfflineModeShallStopWorking;
+    private boolean isLocalApiKeyListInitialized = false;
 
     private final ApiKeyFetcher apiKeyFetcher;
     private final long numberOfMinutesTheGatewayShallWorkInOfflineMode;
@@ -72,20 +72,18 @@ public class LocalApiKeyManager {
     }
 
     public ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
-        if (wasLocalApiKeyListNotInitialized()) {
+        if (!isLocalApiKeyListInitialized) {
             throw new LocalApiKeyListWasNotInitializedException("The API key with the value " + apiKeyValue + " was " +
                     "requested without initialization of local API key list.");
         } else if (isOfflineWorkingTimeExceeded()) {
             throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
                     "gateway will reject every request until a connection to CoatRack admin could be re-established.");
         } else {
+            //This is only a fallback solution if connection to admin does not work. Therefore offline mode is triggered.
             updateGatewayMode(GatewayMode.OFFLINE);
+
             return extractApiKeyFromLocalApiKeyList(apiKeyValue);
         }
-    }
-
-    private boolean wasLocalApiKeyListNotInitialized() {
-        return deadlineWhenOfflineModeShallStopWorking == LocalDateTime.MIN;
     }
 
     private boolean isOfflineWorkingTimeExceeded() {
@@ -102,8 +100,8 @@ public class LocalApiKeyManager {
         if (optionalApiKey.isPresent()) {
             return optionalApiKey.get();
         } else {
-            throw new ApiKeyNotFoundInLocalApiKeyListException("The API key with the value " + apiKeyValue + " could not be " +
-                    "found in the local API key list.");
+            throw new ApiKeyNotFoundInLocalApiKeyListException("The API key with the value " + apiKeyValue +
+                    " could not be found in the local API key list.");
         }
     }
 
@@ -127,6 +125,9 @@ public class LocalApiKeyManager {
         Assert.notNull(fetchedApiKeyList, "Fetched API key list was null.");
         localApiKeyList = fetchedApiKeyList;
         deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkInOfflineMode);
+
+        if(!isLocalApiKeyListInitialized)
+            isLocalApiKeyListInitialized = true;
     }
 
     private void updateGatewayMode(GatewayMode currentGatewayMode) {

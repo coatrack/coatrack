@@ -23,7 +23,9 @@ package eu.coatrack.proxy.security.exceptions;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Is thrown, when the local API key list shall be used but it has not been initialized, yet.
+ * Is thrown, when the local API key list shall be used but has not been initialized. The gateway
+ * never received a list of API Keys from CoatRack admin before and can therefore not
+ * be used for that purpose.
  */
 public class LocalApiKeyListWasNotInitializedException extends AuthenticationException {
     public LocalApiKeyListWasNotInitializedException(String msg) {

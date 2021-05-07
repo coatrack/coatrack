@@ -23,8 +23,8 @@ package eu.coatrack.proxy.security.exceptions;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * Generic exception that indicates an unexpected error during the authentication process.
- * The cause of that error needs to be fixed.
+ * Indicates that an unexpected error occurred during the process of authenticating
+ * a call to the gateway.
  */
 public class AuthenticationProcessFailedException extends AuthenticationException {
 

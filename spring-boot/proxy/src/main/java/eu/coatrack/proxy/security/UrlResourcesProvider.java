@@ -27,12 +27,12 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 /**
- * This class provides information required to fetch API keys from the CoatRack admin server.
+ * Provides auxiliary methods to build URLs for requests to CoatRack admin server.
  *
  * @author Christoph Baier
  */
 
-@Service("securityUtil")
+@Service
 public class UrlResourcesProvider {
 
     @Value("${proxy-id}")

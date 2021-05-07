@@ -22,7 +22,6 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import eu.coatrack.proxy.security.exceptions.AuthenticationProcessFailedException;
-import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,7 +40,7 @@ public class ApiKeyAuthenticatorTest {
 
     private LocalApiKeyManager localApiKeyManagerMock;
     private ApiKeyFetcher apiKeyFetcherMock;
-    private ApiKeyVerifier apiKeyVerifierMock;
+    private ApiKeyValidator apiKeyValidatorMock;
 
     @BeforeEach
     public void setup() {
@@ -68,12 +67,12 @@ public class ApiKeyAuthenticatorTest {
     private ApiKeyAuthenticator createMockedApiKeyAuthTokenVerifier() {
         localApiKeyManagerMock = mock(LocalApiKeyManager.class);
         apiKeyFetcherMock = mock(ApiKeyFetcher.class);
-        apiKeyVerifierMock = mock(ApiKeyVerifier.class);
+        apiKeyValidatorMock = mock(ApiKeyValidator.class);
 
         return new ApiKeyAuthenticator(
                 localApiKeyManagerMock,
                 apiKeyFetcherMock,
-                apiKeyVerifierMock
+                apiKeyValidatorMock
         );
     }
 
@@ -171,7 +170,7 @@ public class ApiKeyAuthenticatorTest {
 
     //apiKeyVerifierMock
     private void addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(boolean shallApiKeyBeValid) {
-        when(apiKeyVerifierMock.isApiKeyValid(apiKey)).thenReturn(shallApiKeyBeValid);
+        when(apiKeyValidatorMock.isApiKeyValid(apiKey)).thenReturn(shallApiKeyBeValid);
     }
 
     //localApiKeyManagerMock

@@ -28,10 +28,10 @@ import java.sql.Timestamp;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ApiKeyVerifierTest {
+public class ApiKeyValidatorTest {
 
     private ApiKey apiKey;
-    private ApiKeyVerifier apiKeyVerifier;
+    private ApiKeyValidator apiKeyValidator;
 
     private static final long
             oneMinuteInMillis = 1000 * 60;
@@ -44,7 +44,7 @@ public class ApiKeyVerifierTest {
     @BeforeEach
     public void createAnAcceptingDefaultSetup() {
         apiKey = createValidApiKey();
-        apiKeyVerifier = new ApiKeyVerifier();
+        apiKeyValidator = new ApiKeyValidator();
     }
 
     private ApiKey createValidApiKey() {
@@ -57,23 +57,23 @@ public class ApiKeyVerifierTest {
 
     @Test
     public void validDefaultApiKeyShouldBeAccepted() {
-        assertTrue(apiKeyVerifier.isApiKeyValid(apiKey));
+        assertTrue(apiKeyValidator.isApiKeyValid(apiKey));
     }
 
     @Test
     public void nullArgumentsShouldBeDenied() {
-        assertFalse(apiKeyVerifier.isApiKeyValid(null));
+        assertFalse(apiKeyValidator.isApiKeyValid(null));
     }
 
     @Test
     public void deletedApiKeyShouldBeDenied() {
         apiKey.setDeletedWhen(oneMinuteBeforeNow);
-        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
+        assertFalse(apiKeyValidator.isApiKeyValid(apiKey));
     }
 
     @Test
     public void expiredApiKeyShouldBeDenied() {
         apiKey.setValidUntil(oneMinuteBeforeNow);
-        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
+        assertFalse(apiKeyValidator.isApiKeyValid(apiKey));
     }
 }
