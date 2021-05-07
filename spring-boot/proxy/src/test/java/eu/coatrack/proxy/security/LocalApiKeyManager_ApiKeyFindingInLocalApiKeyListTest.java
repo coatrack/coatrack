@@ -31,7 +31,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTestProvider extends LocalApiKeyManager_AbstractTestSetupProvider {
+public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends LocalApiKeyManager_AbstractTestSetupProvider {
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {

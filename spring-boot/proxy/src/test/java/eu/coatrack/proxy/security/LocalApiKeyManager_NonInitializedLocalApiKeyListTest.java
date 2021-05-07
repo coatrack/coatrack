@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class LocalApiKeyManager_NonInitializedLocalApiKeyListTestProvider extends LocalApiKeyManager_AbstractTestSetupProvider {
+public class LocalApiKeyManager_NonInitializedLocalApiKeyListTest extends LocalApiKeyManager_AbstractTestSetupProvider {
 
     @BeforeEach
     public void setup() {
