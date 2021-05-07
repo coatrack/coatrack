@@ -29,4 +29,8 @@ public class ApiKeyFetchingFailedException extends AuthenticationException {
     public ApiKeyFetchingFailedException(String message) {
         super(message);
     }
+
+    public ApiKeyFetchingFailedException(String message, Exception e) {
+        super(message, e);
+    }
 }
