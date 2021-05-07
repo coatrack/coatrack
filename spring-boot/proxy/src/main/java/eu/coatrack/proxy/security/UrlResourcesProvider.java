@@ -36,7 +36,7 @@ import javax.annotation.PostConstruct;
 public class UrlResourcesProvider {
 
     @Value("${proxy-id}")
-    private String gatewayId = "";
+    private String gatewayId;
 
     @Value("${ygg.admin.api-base-url}")
     private String adminBaseUrl;

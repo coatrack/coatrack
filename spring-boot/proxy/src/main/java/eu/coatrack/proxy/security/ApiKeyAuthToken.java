@@ -32,21 +32,21 @@ import java.util.Collection;
  */
 public class ApiKeyAuthToken extends AbstractAuthenticationToken {
 
-    private final String apiKey;
+    private final String apiKeyValue;
 
-    public ApiKeyAuthToken(String apiKey, Collection<? extends GrantedAuthority> authorities) {
+    public ApiKeyAuthToken(String apiKeyValue, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
-        this.apiKey = apiKey;
+        this.apiKeyValue = apiKeyValue;
     }
 
     @Override
     public Object getCredentials() {
-        return apiKey;
+        return apiKeyValue;
     }
 
     @Override
     public Object getPrincipal() {
-        return apiKey;
+        return apiKeyValue;
     }
 
 }

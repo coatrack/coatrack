@@ -30,13 +30,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LocalApiKeyManager_NonInitializedLocalApiKeyListTest extends LocalApiKeyManager_AbstractTestSetupProvider {
 
-    @BeforeEach
-    public void setup() {
-        super.setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList();
-    }
-
     @Test
-    public void offlineWorkingTimeShouldBeExceeded() {
+    public void accessingNonInitializedLocalApiKeyListShouldCauseException() {
+        super.setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList();
         assertThrows(LocalApiKeyListWasNotInitializedException.class, () ->
                 localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
     }
