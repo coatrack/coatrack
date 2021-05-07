@@ -23,6 +23,7 @@ package eu.coatrack.proxy.security;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyNotFoundInLocalApiKeyListException;
 import eu.coatrack.proxy.security.exceptions.LocalApiKeyListWasNotInitializedException;
+import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -70,19 +71,30 @@ public class LocalApiKeyManager {
         this.numberOfMinutesTheGatewayShallWorkInOfflineMode = minutesInOfflineMode;
     }
 
-    public ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) {
-        log.debug("Trying to get the API key with the value {} from the local list.", apiKeyValue);
-
-        if (deadlineWhenOfflineModeShallStopWorking == LocalDateTime.MIN)
+    public ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
+        if (wasLocalApiKeyListNotInitialized()) {
             throw new LocalApiKeyListWasNotInitializedException("The API key with the value " + apiKeyValue + " was " +
                     "requested without initialization of local API key list.");
+        } else if (isOfflineWorkingTimeExceeded()) {
+            throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
+                    "gateway will reject every request until a connection to CoatRack admin could be re-established.");
+        } else {
+            updateGatewayMode(GatewayMode.OFFLINE);
+            return extractApiKeyFromLocalApiKeyList(apiKeyValue);
+        }
+    }
 
-        updateGatewayMode(GatewayMode.OFFLINE);
+    private boolean wasLocalApiKeyListNotInitialized() {
+        return deadlineWhenOfflineModeShallStopWorking == LocalDateTime.MIN;
+    }
 
-        return extractApiKeyFromLocalApiKeyList(apiKeyValue);
+    private boolean isOfflineWorkingTimeExceeded() {
+        return LocalDateTime.now().isAfter(deadlineWhenOfflineModeShallStopWorking);
     }
 
     private ApiKey extractApiKeyFromLocalApiKeyList(String apiKeyValue) {
+        log.debug("Trying to extract the API key with the value {} from the local list.", apiKeyValue);
+
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)
         ).findFirst();
@@ -93,10 +105,6 @@ public class LocalApiKeyManager {
             throw new ApiKeyNotFoundInLocalApiKeyListException("The API key with the value " + apiKeyValue + " could not be " +
                     "found in the local API key list.");
         }
-    }
-
-    public boolean isOfflineWorkingTimeExceeded() {
-        return LocalDateTime.now().isAfter(deadlineWhenOfflineModeShallStopWorking);
     }
 
     @Async

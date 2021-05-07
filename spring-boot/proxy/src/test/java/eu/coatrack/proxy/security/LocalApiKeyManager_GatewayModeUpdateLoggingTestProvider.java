@@ -115,7 +115,7 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTestProvider extends Loc
     @Test
     public void localApiKeySearchShouldTriggerSwitchFromOnlineToOfflineMode() throws ApiKeyFetchingFailedException {
         switchToOnlineMode();
-        localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue());
+        localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue());
 
         assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
         assertEquals(1, logEventStorage.getNumberOfLogEventsContaining(switchingToOfflineModeMessage));

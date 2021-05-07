@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.proxy.security.exceptions.LocalApiKeyListWasNotInitializedException;
+import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,16 +37,8 @@ public class LocalApiKeyManager_NonInitializedLocalApiKeyListTestProvider extend
 
     @Test
     public void offlineWorkingTimeShouldBeExceeded() {
-        assertTrue(localApiKeyManager.isOfflineWorkingTimeExceeded());
-    }
-
-    @Test
-    public void apiKeyEntityRequestShouldCauseException() {
         assertThrows(LocalApiKeyListWasNotInitializedException.class, () ->
-                localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKey.getKeyValue()));
-
-        assertThrows(LocalApiKeyListWasNotInitializedException.class, () ->
-                localApiKeyManager.getApiKeyEntityByApiKeyValue(null));
+                localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
     }
 
 }

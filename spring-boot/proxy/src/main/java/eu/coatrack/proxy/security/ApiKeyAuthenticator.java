@@ -123,17 +123,9 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         } catch (ApiKeyFetchingFailedException e) {
             log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed. " +
                     "Therefore checking the local API key list as fallback solution.", apiKeyValue);
-            apiKey = getApiKeyEntityFromLocalCache(apiKeyValue);
+            apiKey = localApiKeyManager.getApiKeyEntityFromLocalCache(apiKeyValue);
         }
         return apiKey;
-    }
-
-    private ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
-        if (localApiKeyManager.isOfflineWorkingTimeExceeded())
-            throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
-                    "gateway will reject every request until a connection to CoatRack admin could be re-established.");
-        else
-            return localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKeyValue);
     }
 
     private ApiKeyAuthToken createAuthTokenGrantingAccessToServiceApi(ApiKey apiKey) {
