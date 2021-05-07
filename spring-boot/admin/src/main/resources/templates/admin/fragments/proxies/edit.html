@@ -88,7 +88,9 @@
                                                 <label>
                                                     <input type="checkbox" class="flat" name="selectedServices"
                                                            th:value="${service.id}" th:checked="${proxy.getServiceApis().contains(service)}? 'true': 'false'"/>
-                                                    <span th:text="${service.name} + ' (' + ${service.uriIdentifier} + ')'"/>
+                                                    <span th:text="${service.name} + ' (' + ${service.uriIdentifier}"></span>
+                                                    <i class="fa fa-long-arrow-right"></i>
+                                                    <span th:text="${' ' + service.localUrl + ')'}"/>
                                                 </label>
                                             </div>
                                         </div>
