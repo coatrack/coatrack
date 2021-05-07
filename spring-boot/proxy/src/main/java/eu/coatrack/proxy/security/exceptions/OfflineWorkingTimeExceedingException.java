@@ -23,8 +23,9 @@ package eu.coatrack.proxy.security.exceptions;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * If the gateway works for a specific time without connection to the Coatrack admin server.
- * If this time is passed, every incoming request is rejected because this exception is thrown.
+ * Indicates that the maximum time the gateway is allowed to work in offline mode
+ * was exceeded. This means that locally cached API keys should be considered
+ * invalid until the online mode is re-established.
  */
 public class OfflineWorkingTimeExceedingException extends AuthenticationException {
 

@@ -46,17 +46,17 @@ import java.util.Set;
  */
 
 @Service
-public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
+public class ApiKeyAuthenticator implements AuthenticationManager {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthenticator.class);
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
     private final ApiKeyVerifier apiKeyVerifier;
     private final Set<SimpleGrantedAuthority> authoritiesGrantedToCoatRackAdminApp = new HashSet<>();
 
-    public ApiKeyAuthTokenVerifier(LocalApiKeyManager localApiKeyManager,
-                                   ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
+    public ApiKeyAuthenticator(LocalApiKeyManager localApiKeyManager,
+                               ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
         this.apiKeyVerifier = apiKeyVerifier;
@@ -70,15 +70,9 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         try {
             log.debug("Verifying the authentication {}.", authentication.getName());
             String apiKeyValue = extractApiKeyValueFromAuthentication(authentication);
-            return doesApiKeyBelongToAdminApp(apiKeyValue) ? createAdminAuthTokenFromApiKey(apiKeyValue)
-                    : createConsumerAuthTokenIfApiKeyIsAuthorized(apiKeyValue);
+            return createAuthToken(apiKeyValue);
         } catch (Exception e) {
-            if (e instanceof AuthenticationException) {
-                throw e;
-            } else {
-                log.error("During the authentication process this unexpected exception occurred: ", e);
-                throw new AuthenticationProcessFailedException("The authentication process failed due to an unknown error.");
-            }
+            throw assureThrowingAnAuthenticationException(e);
         }
     }
 
@@ -93,20 +87,26 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         return apiKeyValue;
     }
 
+    private Authentication createAuthToken(String apiKeyValue) {
+        if (doesApiKeyBelongToAdminApp(apiKeyValue))
+            return createAdminAuthTokenFromApiKey(apiKeyValue);
+        else
+            return createConsumerAuthTokenIfApiKeyIsValid(apiKeyValue);
+    }
+
     private boolean doesApiKeyBelongToAdminApp(String apiKeyValue) {
         log.debug("Checking if '{}' is an API key of the admin application.", apiKeyValue);
         return apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES);
     }
 
     private Authentication createAdminAuthTokenFromApiKey(String apiKeyValue) {
-        log.debug("Creating admins authentication token using API key with the value {}.", apiKeyValue);
+        log.debug("Creating admin authentication token using API key with the value {}.", apiKeyValue);
         ApiKeyAuthToken apiKeyAuthTokenForValidApiKey = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToCoatRackAdminApp);
         apiKeyAuthTokenForValidApiKey.setAuthenticated(true);
         return apiKeyAuthTokenForValidApiKey;
     }
 
-    private Authentication createConsumerAuthTokenIfApiKeyIsAuthorized(String apiKeyValue) throws
-            BadCredentialsException, OfflineWorkingTimeExceedingException {
+    private Authentication createConsumerAuthTokenIfApiKeyIsValid(String apiKeyValue) {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
 
         ApiKey apiKey = getApiKeyEntityByApiKeyValue(apiKeyValue);
@@ -146,5 +146,14 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
         apiKeyAuthToken.setAuthenticated(true);
 
         return apiKeyAuthToken;
+    }
+
+    private AuthenticationException assureThrowingAnAuthenticationException(Exception e) {
+        if (e instanceof AuthenticationException) {
+            return (AuthenticationException) e;
+        } else {
+            return new AuthenticationProcessFailedException("The authentication process failed " +
+                    "due to an unexpected error.", e);
+        }
     }
 }

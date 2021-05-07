@@ -33,10 +33,10 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ApiKeyAuthTokenVerifierTest {
+public class ApiKeyAuthenticatorTest {
 
     private ApiKeyAuthToken apiKeyAuthToken;
-    private ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier;
+    private ApiKeyAuthenticator apiKeyAuthenticator;
     private ApiKey apiKey;
 
     private LocalApiKeyManager localApiKeyManagerMock;
@@ -47,7 +47,7 @@ public class ApiKeyAuthTokenVerifierTest {
     public void setup() {
         apiKey = createSampleApiKeyForTesting();
 
-        apiKeyAuthTokenVerifier = createMockedApiKeyAuthTokenVerifier();
+        apiKeyAuthenticator = createMockedApiKeyAuthTokenVerifier();
 
         // Create an auth token for a valid api key without any granted authorities.
         apiKeyAuthToken = new ApiKeyAuthToken(apiKey.getKeyValue(), null);
@@ -65,12 +65,12 @@ public class ApiKeyAuthTokenVerifierTest {
         return localApiKey;
     }
 
-    private ApiKeyAuthTokenVerifier createMockedApiKeyAuthTokenVerifier() {
+    private ApiKeyAuthenticator createMockedApiKeyAuthTokenVerifier() {
         localApiKeyManagerMock = mock(LocalApiKeyManager.class);
         apiKeyFetcherMock = mock(ApiKeyFetcher.class);
         apiKeyVerifierMock = mock(ApiKeyVerifier.class);
 
-        return new ApiKeyAuthTokenVerifier(
+        return new ApiKeyAuthenticator(
                 localApiKeyManagerMock,
                 apiKeyFetcherMock,
                 apiKeyVerifierMock
@@ -79,14 +79,14 @@ public class ApiKeyAuthTokenVerifierTest {
 
     @Test
     public void nullArgumentShouldCauseException() {
-        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthTokenVerifier.authenticate(null));
+        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthenticator.authenticate(null));
     }
 
     @Test
     public void nullCredentialsInAuthTokenShouldCauseException() {
         ApiKeyAuthToken nullToken = new ApiKeyAuthToken(null, null);
 
-        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthTokenVerifier.authenticate(nullToken));
+        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthenticator.authenticate(nullToken));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(true);
 
-        assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
+        assertTrue(apiKeyAuthenticator.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     @Test
@@ -102,7 +102,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
-        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.NULL);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
-        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(false);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(false);
 
-        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(true);
 
-        assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
+        assertTrue(apiKeyAuthenticator.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallOfflineWorkingTimeBeExceeded(true);
 
-        assertThrows(OfflineWorkingTimeExceedingException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(OfflineWorkingTimeExceedingException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class ApiKeyAuthTokenVerifierTest {
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
-        assertThrows(BadCredentialsException.class, () -> apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test
@@ -155,7 +155,7 @@ public class ApiKeyAuthTokenVerifierTest {
         apiKeyAuthToken = new ApiKeyAuthToken(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES, null);
         apiKeyAuthToken.setAuthenticated(false);
 
-        assertTrue(apiKeyAuthTokenVerifier.authenticate(apiKeyAuthToken).isAuthenticated());
+        assertTrue(apiKeyAuthenticator.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
     //Behavior of the mock objects

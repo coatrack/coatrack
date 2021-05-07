@@ -28,7 +28,7 @@ import org.springframework.security.core.AuthenticationException;
  */
 public class AuthenticationProcessFailedException extends AuthenticationException {
 
-    public AuthenticationProcessFailedException(String msg) {
-        super(msg);
+    public AuthenticationProcessFailedException(String msg, Exception e) {
+        super(msg, e);
     }
 }
