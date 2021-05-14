@@ -25,7 +25,7 @@ import org.springframework.security.core.AuthenticationException;
 /**
  * Is thrown when an incoming API key could not be matched with any API key of the local API key list.
  */
-public class ApiKeyNotFoundInLocalApiKeyListException extends AuthenticationException {
+public class ApiKeyNotFoundInLocalApiKeyListException extends RuntimeException {
     public ApiKeyNotFoundInLocalApiKeyListException(String message) {
         super(message);
     }

@@ -54,7 +54,7 @@ public class ApiKeyFetcher {
         this.urlResourcesProvider = urlResourcesProvider;
     }
 
-    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws ApiKeyFetchingFailedException {
+    public List<ApiKey> requestLatestApiKeyListFromAdmin() {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
         try {
@@ -76,7 +76,7 @@ public class ApiKeyFetcher {
             return responseEntity.getBody();
     }
 
-    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws ApiKeyFetchingFailedException {
+    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
         if (apiKeyValue == null)

@@ -27,7 +27,7 @@ import org.springframework.security.core.AuthenticationException;
  * never received a list of API Keys from CoatRack admin before and can therefore not
  * be used for that purpose.
  */
-public class LocalApiKeyListWasNotInitializedException extends AuthenticationException {
+public class LocalApiKeyListWasNotInitializedException extends RuntimeException {
     public LocalApiKeyListWasNotInitializedException(String msg) {
         super(msg);
     }

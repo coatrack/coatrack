@@ -26,6 +26,9 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.ApiKeyNotFoundInLocalApiKeyListException;
+import eu.coatrack.proxy.security.exceptions.LocalApiKeyListWasNotInitializedException;
+import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.LoggerFactory;
@@ -113,7 +116,7 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
     }
 
     @Test
-    public void localApiKeySearchShouldTriggerSwitchFromOnlineToOfflineMode() throws ApiKeyFetchingFailedException {
+    public void localApiKeySearchShouldTriggerSwitchFromOnlineToOfflineMode() throws ApiKeyFetchingFailedException, LocalApiKeyListWasNotInitializedException, OfflineWorkingTimeExceedingException, ApiKeyNotFoundInLocalApiKeyListException {
         letLocalApiKeyManagerSwitchToOnlineMode();
         localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue());
 

@@ -21,8 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
-import eu.coatrack.proxy.security.exceptions.AuthenticationProcessFailedException;
+import eu.coatrack.proxy.security.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -71,7 +70,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
             String apiKeyValue = extractApiKeyValueFromAuthentication(authentication);
             return createAuthToken(apiKeyValue);
         } catch (Exception e) {
-            throw assureThrowingAnAuthenticationException(e);
+            return (Authentication) assureReturningAnAuthenticationExceptionOrNull(e);
         }
     }
 
@@ -139,12 +138,10 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         return apiKeyAuthToken;
     }
 
-    private AuthenticationException assureThrowingAnAuthenticationException(Exception e) {
-        if (e instanceof AuthenticationException) {
-            return (AuthenticationException) e;
-        } else {
-            return new AuthenticationProcessFailedException("The authentication process failed " +
-                    "due to an unexpected error.", e);
-        }
+    private AuthenticationException assureReturningAnAuthenticationExceptionOrNull(Exception e) {
+        if (e instanceof AuthenticationException)
+            throw (AuthenticationException) e;
+        else
+            return null;
     }
 }

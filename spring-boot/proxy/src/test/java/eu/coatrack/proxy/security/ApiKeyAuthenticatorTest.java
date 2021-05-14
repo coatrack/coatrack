@@ -20,14 +20,12 @@ package eu.coatrack.proxy.security;/*-
 
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.ServiceApi;
-import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
-import eu.coatrack.proxy.security.exceptions.AuthenticationProcessFailedException;
+import eu.coatrack.proxy.security.exceptions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -78,14 +76,14 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void nullArgumentShouldCauseException() {
-        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthenticator.authenticate(null));
+        assertNull(apiKeyAuthenticator.authenticate(null));
     }
 
     @Test
     public void nullCredentialsInAuthTokenShouldCauseException() {
         ApiKeyAuthToken nullToken = new ApiKeyAuthToken(null, null);
 
-        assertThrows(AuthenticationProcessFailedException.class, () -> apiKeyAuthenticator.authenticate(nullToken));
+        assertNull(apiKeyAuthenticator.authenticate(nullToken));
     }
 
     @Test
@@ -113,7 +111,7 @@ public class ApiKeyAuthenticatorTest {
     }
 
     @Test
-    public void apiKeyNotFoundInLocalApiKeyListShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void apiKeyNotFoundInLocalApiKeyListShouldCauseException() {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(false);
 
@@ -121,7 +119,7 @@ public class ApiKeyAuthenticatorTest {
     }
 
     @Test
-    public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() throws ApiKeyFetchingFailedException {
+    public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(true);
@@ -130,7 +128,7 @@ public class ApiKeyAuthenticatorTest {
     }
 
     @Test
-    public void invalidApiKeyFromLocalApiKeyListAndShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void invalidApiKeyFromLocalApiKeyListAndShouldCauseException() {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
@@ -178,5 +176,4 @@ public class ApiKeyAuthenticatorTest {
         ApiKey expectedReturnValue = isFoundInLocalApiKeyList ? apiKey : null;
         when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
     }
-
 }

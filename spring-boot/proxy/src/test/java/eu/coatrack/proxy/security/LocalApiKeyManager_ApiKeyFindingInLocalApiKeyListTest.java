@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;/*-
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import eu.coatrack.proxy.security.exceptions.ApiKeyNotFoundInLocalApiKeyListException;
+import eu.coatrack.proxy.security.exceptions.LocalApiKeyListWasNotInitializedException;
 import eu.coatrack.proxy.security.exceptions.OfflineWorkingTimeExceedingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
     }
 
     @Test
-    public void apiKeyIsNotFoundInLocalApiKeyListAndThereforeNullIsReturned() throws ApiKeyFetchingFailedException {
+    public void apiKeyIsNotFoundInLocalApiKeyListAndThereforeNullIsReturned() {
         List<ApiKey> apiKeyListNotContainingTheIncomingApiKey = createApiKeyListNotContainingTheIncomingApiKey();
 
         reset(apiKeyFetcherMock);
@@ -76,7 +77,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
     }
 
     @Test
-    public void localApiKeyListShouldNotUpdateWhenApiKeyFetcherDeliversNull() throws ApiKeyFetchingFailedException {
+    public void localApiKeyListShouldNotUpdateWhenApiKeyFetcherDeliversNull() {
         reset(apiKeyFetcherMock);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(null);
         localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();

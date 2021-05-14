@@ -26,7 +26,7 @@ import org.springframework.security.core.AuthenticationException;
  * Indicates that an unexpected error occurred during the process of authenticating
  * a call to the gateway.
  */
-public class AuthenticationProcessFailedException extends AuthenticationException {
+public class AuthenticationProcessFailedException extends RuntimeException {
 
     public AuthenticationProcessFailedException(String msg, Exception e) {
         super(msg, e);

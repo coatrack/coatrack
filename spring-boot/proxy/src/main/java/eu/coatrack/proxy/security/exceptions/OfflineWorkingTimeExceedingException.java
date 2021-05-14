@@ -27,7 +27,7 @@ import org.springframework.security.core.AuthenticationException;
  * was exceeded. This means that locally cached API keys should be considered
  * invalid until the online mode is re-established.
  */
-public class OfflineWorkingTimeExceedingException extends AuthenticationException {
+public class OfflineWorkingTimeExceedingException extends RuntimeException {
 
     public OfflineWorkingTimeExceedingException(String message) {
         super(message);
