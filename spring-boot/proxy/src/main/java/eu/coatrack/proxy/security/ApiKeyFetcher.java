@@ -97,9 +97,6 @@ public class ApiKeyFetcher {
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
-        if (apiKeyValue == null)
-            throw new IllegalArgumentException("Provided API key value was null.");
-
         try {
             ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
