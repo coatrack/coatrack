@@ -38,47 +38,54 @@ public class ApiKeyFetcher_ApiKeyListFetchingTest extends ApiKeyFetcher_Abstract
 
     @AfterEach
     public void verifyRestTemplateMockCall() {
-        verify(restTemplateMock).getForEntity(anyString(), eq(ApiKey[].class));
+        verify(restTemplateMock).getForEntity(anyString(), eq(Object.class));
     }
 
     @Test
     public void nullApiKeyListResponseEntityShouldCauseException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class))).thenReturn(null);
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class))).thenReturn(null);
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 
     @Test
     public void exceptionAtApiKeyListFetchingShouldCauseException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
                 .thenThrow(new RestClientException("test"));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 
     @Test
     public void validApiKeyListResponseEntityShouldContainApiKey() throws ApiKeyFetchingFailedException {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
                 .thenReturn(new ResponseEntity<>(apiKeys, HttpStatus.OK));
         assertTrue(apiKeyFetcher.requestLatestApiKeyListFromAdmin().contains(apiKey));
     }
 
     @Test
     public void apiKeyListNotFoundByAdminShouldCauseException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 
     @Test
     public void badHttpStatusShouldCauseException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
                 .thenReturn(new ResponseEntity<>(apiKeys, HttpStatus.INTERNAL_SERVER_ERROR));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 
     @Test
     public void apiKeyListNotFoundByAdminAndBadHttpStatusShouldCauseException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
+        assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
+    }
+
+    @Test
+    public void coatRackAdminSendingExceptionAsResponseEntityBodyShouldCauseException() {
+        when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
+                .thenReturn(new ResponseEntity<>(new Exception("test"), HttpStatus.INTERNAL_SERVER_ERROR));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 

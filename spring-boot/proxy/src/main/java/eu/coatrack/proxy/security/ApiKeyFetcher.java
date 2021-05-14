@@ -59,8 +59,8 @@ public class ApiKeyFetcher {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
         try {
-            ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
+            ResponseEntity<?> responseEntity = restTemplate.getForEntity(
+                    urlResourcesProvider.getApiKeyListRequestUrl(), Object.class);
             ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
             return new ArrayList<>(Arrays.asList(apiKeys));
         } catch (RestClientException e) {
@@ -86,10 +86,12 @@ public class ApiKeyFetcher {
 
         if (responseEntity == null)
             problemMessage = Optional.of("The ResponseEntity was null.");
-        else if (responseEntity.getStatusCode() != HttpStatus.OK)
-            problemMessage = Optional.of("The HTTP status was not OK.");
         else if (responseEntity.getBody() == null)
             problemMessage = Optional.of("The body was null");
+        else if (responseEntity.getBody() instanceof Exception)
+            throw new ApiKeyFetchingFailedException("CoatRack admin had following error: ", (Exception) responseEntity.getBody());
+        else if (responseEntity.getStatusCode() != HttpStatus.OK)
+            problemMessage = Optional.of("The HTTP status was not OK.");
 
         return problemMessage;
     }
