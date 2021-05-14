@@ -33,6 +33,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Sends requests to the Coatrack admin server to receive single
@@ -70,10 +71,27 @@ public class ApiKeyFetcher {
 
     private Object extractBodyFromResponseEntity(ResponseEntity<?> responseEntity) {
         log.debug("Extracting ResponseEntity: " + responseEntity);
-        if (responseEntity == null || responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getBody() == null)
-            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity.");
+
+        Optional<String> problemMessage = createMessageIfThereAreAnyProblems(responseEntity);
+
+        if (problemMessage.isPresent())
+            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity. "
+                    + problemMessage.get());
         else
             return responseEntity.getBody();
+    }
+
+    private Optional<String> createMessageIfThereAreAnyProblems(ResponseEntity<?> responseEntity) {
+        Optional<String> problemMessage = Optional.empty();
+
+        if (responseEntity == null)
+            problemMessage = Optional.of("The ResponseEntity was null.");
+        else if (responseEntity.getStatusCode() != HttpStatus.OK)
+            problemMessage = Optional.of("The HTTP status was not OK.");
+        else if (responseEntity.getBody() == null)
+            problemMessage = Optional.of("The body was null");
+
+        return problemMessage;
     }
 
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
