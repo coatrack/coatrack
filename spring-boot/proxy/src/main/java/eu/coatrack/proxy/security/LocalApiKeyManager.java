@@ -72,6 +72,9 @@ public class LocalApiKeyManager {
     }
 
     public ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
+        //This is only a fallback solution if connection to admin does not work. Therefore offline mode is triggered.
+        updateGatewayMode(GatewayMode.OFFLINE);
+
         if (!isLocalApiKeyListInitialized) {
             throw new LocalApiKeyListWasNotInitializedException("The gateway is currently not able to validate " +
                     "API keys in offline mode, as the local API cache was not yet initialized. This probably " +
@@ -90,9 +93,6 @@ public class LocalApiKeyManager {
 
     private ApiKey extractApiKeyFromLocalApiKeyList(String apiKeyValue) {
         log.debug("Trying to extract the API key with the value {} from the local list.", apiKeyValue);
-
-        //This is only a fallback solution if connection to admin does not work. Therefore offline mode is triggered.
-        updateGatewayMode(GatewayMode.OFFLINE);
 
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)
