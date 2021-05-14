@@ -144,9 +144,32 @@ public class ApiKeyAuthenticatorTest {
         assertTrue(apiKeyAuthenticator.authenticate(apiKeyAuthToken).isAuthenticated());
     }
 
-    //Behavior of the mock objects
+    @Test
+    public void triggerApiKeyNotFoundInLocalApiKeyListExceptionAndExpectNull() {
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue())).thenThrow(ApiKeyNotFoundInLocalApiKeyListException.class);
 
-    //apiKeyFetcherMock
+        assertNull(apiKeyAuthenticator.authenticate(apiKeyAuthToken));
+    }
+
+    @Test
+    public void triggerLocalApiKeyListWasNotInitializedExceptionAndExpectNull() {
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()))
+                .thenThrow(LocalApiKeyListWasNotInitializedException.class);
+
+        assertNull(apiKeyAuthenticator.authenticate(apiKeyAuthToken));
+    }
+
+    @Test
+    public void triggerOfflineWorkingTimeExceedingExceptionAndExpectNull() {
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()))
+                .thenThrow(OfflineWorkingTimeExceedingException.class);
+
+        assertNull(apiKeyAuthenticator.authenticate(apiKeyAuthToken));
+    }
+
     private void addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin)
             throws ApiKeyFetchingFailedException {
         switch (resultOfApiKeyRequestToAdmin) {
@@ -166,12 +189,10 @@ public class ApiKeyAuthenticatorTest {
         NULL, API_KEY, API_KEY_FETCHING_FAILED_EXCEPTION
     }
 
-    //apiKeyVerifierMock
     private void addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(boolean shallApiKeyBeValid) {
         when(apiKeyValidatorMock.isApiKeyValid(apiKey)).thenReturn(shallApiKeyBeValid);
     }
 
-    //localApiKeyManagerMock
     private void addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(boolean isFoundInLocalApiKeyList) {
         ApiKey expectedReturnValue = isFoundInLocalApiKeyList ? apiKey : null;
         when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
