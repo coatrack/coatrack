@@ -69,7 +69,7 @@ public class ApiKeyFetcher {
     }
 
     private Object extractBodyFromResponseEntity(ResponseEntity<?> responseEntity) {
-        log.debug("Extracting ResponseEntity.");
+        log.debug("Extracting ResponseEntity: " + responseEntity);
         if (responseEntity == null || responseEntity.getStatusCode() != HttpStatus.OK || responseEntity.getBody() == null)
             throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity.");
         else

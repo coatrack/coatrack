@@ -73,15 +73,13 @@ public class LocalApiKeyManager {
 
     public ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
         if (!isLocalApiKeyListInitialized) {
-            throw new LocalApiKeyListWasNotInitializedException("The API key with the value " + apiKeyValue + " was " +
-                    "requested without initialization of local API key list.");
+            throw new LocalApiKeyListWasNotInitializedException("The gateway is currently not able to validate " +
+                    "API keys in offline mode, as the local API cache was not yet initialized. This probably " +
+                    "means that a network connection to CoatRack admin could not yet be established.");
         } else if (isOfflineWorkingTimeExceeded()) {
             throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
                     "gateway will reject every request until a connection to CoatRack admin could be re-established.");
         } else {
-            //This is only a fallback solution if connection to admin does not work. Therefore offline mode is triggered.
-            updateGatewayMode(GatewayMode.OFFLINE);
-
             return extractApiKeyFromLocalApiKeyList(apiKeyValue);
         }
     }
@@ -92,6 +90,9 @@ public class LocalApiKeyManager {
 
     private ApiKey extractApiKeyFromLocalApiKeyList(String apiKeyValue) {
         log.debug("Trying to extract the API key with the value {} from the local list.", apiKeyValue);
+
+        //This is only a fallback solution if connection to admin does not work. Therefore offline mode is triggered.
+        updateGatewayMode(GatewayMode.OFFLINE);
 
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)

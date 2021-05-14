@@ -70,17 +70,17 @@ public class GatewayApiController {
     }
 
     @GetMapping("/api/gateways/api-keys")
-    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayApiKey) {
-        log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
+    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
+        log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
-            Proxy proxy = proxyRepository.findById(gatewayApiKey);
+            Proxy proxy = proxyRepository.findById(gatewayIdAndApiKey);
             if (proxy != null) {
                 return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
             } else {
-                throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
+                throw new NotFoundException("The gateway with the ID " + gatewayIdAndApiKey + " was not found.");
             }
         } catch (Exception e) {
-            log.info("The creation of the API key list for the gateway {} failed.", gatewayApiKey, e);
+            log.info("The creation of the API key list for the gateway {} failed.", gatewayIdAndApiKey, e);
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }

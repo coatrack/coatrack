@@ -1,4 +1,6 @@
-package eu.coatrack.proxy.security;/*-
+package eu.coatrack.proxy.security;
+
+/*-
  * #%L
  * coatrack-proxy
  * %%

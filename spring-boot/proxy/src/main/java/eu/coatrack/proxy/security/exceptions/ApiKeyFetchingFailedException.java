@@ -30,7 +30,7 @@ public class ApiKeyFetchingFailedException extends RuntimeException {
         super(message);
     }
 
-    public ApiKeyFetchingFailedException(String message, Exception e) {
-        super(message, e);
+    public ApiKeyFetchingFailedException(String message, Exception rootCause) {
+        super(message, rootCause);
     }
 }

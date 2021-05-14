@@ -37,8 +37,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Checks if the API key token value sent by the client is valid. If so, the client
- * is forwarded to the requested service API.
+ *  Checks if the API key token value sent by the client is valid. If so, an authentication object
+ *  including the granted authorities is generated, to be further handled by access decision voters.
  *
  * @author gr-hovest, Christoph Baier
  */
@@ -68,7 +68,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         try {
             log.debug("Verifying the authentication {}.", authentication.getName());
             String apiKeyValue = extractApiKeyValueFromAuthentication(authentication);
-            return createAuthToken(apiKeyValue);
+            return createAuthTokenIfApiKeyIsValid(apiKeyValue);
         } catch (Exception e) {
             return (Authentication) assureReturningAnAuthenticationExceptionOrNull(e);
         }
@@ -85,7 +85,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         return apiKeyValue;
     }
 
-    private Authentication createAuthToken(String apiKeyValue) {
+    private Authentication createAuthTokenIfApiKeyIsValid(String apiKeyValue) {
         if (doesApiKeyBelongToAdminApp(apiKeyValue))
             return createAdminAuthTokenFromApiKey(apiKeyValue);
         else
