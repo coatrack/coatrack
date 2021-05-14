@@ -20,7 +20,6 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-import eu.coatrack.api.ApiKey;
 import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -57,7 +56,7 @@ public class ApiKeyFetcher_ApiKeyListFetchingTest extends ApiKeyFetcher_Abstract
     @Test
     public void validApiKeyListResponseEntityShouldContainApiKey() throws ApiKeyFetchingFailedException {
         when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
-                .thenReturn(new ResponseEntity<>(apiKeys, HttpStatus.OK));
+                .thenReturn(new ResponseEntity<>(apiKeyList, HttpStatus.OK));
         assertTrue(apiKeyFetcher.requestLatestApiKeyListFromAdmin().contains(apiKey));
     }
 
@@ -71,7 +70,7 @@ public class ApiKeyFetcher_ApiKeyListFetchingTest extends ApiKeyFetcher_Abstract
     @Test
     public void badHttpStatusShouldCauseException() {
         when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
-                .thenReturn(new ResponseEntity<>(apiKeys, HttpStatus.INTERNAL_SERVER_ERROR));
+                .thenReturn(new ResponseEntity<>(apiKeyList, HttpStatus.INTERNAL_SERVER_ERROR));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 

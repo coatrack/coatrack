@@ -19,10 +19,11 @@ package eu.coatrack.proxy.security;/*-
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetcher;
-import eu.coatrack.proxy.security.UrlResourcesProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -35,15 +36,15 @@ public abstract class ApiKeyFetcher_AbstractTestSetup {
     protected RestTemplate restTemplateMock;
     protected UrlResourcesProvider urlResourcesProviderMock;
     protected ApiKey apiKey;
-    protected ApiKey[] apiKeys;
+    protected List<ApiKey> apiKeyList;
 
     @BeforeEach
     public void setup() {
         apiKey = new ApiKey();
         apiKey.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
 
-        apiKeys = new ApiKey[1];
-        apiKeys[0] = apiKey;
+        apiKeyList = new ArrayList<>();
+        apiKeyList.add(apiKey);
 
         restTemplateMock = mock(RestTemplate.class);
         urlResourcesProviderMock = createUrlResourcesProviderMock();

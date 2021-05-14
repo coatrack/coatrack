@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Sends requests to the Coatrack admin server to receive single
@@ -61,8 +58,8 @@ public class ApiKeyFetcher {
         try {
             ResponseEntity<?> responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyListRequestUrl(), Object.class);
-            ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
-            return new ArrayList<>(Arrays.asList(apiKeys));
+            List<ApiKey> apiKeys = (ArrayList<ApiKey>) extractBodyFromResponseEntity(responseEntity);
+            return new ArrayList<>(apiKeys);
         } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
                     "connection failed.", e);
