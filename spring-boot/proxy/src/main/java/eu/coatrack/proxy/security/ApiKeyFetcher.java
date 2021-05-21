@@ -85,8 +85,6 @@ public class ApiKeyFetcher {
             problemMessage = Optional.of("The ResponseEntity was null.");
         else if (responseEntity.getBody() == null)
             problemMessage = Optional.of("The body was null");
-        else if (responseEntity.getBody() instanceof Exception)
-            throw new ApiKeyFetchingFailedException("CoatRack admin had following error: ", (Exception) responseEntity.getBody());
         else if (responseEntity.getStatusCode() != HttpStatus.OK)
             problemMessage = Optional.of("The HTTP status was not OK.");
 

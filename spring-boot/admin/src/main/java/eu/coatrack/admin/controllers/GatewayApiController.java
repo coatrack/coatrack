@@ -79,7 +79,7 @@ public class GatewayApiController {
             return createResponseEntityIfProxyWasFound(proxy, gatewayIdAndApiKey);
         } catch (Exception e) {
             log.info("The creation of the API key list for the gateway {} failed.", gatewayIdAndApiKey, e);
-            return new ResponseEntity<>(e, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
