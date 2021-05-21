@@ -164,7 +164,7 @@ public class Proxy {
         return timeOfLastSuccessfulCallToAdmin;
     }
 
-    public void updateTimeOfLastSuccessfulCallToAdmin() {
+    public void updateTimeOfLastSuccessfulCallToAdmin_setToNow() {
         this.timeOfLastSuccessfulCallToAdmin = LocalDateTime.now();
     }
 
