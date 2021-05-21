@@ -56,10 +56,10 @@ public class ApiKeyFetcher {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
         try {
-            ResponseEntity<?> responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyListRequestUrl(), Object.class);
-            List<ApiKey> apiKeys = (ArrayList<ApiKey>) extractBodyFromResponseEntity(responseEntity);
-            return new ArrayList<>(apiKeys);
+            ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
+                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
+            ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
+            return new ArrayList<>(Arrays.asList(apiKeys));
         } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
                     "connection failed.", e);
