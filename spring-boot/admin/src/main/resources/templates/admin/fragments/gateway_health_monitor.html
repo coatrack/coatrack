@@ -15,7 +15,7 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                    <div class="demo-container" style="height:300px">
+                    <div th:fragment="gateway-health-monitor" class="demo-container" style="height:300px">
 
                         <div th:switch="${gatewayHealthStatusSummary}">
                                     <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}">
@@ -29,9 +29,7 @@
                                     <span class="everything-ok-symbol">&#10004;</span></span>
                         </div>
 
-                        <table class="health-monitor-data-table"></table>
-
-        <!--                <table class="health-monitor-data-table">
+                        <table class="health-monitor-data-table">
                             <tr>
                                 <th th:text="#{admin.dashboard.gatewayhealthmonitor.gatewayname}"></th>
                                 <th th:text="#{admin.dashboard.gatewayhealthmonitor.status}"></th>
@@ -61,7 +59,7 @@
                                 </label>
                                 </td>
                             </tr>
-                        </table> -->
+                        </table>
                     </div>
                 </div>
             </div>
