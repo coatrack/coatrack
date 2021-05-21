@@ -141,15 +141,21 @@
                 var dateRangeUrlSuffix = "?dateFrom=" + dateRangeStartDateFromServer;
                 dateRangeUrlSuffix += "&dateUntil=" + dateRangeEndDateFromServer;
                 loadChartsForNewDateRange(dateRangeUrlSuffix);
+
+                updateGatewayHealthMonitorDataViaFragment();
             });
 
-                 $("#proxyMonitoringSwitch").change(function ()
-            {
-                console.log("The monitoring status of the proxy " + $(this) + " is being changed");
+            function updateGatewayHealthMonitorDataViaFragment (){
+                $('#gatewayHealthMonitor').load("/admin/dashboard/gatewayhealthmonitor/update");
+            }
+
+            function sendProxyIdToChangeNotificationMonitoringValue(proxyId) {
+                console.log("The monitoring status of the proxy " + proxyId + " is being changed");
                 $.ajax({
                     type: "POST",
                     url: "admin/gatewayhealthmonitor/notification",
                     data: {proxyId: proxyId},
+                    complete: updateGatewayHealthMonitorDataViaFragment(),
                 })
             }
             /*]]>*/
