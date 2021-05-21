@@ -29,6 +29,5 @@ ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: http://localhos
 # The Gateway Health Monitor updates the status (Ok, Warning and Critical) of all gateways based on a threshold value in minutes.
 # This threshold values allows the gateway health monitor to put the correct status based on how much time ago the last successful
 # call was made from the gateway to the admin.
-gateway_health_monitor.warning.threshold.minutes: 5
-gateway_health_monitor.critical.threshold.minutes: 60
-gateway_health_monitor.one_minute_to_miliseconds: 60_000
+ygg.gateway_health_monitor.warning.threshold.minutes: 5
+ygg.gateway_health_monitor.critical.threshold.minutes: 60
