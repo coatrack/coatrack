@@ -701,11 +701,19 @@ public class AdminController {
         return testServiceApi;
     }
 
+    @RequestMapping(value = "/dashboard/gatewayhealthmonitor/update", method = GET, produces = "application/json")
+    @ResponseBody
+    public List<GatewayDataForTheGatewayHealthMonitor> updateGatewayHealthMonitorData() {
+        log.info("update Gateway Health Monitor Data");
+        return updateProxyInfoForGatewayHealthMonitor();
+    }
+
     @RequestMapping(value = "/gatewayhealthmonitor/notification", method = POST)
     @ResponseBody
     public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId) {
         Proxy proxy = proxyRepository.findById(proxyId);
         proxy.setMonitoringEnabled(!proxy.isMonitoringEnabled());
+        log.info("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isMonitoringEnabled());
         proxyRepository.save(proxy);
     }
 }
