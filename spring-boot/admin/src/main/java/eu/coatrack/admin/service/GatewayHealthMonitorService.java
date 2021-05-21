@@ -35,9 +35,13 @@ public class GatewayHealthMonitorService {
 
     public ProxyStates gatewayHealthStatusSummary(List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForTheGatewayHealthMonitorList){
         List <GatewayDataForTheGatewayHealthMonitor> proxiesWithMonitoringActivatedList = gatewayDataForTheGatewayHealthMonitorList.stream().filter(proxy -> proxy.isMonitoringEnabled == true).collect(Collectors.toList());
-        if (proxiesWithMonitoringActivatedList.stream().anyMatch(proxy -> proxy.status == ProxyStates.CRITICAL))
+        if (proxiesWithMonitoringActivatedList
+                .stream()
+                .anyMatch(proxy -> proxy.status == ProxyStates.CRITICAL))
             return ProxyStates.CRITICAL;
-        else if(proxiesWithMonitoringActivatedList.stream().anyMatch(proxy -> proxy.status == ProxyStates.WARNING))
+        else if(proxiesWithMonitoringActivatedList
+                .stream()
+                .anyMatch(proxy -> proxy.status == ProxyStates.WARNING))
             return ProxyStates.WARNING;
         return ProxyStates.OK;
     }
