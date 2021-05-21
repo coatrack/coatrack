@@ -25,7 +25,7 @@ public class GatewayHealthMonitorService {
     @Autowired
     ProxyRepository proxyRepository;
 
-    public static class GatewayDataForTheGatewayHealthMonitor {
+    public class GatewayDataForTheGatewayHealthMonitor {
         public String proxyId;
         public String name;
         public ProxyStates status;
@@ -48,8 +48,8 @@ public class GatewayHealthMonitorService {
 
     public List<GatewayDataForTheGatewayHealthMonitor> updateProxyInfoForGatewayHealthMonitor() {
         List <GatewayDataForTheGatewayHealthMonitor> proxyDataForGatewayHealthMonitorList = new ArrayList<>();
-        List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
-        proxiesToBeChanged.forEach((proxy) -> {
+        List<Proxy> AllProxiesOwnedByTheLoggedInUser = proxyRepository.findAvailable();
+        AllProxiesOwnedByTheLoggedInUser.forEach((proxy) -> {
             GatewayDataForTheGatewayHealthMonitor proxyDataForGatewayHealthMonitor = new GatewayDataForTheGatewayHealthMonitor();
             proxyDataForGatewayHealthMonitor.proxyId = proxy.getId();
             proxyDataForGatewayHealthMonitor.name = proxy.getName();
