@@ -42,6 +42,7 @@ import eu.coatrack.admin.logic.CreateProxyAction;
 import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
+import eu.coatrack.admin.service.GatewayHealthMonitorService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -98,15 +99,6 @@ public class AdminController {
     @Value("${ygg.admin.gettingStarted.consumer.testService.uriIdentifier}")
     private String gettingStartedTestServiceIdentifier;
 
-    @Value("${gateway_health_monitor.warning.threshold.minutes}")
-    private int warningThresholdInMinutes;
-
-    @Value("${gateway_health_monitor.critical.threshold.minutes}")
-    private int criticalThresholdInMinutes;
-
-    @Value("${gateway_health_monitor.one_minute_to_miliseconds}")
-    private int oneMinuteToMilliseconds;
-
     private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
 
     private static final String ADMIN_WIZARD_VIEW = "admin/wizard/wizard";
@@ -121,6 +113,8 @@ public class AdminController {
 
     private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
 
+    private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
+
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
     static {
@@ -133,45 +127,6 @@ public class AdminController {
         colorMap.put(503, Color.ORANGE_RED);
         colorMap.put(504, Color.DARK_RED);
         chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
-    }
-
-    private static class GatewayDataForTheGatewayHealthMonitor {
-        public String proxyId;
-        public String name;
-        public Enum status;
-        public Long minutesPastSinceLastContact;
-        public boolean isMonitoringEnabled;
-    }
-
-    private Enum gatewayHealthStatusSummary(List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForTheGatewayHealthMonitorList){
-        List <GatewayDataForTheGatewayHealthMonitor> proxiesWithMonitoringActivatedList = gatewayDataForTheGatewayHealthMonitorList.stream().filter(proxy -> proxy.isMonitoringEnabled == true).collect(Collectors.toList());
-        if (proxiesWithMonitoringActivatedList.stream().anyMatch(proxy -> proxy.status == ProxyStates.CRITICAL))
-            return ProxyStates.CRITICAL;
-        else if(proxiesWithMonitoringActivatedList.stream().anyMatch(proxy -> proxy.status == ProxyStates.WARNING))
-            return ProxyStates.WARNING;
-        return ProxyStates.OK;
-    }
-
-    private List<GatewayDataForTheGatewayHealthMonitor> updateProxyInfoForGatewayHealthMonitor() {
-        List <GatewayDataForTheGatewayHealthMonitor> proxyDataForGatewayHealthMonitorList = new ArrayList<>();
-        List<Proxy> proxiesToBeChanged = proxyRepository.findAvailable();
-        proxiesToBeChanged.forEach((proxy) -> {
-            GatewayDataForTheGatewayHealthMonitor proxyDataForGatewayHealthMonitor = new GatewayDataForTheGatewayHealthMonitor();
-            proxyDataForGatewayHealthMonitor.proxyId = proxy.getId();
-            proxyDataForGatewayHealthMonitor.name = proxy.getName();
-            proxyDataForGatewayHealthMonitor.isMonitoringEnabled = proxy.isMonitoringEnabled();
-            if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null && proxy.isMonitoringEnabled()) {
-                Long minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes();
-                proxyDataForGatewayHealthMonitor.minutesPastSinceLastContact = minutesPastSinceLastContact;
-                if (minutesPastSinceLastContact > criticalThresholdInMinutes) {
-                    proxyDataForGatewayHealthMonitor.status = ProxyStates.CRITICAL;
-                } else if (minutesPastSinceLastContact > warningThresholdInMinutes) {
-                    proxyDataForGatewayHealthMonitor.status = ProxyStates.WARNING;
-                } else proxyDataForGatewayHealthMonitor.status = ProxyStates.OK;
-            } else proxyDataForGatewayHealthMonitor.status = ProxyStates.IGNORE;
-            proxyDataForGatewayHealthMonitorList.add(proxyDataForGatewayHealthMonitor);
-        });
-        return proxyDataForGatewayHealthMonitorList;
     }
 
     /* REPOSITORIES */
@@ -215,6 +170,11 @@ public class AdminController {
     @Autowired
     UserSessionSettings session;
 
+    /* SERVICES */
+
+    @Autowired
+    GatewayHealthMonitorService gatewayHealthMonitorService;
+
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
 
@@ -243,8 +203,6 @@ public class AdminController {
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
-                    mav.addObject("gatewayHealthMonitorProxyData", updateProxyInfoForGatewayHealthMonitor());
-                    mav.addObject("gatewayHealthStatusSummary", gatewayHealthStatusSummary(updateProxyInfoForGatewayHealthMonitor()));
                     mav.addObject("stats", loadGeneralStatistics(
                             session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
                     mav.addObject("userStatistics", getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
@@ -701,11 +659,16 @@ public class AdminController {
         return testServiceApi;
     }
 
-    @RequestMapping(value = "/dashboard/gatewayhealthmonitor/update", method = GET, produces = "application/json")
+    @RequestMapping(value = "/dashboard/gatewayhealthmonitor/update", method = GET)
     @ResponseBody
-    public List<GatewayDataForTheGatewayHealthMonitor> updateGatewayHealthMonitorData() {
+    public ModelAndView updateGatewayHealthMonitorData() {
+        ModelAndView mav = new ModelAndView();
         log.info("update Gateway Health Monitor Data");
-        return updateProxyInfoForGatewayHealthMonitor();
+        List<GatewayHealthMonitorService.GatewayDataForTheGatewayHealthMonitor> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.updateProxyInfoForGatewayHealthMonitor();
+        mav.addObject("gatewayHealthMonitorProxyData", updatedGatewayDataForTheGatewayHealthMonitor);
+        mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.gatewayHealthStatusSummary(updatedGatewayDataForTheGatewayHealthMonitor));
+        mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
+        return mav;
     }
 
     @RequestMapping(value = "/gatewayhealthmonitor/notification", method = POST)
