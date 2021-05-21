@@ -54,7 +54,7 @@ public class ApiKeyFetcher_ApiKeyListFetchingTest extends ApiKeyFetcher_Abstract
     }
 
     @Test
-    public void validApiKeyListResponseEntityShouldContainApiKey() throws ApiKeyFetchingFailedException {
+    public void validApiKeyListResponseEntityShouldContainApiKey() {
         when(restTemplateMock.getForEntity(anyString(), eq(Object.class)))
                 .thenReturn(new ResponseEntity<>(apiKeyList, HttpStatus.OK));
         assertTrue(apiKeyFetcher.requestLatestApiKeyListFromAdmin().contains(apiKey));

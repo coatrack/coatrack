@@ -54,7 +54,7 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
     }
 
     @Test
-    public void apiKeyIsNotFoundInLocalApiKeyListAndThereforeNullIsReturned() {
+    public void apiKeyIsNotFoundInLocalApiKeyListWhichCausesException() {
         List<ApiKey> apiKeyListNotContainingTheIncomingApiKey = createApiKeyListNotContainingTheIncomingApiKey();
 
         reset(apiKeyFetcherMock);
@@ -98,12 +98,13 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
     }
 
     @Test
-    public void offlineWorkingTimeIsExceeded() {
+    public void offlineWorkingTimeIsExceededWhichCausesException() {
         long deadlineIsOneMinuteBeforeNow = -1;
 
         LocalApiKeyManager localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, deadlineIsOneMinuteBeforeNow);
         localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
-        assertThrows(OfflineWorkingTimeExceedingException.class, () -> localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
+        assertThrows(OfflineWorkingTimeExceedingException.class,
+                () -> localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
     }
 }

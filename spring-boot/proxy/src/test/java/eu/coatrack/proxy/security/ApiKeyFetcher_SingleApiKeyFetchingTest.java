@@ -43,7 +43,7 @@ public class ApiKeyFetcher_SingleApiKeyFetchingTest extends ApiKeyFetcher_Abstra
     }
 
     @Test
-    public void nullApiKeyResponseEntityShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void nullApiKeyResponseEntityShouldCauseException() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class))).thenReturn(null);
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(someApiKeyValue));
     }
@@ -56,31 +56,32 @@ public class ApiKeyFetcher_SingleApiKeyFetchingTest extends ApiKeyFetcher_Abstra
     }
 
     @Test
-    public void validApiKeyResponseEntityFromAdminShouldDeliverApiKey() throws ApiKeyFetchingFailedException {
+    public void validApiKeyResponseEntityFromAdminShouldDeliverApiKey() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
                 .thenReturn(new ResponseEntity<>(apiKey, HttpStatus.OK));
         assertSame(apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()), apiKey);
     }
 
     @Test
-    public void nonOkHttpStatusShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void nonOkHttpStatusShouldCauseException() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
                 .thenReturn(new ResponseEntity<>(apiKey, HttpStatus.INTERNAL_SERVER_ERROR));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
     }
 
     @Test
-    public void apiKeyNotFoundByAdminShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void apiKeyNotFoundByAdminShouldCauseException() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.OK));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
     }
 
     @Test
-    public void apiKeyNotFoundByAdminAndNonOkHttpStatusShouldCauseException() throws ApiKeyFetchingFailedException {
+    public void apiKeyNotFoundByAdminAndNonOkHttpStatusShouldCauseException() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey.class)))
                 .thenReturn(new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR));
-        assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
+        assertThrows(ApiKeyFetchingFailedException.class,
+                () -> apiKeyFetcher.requestApiKeyFromAdmin(apiKey.getKeyValue()));
     }
 
 }

@@ -20,8 +20,6 @@ package eu.coatrack.proxy.security.exceptions;
  * #L%
  */
 
-import org.springframework.security.core.AuthenticationException;
-
 /**
  * Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application.
  */

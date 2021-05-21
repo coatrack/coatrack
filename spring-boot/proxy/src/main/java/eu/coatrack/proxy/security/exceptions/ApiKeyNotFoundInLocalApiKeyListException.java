@@ -20,12 +20,12 @@ package eu.coatrack.proxy.security.exceptions;
  * #L%
  */
 
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.authentication.BadCredentialsException;
 
 /**
  * Is thrown when an incoming API key could not be matched with any API key of the local API key list.
  */
-public class ApiKeyNotFoundInLocalApiKeyListException extends RuntimeException {
+public class ApiKeyNotFoundInLocalApiKeyListException extends BadCredentialsException {
     public ApiKeyNotFoundInLocalApiKeyListException(String message) {
         super(message);
     }

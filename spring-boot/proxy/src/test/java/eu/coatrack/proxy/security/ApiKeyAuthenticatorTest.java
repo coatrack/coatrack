@@ -76,14 +76,14 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void nullArgumentShouldCauseException() {
-        assertNull(apiKeyAuthenticator.authenticate(null));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(null));
     }
 
     @Test
     public void nullCredentialsInAuthTokenShouldCauseException() {
         ApiKeyAuthToken nullToken = new ApiKeyAuthToken(null, null);
 
-        assertNull(apiKeyAuthenticator.authenticate(nullToken));
+        assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(nullToken));
     }
 
     @Test
@@ -149,7 +149,7 @@ public class ApiKeyAuthenticatorTest {
         addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue())).thenThrow(ApiKeyNotFoundInLocalApiKeyListException.class);
 
-        assertNull(apiKeyAuthenticator.authenticate(apiKeyAuthToken));
+        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test

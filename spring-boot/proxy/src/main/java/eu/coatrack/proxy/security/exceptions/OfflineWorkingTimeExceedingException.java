@@ -20,15 +20,12 @@ package eu.coatrack.proxy.security.exceptions;
  * #L%
  */
 
-import org.springframework.security.core.AuthenticationException;
-
 /**
  * Indicates that the maximum time the gateway is allowed to work in offline mode
  * was exceeded. This means that locally cached API keys should be considered
  * invalid until the online mode is re-established.
  */
 public class OfflineWorkingTimeExceedingException extends RuntimeException {
-
     public OfflineWorkingTimeExceedingException(String message) {
         super(message);
     }

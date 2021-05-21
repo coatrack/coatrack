@@ -65,24 +65,34 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        if (authentication == null)
+            throw new BadCredentialsException("The authentication was null");
+
+        log.debug("Verifying the authentication {}.", authentication.getName());
         try {
-            log.debug("Verifying the authentication {}.", authentication.getName());
             String apiKeyValue = extractApiKeyValueFromAuthentication(authentication);
             return createAuthTokenIfApiKeyIsValid(apiKeyValue);
+        } catch (BadCredentialsException e) {
+            throw e;
         } catch (Exception e) {
-            return (Authentication) assureReturningAnAuthenticationExceptionOrNull(e);
+            log.warn("The API keys validity could not be decided due to following error: ", e);
+            return null;
         }
     }
 
     private String extractApiKeyValueFromAuthentication(Authentication authentication) {
-        log.debug("Getting API key value from authentication {}.", authentication.getName());
-
-        Assert.notNull(authentication.getCredentials(), "The credentials of " + authentication.getName() + " were null.");
-        Assert.isInstanceOf(String.class, authentication.getCredentials());
-        String apiKeyValue = (String) authentication.getCredentials();
-        Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
-
-        return apiKeyValue;
+        try{
+            log.debug("Getting API key value from authentication {}.", authentication.getName());
+            Assert.notNull(authentication.getCredentials(), "The credentials of " + authentication.getName()
+                    + " were null.");
+            Assert.isInstanceOf(String.class, authentication.getCredentials());
+            String apiKeyValue = (String) authentication.getCredentials();
+            Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
+            return apiKeyValue;
+        } catch (IllegalArgumentException e){
+            throw new BadCredentialsException("The credentials of the authentication " + authentication.getName()
+                    + " are not valid", e);
+        }
     }
 
     private Authentication createAuthTokenIfApiKeyIsValid(String apiKeyValue) {
@@ -136,12 +146,5 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         apiKeyAuthToken.setAuthenticated(true);
 
         return apiKeyAuthToken;
-    }
-
-    private AuthenticationException assureReturningAnAuthenticationExceptionOrNull(Exception e) {
-        if (e instanceof AuthenticationException)
-            throw (AuthenticationException) e;
-        else
-            return null;
     }
 }
