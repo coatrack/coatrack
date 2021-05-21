@@ -36,4 +36,4 @@ public enum ProxyStates {
     public String getDisplayStringVerbose() {
         return displayStringVerbose;
     }
-    }
+}
