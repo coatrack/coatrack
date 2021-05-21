@@ -69,26 +69,26 @@ public class ApiKeyFetcher {
     private Object extractBodyFromResponseEntity(ResponseEntity<?> responseEntity) {
         log.debug("Extracting ResponseEntity: " + responseEntity);
 
-        Optional<String> problemMessage = createMessageIfThereAreAnyProblems(responseEntity);
+        Optional<String> errorMessage = validateResponseEntityAndCreateErrorMessageInCaseOfProblems(responseEntity);
 
-        if (problemMessage.isPresent())
+        if (errorMessage.isPresent())
             throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity. "
-                    + problemMessage.get());
+                    + errorMessage.get());
         else
             return responseEntity.getBody();
     }
 
-    private Optional<String> createMessageIfThereAreAnyProblems(ResponseEntity<?> responseEntity) {
-        Optional<String> problemMessage = Optional.empty();
+    private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(ResponseEntity<?> responseEntity) {
+        Optional<String> errorMessage = Optional.empty();
 
         if (responseEntity == null)
-            problemMessage = Optional.of("The ResponseEntity was null.");
+            errorMessage = Optional.of("The ResponseEntity was null.");
         else if (responseEntity.getBody() == null)
-            problemMessage = Optional.of("The body was null");
+            errorMessage = Optional.of("The body was null");
         else if (responseEntity.getStatusCode() != HttpStatus.OK)
-            problemMessage = Optional.of("The HTTP status was not OK.");
+            errorMessage = Optional.of("The HTTP status was not OK.");
 
-        return problemMessage;
+        return errorMessage;
     }
 
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
