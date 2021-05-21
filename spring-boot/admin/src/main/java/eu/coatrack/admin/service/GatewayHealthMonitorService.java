@@ -17,10 +17,10 @@ import java.util.stream.Collectors;
 public class GatewayHealthMonitorService {
 
     @Value("${ygg.gateway-health-monitor.warning.threshold.minutes}")
-    private int warningThresholdInMinutes;
+    private int gatewayHealthWarningThresholdInMinutes;
 
     @Value("${ygg.gateway-health-monitor.critical.threshold.minutes}")
-    private int criticalThresholdInMinutes;
+    private int gatewayHealthCriticalThresholdInMinutes;
 
     @Autowired
     ProxyRepository proxyRepository;
@@ -53,9 +53,9 @@ public class GatewayHealthMonitorService {
             if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null && proxy.isMonitoringEnabled()) {
                 Long minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes();
                 proxyDataForGatewayHealthMonitor.minutesPastSinceLastContact = minutesPastSinceLastContact;
-                if (minutesPastSinceLastContact > criticalThresholdInMinutes) {
+                if (minutesPastSinceLastContact > gatewayHealthCriticalThresholdInMinutes) {
                     proxyDataForGatewayHealthMonitor.status = ProxyStates.CRITICAL;
-                } else if (minutesPastSinceLastContact > warningThresholdInMinutes) {
+                } else if (minutesPastSinceLastContact > gatewayHealthWarningThresholdInMinutes) {
                     proxyDataForGatewayHealthMonitor.status = ProxyStates.WARNING;
                 } else proxyDataForGatewayHealthMonitor.status = ProxyStates.OK;
             } else proxyDataForGatewayHealthMonitor.status = ProxyStates.IGNORE;
