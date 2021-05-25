@@ -35,6 +35,10 @@
     background-color: #ff2f2f;
 }
 
+.ignore-state{
+    background-color: #ccc;
+}
+
 .health-monitor-data-table{
     border-collapse: separate;
     border-spacing: 20px;

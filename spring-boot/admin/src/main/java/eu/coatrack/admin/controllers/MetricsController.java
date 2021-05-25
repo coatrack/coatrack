@@ -68,6 +68,9 @@ public class MetricsController {
         Proxy proxy = proxyRepository.findOne(proxyId);
         ApiKey apiKey = apiKeyRepository.findByKeyValue(apiKeyValue);
 
+        // Set the current time in order to be processed on the Gateway Health Monitor
+        proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
+
         Metric metricToBeStored = null;
 
         // check if there is already a metric entry in the database, which can be updated instead of storing a new entry

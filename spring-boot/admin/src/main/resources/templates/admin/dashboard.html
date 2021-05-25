@@ -151,11 +151,13 @@
 
             function sendProxyIdToChangeNotificationMonitoringValue(proxyId) {
                 console.log("The monitoring status of the proxy " + proxyId + " is being changed");
-                var delay = 2000;
+                const delay = 1000;
+                const checkboxId = proxyId + '_monitorSwitch';
+                const monitoringStatus = ($('#' + checkboxId).is(':checked') ? true : false);
                 $.ajax({
                     type: "POST",
                     url: "admin/gatewayhealthmonitor/notification",
-                    data: {proxyId: proxyId},
+                    data: {proxyId: proxyId, monitoringStatus: monitoringStatus},
                     complete: function () {
                         setTimeout(function () {
                             updateGatewayHealthMonitorDataViaFragment();

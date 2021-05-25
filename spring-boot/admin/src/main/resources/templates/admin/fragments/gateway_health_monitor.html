@@ -2,68 +2,75 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
 
-    <body>
-        <div class="col-md-4 col-sm-4 col-xs-12">
-            <div class="x_panel">
-                <div class="x_title">
-                    <h2>
-                        Gateway Health Monitor
-                        <a data-toggle="modal" data-target=".help-gateway-health-monitor">
-                            <i class="fa fa-question-circle"></i>
-                        </a>
-                    </h2>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                    <div th:fragment="gateway-health-monitor" class="demo-container" style="height:300px">
+<body>
+<div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>
+                Gateway Health Monitor
+                <a data-toggle="modal" data-target=".help-gateway-health-monitor">
+                    <i class="fa fa-question-circle"></i>
+                </a>
+            </h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div th:fragment="gateway-health-monitor" class="demo-container" style="height:300px">
 
-                        <div th:switch="${gatewayHealthStatusSummary}">
+                <div th:switch="${gatewayHealthStatusSummary}">
                                     <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}">
                                     <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
                                     <span class="warning-exclamation-mark">&#9888;</span></span>
-                            <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}">
+                    <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}">
                                     <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
                                     <span class="critical-exclamation-mark">&#9888;</span></span>
-                            <span th:case="${T(eu.coatrack.api.ProxyStates).OK}">
+                    <span th:case="${T(eu.coatrack.api.ProxyStates).OK}">
                                     <span th:text="#{admin.dashboard.gatewayhealthmonitor.okstate}"></span>
                                     <span class="everything-ok-symbol">&#10004;</span></span>
-                        </div>
-
-                        <table class="health-monitor-data-table">
-                            <tr>
-                                <th th:text="#{admin.dashboard.gatewayhealthmonitor.gatewayname}"></th>
-                                <th th:text="#{admin.dashboard.gatewayhealthmonitor.status}"></th>
-                                <th th:text="#{admin.dashboard.gatewayhealthmonitor.lastcontact}"></th>
-                                <th th:text="#{admin.dashboard.gatewayhealthmonitor.notification.switch}"></th>
-                            </tr>
-                            <tr th:each="proxy : ${gatewayHealthMonitorProxyData}">
-                                <td th:text="${proxy.name}"></td>
-                                <td th:switch="${proxy.status}">
-                                            <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
-                                                  th:class="${'neutral-state-symbol ' + proxy.status.displayStringVerbose}"></span>
-                                    <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}"
-                                          th:class="${'neutral-state-symbol ' + proxy.status.displayStringVerbose}"></span>
-                                    <span th:case="${T(eu.coatrack.api.ProxyStates).OK}"
-                                          th:class="${'neutral-state-symbol ' + proxy.status.displayStringVerbose}"></span>
-                                    <span th:case="*" class="neutral-state-symbol"></span>
-                                </td>
-                                <td th:if="${proxy.minutesPastSinceLastContact != null}">
-                                    <span th:text="${proxy.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : proxy.minutesPastSinceLastContact + ' min ago'}"></span>
-                                </td>
-                                <td th:if="${proxy.minutesPastSinceLastContact == null}"
-                                    th:text="${'No sign of activity'}"></td>
-                                <td><label class="switch">
-                                    <input type="checkbox" th:checked="${proxy.isMonitoringEnabled}"
-                                           th:onchange="'javascript:sendProxyIdToChangeNotificationMonitoringValue(\'' + ${proxy?.proxyId} + '\')'"/>
-                                    <span class="slider round"></span>
-                                </label>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
                 </div>
+
+                <table class="health-monitor-data-table">
+                    <tr>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.gatewayname}"></th>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.status}"></th>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.lastcontact}"></th>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.notification.switch}"></th>
+                    </tr>
+                    <tr th:each="gateway : ${gatewayHealthMonitorProxyData}">
+                        <td th:text="${gateway.name}"></td>
+                        <td th:switch="${gateway.status}">
+                                            <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
+                                                  th:class="${'neutral-state-symbol ' + gateway.status.displayStringVerbose}"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}"
+                                  th:class="${'neutral-state-symbol ' + gateway.status.displayStringVerbose}"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyStates).OK}"
+                                  th:class="${'neutral-state-symbol ' + gateway.status.displayStringVerbose}"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyStates).IGNORE}"
+                                  th:class="${'neutral-state-symbol ' + gateway.status.displayStringVerbose}"></span>
+                            <span th:case="*" class="neutral-state-symbol"></span>
+                        </td>
+                        <div th:if="${gateway.isMonitoringEnabled}">
+                        <td th:if="${gateway.minutesPastSinceLastContact != null}">
+                            <span th:text="${gateway.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPastSinceLastContact + ' min ago'}"></span>
+                        </td>
+                        <td th:if="${gateway.minutesPastSinceLastContact == null}"
+                            th:text="${'No sign of activity'}"></td>
+                        </div>
+                        <td th:if="${!gateway.isMonitoringEnabled}">
+                        <span th:text="${'-'}"></span></td>
+                        <td><label class="switch">
+                            <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
+                                   th:checked="${gateway.isMonitoringEnabled}"
+                                   th:onchange="'javascript:sendProxyIdToChangeNotificationMonitoringValue(\'' + ${gateway?.gatewayId} + '\')'"/>
+                            <span class="slider round"></span>
+                        </label>
+                        </td>
+                    </tr>
+                </table>
             </div>
         </div>
-    </body>
+    </div>
+</div>
+</body>
 
 </html>

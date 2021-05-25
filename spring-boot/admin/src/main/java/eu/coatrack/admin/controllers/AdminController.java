@@ -673,9 +673,9 @@ public class AdminController {
 
     @RequestMapping(value = "/gatewayhealthmonitor/notification", method = POST)
     @ResponseBody
-    public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId) {
+    public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean monitoringStatus) {
         Proxy proxy = proxyRepository.findById(proxyId);
-        proxy.setMonitoringEnabled(!proxy.isMonitoringEnabled());
+        proxy.setMonitoringEnabled(monitoringStatus);
         log.info("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isMonitoringEnabled());
         proxyRepository.save(proxy);
     }
