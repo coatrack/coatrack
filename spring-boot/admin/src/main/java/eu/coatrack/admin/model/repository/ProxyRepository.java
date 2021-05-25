@@ -41,6 +41,12 @@ public interface ProxyRepository extends PagingAndSortingRepository<Proxy, Strin
     @PostFilter("filterObject.owner != null and filterObject.owner.username == authentication.name")
     List<Proxy> findByName(@Param("name") String name);
 
+    /*
+    * Added to avoid unauthorized calls to obtain the complete proxy info.
+    * The findById method will return the proxy complete info if either the
+    * calls were made by the proxy with that same id or were made by admin
+    * where the loggedInUser is the owner of the proxy with this id
+     */
     @PostAuthorize("#id == authentication.name or returnObject.owner.username == authentication.name")
     Proxy findById(@Param("id") String id);
 
