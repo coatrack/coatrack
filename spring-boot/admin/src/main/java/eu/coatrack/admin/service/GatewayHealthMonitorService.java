@@ -33,6 +33,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/*
+ * In this class it is contained all the business logic regarding the Gateway Health Monitor.
+ * Each time the user updates a switch or adds a new proxy, this service class is responsible
+ * to process this data and send it to the Front End on the Gateway Health Monitor
+ */
 @Service
 public class GatewayHealthMonitorService {
 
