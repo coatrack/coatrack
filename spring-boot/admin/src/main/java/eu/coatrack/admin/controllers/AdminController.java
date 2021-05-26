@@ -664,7 +664,7 @@ public class AdminController {
     public ModelAndView updateGatewayHealthMonitorData() {
         ModelAndView mav = new ModelAndView();
         log.debug("update Gateway Health Monitor Data");
-        List<GatewayHealthMonitorService.GatewayDataForTheGatewayHealthMonitor> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.updateProxyInfoForGatewayHealthMonitor();
+        List<GatewayHealthMonitorService.HealthDataForOneGateway> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.updateProxyInfoForGatewayHealthMonitor();
         mav.addObject("gatewayHealthMonitorProxyData", updatedGatewayDataForTheGatewayHealthMonitor);
         mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.gatewayHealthStatusSummary(updatedGatewayDataForTheGatewayHealthMonitor));
         mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
