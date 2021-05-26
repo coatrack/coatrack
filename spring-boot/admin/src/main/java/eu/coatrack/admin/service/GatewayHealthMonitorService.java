@@ -52,7 +52,7 @@ public class GatewayHealthMonitorService {
     @Autowired
     ProxyRepository proxyRepository;
 
-    public class GatewayDataForTheGatewayHealthMonitor {
+    public class HealthDataForOneGateway {
         public String gatewayId;
         public String name;
         public ProxyStates status;
