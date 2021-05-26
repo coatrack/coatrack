@@ -142,25 +142,25 @@
                 dateRangeUrlSuffix += "&dateUntil=" + dateRangeEndDateFromServer;
                 loadChartsForNewDateRange(dateRangeUrlSuffix);
 
-                updateGatewayHealthMonitorDataViaFragment();
+                updateGatewayHealthMonitorWithLatestDataFromAdmin();
             });
 
-            function updateGatewayHealthMonitorDataViaFragment (){
+            function updateGatewayHealthMonitorWithLatestDataFromAdmin() {
                 $('#gatewayHealthMonitor').load("/admin/dashboard/gateway-health-monitor/update");
             }
 
-            function sendProxyIdToChangeNotificationMonitoringValue(proxyId) {
+            function informAdminAboutMonitoringEnabledSwitchUpdate(proxyId) {
                 console.log("The monitoring status of the proxy " + proxyId + " is being changed");
                 const delay = 1000;
                 const checkboxId = proxyId + '_monitorSwitch';
-                const monitoringStatus = ($('#' + checkboxId).is(':checked') ? true : false);
+                const isMonitoringEnabled = ($('#' + checkboxId).is(':checked') ? true : false);
                 $.ajax({
                     type: "POST",
                     url: "admin/dashboard/gateway-health-monitor/notification",
-                    data: {proxyId: proxyId, monitoringStatus: monitoringStatus},
+                    data: {proxyId: proxyId, isMonitoringEnabled: isMonitoringEnabled},
                     complete: function () {
                         setTimeout(function () {
-                            updateGatewayHealthMonitorDataViaFragment();
+                            updateGatewayHealthMonitorWithLatestDataFromAdmin();
                         }, delay);
                     },
                 })

@@ -67,9 +67,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Date;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -664,7 +662,7 @@ public class AdminController {
     public ModelAndView updateGatewayHealthMonitorData() {
         ModelAndView mav = new ModelAndView();
         log.debug("update Gateway Health Monitor Data");
-        List<GatewayHealthMonitorService.HealthDataForOneGateway> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.updateProxyInfoForGatewayHealthMonitor();
+        List<GatewayHealthMonitorService.HealthDataForOneGateway> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.getGatewayHealthMonitorData();
         mav.addObject("gatewayHealthMonitorProxyData", updatedGatewayDataForTheGatewayHealthMonitor);
         mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(updatedGatewayDataForTheGatewayHealthMonitor));
         mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
@@ -673,9 +671,9 @@ public class AdminController {
 
     @RequestMapping(value = "/dashboard/gateway-health-monitor/notification", method = POST)
     @ResponseBody
-    public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean monitoringStatus) {
+    public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
         Proxy proxy = proxyRepository.findById(proxyId);
-        proxy.setMonitoringEnabled(monitoringStatus);
+        proxy.setMonitoringEnabled(isMonitoringEnabled);
         log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isMonitoringEnabled());
         proxyRepository.save(proxy);
     }

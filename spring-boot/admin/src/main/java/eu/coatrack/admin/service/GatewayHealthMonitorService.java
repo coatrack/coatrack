@@ -67,25 +67,25 @@ public class GatewayHealthMonitorService {
     }
 
     public ProxyStates calculateGatewayHealthStatusSummary(List<HealthDataForOneGateway> gatewayHealthMonitorDataList) {
-        List<HealthDataForOneGateway> gatewaysWithMonitoringActivatedList = gatewayHealthMonitorDataList
+        List<HealthDataForOneGateway> dataForMonitoredGateways = gatewayHealthMonitorDataList
                 .stream()
                 .filter(gateway -> gateway.isMonitoringEnabled == true)
                 .collect(Collectors.toList());
-        if (gatewaysWithMonitoringActivatedList
+        if (dataForMonitoredGateways
                 .stream()
                 .anyMatch(gateway -> gateway.status == ProxyStates.CRITICAL)) {
             return ProxyStates.CRITICAL;
-        } else if (gatewaysWithMonitoringActivatedList
+        } else if (dataForMonitoredGateways
                 .stream()
                 .anyMatch(gateway -> gateway.status == ProxyStates.WARNING)) {
             return ProxyStates.WARNING;
-        } else if (gatewaysWithMonitoringActivatedList.stream().allMatch(gateway -> gateway.status == ProxyStates.OK)) {
+        } else if (dataForMonitoredGateways.stream().allMatch(gateway -> gateway.status == ProxyStates.OK)) {
             return ProxyStates.OK;
         }
         return ProxyStates.NEVER_CONNECTED;
     }
 
-    public List<HealthDataForOneGateway> updateProxyInfoForGatewayHealthMonitor() {
+    public List<HealthDataForOneGateway> getGatewayHealthMonitorData() {
         List<HealthDataForOneGateway> gatewayDataForGatewayHealthMonitorList = new ArrayList<>();
         List<Proxy> allProxiesOwnedByTheLoggedInUser = proxyRepository.findAvailable();
         allProxiesOwnedByTheLoggedInUser.forEach((proxy) -> {
