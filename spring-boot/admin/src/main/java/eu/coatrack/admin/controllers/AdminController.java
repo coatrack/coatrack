@@ -671,7 +671,7 @@ public class AdminController {
         return mav;
     }
 
-    @RequestMapping(value = "/gatewayhealthmonitor/notification", method = POST)
+    @RequestMapping(value = "/dashboard/gateway-health-monitor/notification", method = POST)
     @ResponseBody
     public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean monitoringStatus) {
         Proxy proxy = proxyRepository.findById(proxyId);
