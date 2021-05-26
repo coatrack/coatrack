@@ -66,7 +66,7 @@ public class GatewayHealthMonitorService {
         }
     }
 
-    public ProxyStates gatewayHealthStatusSummary(List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForTheGatewayHealthMonitorList) {
+    public ProxyStates calculateGatewayHealthStatusSummary(List<GatewayHealthMonitorData> gatewayHealthMonitorDataList) {
         List<GatewayDataForTheGatewayHealthMonitor> gatewaysWithMonitoringActivatedList = gatewayDataForTheGatewayHealthMonitorList
                 .stream()
                 .filter(gateway -> gateway.isMonitoringEnabled == true)
