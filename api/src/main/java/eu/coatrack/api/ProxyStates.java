@@ -28,13 +28,13 @@ public enum ProxyStates {
     IGNORE("ignore-state"),
     NEVER_CONNECTED("");
 
-    private final String displayStringVerbose;
+    private final String cssClassForGui;
 
-    ProxyStates(String displayStringVerbose) {
-        this.displayStringVerbose = displayStringVerbose;
+    ProxyStates(String cssClassForGui) {
+        this.cssClassForGui = cssClassForGui;
     }
 
-    public String getDisplayStringVerbose() {
-        return displayStringVerbose;
+    public String getCssClassForGui() {
+        return cssClassForGui;
     }
 }
