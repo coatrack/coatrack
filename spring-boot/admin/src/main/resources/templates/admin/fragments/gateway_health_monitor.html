@@ -3,7 +3,7 @@
 
 
 <body>
-<div class="col-md-4 col-sm-4 col-xs-12">
+<div th:fragment="gateway-health-monitor">
     <div class="x_panel">
         <div class="x_title">
             <h2>
@@ -15,7 +15,7 @@
             <div class="clearfix"></div>
         </div>
         <div class="x_content">
-            <div th:fragment="gateway-health-monitor" class="demo-container" style="height:300px">
+            <div class="demo-container" style="height:300px">
 
                 <div th:switch="${gatewayHealthStatusSummary}">
                                     <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}">
