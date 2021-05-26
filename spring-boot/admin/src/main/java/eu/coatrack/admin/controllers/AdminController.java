@@ -663,7 +663,7 @@ public class AdminController {
     @ResponseBody
     public ModelAndView updateGatewayHealthMonitorData() {
         ModelAndView mav = new ModelAndView();
-        log.info("update Gateway Health Monitor Data");
+        log.debug("update Gateway Health Monitor Data");
         List<GatewayHealthMonitorService.GatewayDataForTheGatewayHealthMonitor> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.updateProxyInfoForGatewayHealthMonitor();
         mav.addObject("gatewayHealthMonitorProxyData", updatedGatewayDataForTheGatewayHealthMonitor);
         mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.gatewayHealthStatusSummary(updatedGatewayDataForTheGatewayHealthMonitor));
@@ -676,7 +676,7 @@ public class AdminController {
     public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean monitoringStatus) {
         Proxy proxy = proxyRepository.findById(proxyId);
         proxy.setMonitoringEnabled(monitoringStatus);
-        log.info("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isMonitoringEnabled());
+        log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isMonitoringEnabled());
         proxyRepository.save(proxy);
     }
 }
