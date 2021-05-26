@@ -66,8 +66,8 @@ public class GatewayHealthMonitorService {
         }
     }
 
-    public ProxyStates gatewayHealthStatusSummary(List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForTheGatewayHealthMonitorList) {
-        List<GatewayDataForTheGatewayHealthMonitor> gatewaysWithMonitoringActivatedList = gatewayDataForTheGatewayHealthMonitorList
+    public ProxyStates gatewayHealthStatusSummary(List<HealthDataForOneGateway> gatewayDataForTheGatewayHealthMonitorList) {
+        List<HealthDataForOneGateway> gatewaysWithMonitoringActivatedList = gatewayDataForTheGatewayHealthMonitorList
                 .stream()
                 .filter(gateway -> gateway.isMonitoringEnabled == true)
                 .collect(Collectors.toList());
@@ -85,11 +85,11 @@ public class GatewayHealthMonitorService {
         return ProxyStates.NEVER_CONNECTED;
     }
 
-    public List<GatewayDataForTheGatewayHealthMonitor> updateProxyInfoForGatewayHealthMonitor() {
-        List<GatewayDataForTheGatewayHealthMonitor> gatewayDataForGatewayHealthMonitorList = new ArrayList<>();
+    public List<HealthDataForOneGateway> updateProxyInfoForGatewayHealthMonitor() {
+        List<HealthDataForOneGateway> gatewayDataForGatewayHealthMonitorList = new ArrayList<>();
         List<Proxy> allProxiesOwnedByTheLoggedInUser = proxyRepository.findAvailable();
         allProxiesOwnedByTheLoggedInUser.forEach((proxy) -> {
-            GatewayDataForTheGatewayHealthMonitor gatewayDataForGatewayHealthMonitor = new GatewayDataForTheGatewayHealthMonitor();
+            HealthDataForOneGateway gatewayDataForGatewayHealthMonitor = new HealthDataForOneGateway();
             gatewayDataForGatewayHealthMonitor.setDataNeededFromProxy(proxy);
             if (proxy.isMonitoringEnabled()) {
                 if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
@@ -117,9 +117,9 @@ public class GatewayHealthMonitorService {
         return gatewayDataForGatewayHealthMonitorList;
     }
 
-    class GatewayHealthDataComparator implements Comparator<GatewayDataForTheGatewayHealthMonitor> {
+    class GatewayHealthDataComparator implements Comparator<HealthDataForOneGateway> {
         @Override
-        public int compare(GatewayDataForTheGatewayHealthMonitor a, GatewayDataForTheGatewayHealthMonitor b) {
+        public int compare(HealthDataForOneGateway a, HealthDataForOneGateway b) {
             if (a.isMonitoringEnabled && !b.isMonitoringEnabled) {
                 return -1;
             } else if (!a.isMonitoringEnabled && b.isMonitoringEnabled) {
