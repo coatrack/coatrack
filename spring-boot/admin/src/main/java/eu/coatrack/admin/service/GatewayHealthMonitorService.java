@@ -59,10 +59,11 @@ public class GatewayHealthMonitorService {
         public Long minutesPastSinceLastContact;
         public boolean isMonitoringEnabled;
 
-        public void setDataNeededFromProxy(Proxy proxy) {
+        public HealthDataForOneGateway(Proxy proxy) {
             this.gatewayId = proxy.getId();
             this.name = proxy.getName();
             this.isMonitoringEnabled = proxy.isMonitoringEnabled();
+            this.minutesPastSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ? null : Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
         }
     }
 
@@ -89,32 +90,34 @@ public class GatewayHealthMonitorService {
         List<HealthDataForOneGateway> gatewayDataForGatewayHealthMonitorList = new ArrayList<>();
         List<Proxy> allProxiesOwnedByTheLoggedInUser = proxyRepository.findAvailable();
         allProxiesOwnedByTheLoggedInUser.forEach((proxy) -> {
-            HealthDataForOneGateway gatewayDataForGatewayHealthMonitor = new HealthDataForOneGateway();
-            gatewayDataForGatewayHealthMonitor.setDataNeededFromProxy(proxy);
-            if (proxy.isMonitoringEnabled()) {
-                if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
-                    gatewayDataForGatewayHealthMonitor.minutesPastSinceLastContact = Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes();
-                    if (proxy.getTimeOfLastSuccessfulCallToAdmin()
-                            .plusMinutes(gatewayHealthCriticalThresholdInMinutes)
-                            .isBefore(LocalDateTime.now())) {
-                        gatewayDataForGatewayHealthMonitor.status = ProxyStates.CRITICAL;
-                    } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
-                            .plusMinutes(gatewayHealthWarningThresholdInMinutes)
-                            .isBefore(LocalDateTime.now())) {
-                        gatewayDataForGatewayHealthMonitor.status = ProxyStates.WARNING;
-                    } else {
-                        gatewayDataForGatewayHealthMonitor.status = ProxyStates.OK;
-                    }
-                } else {
-                    gatewayDataForGatewayHealthMonitor.status = ProxyStates.NEVER_CONNECTED;
-                }
-            } else {
-                gatewayDataForGatewayHealthMonitor.status = ProxyStates.IGNORE;
-            }
+            HealthDataForOneGateway gatewayDataForGatewayHealthMonitor = new HealthDataForOneGateway(proxy);
+            gatewayDataForGatewayHealthMonitor.status = calculateProxyStateForHealthMonitor(proxy);
             gatewayDataForGatewayHealthMonitorList.add(gatewayDataForGatewayHealthMonitor);
         });
         Collections.sort(gatewayDataForGatewayHealthMonitorList, new GatewayHealthDataComparator());
         return gatewayDataForGatewayHealthMonitorList;
+    }
+
+    private ProxyStates calculateProxyStateForHealthMonitor(Proxy proxy) {
+        if (proxy.isMonitoringEnabled()) {
+            if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
+                if (proxy.getTimeOfLastSuccessfulCallToAdmin()
+                        .plusMinutes(gatewayHealthCriticalThresholdInMinutes)
+                        .isBefore(LocalDateTime.now())) {
+                    return ProxyStates.CRITICAL;
+                } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
+                        .plusMinutes(gatewayHealthWarningThresholdInMinutes)
+                        .isBefore(LocalDateTime.now())) {
+                    return ProxyStates.WARNING;
+                } else {
+                    return ProxyStates.OK;
+                }
+            } else {
+                return ProxyStates.NEVER_CONNECTED;
+            }
+        } else {
+            return ProxyStates.IGNORE;
+        }
     }
 
     class GatewayHealthDataComparator implements Comparator<HealthDataForOneGateway> {
