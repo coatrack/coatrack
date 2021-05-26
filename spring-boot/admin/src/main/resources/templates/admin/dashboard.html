@@ -146,7 +146,7 @@
             });
 
             function updateGatewayHealthMonitorDataViaFragment (){
-                $('#gatewayHealthMonitor').load("/admin/dashboard/gatewayhealthmonitor/update");
+                $('#gatewayHealthMonitor').load("/admin/dashboard/gateway-health-monitor/update");
             }
 
             function sendProxyIdToChangeNotificationMonitoringValue(proxyId) {
@@ -156,7 +156,7 @@
                 const monitoringStatus = ($('#' + checkboxId).is(':checked') ? true : false);
                 $.ajax({
                     type: "POST",
-                    url: "admin/gatewayhealthmonitor/notification",
+                    url: "admin/dashboard/gateway-health-monitor/notification",
                     data: {proxyId: proxyId, monitoringStatus: monitoringStatus},
                     complete: function () {
                         setTimeout(function () {
