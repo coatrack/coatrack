@@ -41,7 +41,7 @@
                     </tr>
                     <tr th:each="gateway : ${gatewayHealthMonitorProxyData}">
                         <td th:text="${gateway.name}"></td>
-                        <td th:switch="${gateway.status}">
+                        <td align="center" th:switch="${gateway.status}">
                                             <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
                                                   th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
                             <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}"
@@ -60,8 +60,9 @@
                             th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
                         </div>
                         <td th:if="${!gateway.isMonitoringEnabled}">
-                        <span th:text="${'-'}"></span></td>
-                        <td><label class="switch">
+                            <span th:text="${'-'}"></span></td>
+                        <td align="center">
+                            <label class="switch">
                             <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
                                    th:checked="${gateway.isMonitoringEnabled}"
                                    th:onchange="'javascript:sendProxyIdToChangeNotificationMonitoringValue(\'' + ${gateway?.gatewayId} + '\')'"/>
