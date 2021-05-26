@@ -25,8 +25,11 @@
                                     <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
                                     <span class="critical-exclamation-mark">&#9888;</span></span>
                     <span th:case="${T(eu.coatrack.api.ProxyStates).OK}">
-                                    <span th:text="#{admin.dashboard.gatewayhealthmonitor.okstate}"></span>
+                                    <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.ok}"></span>
                                     <span class="everything-ok-symbol">&#10004;</span></span>
+                    <span th:case="${T(eu.coatrack.api.ProxyStates).NEVER_CONNECTED}">
+                                    <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.notconnected}"></span>
+                                    </span>
                 </div>
 
                 <table class="health-monitor-data-table">

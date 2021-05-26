@@ -75,13 +75,14 @@ public class GatewayHealthMonitorService {
                 .stream()
                 .anyMatch(gateway -> gateway.status == ProxyStates.CRITICAL)) {
             return ProxyStates.CRITICAL;
-        }
-        else if (gatewaysWithMonitoringActivatedList
+        } else if (gatewaysWithMonitoringActivatedList
                 .stream()
                 .anyMatch(gateway -> gateway.status == ProxyStates.WARNING)) {
             return ProxyStates.WARNING;
+        } else if (gatewaysWithMonitoringActivatedList.stream().allMatch(gateway -> gateway.status == ProxyStates.OK)) {
+            return ProxyStates.OK;
         }
-        return ProxyStates.OK;
+        return ProxyStates.NEVER_CONNECTED;
     }
 
     public List<GatewayDataForTheGatewayHealthMonitor> updateProxyInfoForGatewayHealthMonitor() {
