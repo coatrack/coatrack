@@ -120,6 +120,11 @@ public class GatewayHealthMonitorService {
         }
     }
 
+    /*
+    * This method will sort the list of gateways to be
+    * sent for the Gateway Health Monitor first by the
+    * monitoring enable status and then by name
+    */
     class GatewayHealthDataComparator implements Comparator<HealthDataForOneGateway> {
         @Override
         public int compare(HealthDataForOneGateway a, HealthDataForOneGateway b) {
