@@ -41,9 +41,9 @@
                     </tr>
                     <tr th:each="gateway : ${gatewayHealthMonitorProxyData}">
                         <td th:text="${gateway.name}"></td>
-                        <td align="center" th:switch="${gateway.status}">
-                                            <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
-                                                  th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
+                        <td th:switch="${gateway.status}">
+                            <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
+                                  th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
                             <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}"
                                   th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
                             <span th:case="${T(eu.coatrack.api.ProxyStates).OK}"
@@ -53,14 +53,13 @@
                             <span th:case="*" th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class}"></span>
                         </td>
                         <div th:if="${gateway.isMonitoringEnabled}">
-                        <td th:if="${gateway.minutesPastSinceLastContact != null}">
-                            <span th:text="${gateway.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPastSinceLastContact + ' min ago'}"></span>
+                        <td align="center" th:if="${gateway.minutesPastSinceLastContact != null}" th:text="${gateway.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPastSinceLastContact + ' min ago'}">
                         </td>
                         <td th:if="${gateway.minutesPastSinceLastContact == null}"
                             th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
                         </div>
-                        <td th:if="${!gateway.isMonitoringEnabled}">
-                            <span th:text="${'-'}"></span></td>
+                        <td align="center" th:text="${'-'}" th:if="${!gateway.isMonitoringEnabled}">
+                             </td>
                         <td align="center">
                             <label class="switch">
                             <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
