@@ -61,7 +61,9 @@ public class GatewayHealthMonitorService {
             this.gatewayId = proxy.getId();
             this.name = proxy.getName();
             this.isMonitoringEnabled = proxy.isMonitoringEnabled();
-            this.minutesPassedSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ? null : Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
+            this.minutesPassedSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ?
+                    null :
+                    Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
         }
     }
 
