@@ -229,14 +229,17 @@
                     <table class="health-monitor-introduction-table">
                         <tr>
                             <td>
-                                <img th:src="#{admin.help.gateway.health.monitor.example.image}" width="400px"
+                                <img th:src="#{admin.help.gateway.health.monitor.example.image}" width="500px"
                                      th:alt="#{admin.help.gateway.health.monitor.example.image.alt}"/>
+                                <p th:utext="#{admin.help.gateway.health.monitor.text.disclaimer}"></p>
                             </td>
                             <td>
                                 <p th:utext="#{admin.help.gateway.health.monitor.text.summary}"></p>
                                 <p th:utext="#{admin.help.gateway.health.monitor.text.ok}"></p>
                                 <p th:utext="#{admin.help.gateway.health.monitor.text.warning}"></p>
                                 <p th:utext="#{admin.help.gateway.health.monitor.text.critical}"></p>
+                                <p th:utext="#{admin.help.gateway.health.monitor.text.not.connected}"></p>
+                                <p th:utext="#{admin.help.gateway.health.monitor.text.ignore}"></p>
                             </td>
                         </tr>
                     </table>
