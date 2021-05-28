@@ -156,7 +156,7 @@
                 const isMonitoringEnabled = ($('#' + checkboxId).is(':checked') ? true : false);
                 $.ajax({
                     type: "POST",
-                    url: "admin/dashboard/gateway-health-monitor/notification",
+                    url: "admin/dashboard/gateway-health-monitor/notification-status",
                     data: {proxyId: proxyId, isMonitoringEnabled: isMonitoringEnabled},
                     complete: function () {
                         setTimeout(function () {

@@ -36,9 +36,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /*
- * In this class it is contained all the business logic regarding the Gateway Health Monitor.
- * Each time the user updates a switch or adds a new proxy, this service class is responsible
- * to process this data and send it to the Front End on the Gateway Health Monitor
+ * This class calculates and provides all data required for the Gateway Health Monitor.
  */
 @Service
 public class GatewayHealthMonitorService {
@@ -56,31 +54,34 @@ public class GatewayHealthMonitorService {
         public String gatewayId;
         public String name;
         public ProxyStates status;
-        public Long minutesPastSinceLastContact;
+        public Long minutesPassedSinceLastContact;
         public boolean isMonitoringEnabled;
 
         public HealthDataForOneGateway(Proxy proxy) {
             this.gatewayId = proxy.getId();
             this.name = proxy.getName();
             this.isMonitoringEnabled = proxy.isMonitoringEnabled();
-            this.minutesPastSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ? null : Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
+            this.minutesPassedSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ? null : Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
         }
     }
 
-    public ProxyStates calculateGatewayHealthStatusSummary(List<HealthDataForOneGateway> gatewayHealthMonitorDataList) {
-        List<HealthDataForOneGateway> dataForMonitoredGateways = gatewayHealthMonitorDataList
+    public ProxyStates calculateGatewayHealthStatusSummary(List<HealthDataForOneGateway> dataForAllGateways) {
+        List<HealthDataForOneGateway> dataJustForMonitoredGateways = dataForAllGateways
                 .stream()
                 .filter(gateway -> gateway.isMonitoringEnabled == true)
                 .collect(Collectors.toList());
-        if (dataForMonitoredGateways
+
+        if (dataJustForMonitoredGateways
                 .stream()
                 .anyMatch(gateway -> gateway.status == ProxyStates.CRITICAL)) {
             return ProxyStates.CRITICAL;
-        } else if (dataForMonitoredGateways
+        } else if (dataJustForMonitoredGateways
                 .stream()
                 .anyMatch(gateway -> gateway.status == ProxyStates.WARNING)) {
             return ProxyStates.WARNING;
-        } else if (dataForMonitoredGateways.stream().allMatch(gateway -> gateway.status == ProxyStates.OK)) {
+        } else if (dataJustForMonitoredGateways
+                .stream()
+                .allMatch(gateway -> gateway.status == ProxyStates.OK)) {
             return ProxyStates.OK;
         }
         return ProxyStates.NEVER_CONNECTED;
@@ -99,32 +100,28 @@ public class GatewayHealthMonitorService {
     }
 
     private ProxyStates calculateProxyStateForHealthMonitor(Proxy proxy) {
-        if (proxy.isMonitoringEnabled()) {
-            if (proxy.getTimeOfLastSuccessfulCallToAdmin() != null) {
-                if (proxy.getTimeOfLastSuccessfulCallToAdmin()
+        if (!proxy.isMonitoringEnabled()) {
+            return ProxyStates.IGNORE;
+        } else if (proxy.getTimeOfLastSuccessfulCallToAdmin() == null) {
+            return ProxyStates.NEVER_CONNECTED;
+        } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
                         .plusMinutes(gatewayHealthCriticalThresholdInMinutes)
                         .isBefore(LocalDateTime.now())) {
-                    return ProxyStates.CRITICAL;
-                } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
+            return ProxyStates.CRITICAL;
+        } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
                         .plusMinutes(gatewayHealthWarningThresholdInMinutes)
                         .isBefore(LocalDateTime.now())) {
-                    return ProxyStates.WARNING;
-                } else {
-                    return ProxyStates.OK;
-                }
-            } else {
-                return ProxyStates.NEVER_CONNECTED;
-            }
+            return ProxyStates.WARNING;
         } else {
-            return ProxyStates.IGNORE;
+            return ProxyStates.OK;
         }
     }
 
     /*
-    * This method will sort the list of gateways to be
-    * sent for the Gateway Health Monitor first by the
-    * monitoring enable status and then by name
-    */
+     * Sorts the list of gateways for the Gateway Health Monitor GUI:
+     * - gateways with "monitoring enabled" should be displayed first
+     * - second sorting criterion is "alphabetical by name"
+     */
     class GatewayHealthDataComparator implements Comparator<HealthDataForOneGateway> {
         @Override
         public int compare(HealthDataForOneGateway a, HealthDataForOneGateway b) {
