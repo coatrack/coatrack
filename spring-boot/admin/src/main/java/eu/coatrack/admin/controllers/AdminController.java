@@ -168,7 +168,6 @@ public class AdminController {
     @Autowired
     UserSessionSettings session;
 
-    /* SERVICES */
 
     @Autowired
     GatewayHealthMonitorService gatewayHealthMonitorService;
