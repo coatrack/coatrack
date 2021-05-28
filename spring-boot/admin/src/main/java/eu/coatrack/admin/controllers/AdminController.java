@@ -658,12 +658,12 @@ public class AdminController {
 
     @RequestMapping(value = "/dashboard/gateway-health-monitor", method = GET)
     @ResponseBody
-    public ModelAndView updateGatewayHealthMonitorData() {
+    public ModelAndView getGatewayHealthMonitorGuiFragment() {
         ModelAndView mav = new ModelAndView();
         log.debug("update Gateway Health Monitor Data");
-        List<GatewayHealthMonitorService.HealthDataForOneGateway> updatedGatewayDataForTheGatewayHealthMonitor = gatewayHealthMonitorService.getGatewayHealthMonitorData();
-        mav.addObject("gatewayHealthMonitorProxyData", updatedGatewayDataForTheGatewayHealthMonitor);
-        mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(updatedGatewayDataForTheGatewayHealthMonitor));
+        List<GatewayHealthMonitorService.HealthDataForOneGateway> dataForGatewayHealthMonitor = gatewayHealthMonitorService.getGatewayHealthMonitorData();
+        mav.addObject("gatewayHealthMonitorProxyData", dataForGatewayHealthMonitor);
+        mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(dataForGatewayHealthMonitor));
         mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
         return mav;
     }
