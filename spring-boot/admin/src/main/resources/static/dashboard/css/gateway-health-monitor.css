@@ -18,6 +18,11 @@
     font-size: 20px;
 }
 
+.warning-not-connected-exclamation-mark{
+    color: grey;
+    font-size: 20px;
+}
+
 .critical-exclamation-mark{
     color: #ff2f2f;
     font-size: 20px;
