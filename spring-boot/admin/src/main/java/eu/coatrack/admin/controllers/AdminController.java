@@ -656,7 +656,7 @@ public class AdminController {
         return testServiceApi;
     }
 
-    @RequestMapping(value = "/dashboard/gateway-health-monitor/update", method = GET)
+    @RequestMapping(value = "/dashboard/gateway-health-monitor", method = GET)
     @ResponseBody
     public ModelAndView updateGatewayHealthMonitorData() {
         ModelAndView mav = new ModelAndView();
