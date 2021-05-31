@@ -64,6 +64,7 @@ public class GatewayHealthMonitorService {
             this.minutesPassedSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ?
                     null :
                     Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
+            this.status = calculateProxyStateForHealthMonitor(proxy);
         }
     }
 
@@ -90,15 +91,9 @@ public class GatewayHealthMonitorService {
     }
 
     public List<HealthDataForOneGateway> getGatewayHealthMonitorData() {
-        List<HealthDataForOneGateway> gatewayDataForGatewayHealthMonitorList = new ArrayList<>();
-        List<Proxy> allProxiesOwnedByTheLoggedInUser = proxyRepository.findAvailable();
-        allProxiesOwnedByTheLoggedInUser.forEach((proxy) -> {
-            HealthDataForOneGateway gatewayDataForGatewayHealthMonitor = new HealthDataForOneGateway(proxy);
-            gatewayDataForGatewayHealthMonitor.status = calculateProxyStateForHealthMonitor(proxy);
-            gatewayDataForGatewayHealthMonitorList.add(gatewayDataForGatewayHealthMonitor);
-        });
-        Collections.sort(gatewayDataForGatewayHealthMonitorList, new GatewayHealthDataComparator());
-        return gatewayDataForGatewayHealthMonitorList;
+        List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor = proxyRepository.findAvailable().stream().map(proxy -> new HealthDataForOneGateway(proxy)).collect(Collectors.toList());
+        Collections.sort(gatewayDataListForGatewayHealthMonitor, new GatewayHealthDataComparator());
+        return gatewayDataListForGatewayHealthMonitor;
     }
 
     private ProxyStates calculateProxyStateForHealthMonitor(Proxy proxy) {
