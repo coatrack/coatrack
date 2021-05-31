@@ -42,21 +42,15 @@
                     </tr>
                     <tr th:each="gateway : ${gatewayHealthMonitorProxyData}">
                         <td align="left" th:text="${gateway.name}"></td>
+
                         <td align="center" th:switch="${gateway.status}">
-                            <span th:case="${T(eu.coatrack.api.ProxyStates).CRITICAL}"
-                                  th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
-                            <span th:case="${T(eu.coatrack.api.ProxyStates).WARNING}"
-                                  th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
-                            <span th:case="${T(eu.coatrack.api.ProxyStates).OK}"
-                                  th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
-                            <span th:case="${T(eu.coatrack.api.ProxyStates).IGNORE}"
-                                  th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway.status.cssClassForGui}"></span>
-                            <span th:case="*" th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class}"></span>
+                            <span th:class="#{admin.dasboard.gatewayhealthmonitor.status.icon.circle.css.class} + ' ' + ${gateway?.status?.cssClassForGui}"></span>
                         </td>
+
                         <div th:if="${gateway.isMonitoringEnabled}">
-                        <td align="left" th:if="${gateway.minutesPastSinceLastContact != null}" th:text="${gateway.minutesPastSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPastSinceLastContact + ' min ago'}">
+                        <td align="left" th:if="${gateway.minutesPassedSinceLastContact != null}" th:text="${gateway.minutesPassedSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPassedSinceLastContact + ' min ago'}">
                         </td>
-                        <td align="left" th:if="${gateway.minutesPastSinceLastContact == null}"
+                        <td align="left" th:if="${gateway.minutesPassedSinceLastContact == null}"
                             th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
                         </div>
                         <td align="center" th:text="${'-'}" th:if="${!gateway.isMonitoringEnabled}">
