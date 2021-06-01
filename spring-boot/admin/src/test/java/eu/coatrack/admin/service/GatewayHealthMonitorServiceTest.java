@@ -32,21 +32,19 @@ public class GatewayHealthMonitorServiceTest {
     @InjectMocks
     private GatewayHealthMonitorService gatewayHealthMonitorService;
 
-    public Proxy createSampleProxy(boolean monitoredEnabled, String proxyName, boolean testWithSuccessfulCallDone) {
+    public Proxy createSampleProxy(boolean monitoredEnabled, String proxyName) {
         Proxy proxy = new Proxy();
         proxy.setName(proxyName);
         proxy.setId("GatewayIDTest");
         proxy.setMonitoringEnabled(monitoredEnabled);
-        if (testWithSuccessfulCallDone){
-            proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
-        }
+        proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
         return proxy;
     }
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sampleList = Arrays.asList(createSampleProxy(true, "test1", true), createSampleProxy(false, "test2", true), proxySample);
+        sampleList = Arrays.asList(createSampleProxy(true, "test1"), createSampleProxy(false, "test2"), proxySample);
         when(proxySample.isMonitoringEnabled()).thenReturn(true);
         when(proxySample.getName()).thenReturn("test3");
         ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthWarningThresholdInMinutes", 5);
@@ -75,7 +73,7 @@ public class GatewayHealthMonitorServiceTest {
     }
 
     @Test
-    public void ifGatewaysNotConnected_ThenStatusSummaryShouldReturnNotConnectedState() {
+    public void ifAllGatewaysNotConnected_ThenStatusSummaryShouldReturnNotConnectedState() {
         when(proxyRepository.findAvailable()).thenReturn(sampleList);
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(null);
         Assert.assertEquals(ProxyStates.NEVER_CONNECTED, gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
