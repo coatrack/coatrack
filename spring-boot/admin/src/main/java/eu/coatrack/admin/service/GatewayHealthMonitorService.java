@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -91,7 +90,11 @@ public class GatewayHealthMonitorService {
     }
 
     public List<HealthDataForOneGateway> getGatewayHealthMonitorData() {
-        List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor = proxyRepository.findAvailable().stream().map(proxy -> new HealthDataForOneGateway(proxy)).collect(Collectors.toList());
+        List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor = proxyRepository.findAvailable()
+                .stream()
+                .map(proxy -> new HealthDataForOneGateway(proxy))
+                .collect(Collectors.toList());
+
         Collections.sort(gatewayDataListForGatewayHealthMonitor, new GatewayHealthDataComparator());
         return gatewayDataListForGatewayHealthMonitor;
     }

@@ -85,6 +85,10 @@ public class GatewayHealthMonitorServiceTest {
     public void listShouldBeOrganizedFirstByMonitoringEnabledAndThenByName() {
         when(proxyRepository.findAvailable()).thenReturn(sampleList);
         List<String> gatewayNames = Arrays.asList("test1", "test3", "test2");
-        Assert.assertEquals(gatewayNames, gatewayHealthMonitorService.getGatewayHealthMonitorData().stream().map(gateway -> gateway.name).collect(Collectors.toList()));
+        Assert.assertEquals(gatewayNames,
+                gatewayHealthMonitorService.getGatewayHealthMonitorData()
+                        .stream()
+                        .map(gateway -> gateway.name)
+                        .collect(Collectors.toList()));
     }
 }
