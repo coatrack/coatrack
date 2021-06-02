@@ -27,7 +27,7 @@ public class GatewayHealthMonitorServiceTest {
     @Mock
     Proxy proxySample;
 
-    private List<Proxy> sampleList = new ArrayList<>();
+    private List<Proxy> sampleProxies = new ArrayList<>();
 
     @InjectMocks
     private GatewayHealthMonitorService gatewayHealthMonitorService;
@@ -44,8 +44,8 @@ public class GatewayHealthMonitorServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sampleList = Arrays.asList(createSampleProxy(true, "testProxyMonitoringEnabledA"), createSampleProxy(false, "testProxyMonitoringDisabledA"), proxySample);
-        when(proxyRepository.findAvailable()).thenReturn(sampleList);
+        sampleProxies = Arrays.asList(createSampleProxy(true, "testProxyMonitoringEnabledA"), createSampleProxy(false, "testProxyMonitoringDisabledA"), proxySample);
+        when(proxyRepository.findAvailable()).thenReturn(sampleProxies);
         when(proxySample.isMonitoringEnabled()).thenReturn(true);
         when(proxySample.getName()).thenReturn("testProxyMonitoringEnabledB");
         ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthWarningThresholdInMinutes", 5);
