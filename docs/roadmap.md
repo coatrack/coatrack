@@ -31,6 +31,8 @@ product:
     to allow a quick overview which gateways are currently running/(dis-)connected
 -   Support automated deployment to different test environments, in order to facilitate quick deployment/test cycles
 -   Add CII Best Practices Badge and complete questionnaire.
+-   Update Oauth2 configuration/libraries in order to be compatible with upcoming Github API changes 
+    (Auth token in HTTP header)
 
 ### Medium term
 
@@ -38,8 +40,6 @@ The following list of features are planned to be addressed in the medium term, t
 release(s) generated in the next 9 months after the next planned release:
 
 -   Fulfill all requirements as a full Generic Enabler
--   Update Oauth2 configuration/libraries in order to be compatible with upcoming Github API changes 
-    (Auth token in HTTP header)
 -   Add scripts and instructions to facilitate deployment of independent new CoatRack instances, 
     including their own configuration server
 -   Additional visualisations on statistics dashboard (e.g. number of calls per service, distribution of errors over time)
