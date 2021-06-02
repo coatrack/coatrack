@@ -57,4 +57,6 @@ The following list of features are proposals regarding the longer-term evolution
 development of these features has not yet been scheduled for a release in the near future. Please feel free to contact
 us if you wish to get involved in the implementation or influence the roadmap:
 
--   TBD
+-   Allow several CoatRack user accounts to "share" gateways, so that several people could together "keep an eye" on a running gateway
+-   Rework the management of usage metrics/statistics data in the web application, either simplifying the existing storage/filtering 
+    approach or replacing by some standardized metrics database approach 
