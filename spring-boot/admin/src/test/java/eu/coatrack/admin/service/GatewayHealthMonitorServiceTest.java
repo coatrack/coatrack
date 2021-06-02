@@ -77,7 +77,7 @@ public class GatewayHealthMonitorServiceTest {
     }
 
     @Test
-    public void listShouldBeOrganizedFirstByMonitoringEnabledAndThenByName() {
+    public void listShouldBeOrderedFirstByMonitoringEnabledAndThenByGatewayName() {
         List<String> gatewayNames = Arrays.asList("test1", "test3", "test2");
         Assert.assertEquals(gatewayNames,
                 gatewayHealthMonitorService.getGatewayHealthMonitorData()
