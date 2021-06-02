@@ -27,7 +27,9 @@ product:
 
 -   Complete onboarding off Coatrack as an incubated Generic Enabler
 -   Add CII Best Practices Badge and complete questionnaire.
--   Allow CoatRack gateway to keep working for a while without connection to central web application, e.g. during maintenance downtimes ([#73](https://github.com/coatrack/coatrack/issues/123))
+- Allow CoatRack gateway to keep working for a short time without connection to central web application, e.g. during maintenance downtimes of web application
+- Support basic "health monitoring" of CoatRack gateways, to allow a quick overview which gateways are currently running/(dis-)connected
+- Support automated deployment to different test environments, in order to facilitate quick deployment/test cycles
 
 ### Medium term
 
@@ -35,6 +37,13 @@ The following list of features are planned to be addressed in the medium term, t
 release(s) generated in the next 9 months after the next planned release:
 
 -   Fulfill all requirements as a full Generic Enabler
+- Update Oauth2 configuration/libraries in order to be compatible with upcoming Github API changes (Auth token in HTTP header)
+- Add scripts and instructions to facilitate deployment of independent new CoatRack instances, including their own configuration server
+- Additional visualisations on statistics dashboard (e.g. number of calls per service, distribution of errors over time)
+- Based on the existing integration from IoF2020, investigate specific requirements to further facilitate usage of CoatRack in combination with FIWARE BAE and FIWARE Context Broker (e.g. facilitate deployment and configuration to work in front of Context Broker)
+- Feature enabling users to delete their CoatRack user account
+- Integrate database migration framework (e.g. Flyway or Liquibase)
+- Improve the authentication mechanism between web application and gateway (configurable API key for web application and unification of two existing gateway IDs)
 
 ### Long term
 
