@@ -44,10 +44,10 @@ public class GatewayHealthMonitorServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sampleList = Arrays.asList(createSampleProxy(true, "test1"), createSampleProxy(false, "test2"), proxySample);
+        sampleList = Arrays.asList(createSampleProxy(true, "testProxyMonitoringEnabledA"), createSampleProxy(false, "testProxyMonitoringDisabledA"), proxySample);
         when(proxyRepository.findAvailable()).thenReturn(sampleList);
         when(proxySample.isMonitoringEnabled()).thenReturn(true);
-        when(proxySample.getName()).thenReturn("test3");
+        when(proxySample.getName()).thenReturn("testProxyMonitoringEnabledB");
         ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthWarningThresholdInMinutes", 5);
         ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthCriticalThresholdInMinutes", 60);
     }
@@ -55,31 +55,39 @@ public class GatewayHealthMonitorServiceTest {
     @Test
     public void ifAllGatewaysAreOkOrIgnore_ThenStatusSummaryShouldReturnOkState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now());
-        Assert.assertEquals(ProxyStates.OK, gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        Assert.assertEquals(ProxyStates.OK,
+                gatewayHealthMonitorService
+                        .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
 
     @Test
     public void ifOneGatewayIsWarningAndOthersOKOrIgnore_ThenStatusSummaryShouldReturnWarningState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
-        Assert.assertEquals(ProxyStates.WARNING, gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        Assert.assertEquals(ProxyStates.WARNING,
+                gatewayHealthMonitorService.
+                        calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
 
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
-        Assert.assertEquals(ProxyStates.CRITICAL, gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        Assert.assertEquals(ProxyStates.CRITICAL,
+                gatewayHealthMonitorService
+                        .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
 
     @Test
     public void ifAllGatewaysNotConnected_ThenStatusSummaryShouldReturnNotConnectedState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(null);
-        Assert.assertEquals(ProxyStates.NEVER_CONNECTED, gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        Assert.assertEquals(ProxyStates.NEVER_CONNECTED,
+                gatewayHealthMonitorService
+                        .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
 
     @Test
     public void listShouldBeOrganizedFirstByMonitoringEnabledAndThenByName() {
-        List<String> gatewayNames = Arrays.asList("test1", "test3", "test2");
-        Assert.assertEquals(gatewayNames,
+        List<String> expectedOrderOfGatewayNames = Arrays.asList("testProxyMonitoringEnabledA", "testProxyMonitoringEnabledB", "testProxyMonitoringDisabledA");
+        Assert.assertEquals(expectedOrderOfGatewayNames,
                 gatewayHealthMonitorService.getGatewayHealthMonitorData()
                         .stream()
                         .map(gateway -> gateway.name)
