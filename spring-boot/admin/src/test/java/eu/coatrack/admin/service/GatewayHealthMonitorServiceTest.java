@@ -35,7 +35,7 @@ public class GatewayHealthMonitorServiceTest {
     public Proxy createSampleProxy(boolean monitoredEnabled, String proxyName) {
         Proxy proxy = new Proxy();
         proxy.setName(proxyName);
-        proxy.setId("GatewayIDTest");
+        proxy.setId("testIdFor-" + proxyName);
         proxy.setMonitoringEnabled(monitoredEnabled);
         proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
         return proxy;
