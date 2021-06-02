@@ -27,7 +27,7 @@ product:
 
 -   Complete onboarding off Coatrack as an incubated Generic Enabler
 -   Add CII Best Practices Badge and complete questionnaire.
--   Allow CoatRack gateway to keep working for a while without connection to central web application, e.g. during maintenance downtimes (#73)
+-   Allow CoatRack gateway to keep working for a while without connection to central web application, e.g. during maintenance downtimes (coatrack#73)
 
 ### Medium term
 
