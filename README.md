@@ -6,6 +6,7 @@
 [![SOF support badge](https://nexus.lab.fiware.org/repository/raw/public/badges/stackoverflow/fiware.svg)](http://stackoverflow.com/questions/tagged/fiware)
 <br/>
 ![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4948/badge)](https://bestpractices.coreinfrastructure.org/projects/4948)
 
 CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of:
 
