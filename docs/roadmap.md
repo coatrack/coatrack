@@ -33,6 +33,8 @@ product:
 -   Add CII Best Practices Badge and complete questionnaire.
 -   Update Oauth2 configuration/libraries in order to be compatible with upcoming Github API changes 
     (Auth token in HTTP header)
+-   Kubernetes deployment
+
 
 ### Medium term
 
@@ -46,6 +48,7 @@ release(s) generated in the next 9 months after the next planned release:
 -   Based on the existing integration from IoF2020, investigate specific requirements to further facilitate usage of 
     CoatRack in combination with FIWARE BAE and FIWARE Context Broker (e.g. facilitate deployment and configuration to work 
     in front of Context Broker)
+-   Investigation compatibility 3scale
 -   Feature enabling users to delete their CoatRack user account
 -   Integrate database migration framework (e.g. Flyway or Liquibase)
 -   Improve the authentication mechanism between web application and gateway (configurable API key for web application 
