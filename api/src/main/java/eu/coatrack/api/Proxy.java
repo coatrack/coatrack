@@ -45,19 +45,12 @@ public class Proxy {
     private String id;
 
     private String name;
-
     private String description;
-
     private String publicUrl;
-
     private Integer port;
-
     private String configServerName;
-
     private String configServerPassword;
-
     private LocalDateTime timeOfLastSuccessfulCallToAdmin;
-
     private boolean isMonitoringEnabled = true;
 
     @OneToOne
