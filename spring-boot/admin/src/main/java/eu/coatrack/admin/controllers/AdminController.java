@@ -98,21 +98,13 @@ public class AdminController {
     private String gettingStartedTestServiceIdentifier;
 
     private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
-
     private static final String ADMIN_WIZARD_VIEW = "admin/wizard/wizard";
-
     private static final String ADMIN_STARTPAGE = "admin/startpage";
-
     private static final String ADMIN_CONSUMER_WIZARD = "admin/consumer_wizard/wizard";
-
     private static final String ADMIN_PROFILE = "admin/profile/profile";
-
     private static final String GITHUB_API_USER = "https://api.github.com/user";
-
     private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
-
     private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
-
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
     static {
