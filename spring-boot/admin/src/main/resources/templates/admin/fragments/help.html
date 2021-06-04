@@ -170,8 +170,14 @@
                     </h4>
                 </div>
                 <div class="modal-body" style="font-weight: normal;">
-                    <p th:text="#{admin.help.getting.started.service.identifier.text}">
+                    <p th:text="#{admin.help.getting.started.service.identifier.explanatory.text}">
                         explanatory text
+                    </p>
+                    <p style="color:red">
+                        <span>&#9888;</span>
+                        <span th:text="#{admin.help.getting.started.service.identifier.caution.text}">
+                            caution text
+                        </span>
                     </p>
                     <img th:src="#{admin.help.getting.started.service.identifier.image.path}" width="850px"
                          th:alt="#{admin.help.getting.started.service.identifier.image.alt}"/>
