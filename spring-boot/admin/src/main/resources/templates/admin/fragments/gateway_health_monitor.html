@@ -44,7 +44,7 @@
                         <td align="left" th:text="${gateway.name}"></td>
 
                         <td align="center" th:switch="${gateway.status}">
-                            <span th:class="'neutral-state-symbol' + ${gateway?.status?.cssClassForGui}"></span>
+                            <span th:class="'neutral-state-symbol ' + ${gateway?.status?.cssClassForGui}"></span>
                         </td>
 
                         <div th:if="${gateway.isMonitoringEnabled}">
