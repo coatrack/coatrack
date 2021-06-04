@@ -44,7 +44,9 @@ public class GatewayHealthMonitorServiceTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        sampleProxies = Arrays.asList(createSampleProxy(true, "testProxyMonitoringEnabledA"), createSampleProxy(false, "testProxyMonitoringDisabledA"), proxySample);
+        sampleProxies = Arrays.asList(createSampleProxy(true, "testProxyMonitoringEnabledA"),
+                createSampleProxy(false, "testProxyMonitoringDisabledA"),
+                proxySample);
         when(proxyRepository.findAvailable()).thenReturn(sampleProxies);
         when(proxySample.isMonitoringEnabled()).thenReturn(true);
         when(proxySample.getName()).thenReturn("testProxyMonitoringEnabledB");
