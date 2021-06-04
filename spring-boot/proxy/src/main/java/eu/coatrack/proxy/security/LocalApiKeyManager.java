@@ -122,9 +122,11 @@ public class LocalApiKeyManager {
     }
 
     private void updateApiKeyList(List<ApiKey> fetchedApiKeyList) {
-        Assert.notNull(fetchedApiKeyList, "Fetched API key list was null.");
+        Assert.notNull(fetchedApiKeyList, "The local API key list will not be " +
+                "updated since the fetched API key list was null.");
         localApiKeyList = fetchedApiKeyList;
-        deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now().plusMinutes(numberOfMinutesTheGatewayShallWorkInOfflineMode);
+        deadlineWhenOfflineModeShallStopWorking = LocalDateTime.now()
+                .plusMinutes(numberOfMinutesTheGatewayShallWorkInOfflineMode);
 
         if(!isLocalApiKeyListInitialized)
             isLocalApiKeyListInitialized = true;

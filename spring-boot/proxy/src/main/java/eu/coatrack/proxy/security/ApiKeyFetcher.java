@@ -81,12 +81,13 @@ public class ApiKeyFetcher {
     private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(ResponseEntity<?> responseEntity) {
         Optional<String> errorMessage = Optional.empty();
 
-        if (responseEntity == null)
+        if (responseEntity == null) {
             errorMessage = Optional.of("The ResponseEntity was null.");
-        else if (responseEntity.getBody() == null)
+        } else if (responseEntity.getBody() == null) {
             errorMessage = Optional.of("The body was null");
-        else if (responseEntity.getStatusCode() != HttpStatus.OK)
+        } else if (responseEntity.getStatusCode() != HttpStatus.OK) {
             errorMessage = Optional.of("The HTTP status was not OK.");
+        }
 
         return errorMessage;
     }
