@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -29,12 +30,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
- * Offers request services to the Coatrack admin server to receive single
+ * Sends requests to the Coatrack admin server to receive single
  * API keys or a list of API keys for all services offered by this gateway.
  *
  * @author Christoph Baier
@@ -53,49 +52,56 @@ public class ApiKeyFetcher {
         this.urlResourcesProvider = urlResourcesProvider;
     }
 
-    public List<ApiKey> requestLatestApiKeyListFromAdmin() throws ApiKeyFetchingFailedException {
+    public List<ApiKey> requestLatestApiKeyListFromAdmin() {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
-        ResponseEntity<ApiKey[]> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(
+            ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
                     urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
-        } catch (RestClientException e){
-            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
-                    "connection failed." + e.getMessage() + e);
-        }
-
-        ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
-        if (apiKeys == null)
-            throw new ApiKeyFetchingFailedException("Received null instead of an API key list.");
-        else
+            ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
             return new ArrayList<>(Arrays.asList(apiKeys));
+        } catch (RestClientException e) {
+            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
+                    "connection failed.", e);
+        }
     }
 
     private Object extractBodyFromResponseEntity(ResponseEntity<?> responseEntity) {
-        log.debug("Extracting ResponseEntity.");
-        if(responseEntity == null)
-            return null;
+        log.debug("Extracting ResponseEntity: " + responseEntity);
 
-        boolean isResponseEntityOk = responseEntity.getStatusCode() == HttpStatus.OK
-                && responseEntity.getBody() != null;
-        return isResponseEntityOk ? responseEntity.getBody() : null;
+        Optional<String> errorMessage = validateResponseEntityAndCreateErrorMessageInCaseOfProblems(responseEntity);
+
+        if (errorMessage.isPresent())
+            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity. "
+                    + errorMessage.get());
+        else
+            return responseEntity.getBody();
     }
 
-    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) throws ApiKeyFetchingFailedException {
+    private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(ResponseEntity<?> responseEntity) {
+        Optional<String> errorMessage = Optional.empty();
+
+        if (responseEntity == null) {
+            errorMessage = Optional.of("The ResponseEntity was null.");
+        } else if (responseEntity.getBody() == null) {
+            errorMessage = Optional.of("The body was null");
+        } else if (responseEntity.getStatusCode() != HttpStatus.OK) {
+            errorMessage = Optional.of("The HTTP status was not OK.");
+        }
+
+        return errorMessage;
+    }
+
+    public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
-        if(apiKeyValue == null)
-            throw new ApiKeyFetchingFailedException("Provided API key was null.");
-
-        ResponseEntity<ApiKey> responseEntity;
         try {
-            responseEntity = restTemplate.getForEntity(
-                urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
-        } catch (RestClientException e){
+            ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
+                    urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+            return (ApiKey) extractBodyFromResponseEntity(responseEntity);
+        } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the API key with the value " + apiKeyValue +
-                    " from CoatRack admin, the connection failed." + e.getMessage() + e);
+                    " from CoatRack admin, the connection failed.", e);
         }
-        return (ApiKey) extractBodyFromResponseEntity(responseEntity);
     }
 }

@@ -1,4 +1,4 @@
-package security.localApiKeyManagerTests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -9,9 +9,9 @@ package security.localApiKeyManagerTests;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,22 +21,20 @@ package security.localApiKeyManagerTests;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetcher;
-import eu.coatrack.proxy.security.LocalApiKeyManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.mock;
 
-public class AbstractLocalApiKeyManagerSetup {
+public abstract class LocalApiKeyManager_AbstractTestSetupProvider {
 
     protected ApiKey apiKey;
     protected List<ApiKey> apiKeyList;
     protected ApiKeyFetcher apiKeyFetcherMock;
     protected LocalApiKeyManager localApiKeyManager;
 
-    public void setupLocalApiKeyManagerAndApiKeyList() {
+    public void setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList() {
         apiKey = new ApiKey();
         apiKey.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
 
@@ -47,4 +45,5 @@ public class AbstractLocalApiKeyManagerSetup {
         long timeInMinutesTheGatewayWorksWithoutConnectionToAdmin = 60;
         localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, timeInMinutesTheGatewayWorksWithoutConnectionToAdmin);
     }
+
 }

@@ -37,10 +37,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- *  Controller that handles HTTP calls by CoatRack gateways.
+ * Controller that handles HTTP calls by CoatRack gateways.
  */
 
 @Controller
@@ -69,33 +70,28 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    @GetMapping( "/api/gateways/api-keys")
-    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayApiKey) {
-        log.debug("The gateway with the ID {} requests its latest API key list.", gatewayApiKey);
+    //Due to legacy code reasons the gateway API key and the gateway id are exactly the same.
+    @GetMapping("/api/gateways/api-keys")
+    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
+        log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
-            Proxy proxy = proxyRepository.findById(gatewayApiKey);
-            if (proxy != null) {
-                proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
-                proxyRepository.save(proxy);
-                return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy), HttpStatus.OK);
-            }
-            else
-                throw new NotFoundException("The gateway with the ID " + gatewayApiKey + " was not found.");
+            Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
+            return proxy.map(value -> new ResponseEntity<>(getApiKeysBelongingToServicesOf(value), HttpStatus.OK))
+                    .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
         } catch (Exception e) {
-            log.warn("The creation of the API key list for the gateway {} failed." , gatewayApiKey, e);
+            log.warn("The creation of the API key list for the gateway {} failed.", gatewayIdAndApiKey, e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     private List<ApiKey> getApiKeysBelongingToServicesOf(Proxy proxy) {
-        if(proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()){
+        if (proxy.getServiceApis() == null || proxy.getServiceApis().isEmpty()) {
             log.debug("The gateway with the ID {} does not provide any services.", proxy.getId());
             return new ArrayList<>();
-        } else{
+        } else
             return proxy.getServiceApis().stream()
                     .flatMap(
                             serviceApi -> serviceApi.getApiKeys().stream()
                     ).collect(Collectors.toList());
-        }
     }
 }

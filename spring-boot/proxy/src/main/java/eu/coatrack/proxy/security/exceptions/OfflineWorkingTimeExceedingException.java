@@ -1,4 +1,4 @@
-package eu.coatrack.proxy.security;
+package eu.coatrack.proxy.security.exceptions;
 
 /*-
  * #%L
@@ -9,9 +9,9 @@ package eu.coatrack.proxy.security;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,12 @@ package eu.coatrack.proxy.security;
  * #L%
  */
 
-public class OfflineWorkingTimeExceedingException extends Exception {
-
+/**
+ * Indicates that the maximum time the gateway is allowed to work in offline mode
+ * was exceeded. This means that locally cached API keys should be considered
+ * invalid until the online mode is re-established.
+ */
+public class OfflineWorkingTimeExceedingException extends RuntimeException {
     public OfflineWorkingTimeExceedingException(String message) {
         super(message);
     }

@@ -1,4 +1,4 @@
-package security.apiKeyFetcherTests;
+package eu.coatrack.proxy.security;
 
 /*-
  * #%L
@@ -9,9 +9,9 @@ package security.apiKeyFetcherTests;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ package security.apiKeyFetcherTests;
  */
 
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyFetchingFailedException;
+import eu.coatrack.proxy.security.exceptions.ApiKeyFetchingFailedException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -34,10 +34,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-public class ApiKeyListFetchingTest extends AbstractApiKeyFetcherTestSetup {
+public class ApiKeyFetcher_ApiKeyListFetchingTest extends ApiKeyFetcher_AbstractTestSetup {
 
     @AfterEach
-    public void verifyRestTemplateMockCall(){
+    public void verifyRestTemplateMockCall() {
         verify(restTemplateMock).getForEntity(anyString(), eq(ApiKey[].class));
     }
 
@@ -55,7 +55,7 @@ public class ApiKeyListFetchingTest extends AbstractApiKeyFetcherTestSetup {
     }
 
     @Test
-    public void validApiKeyListResponseEntityShouldContainApiKey() throws ApiKeyFetchingFailedException {
+    public void validApiKeyListResponseEntityShouldContainApiKey() {
         when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
                 .thenReturn(new ResponseEntity<>(apiKeys, HttpStatus.OK));
         assertTrue(apiKeyFetcher.requestLatestApiKeyListFromAdmin().contains(apiKey));

@@ -1,4 +1,5 @@
-package security;/*-
+package eu.coatrack.proxy.security;
+/*-
  * #%L
  * coatrack-proxy
  * %%
@@ -7,9 +8,9 @@ package security;/*-
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +18,8 @@ package security;/*-
  * limitations under the License.
  * #L%
  */
+
 import eu.coatrack.api.ApiKey;
-import eu.coatrack.proxy.security.ApiKeyVerifier;
-import eu.coatrack.proxy.security.LocalApiKeyManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -27,16 +27,13 @@ import java.sql.Timestamp;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
-public class ApiKeyVerifierTest {
+public class ApiKeyValidatorTest {
 
-    private final String someValidApiKeyValue = "ca716b82-745c-4f6d-a38b-ff8fe140ffd1";
     private ApiKey apiKey;
-    private ApiKeyVerifier apiKeyVerifier;
+    private ApiKeyValidator apiKeyValidator;
 
-    private final long
+    private static final long
             oneMinuteInMillis = 1000 * 60;
 
     private final Timestamp
@@ -45,38 +42,38 @@ public class ApiKeyVerifierTest {
             oneMinuteBeforeNow = new Timestamp(now.getTime() - oneMinuteInMillis);
 
     @BeforeEach
-    public void createAnAcceptingDefaultSetup(){
+    public void createAnAcceptingDefaultSetup() {
         apiKey = createValidApiKey();
-        apiKeyVerifier = new ApiKeyVerifier();
+        apiKeyValidator = new ApiKeyValidator();
     }
 
     private ApiKey createValidApiKey() {
         ApiKey apiKeyToBeCreated = new ApiKey();
         apiKeyToBeCreated.setDeletedWhen(null);
-        apiKeyToBeCreated.setKeyValue(someValidApiKeyValue);
+        apiKeyToBeCreated.setKeyValue("ca716b82-745c-4f6d-a38b-ff8fe140ffd1");
         apiKeyToBeCreated.setValidUntil(oneMinuteAfterNow);
         return apiKeyToBeCreated;
     }
 
     @Test
-    public void validDefaultApiKeyShouldBeAccepted(){
-        assertTrue(apiKeyVerifier.isApiKeyValid(apiKey));
+    public void validDefaultApiKeyShouldBeAccepted() {
+        assertTrue(apiKeyValidator.isApiKeyValid(apiKey));
     }
 
     @Test
-    public void nullArgumentsShouldBeDenied(){
-        assertFalse(apiKeyVerifier.isApiKeyValid(null));
+    public void nullArgumentsShouldBeDenied() {
+        assertFalse(apiKeyValidator.isApiKeyValid(null));
     }
 
     @Test
-    public void deletedApiKeyShouldBeDenied(){
+    public void deletedApiKeyShouldBeDenied() {
         apiKey.setDeletedWhen(oneMinuteBeforeNow);
-        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
+        assertFalse(apiKeyValidator.isApiKeyValid(apiKey));
     }
 
     @Test
-    public void expiredApiKeyShouldBeDenied(){
+    public void expiredApiKeyShouldBeDenied() {
         apiKey.setValidUntil(oneMinuteBeforeNow);
-        assertFalse(apiKeyVerifier.isApiKeyValid(apiKey));
+        assertFalse(apiKeyValidator.isApiKeyValid(apiKey));
     }
 }

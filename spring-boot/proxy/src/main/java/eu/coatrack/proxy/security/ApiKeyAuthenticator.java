@@ -21,6 +21,7 @@ package eu.coatrack.proxy.security;
  */
 
 import eu.coatrack.api.ApiKey;
+import eu.coatrack.proxy.security.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,30 +32,32 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * Checks if the API key token value sent by the client is valid. If so, the client
- * is forwarded to the requested service API.
+ *  Checks if the API key token value sent by the client is valid. If so, an authentication object
+ *  including the granted authorities is generated, to be further handled by access decision voters.
  *
  * @author gr-hovest, Christoph Baier
  */
 
 @Service
-public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
+public class ApiKeyAuthenticator implements AuthenticationManager {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthTokenVerifier.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthenticator.class);
 
     private final LocalApiKeyManager localApiKeyManager;
     private final ApiKeyFetcher apiKeyFetcher;
-    private final ApiKeyVerifier apiKeyVerifier;
+    private final ApiKeyValidator apiKeyValidator;
     private final Set<SimpleGrantedAuthority> authoritiesGrantedToCoatRackAdminApp = new HashSet<>();
 
-    public ApiKeyAuthTokenVerifier(LocalApiKeyManager localApiKeyManager,
-                                   ApiKeyFetcher apiKeyFetcher, ApiKeyVerifier apiKeyVerifier) {
+    public ApiKeyAuthenticator(LocalApiKeyManager localApiKeyManager,
+                               ApiKeyFetcher apiKeyFetcher, ApiKeyValidator apiKeyValidator) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
-        this.apiKeyVerifier = apiKeyVerifier;
+        this.apiKeyValidator = apiKeyValidator;
 
         authoritiesGrantedToCoatRackAdminApp.add(new SimpleGrantedAuthority(
                 ServiceApiAccessRightsVoter.ACCESS_SERVICE_AUTHORITY_PREFIX + "refresh"));
@@ -62,26 +65,41 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        if (authentication == null)
+            throw new BadCredentialsException("The authentication was null");
+
+        log.debug("Verifying the authentication {}.", authentication.getName());
         try {
-            log.debug("Verifying the authentication {}.", authentication.getName());
             String apiKeyValue = extractApiKeyValueFromAuthentication(authentication);
-            return doesApiKeyBelongToAdminApp(apiKeyValue) ? createAdminAuthTokenFromApiKey(apiKeyValue)
-                    : createConsumerAuthTokenIfApiKeyIsAuthorized(apiKeyValue);
+            return createAuthTokenIfApiKeyIsValid(apiKeyValue);
+        } catch (BadCredentialsException e) {
+            throw e;
         } catch (Exception e) {
-            log.debug("During the authentication process this exception occurred: ", e);
+            log.warn("The API keys validity could not be decided due to following error: ", e);
+            return null;
         }
-        throw new BadCredentialsException("The authentication process failed.");
     }
 
     private String extractApiKeyValueFromAuthentication(Authentication authentication) {
-        log.debug("Getting API key value from authentication {}.", authentication.getName());
+        try{
+            log.debug("Getting API key value from authentication {}.", authentication.getName());
+            Assert.notNull(authentication.getCredentials(), "The credentials of " + authentication.getName()
+                    + " were null.");
+            Assert.isInstanceOf(String.class, authentication.getCredentials());
+            String apiKeyValue = (String) authentication.getCredentials();
+            Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
+            return apiKeyValue;
+        } catch (IllegalArgumentException e){
+            throw new BadCredentialsException("The credentials of the authentication " + authentication.getName()
+                    + " are not valid", e);
+        }
+    }
 
-        Assert.notNull(authentication.getCredentials(), "The credentials of " + authentication.getName() + " were null.");
-        Assert.isInstanceOf(String.class, authentication.getCredentials());
-        String apiKeyValue = (String) authentication.getCredentials();
-        Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
-
-        return apiKeyValue;
+    private Authentication createAuthTokenIfApiKeyIsValid(String apiKeyValue) {
+        if (doesApiKeyBelongToAdminApp(apiKeyValue))
+            return createAdminAuthTokenFromApiKey(apiKeyValue);
+        else
+            return createConsumerAuthTokenIfApiKeyIsValid(apiKeyValue);
     }
 
     private boolean doesApiKeyBelongToAdminApp(String apiKeyValue) {
@@ -90,40 +108,32 @@ public class ApiKeyAuthTokenVerifier implements AuthenticationManager {
     }
 
     private Authentication createAdminAuthTokenFromApiKey(String apiKeyValue) {
-        log.debug("Creating admins authentication token using API key with the value {}.", apiKeyValue);
-        ApiKeyAuthToken apiKeyAuthToken = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToCoatRackAdminApp);
-        apiKeyAuthToken.setAuthenticated(true);
-        return apiKeyAuthToken;
+        log.debug("Creating admin authentication token using API key with the value {}.", apiKeyValue);
+        ApiKeyAuthToken apiKeyAuthTokenForValidApiKey = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToCoatRackAdminApp);
+        apiKeyAuthTokenForValidApiKey.setAuthenticated(true);
+        return apiKeyAuthTokenForValidApiKey;
     }
 
-    private Authentication createConsumerAuthTokenIfApiKeyIsAuthorized(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
+    private Authentication createConsumerAuthTokenIfApiKeyIsValid(String apiKeyValue) {
         log.debug("Verifying the API with the value {} from consumer.", apiKeyValue);
+
         ApiKey apiKey = getApiKeyEntityByApiKeyValue(apiKeyValue);
-        if (apiKeyVerifier.isApiKeyValid(apiKey))
+        if (apiKeyValidator.isApiKeyValid(apiKey))
             return createAuthTokenGrantingAccessToServiceApi(apiKey);
         else
             throw new BadCredentialsException("The API key " + apiKeyValue + " is not valid.");
     }
 
-    private ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
+    private ApiKey getApiKeyEntityByApiKeyValue(String apiKeyValue) {
         ApiKey apiKey;
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
         } catch (ApiKeyFetchingFailedException e) {
             log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed. " +
-                            "Therefore checking the local API key list as fallback solution.", apiKeyValue);
-            apiKey = getApiKeyEntityFromLocalCache(apiKeyValue);
+                    "Therefore checking the local API key list as fallback solution.", apiKeyValue);
+            apiKey = localApiKeyManager.getApiKeyEntityFromLocalCache(apiKeyValue);
         }
         return apiKey;
-    }
-
-    private ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) throws OfflineWorkingTimeExceedingException {
-        if (localApiKeyManager.isMaxDurationOfOfflineModeExceeded())
-            return localApiKeyManager.getApiKeyEntityByApiKeyValue(apiKeyValue);
-        else {
-            throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
-                    "gateway will reject every request until a connection to CoatRack admin could be re-established.");
-        }
     }
 
     private ApiKeyAuthToken createAuthTokenGrantingAccessToServiceApi(ApiKey apiKey) {
