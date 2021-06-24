@@ -145,6 +145,10 @@
                 updateGatewayHealthMonitorWithLatestDataFromAdmin();
             });
 
+            setInterval(function(){
+                updateGatewayHealthMonitorWithLatestDataFromAdmin()
+            }, 30000)
+
             function updateGatewayHealthMonitorWithLatestDataFromAdmin() {
                 $('#gatewayHealthMonitor').load("/admin/dashboard/gateway-health-monitor");
             }

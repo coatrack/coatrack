@@ -124,7 +124,7 @@ public class GatewayHealthMonitorService {
      * - gateways with "monitoring enabled" should be displayed first
      * - second sorting criterion is "alphabetical by name"
      */
-    class GatewayHealthDataComparator implements Comparator<HealthDataForOneGateway> {
+    private class GatewayHealthDataComparator implements Comparator<HealthDataForOneGateway> {
         @Override
         public int compare(HealthDataForOneGateway a, HealthDataForOneGateway b) {
             if (a.isMonitoringEnabled && !b.isMonitoringEnabled) {
