@@ -57,33 +57,37 @@ public class GatewayHealthMonitorServiceTest {
     @Test
     public void ifAllGatewaysAreOkOrIgnore_ThenStatusSummaryShouldReturnOkState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now());
-        Assert.assertEquals(ProxyHealthStatus.OK,
-                gatewayHealthMonitorService
-                        .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
+                .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
+                        .getGatewayHealthMonitorData());
+        Assert.assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
     }
 
     @Test
     public void ifOneGatewayIsWarningAndOthersOKOrIgnore_ThenStatusSummaryShouldReturnWarningState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
-        Assert.assertEquals(ProxyHealthStatus.WARNING,
-                gatewayHealthMonitorService.
-                        calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
+                .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
+                        .getGatewayHealthMonitorData());
+        Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
-        Assert.assertEquals(ProxyHealthStatus.CRITICAL,
-                gatewayHealthMonitorService
-                        .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
+                .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
+                        .getGatewayHealthMonitorData());
+        Assert.assertEquals(ProxyHealthStatus.CRITICAL, healthStatusSummary);
     }
 
     @Test
     public void ifAllGatewaysNotConnected_ThenStatusSummaryShouldReturnNotConnectedState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(null);
-        Assert.assertEquals(ProxyHealthStatus.NEVER_CONNECTED,
-                gatewayHealthMonitorService
-                        .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
+        ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
+                .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
+                        .getGatewayHealthMonitorData());
+        Assert.assertEquals(ProxyHealthStatus.NEVER_CONNECTED, healthStatusSummary);
     }
 
     @Test
