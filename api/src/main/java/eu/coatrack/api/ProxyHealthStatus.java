@@ -20,7 +20,7 @@ package eu.coatrack.api;
  * #L%
  */
 
-public enum ProxyStates {
+public enum ProxyHealthStatus {
 
     CRITICAL("critical-state"),
     WARNING("warning-state"),
@@ -30,7 +30,7 @@ public enum ProxyStates {
 
     private final String cssClassForGui;
 
-    ProxyStates(String cssClassForGui) {
+    ProxyHealthStatus(String cssClassForGui) {
         this.cssClassForGui = cssClassForGui;
     }
 

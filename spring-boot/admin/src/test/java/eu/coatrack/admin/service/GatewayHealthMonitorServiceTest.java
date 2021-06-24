@@ -2,7 +2,7 @@ package eu.coatrack.admin.service;
 
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.api.Proxy;
-import eu.coatrack.api.ProxyStates;
+import eu.coatrack.api.ProxyHealthStatus;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +36,7 @@ public class GatewayHealthMonitorServiceTest {
         Proxy proxy = new Proxy();
         proxy.setName(proxyName);
         proxy.setId("testIdFor-" + proxyName);
-        proxy.setMonitoringEnabled(monitoredEnabled);
+        proxy.setHealthMonitoringEnabled(monitoredEnabled);
         proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
         return proxy;
     }
@@ -48,7 +48,7 @@ public class GatewayHealthMonitorServiceTest {
                 createSampleProxy(false, "testProxyMonitoringDisabledA"),
                 proxySample);
         when(proxyRepository.findAvailable()).thenReturn(sampleProxies);
-        when(proxySample.isMonitoringEnabled()).thenReturn(true);
+        when(proxySample.isHealthMonitoringEnabled()).thenReturn(true);
         when(proxySample.getName()).thenReturn("testProxyMonitoringEnabledB");
         ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthWarningThresholdInMinutes", 5);
         ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthCriticalThresholdInMinutes", 60);
@@ -57,7 +57,7 @@ public class GatewayHealthMonitorServiceTest {
     @Test
     public void ifAllGatewaysAreOkOrIgnore_ThenStatusSummaryShouldReturnOkState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now());
-        Assert.assertEquals(ProxyStates.OK,
+        Assert.assertEquals(ProxyHealthStatus.OK,
                 gatewayHealthMonitorService
                         .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
@@ -65,7 +65,7 @@ public class GatewayHealthMonitorServiceTest {
     @Test
     public void ifOneGatewayIsWarningAndOthersOKOrIgnore_ThenStatusSummaryShouldReturnWarningState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
-        Assert.assertEquals(ProxyStates.WARNING,
+        Assert.assertEquals(ProxyHealthStatus.WARNING,
                 gatewayHealthMonitorService.
                         calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
@@ -73,7 +73,7 @@ public class GatewayHealthMonitorServiceTest {
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
-        Assert.assertEquals(ProxyStates.CRITICAL,
+        Assert.assertEquals(ProxyHealthStatus.CRITICAL,
                 gatewayHealthMonitorService
                         .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }
@@ -81,7 +81,7 @@ public class GatewayHealthMonitorServiceTest {
     @Test
     public void ifAllGatewaysNotConnected_ThenStatusSummaryShouldReturnNotConnectedState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(null);
-        Assert.assertEquals(ProxyStates.NEVER_CONNECTED,
+        Assert.assertEquals(ProxyHealthStatus.NEVER_CONNECTED,
                 gatewayHealthMonitorService
                         .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService.getGatewayHealthMonitorData()));
     }

@@ -664,8 +664,8 @@ public class AdminController {
     @ResponseBody
     public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
         Proxy proxy = proxyRepository.findById(proxyId);
-        proxy.setMonitoringEnabled(isMonitoringEnabled);
-        log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isMonitoringEnabled());
+        proxy.setHealthMonitoringEnabled(isMonitoringEnabled);
+        log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isHealthMonitoringEnabled());
         proxyRepository.save(proxy);
     }
 }

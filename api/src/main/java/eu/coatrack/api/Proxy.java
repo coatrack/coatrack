@@ -51,7 +51,7 @@ public class Proxy {
     private String configServerName;
     private String configServerPassword;
     private LocalDateTime timeOfLastSuccessfulCallToAdmin;
-    private boolean isMonitoringEnabled = true;
+    private boolean isHealthMonitoringEnabled = true;
 
     @OneToOne
     private User owner;
@@ -161,12 +161,12 @@ public class Proxy {
         this.timeOfLastSuccessfulCallToAdmin = LocalDateTime.now();
     }
 
-    public boolean isMonitoringEnabled() {
-        return isMonitoringEnabled;
+    public boolean isHealthMonitoringEnabled() {
+        return isHealthMonitoringEnabled;
     }
 
-    public void setMonitoringEnabled(boolean monitoringEnabled) {
-        isMonitoringEnabled = monitoringEnabled;
+    public void setHealthMonitoringEnabled(boolean healthMonitoringEnabled) {
+        isHealthMonitoringEnabled = healthMonitoringEnabled;
     }
 
     @Override

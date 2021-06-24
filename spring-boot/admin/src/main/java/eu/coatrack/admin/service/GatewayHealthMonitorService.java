@@ -22,7 +22,7 @@ package eu.coatrack.admin.service;
 
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.api.Proxy;
-import eu.coatrack.api.ProxyStates;
+import eu.coatrack.api.ProxyHealthStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,14 +52,14 @@ public class GatewayHealthMonitorService {
     public class HealthDataForOneGateway {
         public String gatewayId;
         public String name;
-        public ProxyStates status;
+        public ProxyHealthStatus status;
         public Long minutesPassedSinceLastContact;
         public boolean isMonitoringEnabled;
 
         public HealthDataForOneGateway(Proxy proxy) {
             this.gatewayId = proxy.getId();
             this.name = proxy.getName();
-            this.isMonitoringEnabled = proxy.isMonitoringEnabled();
+            this.isMonitoringEnabled = proxy.isHealthMonitoringEnabled();
             this.minutesPassedSinceLastContact = (proxy.getTimeOfLastSuccessfulCallToAdmin() == null ?
                     null :
                     Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
@@ -67,7 +67,7 @@ public class GatewayHealthMonitorService {
         }
     }
 
-    public ProxyStates calculateGatewayHealthStatusSummary(List<HealthDataForOneGateway> dataForAllGateways) {
+    public ProxyHealthStatus calculateGatewayHealthStatusSummary(List<HealthDataForOneGateway> dataForAllGateways) {
         List<HealthDataForOneGateway> dataJustForMonitoredGateways = dataForAllGateways
                 .stream()
                 .filter(gateway -> gateway.isMonitoringEnabled == true)
@@ -75,18 +75,18 @@ public class GatewayHealthMonitorService {
 
         if (dataJustForMonitoredGateways
                 .stream()
-                .anyMatch(gateway -> gateway.status == ProxyStates.CRITICAL)) {
-            return ProxyStates.CRITICAL;
+                .anyMatch(gateway -> gateway.status == ProxyHealthStatus.CRITICAL)) {
+            return ProxyHealthStatus.CRITICAL;
         } else if (dataJustForMonitoredGateways
                 .stream()
-                .anyMatch(gateway -> gateway.status == ProxyStates.WARNING)) {
-            return ProxyStates.WARNING;
+                .anyMatch(gateway -> gateway.status == ProxyHealthStatus.WARNING)) {
+            return ProxyHealthStatus.WARNING;
         } else if (dataJustForMonitoredGateways
                 .stream()
-                .allMatch(gateway -> gateway.status == ProxyStates.OK)) {
-            return ProxyStates.OK;
+                .allMatch(gateway -> gateway.status == ProxyHealthStatus.OK)) {
+            return ProxyHealthStatus.OK;
         }
-        return ProxyStates.NEVER_CONNECTED;
+        return ProxyHealthStatus.NEVER_CONNECTED;
     }
 
     public List<HealthDataForOneGateway> getGatewayHealthMonitorData() {
@@ -99,21 +99,21 @@ public class GatewayHealthMonitorService {
         return gatewayDataListForGatewayHealthMonitor;
     }
 
-    private ProxyStates calculateProxyStateForHealthMonitor(Proxy proxy) {
-        if (!proxy.isMonitoringEnabled()) {
-            return ProxyStates.IGNORE;
+    private ProxyHealthStatus calculateProxyStateForHealthMonitor(Proxy proxy) {
+        if (!proxy.isHealthMonitoringEnabled()) {
+            return ProxyHealthStatus.IGNORE;
         } else if (proxy.getTimeOfLastSuccessfulCallToAdmin() == null) {
-            return ProxyStates.NEVER_CONNECTED;
+            return ProxyHealthStatus.NEVER_CONNECTED;
         } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
                         .plusMinutes(gatewayHealthCriticalThresholdInMinutes)
                         .isBefore(LocalDateTime.now())) {
-            return ProxyStates.CRITICAL;
+            return ProxyHealthStatus.CRITICAL;
         } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
                         .plusMinutes(gatewayHealthWarningThresholdInMinutes)
                         .isBefore(LocalDateTime.now())) {
-            return ProxyStates.WARNING;
+            return ProxyHealthStatus.WARNING;
         } else {
-            return ProxyStates.OK;
+            return ProxyHealthStatus.OK;
         }
     }
 
