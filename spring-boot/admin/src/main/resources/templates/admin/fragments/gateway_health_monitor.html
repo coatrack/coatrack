@@ -47,15 +47,16 @@
                             <span th:class="'neutral-state-symbol ' + ${gateway?.status?.cssClassForGui}"></span>
                         </td>
 
-                        <div th:if="${gateway.isMonitoringEnabled}">
-                        <td align="left" th:if="${gateway.minutesPassedSinceLastContact != null}" th:text="${gateway.minutesPassedSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPassedSinceLastContact + ' min ago'}">
-                        </td>
-                        <td align="left" th:if="${gateway.minutesPassedSinceLastContact == null}"
-                            th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
-                        </div>
+                        <th:block th:if="${gateway.isMonitoringEnabled}">
+                            <td align="left" th:if="${gateway.minutesPassedSinceLastContact != null}"
+                                th:text="${gateway.minutesPassedSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPassedSinceLastContact + ' min ago'}">
+                            </td>
+                            <td align="left" th:if="${gateway.minutesPassedSinceLastContact == null}"
+                                th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
+                        </th:block>
                         <td align="center" th:if="${!gateway.isMonitoringEnabled}">
                             -
-                             </td>
+                        </td>
                         <td align="center">
                             <label class="switch">
                             <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
