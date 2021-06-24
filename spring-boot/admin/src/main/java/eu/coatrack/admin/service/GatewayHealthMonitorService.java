@@ -23,7 +23,6 @@ package eu.coatrack.admin.service;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ProxyHealthStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -40,14 +39,17 @@ import java.util.stream.Collectors;
 @Service
 public class GatewayHealthMonitorService {
 
-    @Value("${ygg.gateway-health-monitor.warning.threshold.minutes}")
+    public GatewayHealthMonitorService(@Value("${ygg.gateway-health-monitor.warning.threshold.minutes}") int gatewayHealthWarningThresholdInMinutes,
+                                       @Value("${ygg.gateway-health-monitor.critical.threshold.minutes}") int gatewayHealthCriticalThresholdInMinutes,
+                                       ProxyRepository proxyRepository) {
+        this.gatewayHealthWarningThresholdInMinutes = gatewayHealthWarningThresholdInMinutes;
+        this.gatewayHealthCriticalThresholdInMinutes = gatewayHealthCriticalThresholdInMinutes;
+        this.proxyRepository = proxyRepository;
+    }
+
     private int gatewayHealthWarningThresholdInMinutes;
-
-    @Value("${ygg.gateway-health-monitor.critical.threshold.minutes}")
     private int gatewayHealthCriticalThresholdInMinutes;
-
-    @Autowired
-    ProxyRepository proxyRepository;
+    private ProxyRepository proxyRepository;
 
     public class HealthDataForOneGateway {
         public String gatewayId;

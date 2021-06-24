@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ public class GatewayHealthMonitorServiceTest {
     private List<Proxy> sampleProxies = new ArrayList<>();
 
     @InjectMocks
-    private GatewayHealthMonitorService gatewayHealthMonitorService;
+    private GatewayHealthMonitorService gatewayHealthMonitorService = new GatewayHealthMonitorService(5, 60, proxyRepository);
 
     public Proxy createSampleProxy(boolean monitoredEnabled, String proxyName) {
         Proxy proxy = new Proxy();
@@ -50,8 +49,6 @@ public class GatewayHealthMonitorServiceTest {
         when(proxyRepository.findAvailable()).thenReturn(sampleProxies);
         when(proxySample.isHealthMonitoringEnabled()).thenReturn(true);
         when(proxySample.getName()).thenReturn("testProxyMonitoringEnabledB");
-        ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthWarningThresholdInMinutes", 5);
-        ReflectionTestUtils.setField(gatewayHealthMonitorService, "gatewayHealthCriticalThresholdInMinutes", 60);
     }
 
     @Test
