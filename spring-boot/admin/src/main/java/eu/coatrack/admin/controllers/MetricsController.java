@@ -66,10 +66,11 @@ public class MetricsController {
 
         // the following related entities are NOT included in metricSubmitted, therefore IDs sent separately
         Proxy proxy = proxyRepository.findOne(proxyId);
-        ApiKey apiKey = apiKeyRepository.findByKeyValue(apiKeyValue);
 
         // Set the current time in order to be processed on the Gateway Health Monitor
         proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
+
+        ApiKey apiKey = apiKeyRepository.findByKeyValue(apiKeyValue);
 
         Metric metricToBeStored = null;
 
