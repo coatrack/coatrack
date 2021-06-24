@@ -53,7 +53,8 @@
                         <td align="left" th:if="${gateway.minutesPassedSinceLastContact == null}"
                             th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
                         </div>
-                        <td align="center" th:text="${'-'}" th:if="${!gateway.isMonitoringEnabled}">
+                        <td align="center" th:if="${!gateway.isMonitoringEnabled}">
+                            -
                              </td>
                         <td align="center">
                             <label class="switch">
