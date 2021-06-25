@@ -145,6 +145,7 @@
                 updateGatewayHealthMonitorWithLatestDataFromAdmin();
             });
 
+            // This function calls automatically (each 30 seconds) the Backend to update the Gateway Health Monitor
             setInterval(function(){
                 updateGatewayHealthMonitorWithLatestDataFromAdmin()
             }, 30000)
