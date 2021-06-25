@@ -75,10 +75,15 @@ public class GatewayApiController {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
             Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
-            proxy.get().updateTimeOfLastSuccessfulCallToAdmin_setToNow();
-            proxyRepository.save(proxy.get());
-            return proxy.map(value -> new ResponseEntity<>(getApiKeysBelongingToServicesOf(value), HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+
+            if (proxy.isPresent()) {
+                proxy.get().updateTimeOfLastSuccessfulCallToAdmin_setToNow();
+                proxyRepository.save(proxy.get());
+                return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxy.get()), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+
         } catch (Exception e) {
             log.warn("The creation of the API key list for the gateway {} failed.", gatewayIdAndApiKey, e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
