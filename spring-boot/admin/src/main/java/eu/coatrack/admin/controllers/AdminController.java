@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -112,7 +112,7 @@ public class AdminController {
         colorMap.put(400, Color.ORANGE);
         colorMap.put(401, Color.SALMON);
         colorMap.put(403, Color.LIGHT_YELLOW);
-        colorMap.put(404, new Color(255,255,102)); // yellow
+        colorMap.put(404, new Color(255, 255, 102)); // yellow
         colorMap.put(500, Color.RED);
         colorMap.put(503, Color.ORANGE_RED);
         colorMap.put(504, Color.DARK_RED);
@@ -337,14 +337,14 @@ public class AdminController {
                     // there is no fixed color defined for this status code, set it based on the range
                     if (statusCode >= 200 && statusCode < 300) {
                         // lighter green
-                        colorForStatusCode = new Color(0, 204,0);
+                        colorForStatusCode = new Color(0, 204, 0);
                     } else if (statusCode >= 300 && statusCode < 400) {
                         colorForStatusCode = Color.LIGHT_BLUE;
                     } else if (statusCode >= 404 && statusCode < 500) {
                         colorForStatusCode = Color.DARK_ORANGE;
                     } else if (statusCode >= 500 && statusCode < 600) {
                         // red
-                        colorForStatusCode = new Color(255,51,51);
+                        colorForStatusCode = new Color(255, 51, 51);
                     } else {
                         colorForStatusCode = Color.LIGHT_GRAY;
                     }
@@ -653,16 +653,16 @@ public class AdminController {
     public ModelAndView getGatewayHealthMonitorGuiFragment() {
         ModelAndView mav = new ModelAndView();
         log.debug("client request for Gateway Health Monitor Data");
-        List<GatewayHealthMonitorService.HealthDataForOneGateway> dataForGatewayHealthMonitor = gatewayHealthMonitorService.getGatewayHealthMonitorData();
+        GatewayHealthMonitorService.HealthDataForOneGatewayPlusSummaryStatus dataForGatewayHealthMonitor = gatewayHealthMonitorService
+                .getGatewayHealthMonitorData();
         mav.addObject("gatewayHealthMonitorProxyData", dataForGatewayHealthMonitor);
-        mav.addObject("gatewayHealthStatusSummary", gatewayHealthMonitorService.calculateGatewayHealthStatusSummary(dataForGatewayHealthMonitor));
         mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
         return mav;
     }
 
     @RequestMapping(value = "/dashboard/gateway-health-monitor/notification-status", method = POST)
     @ResponseBody
-    public void updateNotificationStatusOnGatewayHealthMonitor (@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
+    public void updateNotificationStatusOnGatewayHealthMonitor(@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
         Proxy proxy = proxyRepository.findById(proxyId);
         proxy.setHealthMonitoringEnabled(isMonitoringEnabled);
         log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isHealthMonitoringEnabled());

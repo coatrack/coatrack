@@ -39,6 +39,10 @@ import java.util.stream.Collectors;
 @Service
 public class GatewayHealthMonitorService {
 
+    private int gatewayHealthWarningThresholdInMinutes;
+    private int gatewayHealthCriticalThresholdInMinutes;
+    private ProxyRepository proxyRepository;
+
     public GatewayHealthMonitorService(@Value("${ygg.gateway-health-monitor.warning.threshold.minutes}") int gatewayHealthWarningThresholdInMinutes,
                                        @Value("${ygg.gateway-health-monitor.critical.threshold.minutes}") int gatewayHealthCriticalThresholdInMinutes,
                                        ProxyRepository proxyRepository) {
@@ -46,10 +50,6 @@ public class GatewayHealthMonitorService {
         this.gatewayHealthCriticalThresholdInMinutes = gatewayHealthCriticalThresholdInMinutes;
         this.proxyRepository = proxyRepository;
     }
-
-    private int gatewayHealthWarningThresholdInMinutes;
-    private int gatewayHealthCriticalThresholdInMinutes;
-    private ProxyRepository proxyRepository;
 
     public class HealthDataForOneGateway {
         public String gatewayId;
@@ -66,6 +66,16 @@ public class GatewayHealthMonitorService {
                     null :
                     Duration.between(proxy.getTimeOfLastSuccessfulCallToAdmin(), LocalDateTime.now()).toMinutes());
             this.status = calculateProxyStateForHealthMonitor(proxy);
+        }
+    }
+
+    public class HealthDataForOneGatewayPlusSummaryStatus {
+        public List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor;
+        public ProxyHealthStatus statusSummary;
+
+        public HealthDataForOneGatewayPlusSummaryStatus(List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor, ProxyHealthStatus statusSummary) {
+            this.gatewayDataListForGatewayHealthMonitor = gatewayDataListForGatewayHealthMonitor;
+            this.statusSummary = statusSummary;
         }
     }
 
@@ -91,14 +101,19 @@ public class GatewayHealthMonitorService {
         return ProxyHealthStatus.NEVER_CONNECTED;
     }
 
-    public List<HealthDataForOneGateway> getGatewayHealthMonitorData() {
+    public HealthDataForOneGatewayPlusSummaryStatus getGatewayHealthMonitorData() {
         List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor = proxyRepository.findAvailable()
                 .stream()
                 .map(proxy -> new HealthDataForOneGateway(proxy))
                 .collect(Collectors.toList());
-
         Collections.sort(gatewayDataListForGatewayHealthMonitor, new GatewayHealthDataComparator());
-        return gatewayDataListForGatewayHealthMonitor;
+        ProxyHealthStatus gatewayHealthStatusSummary = calculateGatewayHealthStatusSummary
+                (gatewayDataListForGatewayHealthMonitor);
+
+        HealthDataForOneGatewayPlusSummaryStatus healthDataForOneGatewayPlusSummaryStatus =
+                new HealthDataForOneGatewayPlusSummaryStatus(gatewayDataListForGatewayHealthMonitor,
+                        gatewayHealthStatusSummary);
+        return healthDataForOneGatewayPlusSummaryStatus;
     }
 
     private ProxyHealthStatus calculateProxyStateForHealthMonitor(Proxy proxy) {
@@ -107,12 +122,12 @@ public class GatewayHealthMonitorService {
         } else if (proxy.getTimeOfLastSuccessfulCallToAdmin() == null) {
             return ProxyHealthStatus.NEVER_CONNECTED;
         } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
-                        .plusMinutes(gatewayHealthCriticalThresholdInMinutes)
-                        .isBefore(LocalDateTime.now())) {
+                .plusMinutes(gatewayHealthCriticalThresholdInMinutes)
+                .isBefore(LocalDateTime.now())) {
             return ProxyHealthStatus.CRITICAL;
         } else if (proxy.getTimeOfLastSuccessfulCallToAdmin()
-                        .plusMinutes(gatewayHealthWarningThresholdInMinutes)
-                        .isBefore(LocalDateTime.now())) {
+                .plusMinutes(gatewayHealthWarningThresholdInMinutes)
+                .isBefore(LocalDateTime.now())) {
             return ProxyHealthStatus.WARNING;
         } else {
             return ProxyHealthStatus.OK;

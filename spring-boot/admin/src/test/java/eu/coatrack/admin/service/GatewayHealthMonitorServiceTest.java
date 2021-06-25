@@ -56,7 +56,8 @@ public class GatewayHealthMonitorServiceTest {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now());
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
-                        .getGatewayHealthMonitorData());
+                        .getGatewayHealthMonitorData()
+                        .gatewayDataListForGatewayHealthMonitor);
         Assert.assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
     }
 
@@ -65,7 +66,8 @@ public class GatewayHealthMonitorServiceTest {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
-                        .getGatewayHealthMonitorData());
+                        .getGatewayHealthMonitorData()
+                        .gatewayDataListForGatewayHealthMonitor);
         Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
@@ -74,7 +76,8 @@ public class GatewayHealthMonitorServiceTest {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
-                        .getGatewayHealthMonitorData());
+                        .getGatewayHealthMonitorData()
+                        .gatewayDataListForGatewayHealthMonitor);
         Assert.assertEquals(ProxyHealthStatus.CRITICAL, healthStatusSummary);
     }
 
@@ -83,7 +86,8 @@ public class GatewayHealthMonitorServiceTest {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(null);
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
-                        .getGatewayHealthMonitorData());
+                        .getGatewayHealthMonitorData()
+                        .gatewayDataListForGatewayHealthMonitor);
         Assert.assertEquals(ProxyHealthStatus.NEVER_CONNECTED, healthStatusSummary);
     }
 
@@ -92,6 +96,7 @@ public class GatewayHealthMonitorServiceTest {
         List<String> expectedOrderOfGatewayNames = Arrays.asList("testProxyMonitoringEnabledA", "testProxyMonitoringEnabledB", "testProxyMonitoringDisabledA");
         Assert.assertEquals(expectedOrderOfGatewayNames,
                 gatewayHealthMonitorService.getGatewayHealthMonitorData()
+                        .gatewayDataListForGatewayHealthMonitor
                         .stream()
                         .map(gateway -> gateway.name)
                         .collect(Collectors.toList()));

@@ -17,7 +17,7 @@
         <div class="x_content">
             <div class="demo-container" style="height:300px">
 
-                <div th:switch="${gatewayHealthStatusSummary}">
+                <div th:switch="${gatewayHealthMonitorProxyData.statusSummary}">
                                     <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).WARNING}">
                                     <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
                                     <span class="warning-exclamation-mark">&#9888;</span></span>
@@ -59,11 +59,11 @@
                         </td>
                         <td align="center">
                             <label class="switch">
-                            <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
-                                   th:checked="${gateway.isMonitoringEnabled}"
-                                   th:onchange="'javascript:informAdminAboutMonitoringEnabledSwitchUpdate(\'' + ${gateway?.gatewayId} + '\')'"/>
-                            <span class="slider round"></span>
-                        </label>
+                                <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
+                                       th:checked="${gateway.isMonitoringEnabled}"
+                                       th:onchange="'javascript:informAdminAboutMonitoringEnabledSwitchUpdate(\'' + ${gateway?.gatewayId} + '\')'"/>
+                                <span class="slider round"></span>
+                            </label>
                         </td>
                     </tr>
                 </table>
