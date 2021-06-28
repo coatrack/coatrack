@@ -73,7 +73,7 @@ public class GatewayHealthMonitorServiceTest {
 
     @Test
     public void ifAllGatewaysAreOkOrIgnore_ThenStatusSummaryShouldReturnOkState() {
-        when(proxySample.getTimeOfLastSuccessfulCallToAdmin().get()).thenReturn(LocalDateTime.now());
+        when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now());
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
@@ -83,7 +83,7 @@ public class GatewayHealthMonitorServiceTest {
 
     @Test
     public void ifOneGatewayIsWarningAndOthersOKOrIgnore_ThenStatusSummaryShouldReturnWarningState() {
-        when(proxySample.getTimeOfLastSuccessfulCallToAdmin().get()).thenReturn(LocalDateTime.now().minusMinutes(6));
+        when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
@@ -93,7 +93,7 @@ public class GatewayHealthMonitorServiceTest {
 
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
-        when(proxySample.getTimeOfLastSuccessfulCallToAdmin().get()).thenReturn(LocalDateTime.now().minusMinutes(70));
+        when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
