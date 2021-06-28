@@ -40,11 +40,20 @@
                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.lastcontact}"></th>
                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.notification.switch}"></th>
                     </tr>
-                    <tr th:each="gateway : ${gatewayHealthMonitorProxyData}">
+                    <tr th:each="gateway : ${gatewayHealthMonitorProxyData.gatewayDataListForGatewayHealthMonitor}">
                         <td align="left" th:text="${gateway.name}"></td>
 
                         <td align="center" th:switch="${gateway.status}">
-                            <span th:class="'neutral-state-symbol ' + ${gateway?.status?.cssClassForGui}"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).WARNING}">
+                                <span th:class="'neutral-state-symbol warning-state'"></span></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).CRITICAL}">
+                                <span th:class="'neutral-state-symbol critical-state'"></span></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).OK}">
+                                <span th:class="'neutral-state-symbol ok-state'"></span></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).NEVER_CONNECTED}">
+                                <span th:class="'neutral-state-symbol'"></span></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).IGNORE}">
+                                <span th:class="'neutral-state-symbol ignore-state'"></span></span>
                         </td>
 
                         <th:block th:if="${gateway.isMonitoringEnabled}">
