@@ -66,6 +66,12 @@ To run the CoatRack web application, use:
 ```
 After starting up, the CoatRack web application will be accessible at `http://localhost:8080` 
 
+*Optional:* If you are a CoatRack developer and want to run the application using a custom Spring profile, you can pass the profile name to the run script as follows:
+
+```console
+./run-admin-application.sh [optional-spring-profile-name]
+```
+
 ## Usage
 
 To start using CoatRack: 
