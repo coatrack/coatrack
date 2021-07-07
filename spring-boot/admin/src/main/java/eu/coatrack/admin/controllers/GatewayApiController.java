@@ -77,10 +77,10 @@ public class GatewayApiController {
             Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
 
             if (proxy.isPresent()) {
-                Proxy getProxyFromOptional = proxy.get();
-                getProxyFromOptional.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
-                proxyRepository.save(getProxyFromOptional);
-                return new ResponseEntity<>(getApiKeysBelongingToServicesOf(getProxyFromOptional), HttpStatus.OK);
+                Proxy proxyToUpdate = proxy.get();
+                proxyToUpdate.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
+                proxyRepository.save(proxyToUpdate);
+                return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxyToUpdate), HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
             }
