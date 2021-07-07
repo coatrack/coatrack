@@ -77,7 +77,7 @@ public class GatewayHealthMonitorServiceTest {
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
-                        .gatewayDataListForGatewayHealthMonitor);
+                        .healthDataForAllGateways);
         Assert.assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
     }
 
@@ -87,7 +87,7 @@ public class GatewayHealthMonitorServiceTest {
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
-                        .gatewayDataListForGatewayHealthMonitor);
+                        .healthDataForAllGateways);
         Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
@@ -97,7 +97,7 @@ public class GatewayHealthMonitorServiceTest {
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
-                        .gatewayDataListForGatewayHealthMonitor);
+                        .healthDataForAllGateways);
         Assert.assertEquals(ProxyHealthStatus.CRITICAL, healthStatusSummary);
     }
 
@@ -107,7 +107,7 @@ public class GatewayHealthMonitorServiceTest {
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
-                        .gatewayDataListForGatewayHealthMonitor);
+                        .healthDataForAllGateways);
         Assert.assertEquals(ProxyHealthStatus.NEVER_CONNECTED, healthStatusSummary);
     }
 
@@ -116,7 +116,7 @@ public class GatewayHealthMonitorServiceTest {
         List<String> expectedOrderOfGatewayNames = Arrays.asList("testProxyMonitoringEnabledA", "testProxyMonitoringEnabledB", "testProxyMonitoringDisabledA");
         Assert.assertEquals(expectedOrderOfGatewayNames,
                 gatewayHealthMonitorService.getGatewayHealthMonitorData()
-                        .gatewayDataListForGatewayHealthMonitor
+                        .healthDataForAllGateways
                         .stream()
                         .map(gateway -> gateway.name)
                         .collect(Collectors.toList()));
