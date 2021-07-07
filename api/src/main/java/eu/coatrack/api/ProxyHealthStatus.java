@@ -22,9 +22,9 @@ package eu.coatrack.api;
 
 public enum ProxyHealthStatus {
 
-    CRITICAL(),
-    WARNING(),
-    OK(),
-    IGNORE(),
-    NEVER_CONNECTED();
+    CRITICAL,
+    WARNING,
+    OK,
+    IGNORE,
+    NEVER_CONNECTED;
 }
