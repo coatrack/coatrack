@@ -69,11 +69,11 @@ public class GatewayHealthMonitorService {
         }
     }
 
-    public class HealthDataForOneGatewayPlusSummaryStatus {
+    public class DataForGatewayHealthMonitor {
         public List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor;
         public ProxyHealthStatus statusSummary;
 
-        public HealthDataForOneGatewayPlusSummaryStatus(List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor, ProxyHealthStatus statusSummary) {
+        public DataForGatewayHealthMonitor(List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor, ProxyHealthStatus statusSummary) {
             this.gatewayDataListForGatewayHealthMonitor = gatewayDataListForGatewayHealthMonitor;
             this.statusSummary = statusSummary;
         }
@@ -101,7 +101,7 @@ public class GatewayHealthMonitorService {
         return ProxyHealthStatus.NEVER_CONNECTED;
     }
 
-    public HealthDataForOneGatewayPlusSummaryStatus getGatewayHealthMonitorData() {
+    public DataForGatewayHealthMonitor getGatewayHealthMonitorData() {
         List<HealthDataForOneGateway> gatewayDataListForGatewayHealthMonitor = proxyRepository.findAvailable()
                 .stream()
                 .map(proxy -> new HealthDataForOneGateway(proxy))
@@ -110,10 +110,10 @@ public class GatewayHealthMonitorService {
         ProxyHealthStatus gatewayHealthStatusSummary = calculateGatewayHealthStatusSummary
                 (gatewayDataListForGatewayHealthMonitor);
 
-        HealthDataForOneGatewayPlusSummaryStatus healthDataForOneGatewayPlusSummaryStatus =
-                new HealthDataForOneGatewayPlusSummaryStatus(gatewayDataListForGatewayHealthMonitor,
+        DataForGatewayHealthMonitor dataForGatewayHealthMonitor =
+                new DataForGatewayHealthMonitor(gatewayDataListForGatewayHealthMonitor,
                         gatewayHealthStatusSummary);
-        return healthDataForOneGatewayPlusSummaryStatus;
+        return dataForGatewayHealthMonitor;
     }
 
     private ProxyHealthStatus calculateProxyStateForHealthMonitor(Proxy proxy) {

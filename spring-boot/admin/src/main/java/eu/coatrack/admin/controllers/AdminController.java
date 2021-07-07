@@ -653,7 +653,7 @@ public class AdminController {
     public ModelAndView getGatewayHealthMonitorGuiFragment() {
         ModelAndView mav = new ModelAndView();
         log.debug("client request for Gateway Health Monitor Data");
-        GatewayHealthMonitorService.HealthDataForOneGatewayPlusSummaryStatus dataForGatewayHealthMonitor = gatewayHealthMonitorService
+        GatewayHealthMonitorService.DataForGatewayHealthMonitor dataForGatewayHealthMonitor = gatewayHealthMonitorService
                 .getGatewayHealthMonitorData();
         mav.addObject("gatewayHealthMonitorProxyData", dataForGatewayHealthMonitor);
         mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
