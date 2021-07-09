@@ -58,6 +58,7 @@ public class ServiceApi implements ServiceApiInterface{
     @Enumerated(EnumType.STRING)
     private ServiceAccessPermissionPolicy serviceAccessPermissionPolicy;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ApiKey> apiKeys = new ArrayList<>(0);
 

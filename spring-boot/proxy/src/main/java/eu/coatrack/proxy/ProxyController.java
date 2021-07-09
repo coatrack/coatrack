@@ -9,9 +9,9 @@ package eu.coatrack.proxy;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,14 +28,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- *
  * @author perezdf
  */
 // curl -X POST http://<host>:<port>/refresh
 @RefreshScope
 @Controller
 public class ProxyController extends org.springframework.cloud.netflix.zuul.web.ZuulController {
-    
+
     @RequestMapping("/proxy")
     public void home(Model model) {
         System.out.print("test");

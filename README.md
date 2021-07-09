@@ -6,6 +6,7 @@
 [![SOF support badge](https://nexus.lab.fiware.org/repository/raw/public/badges/stackoverflow/fiware.svg)](http://stackoverflow.com/questions/tagged/fiware)
 <br/>
 ![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4948/badge)](https://bestpractices.coreinfrastructure.org/projects/4948)
 
 CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of:
 
@@ -64,6 +65,12 @@ To run the CoatRack web application, use:
 ./run-admin-application.sh
 ```
 After starting up, the CoatRack web application will be accessible at `http://localhost:8080` 
+
+*Optional:* If you are a CoatRack developer and want to run the application using a custom Spring profile, you can pass the profile name to the run script as follows:
+
+```console
+./run-admin-application.sh [optional-spring-profile-name]
+```
 
 ## Usage
 
