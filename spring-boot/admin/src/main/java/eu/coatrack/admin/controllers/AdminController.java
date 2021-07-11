@@ -615,7 +615,10 @@ public class AdminController {
                     "Please notice the list of proxies is larger than one, so for test consumer we will take into account only first one");
         }
         List<String> defaultProxyList = new ArrayList();
-        defaultProxyList.add(proxiesUrlList.get(0));
+        if(!proxiesUrlList.isEmpty())
+        {
+            defaultProxyList.add(proxiesUrlList.get(0));
+        }
 
         proxyURLPerNewApiKey.putIfAbsent(newApiKey.getKeyValue(), defaultProxyList);
 

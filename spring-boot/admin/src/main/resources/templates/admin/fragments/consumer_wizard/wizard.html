@@ -123,6 +123,10 @@
                                                     <input onclick="subscribeButtonClicked()" class ="btn btn-primary" th:type="button" value="Generate your API key" id="subscribeButton"></input>
                                                 </td>
                                             </tr>
+                                            <tr th:if="${testService == null}">>
+                                                <td colspan="3">Currently the tutorial test service is not correctly configured</td>
+                                                
+                                            </tr>
                                             </tbody>
                                         </table>
                                         <h2>
@@ -233,7 +237,7 @@
     // Post call to subscribe the test service
     function subscribeButtonClicked() {
         $.post("/admin/services/consumer/subscribe", {
-            selectedServiceId: [[${ testService != null ? testService.id: 0 }]]
+            selectedServiceId: [[${testService != null ?testService.id:0}]]
         }).done(function ChangeHTML() {
             console.log("Data sent");
             var serviceSubscribed = '<p id="ButtonClicked" clicked="1" class="byline"> Your API key was generated. To display your API key, please continue to the next step. </p>';
