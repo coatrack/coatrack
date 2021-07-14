@@ -19,7 +19,6 @@ package eu.coatrack.admin.controllers;
  * limitations under the License.
  * #L%
  */
-
 import be.ceau.chart.DoughnutChart;
 import be.ceau.chart.LineChart;
 import be.ceau.chart.color.Color;
@@ -115,7 +114,7 @@ public class AdminController {
         colorMap.put(400, Color.ORANGE);
         colorMap.put(401, Color.SALMON);
         colorMap.put(403, Color.LIGHT_YELLOW);
-        colorMap.put(404, new Color(255,255,102)); // yellow
+        colorMap.put(404, new Color(255, 255, 102)); // yellow
         colorMap.put(500, Color.RED);
         colorMap.put(503, Color.ORANGE_RED);
         colorMap.put(504, Color.DARK_RED);
@@ -191,14 +190,14 @@ public class AdminController {
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
-                    mav.addObject("stats", loadGeneralStatistics(
-                            session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
+                    mav.addObject("stats", loadGeneralStatistics(session.getDashboardDateRangeStart(),
+                            session.getDashboardDateRangeEnd()));
                     mav.addObject("userStatistics", getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
                             session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
                 } else {
                     if (!user.getInitialized()) {
 
-                        //temporalFirstTimeFlag = false;
+                        // temporalFirstTimeFlag = false;
                         mav.setViewName(ADMIN_STARTPAGE);
 
                     } else {
@@ -210,21 +209,26 @@ public class AdminController {
 
             } else {
 
-                // The user is new for our database therefore we try to retrieve as much user info is possible from Github
+                // The user is new for our database therefore we try to retrieve as much user
+                // info is possible from Github
                 OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
                 RestTemplate restTemplate = new RestTemplate();
-                String userInfo = restTemplate.getForObject(GITHUB_API_USER + "?access_token=" + details.getTokenValue(), String.class);
+                String userInfo = restTemplate
+                        .getForObject(GITHUB_API_USER + "?access_token=" + details.getTokenValue(), String.class);
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-                Map<String, Object> userMap = objectMapper.readValue(userInfo, new TypeReference<Map<String, Object>>() {
+                Map<String, Object> userMap = objectMapper.readValue(userInfo,
+                        new TypeReference<Map<String, Object>>() {
                 });
                 String email = (String) userMap.get("email");
                 if (email == null || email.isEmpty()) {
-                    String userEmails = restTemplate.getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
-                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails, objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
+                    String userEmails = restTemplate
+                            .getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
+                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails,
+                            objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
 
                     Iterator<GithubEmail> it = emailsList.iterator();
                     boolean found = false;
@@ -257,9 +261,10 @@ public class AdminController {
             }
 
         } else {
-            // User is not authenticated, it is quite weird according to the Github login page but I prefer to prevent the case
-            String springVersion = webUI.parameterizedMessage("home.spring.version",
-                    SpringBootVersion.getVersion(), SpringVersion.getVersion());
+            // User is not authenticated, it is quite weird according to the Github login
+            // page but I prefer to prevent the case
+            String springVersion = webUI.parameterizedMessage("home.spring.version", SpringBootVersion.getVersion(),
+                    SpringVersion.getVersion());
             model.addAttribute("springVersion", springVersion);
             mav.setViewName("home");
         }
@@ -283,7 +288,8 @@ public class AdminController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<StatisticsPerApiUser> userStatistics = metricsAggregationCustomRepository
-                .getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
+                .getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd,
+                        auth.getName());
 
         return userStatistics;
     }
@@ -296,15 +302,14 @@ public class AdminController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        List<StatisticsPerApiUser> userStatsList = metricsAggregationCustomRepository.getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
-        DoughnutDataset dataset = new DoughnutDataset()
-                .setLabel("API calls")
-                .addBackgroundColors(Color.AQUA_MARINE, Color.LIGHT_BLUE, Color.LIGHT_SALMON, Color.LIGHT_BLUE, Color.GRAY)
-                .setBorderWidth(2);
+        List<StatisticsPerApiUser> userStatsList = metricsAggregationCustomRepository
+                .getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd,
+                        auth.getName());
+        DoughnutDataset dataset = new DoughnutDataset().setLabel("API calls").addBackgroundColors(Color.AQUA_MARINE,
+                Color.LIGHT_BLUE, Color.LIGHT_SALMON, Color.LIGHT_BLUE, Color.GRAY).setBorderWidth(2);
         userStatsList.forEach(stats -> dataset.addData(stats.getNoOfCalls()));
         if (userStatsList.size() > 0) {
-            DoughnutData data = new DoughnutData()
-                    .addDataset(dataset);
+            DoughnutData data = new DoughnutData().addDataset(dataset);
             userStatsList.forEach(stats -> data.addLabel(stats.getUserName()));
 
             return new DoughnutChart(data);
@@ -320,10 +325,8 @@ public class AdminController {
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerHttpStatusCode> statisticsPerHttpStatusCodeList = metricsAggregationCustomRepository.getNoOfCallsPerHttpResponseCode(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                auth.getName());
+        List<StatisticsPerHttpStatusCode> statisticsPerHttpStatusCodeList = metricsAggregationCustomRepository
+                .getNoOfCallsPerHttpResponseCode(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
 
         if (statisticsPerHttpStatusCodeList.size() > 0) {
 
@@ -333,17 +336,18 @@ public class AdminController {
                 Color colorForStatusCode = chartColorsPerHttpResponseCode.get(statusCode);
 
                 if (colorForStatusCode == null) {
-                    // there is no fixed color defined for this status code, set it based on the range
+                    // there is no fixed color defined for this status code, set it based on the
+                    // range
                     if (statusCode >= 200 && statusCode < 300) {
                         // lighter green
-                        colorForStatusCode = new Color(0, 204,0);
+                        colorForStatusCode = new Color(0, 204, 0);
                     } else if (statusCode >= 300 && statusCode < 400) {
                         colorForStatusCode = Color.LIGHT_BLUE;
                     } else if (statusCode >= 404 && statusCode < 500) {
                         colorForStatusCode = Color.DARK_ORANGE;
                     } else if (statusCode >= 500 && statusCode < 600) {
                         // red
-                        colorForStatusCode = new Color(255,51,51);
+                        colorForStatusCode = new Color(255, 51, 51);
                     } else {
                         colorForStatusCode = Color.LIGHT_GRAY;
                     }
@@ -351,13 +355,10 @@ public class AdminController {
                 chartColors.add(colorForStatusCode);
             }
 
-            DoughnutDataset dataset = new DoughnutDataset()
-                    .setLabel("HTTP response codes")
-                    .addBackgroundColors(chartColors.stream().toArray(Color[]::new))
-                    .setBorderWidth(2);
+            DoughnutDataset dataset = new DoughnutDataset().setLabel("HTTP response codes")
+                    .addBackgroundColors(chartColors.stream().toArray(Color[]::new)).setBorderWidth(2);
             statisticsPerHttpStatusCodeList.forEach(stats -> dataset.addData(stats.getNoOfCalls()));
-            DoughnutData data = new DoughnutData()
-                    .addDataset(dataset);
+            DoughnutData data = new DoughnutData().addDataset(dataset);
             statisticsPerHttpStatusCodeList.forEach(stats -> data.addLabel(stats.getStatusCode().toString()));
             return new DoughnutChart(data);
         } else {
@@ -372,10 +373,8 @@ public class AdminController {
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerDay> statsList = metricsAggregationCustomRepository.getNoOfCallsPerDayForDateRange(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                auth.getName());
+        List<StatisticsPerDay> statsList = metricsAggregationCustomRepository
+                .getNoOfCallsPerDayForDateRange(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
 
         // create a map with entries for all days in the given date range
         Map<LocalDate, Long> callsPerDay = new TreeMap<>();
@@ -387,31 +386,22 @@ public class AdminController {
 
         // add numbers from database, if any
         statsList.forEach(statisticsPerDay -> {
-            callsPerDay.put(
-                    statisticsPerDay.getLocalDate(),
-                    statisticsPerDay.getNoOfCalls());
+            callsPerDay.put(statisticsPerDay.getLocalDate(), statisticsPerDay.getNoOfCalls());
         });
 
         // create actual chart
-        LineDataset dataset = new LineDataset()
-                .setLabel("Total number of API calls per day")
-                .setBackgroundColor(Color.LIGHT_YELLOW)
-                .setBorderWidth(3);
-        LineData data = new LineData()
-                .addDataset(dataset);
+        LineDataset dataset = new LineDataset().setLabel("Total number of API calls per day")
+                .setBackgroundColor(Color.LIGHT_YELLOW).setBorderWidth(3);
+        LineData data = new LineData().addDataset(dataset);
 
         callsPerDay.forEach((date, noOfCalls) -> {
             data.addLabel(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
-            dataset.addData(noOfCalls)
-                    .addPointStyle(PointStyle.CIRCLE)
-                    .addPointBorderWidth(2)
-                    .setLineTension(0f)
-                    .setSteppedLine(false)
-                    .addPointBackgroundColor(Color.LIGHT_YELLOW)
+            dataset.addData(noOfCalls).addPointStyle(PointStyle.CIRCLE).addPointBorderWidth(2).setLineTension(0f)
+                    .setSteppedLine(false).addPointBackgroundColor(Color.LIGHT_YELLOW)
                     .addPointBorderColor(Color.LIGHT_GRAY);
         });
-        LineOptions lineOptions = new LineOptions().setScales(new LinearScales().addyAxis(
-                new LinearScale().setTicks(new LinearTicks().setBeginAtZero(true))));
+        LineOptions lineOptions = new LineOptions().setScales(
+                new LinearScales().addyAxis(new LinearScale().setTicks(new LinearTicks().setBeginAtZero(true))));
 
         return new LineChart(data, lineOptions);
     }
@@ -421,10 +411,12 @@ public class AdminController {
     private Iterable<Metric> loadCallsStatistics(
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
-        log.debug("List of Calls by the user during the date range from " + selectedTimePeriodStart + " and " + selectedTimePeriodEnd);
+        log.debug("List of Calls by the user during the date range from " + selectedTimePeriodStart + " and "
+                + selectedTimePeriodEnd);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return metricRepository.retrieveByUserConsumer(auth.getName(), Date.valueOf(selectedTimePeriodStart), Date.valueOf(selectedTimePeriodEnd));
+        return metricRepository.retrieveByUserConsumer(auth.getName(), Date.valueOf(selectedTimePeriodStart),
+                Date.valueOf(selectedTimePeriodEnd));
     }
 
     @RequestMapping(value = "/dashboard/generalStatistics", method = GET, produces = "application/json")
@@ -449,14 +441,10 @@ public class AdminController {
         LocalDate previousTimePeriodEnd = selectedTimePeriodStart.minusDays(1);
         LocalDate previousTimePeriodStart = previousTimePeriodEnd.minusDays(timePeriodDurationInDays);
 
-        int callsThisPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                apiProviderUsername);
-        int callsPreviousPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(
-                previousTimePeriodStart,
-                previousTimePeriodEnd,
-                apiProviderUsername);
+        int callsThisPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
+                selectedTimePeriodEnd, apiProviderUsername);
+        int callsPreviousPeriod = metricsAggregationCustomRepository
+                .getTotalNumberOfLoggedApiCalls(previousTimePeriodStart, previousTimePeriodEnd, apiProviderUsername);
 
         GeneralStats stats = new GeneralStats();
         stats.dateFrom = selectedTimePeriodStart;
@@ -465,19 +453,18 @@ public class AdminController {
         stats.callsThisPeriod = callsThisPeriod;
         stats.callsDiff = callsThisPeriod - callsPreviousPeriod;
 
-        stats.errorsThisPeriod = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                apiProviderUsername);
-        stats.errorsTotal = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(previousTimePeriodStart, previousTimePeriodEnd, apiProviderUsername);
+        stats.errorsThisPeriod = metricsAggregationCustomRepository
+                .getNumberOfErroneousApiCalls(selectedTimePeriodStart, selectedTimePeriodEnd, apiProviderUsername);
+        stats.errorsTotal = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(previousTimePeriodStart,
+                previousTimePeriodEnd, apiProviderUsername);
 
-        stats.users = metricsAggregationCustomRepository.getNumberOfApiCallers(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                apiProviderUsername);
-        stats.callsTotal = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart, selectedTimePeriodEnd, apiProviderUsername);
+        stats.users = metricsAggregationCustomRepository.getNumberOfApiCallers(selectedTimePeriodStart,
+                selectedTimePeriodEnd, apiProviderUsername);
+        stats.callsTotal = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
+                selectedTimePeriodEnd, apiProviderUsername);
 
-        stats.revenueTotal = reportController.calculateTotalRevenueForApiProvider(auth.getName(), selectedTimePeriodStart, selectedTimePeriodEnd);
+        stats.revenueTotal = reportController.calculateTotalRevenueForApiProvider(auth.getName(),
+                selectedTimePeriodStart, selectedTimePeriodEnd);
 
         return stats;
     }
@@ -498,7 +485,8 @@ public class AdminController {
     }
 
     @PostMapping(value = "/serviceWizard")
-    public ModelAndView serviceWizard(ServiceWizardForm wizard, BindingResult bindingResult, Model model) throws IOException, GitAPIException, URISyntaxException {
+    public ModelAndView serviceWizard(ServiceWizardForm wizard, BindingResult bindingResult, Model model)
+            throws IOException, GitAPIException, URISyntaxException {
 
         // Create Service
         ServiceApi serviceApi = new ServiceApi();
@@ -588,7 +576,8 @@ public class AdminController {
     @ResponseBody
     public ModelAndView gettingStartedWizardForConsumer(Model model) throws IOException {
 
-        // API key will be generated later in the wizard, put null as dummy value for now
+        // API key will be generated later in the wizard, put null as dummy value for
+        // now
         ApiKey newApiKey = null;
 
         ServiceApi gettingStartedTestService = loadTestServiceForConsumerWizard();
@@ -600,26 +589,38 @@ public class AdminController {
         return mav;
     }
 
-    // Refresh the Test Api Key and the URL to call the service in the getting started wizard for consumer
+    // Refresh the Test Api Key and the URL to call the service in the getting
+    // started wizard for consumer
     @RequestMapping(value = "/consumer/gettingstarted/refreshApiKeys/{whichFragmentToLoad}", method = GET)
     public String refreshApiKeys(@PathVariable("whichFragmentToLoad") String whichFragmentToLoad, Model model) {
 
         ServiceApi gettingStartedTestService = loadTestServiceForConsumerWizard();
-        List<ApiKey> apiKeysForTestService = apiKeyRepository.findByLoggedInAPIConsumerAndServiceId(gettingStartedTestService.getId());
+        List<ApiKey> apiKeysForTestService = apiKeyRepository
+                .findByLoggedInAPIConsumerAndServiceId(gettingStartedTestService.getId());
 
-        // Gets the last Getting Started Test Service APIKey, as the Getting Started for Consumer can be used several times (there is size -1 because the array starts in element 0)
+        // Gets the last Getting Started Test Service APIKey, as the Getting Started for
+        // Consumer can be used several times (there is size -1 because the array starts
+        // in element 0)
         ApiKey newApiKey = apiKeysForTestService.get(apiKeysForTestService.size() - 1);
 
         // get the URL(s) for the test service proxy(s)
         Map<String, List<String>> proxyURLPerNewApiKey = new TreeMap<>();
-        List<String> proxiesUrlList = proxyRepository.customSearchForAllProxiesForGivenServiceApiId(newApiKey.getServiceApi().getId())
-                .stream()
-                .filter(proxy -> proxy.getPublicUrl() != null)
-                .filter(proxy -> proxy.getPublicUrl() != "")
-                .map(Proxy::getPublicUrl)
-                .collect(Collectors.toList());
+        List<String> proxiesUrlList = proxyRepository
+                .customSearchForAllProxiesForGivenServiceApiId(newApiKey.getServiceApi().getId()).stream()
+                .filter(proxy -> proxy.getPublicUrl() != null).filter(proxy -> proxy.getPublicUrl() != "")
+                .map(Proxy::getPublicUrl).collect(Collectors.toList());
 
-        proxyURLPerNewApiKey.putIfAbsent(newApiKey.getKeyValue(), proxiesUrlList);
+        if (proxiesUrlList.size() > 1) {
+            log.info(
+                    "Please notice the list of proxies is larger than one, so for test consumer we will take into account only first one");
+        }
+        List<String> defaultProxyList = new ArrayList();
+        if(!proxiesUrlList.isEmpty())
+        {
+            defaultProxyList.add(proxiesUrlList.get(0));
+        }
+
+        proxyURLPerNewApiKey.putIfAbsent(newApiKey.getKeyValue(), defaultProxyList);
 
         model.addAttribute("testService", gettingStartedTestService);
         model.addAttribute("proxiesPerApiKey", proxyURLPerNewApiKey);
@@ -636,13 +637,11 @@ public class AdminController {
     }
 
     private ServiceApi loadTestServiceForConsumerWizard() {
-        //Getting the test service
+        // Getting the test service
         log.debug("trying to load test service for provider '{}' and uriIdentifier '{}'",
-                gettingStartedTestServiceProvider,
-                gettingStartedTestServiceIdentifier);
+                gettingStartedTestServiceProvider, gettingStartedTestServiceIdentifier);
         ServiceApi testServiceApi = serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(
-                gettingStartedTestServiceProvider,
-                gettingStartedTestServiceIdentifier);
+                gettingStartedTestServiceProvider, gettingStartedTestServiceIdentifier);
         log.debug("test service loaded: {}", testServiceApi);
         return testServiceApi;
     }
