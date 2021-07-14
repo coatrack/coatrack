@@ -170,7 +170,7 @@
                     </h4>
                 </div>
                 <div class="modal-body" style="font-weight: normal;">
-                    <p th:text="#{admin.help.getting.started.service.identifier.text}">
+                    <p th:text="#{admin.help.getting.started.service.identifier.explanatory.text}">
                         explanatory text
                     </p>
                     <img th:src="#{admin.help.getting.started.service.identifier.image.path}" width="850px"
@@ -182,6 +182,30 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade getting-started-service-identifier-warning-modal" tabindex="-1" role="dialog" aria-hidden="true"
+         style="text-align: left">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">
+                                <span th:text="#{admin.help.getting.started.service.identifier.warning.heading}">
+                                    heading
+                                </span>
+                    </h4>
+                </div>
+                <div class="modal-body" style="font-weight: normal;">
+                    <span th:text="#{admin.help.getting.started.service.identifier.warning.text}"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!--./modal -->
     <!-- modal -->
     <div class="modal fade getting-started-api-key-modal" tabindex="-1" role="dialog" aria-hidden="true"
