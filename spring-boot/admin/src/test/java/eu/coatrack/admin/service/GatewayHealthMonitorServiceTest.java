@@ -97,7 +97,7 @@ public class GatewayHealthMonitorServiceTest {
         Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
-    // The 6 means that the last gateway call was made 70 minutes ago, which should trigger a Critical State
+    // The 70 means that the last gateway call was made 70 minutes ago, which should trigger a Critical State
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
