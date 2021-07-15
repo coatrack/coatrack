@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+>
+
     <body>
         <div th:fragment="body">
             <div class="row col-md-12">
                 <div id="date-range-picker" class="pull-left" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; margin-bottom: 5px;">
                     <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>
                     <span id="date-range-from" th:text="${#temporals.format(stats.dateFrom, 'yyyy-MM-dd')}">April 15, 2018</span>
-                    -
                     <span id="date-range-until" th:text="${#temporals.format(stats.dateUntil, 'yyyy-MM-dd')}">April 21, 2018</span>
                     <b class="caret"></b>
                 </div>
@@ -119,7 +119,10 @@
                         </div>
                     </div>
                 </div>
-               
+
+                <div id="gatewayHealthMonitor" class="col-md-4 col-sm-4 col-xs-12">
+                </div>
+
             </div>
         </div>
 

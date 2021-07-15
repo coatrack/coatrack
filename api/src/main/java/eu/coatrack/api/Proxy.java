@@ -21,6 +21,7 @@ package eu.coatrack.api;
  */
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -44,16 +45,13 @@ public class Proxy {
     private String id;
 
     private String name;
-
     private String description;
-
     private String publicUrl;
-
     private Integer port;
-
     private String configServerName;
-
     private String configServerPassword;
+    private LocalDateTime timeOfLastSuccessfulCallToAdmin;
+    private boolean isHealthMonitoringEnabled = true;
 
     @OneToOne
     private User owner;
@@ -82,8 +80,6 @@ public class Proxy {
     public void setConfigServerPassword(String credential_password) {
         this.configServerPassword = credential_password;
     }
-    
-    
 
     public User getOwner() {
         return owner;
@@ -155,6 +151,22 @@ public class Proxy {
 
     public void setPort(Integer port) {
         this.port = port;
+    }
+
+    public LocalDateTime getTimeOfLastSuccessfulCallToAdmin() {
+        return timeOfLastSuccessfulCallToAdmin;
+    }
+
+    public void updateTimeOfLastSuccessfulCallToAdmin_setToNow() {
+        this.timeOfLastSuccessfulCallToAdmin = LocalDateTime.now();
+    }
+
+    public boolean isHealthMonitoringEnabled() {
+        return isHealthMonitoringEnabled;
+    }
+
+    public void setHealthMonitoringEnabled(boolean healthMonitoringEnabled) {
+        isHealthMonitoringEnabled = healthMonitoringEnabled;
     }
 
     @Override

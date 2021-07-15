@@ -26,7 +26,6 @@ import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
-import javassist.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -75,9 +73,17 @@ public class GatewayApiController {
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
-            Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
-            return proxy.map(value -> new ResponseEntity<>(getApiKeysBelongingToServicesOf(value), HttpStatus.OK))
-                    .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
+            Proxy callingProxy = proxyRepository.findById(gatewayIdAndApiKey);
+
+            if (callingProxy != null) {
+                Proxy proxyToUpdate = callingProxy;
+                proxyToUpdate.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
+                proxyRepository.save(proxyToUpdate);
+                return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxyToUpdate), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            }
+
         } catch (Exception e) {
             log.warn("The creation of the API key list for the gateway {} failed.", gatewayIdAndApiKey, e);
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

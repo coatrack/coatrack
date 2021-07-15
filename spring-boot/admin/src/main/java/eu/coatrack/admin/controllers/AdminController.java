@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,6 +42,7 @@ import eu.coatrack.admin.logic.CreateProxyAction;
 import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
+import eu.coatrack.admin.service.GatewayHealthMonitorService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -73,9 +74,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
+ * @author Bruno Silva <silva@atb-bremen.de>
  */
 @Controller
 @RequestMapping(value = "/admin")
@@ -95,19 +98,13 @@ public class AdminController {
     private String gettingStartedTestServiceIdentifier;
 
     private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
-
     private static final String ADMIN_WIZARD_VIEW = "admin/wizard/wizard";
-
     private static final String ADMIN_STARTPAGE = "admin/startpage";
-
     private static final String ADMIN_CONSUMER_WIZARD = "admin/consumer_wizard/wizard";
-
     private static final String ADMIN_PROFILE = "admin/profile/profile";
-
     private static final String GITHUB_API_USER = "https://api.github.com/user";
-
     private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
-
+    private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
     static {
@@ -115,7 +112,7 @@ public class AdminController {
         colorMap.put(400, Color.ORANGE);
         colorMap.put(401, Color.SALMON);
         colorMap.put(403, Color.LIGHT_YELLOW);
-        colorMap.put(404, new Color(255,255,102)); // yellow
+        colorMap.put(404, new Color(255, 255, 102)); // yellow
         colorMap.put(500, Color.RED);
         colorMap.put(503, Color.ORANGE_RED);
         colorMap.put(504, Color.DARK_RED);
@@ -162,6 +159,10 @@ public class AdminController {
 
     @Autowired
     UserSessionSettings session;
+
+
+    @Autowired
+    GatewayHealthMonitorService gatewayHealthMonitorService;
 
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
@@ -336,14 +337,14 @@ public class AdminController {
                     // there is no fixed color defined for this status code, set it based on the range
                     if (statusCode >= 200 && statusCode < 300) {
                         // lighter green
-                        colorForStatusCode = new Color(0, 204,0);
+                        colorForStatusCode = new Color(0, 204, 0);
                     } else if (statusCode >= 300 && statusCode < 400) {
                         colorForStatusCode = Color.LIGHT_BLUE;
                     } else if (statusCode >= 404 && statusCode < 500) {
                         colorForStatusCode = Color.DARK_ORANGE;
                     } else if (statusCode >= 500 && statusCode < 600) {
                         // red
-                        colorForStatusCode = new Color(255,51,51);
+                        colorForStatusCode = new Color(255, 51, 51);
                     } else {
                         colorForStatusCode = Color.LIGHT_GRAY;
                     }
@@ -647,4 +648,24 @@ public class AdminController {
         return testServiceApi;
     }
 
+    @RequestMapping(value = "/dashboard/gateway-health-monitor", method = GET)
+    @ResponseBody
+    public ModelAndView getGatewayHealthMonitorGuiFragment() {
+        ModelAndView mav = new ModelAndView();
+        log.debug("client request for Gateway Health Monitor Data");
+        GatewayHealthMonitorService.DataForGatewayHealthMonitor dataForGatewayHealthMonitor = gatewayHealthMonitorService
+                .getGatewayHealthMonitorData();
+        mav.addObject("gatewayHealthMonitorProxyData", dataForGatewayHealthMonitor);
+        mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
+        return mav;
+    }
+
+    @RequestMapping(value = "/dashboard/gateway-health-monitor/notification-status", method = POST)
+    @ResponseBody
+    public void updateNotificationStatusOnGatewayHealthMonitor(@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
+        Proxy proxy = proxyRepository.findById(proxyId);
+        proxy.setHealthMonitoringEnabled(isMonitoringEnabled);
+        log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isHealthMonitoringEnabled());
+        proxyRepository.save(proxy);
+    }
 }
