@@ -48,6 +48,11 @@ public class GatewayHealthMonitorServiceTest {
 
     private List<Proxy> sampleProxies = new ArrayList<>();
 
+    /*
+     * 5 and 60 minutes represent the threshold for the gateway health status.
+     * Warning state is triggered when the last call from a gateway was done more than 5 minutes ago, while Critical
+     * state will be triggered if was done more than 60 minutes ago
+     */
     @InjectMocks
     private GatewayHealthMonitorService gatewayHealthMonitorService = new GatewayHealthMonitorService(5, 60, proxyRepository);
 
@@ -81,6 +86,7 @@ public class GatewayHealthMonitorServiceTest {
         Assert.assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
     }
 
+    // The 6 means that the last gateway call was made 6 minutes ago, which should trigger a Warning State
     @Test
     public void ifOneGatewayIsWarningAndOthersOKOrIgnore_ThenStatusSummaryShouldReturnWarningState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
@@ -91,6 +97,7 @@ public class GatewayHealthMonitorServiceTest {
         Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
+    // The 6 means that the last gateway call was made 70 minutes ago, which should trigger a Critical State
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
