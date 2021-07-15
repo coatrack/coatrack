@@ -9,9 +9,9 @@ package eu.coatrack.admin.service;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -86,9 +86,9 @@ public class GatewayHealthMonitorServiceTest {
         Assert.assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
     }
 
-    // The 6 means that the last gateway call was made 6 minutes ago, which should trigger a Warning State
     @Test
     public void ifOneGatewayIsWarningAndOthersOKOrIgnore_ThenStatusSummaryShouldReturnWarningState() {
+        // The 6 means that the last gateway call was made 6 minutes ago, which should trigger a Warning State
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(6));
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
@@ -97,9 +97,9 @@ public class GatewayHealthMonitorServiceTest {
         Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
-    // The 70 means that the last gateway call was made 70 minutes ago, which should trigger a Critical State
     @Test
     public void ifOneGatewayIsCritical_ThenStatusSummaryShouldReturnCriticalState() {
+        // The 70 means that the last gateway call was made 70 minutes ago, which should trigger a Critical State
         when(proxySample.getTimeOfLastSuccessfulCallToAdmin()).thenReturn(LocalDateTime.now().minusMinutes(70));
         ProxyHealthStatus healthStatusSummary = gatewayHealthMonitorService
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
