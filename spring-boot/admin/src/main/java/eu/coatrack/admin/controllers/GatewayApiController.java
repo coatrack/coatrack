@@ -36,7 +36,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -74,10 +73,10 @@ public class GatewayApiController {
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
-            Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
+            Proxy callingProxy = proxyRepository.findById(gatewayIdAndApiKey);
 
-            if (proxy.isPresent()) {
-                Proxy proxyToUpdate = proxy.get();
+            if (callingProxy != null) {
+                Proxy proxyToUpdate = callingProxy;
                 proxyToUpdate.updateTimeOfLastSuccessfulCallToAdmin_setToNow();
                 proxyRepository.save(proxyToUpdate);
                 return new ResponseEntity<>(getApiKeysBelongingToServicesOf(proxyToUpdate), HttpStatus.OK);
