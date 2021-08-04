@@ -138,8 +138,8 @@ public class ReportController {
         mav.getModel().put("dateUntil", df.format(dateUntilDate));
         mav.addObject("selectedServiceId", selectedServiceId);
         mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findOne(selectedServiceId));
-        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findOne(selectedApiConsumerUserId));
+        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
+        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findById(selectedApiConsumerUserId).orElse(null));
         mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
         mav.addObject("exportUser", exportUser);
         mav.addObject("isReportForConsumer", false);
@@ -158,7 +158,7 @@ public class ReportController {
             @PathVariable("onlyPaidCalls") boolean onlyPaidCalls
     ) throws IOException, ParseException {
 
-        ServiceApi serviceApi = serviceApiRepository.findOne(selectedServiceId);
+        ServiceApi serviceApi = serviceApiRepository.findById(selectedServiceId).orElse(null);
         List<ApiUsageReport> result;
 
         if (serviceApi != null) {
@@ -358,7 +358,7 @@ public class ReportController {
         mav.addObject("selectedServiceId", selectedServiceId);
         mav.addObject("selectedApiConsumerUserId", user.getId());
         mav.addObject("consumerUserSelectedForReport", user);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findOne(selectedServiceId));
+        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
         mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
         mav.addObject("isReportForConsumer", true);
         mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);

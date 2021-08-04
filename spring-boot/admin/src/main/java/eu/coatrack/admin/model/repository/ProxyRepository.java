@@ -22,6 +22,7 @@ package eu.coatrack.admin.model.repository;
 
 import eu.coatrack.api.Proxy;
 import java.util.List;
+import java.util.Optional;
 
 import eu.coatrack.api.ServiceApi;
 import org.springframework.data.jpa.repository.Query;
@@ -43,7 +44,7 @@ public interface ProxyRepository extends PagingAndSortingRepository<Proxy, Strin
     List<Proxy> findByName(@Param("name") String name);
 
     @PreAuthorize("#id == authentication.name")
-    Proxy findById(@Param("id") String id);
+    Optional<Proxy> findById(@Param("id") String id);
 
     @PostFilter("filterObject.owner != null and filterObject.owner.username == authentication.name")
     @Query("SELECT proxy FROM Proxy proxy JOIN proxy.serviceApis serviceApi WHERE :serviceApiId = serviceApi.id")

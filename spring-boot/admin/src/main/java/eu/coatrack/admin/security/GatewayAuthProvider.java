@@ -89,7 +89,7 @@ public class GatewayAuthProvider implements AuthenticationProvider {
             log.debug("checking gateway's APIKEY (UUID) value {}", gatewayUUID);
 
             // search proxy with given api key value, which is equivalent to the proxy's UUID
-            Proxy proxy = proxyRepository.findOne(gatewayUUID);
+            Proxy proxy = proxyRepository.findById(gatewayUUID).orElse(null);
 
             if (proxy != null) {
                 log.debug("Proxy was found by gateway api key verifier: " + proxy);

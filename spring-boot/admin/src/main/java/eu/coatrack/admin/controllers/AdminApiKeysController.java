@@ -146,7 +146,7 @@ public class AdminApiKeysController {
         Iterable<User> users = userRepository.findAll();
 
         ModelAndView mav = new ModelAndView();
-        mav.addObject("apiKey", apiKeyRepository.findOne(id));
+        mav.addObject("apiKey", apiKeyRepository.findById(id).orElse(null));
         mav.addObject("mode", UPDATE_MODE);
         mav.addObject("services", services);
         mav.addObject("users", users);
@@ -178,7 +178,7 @@ public class AdminApiKeysController {
 
         }
 
-        ServiceApi selectedService = serviceApiRepository.findOne(selectedServiceId);
+        ServiceApi selectedService = serviceApiRepository.findById(selectedServiceId).orElse(null);
 
         createApiKeyAction.setServiceApi(selectedService);
         createApiKeyAction.setUser(user);
@@ -195,9 +195,9 @@ public class AdminApiKeysController {
             @RequestParam(required = false) String selectedServiceId
     ) {
         log.debug("Update Api Key:" + apiKey.toString());
-        ServiceApi selectedService = serviceApiRepository.findOne(Long.parseLong(selectedServiceId));
+        ServiceApi selectedService = serviceApiRepository.findById(Long.parseLong(selectedServiceId)).orElse(null);
 
-        ApiKey apiKeyStored = apiKeyRepository.findOne(apiKey.getId());
+        ApiKey apiKeyStored = apiKeyRepository.findById(apiKey.getId()).orElse(null);
 
         apiKeyStored.setServiceApi(selectedService);
 
@@ -217,35 +217,35 @@ public class AdminApiKeysController {
             @RequestParam(value = "nextValidDate", required = false) String nextValidDate) throws ParseException {
         log.debug("Update Api Key:" + id + " with extendValidity until " + nextValidDate);
 
-        ApiKey apiKeyStored = apiKeyRepository.findOne(id);
+        ApiKey apiKeyStored = apiKeyRepository.findById(id).orElse(null);
 
         apiKeyStored.setValidUntil(DateUtils.parseDate(nextValidDate, parsePatterns));
 
         apiKeyRepository.save(apiKeyStored);
 
-        return apiKeyRepository.findOne(id);
+        return apiKeyRepository.findById(id).orElse(null);
     }
 
     @RequestMapping(value = "{id}", method = GET)
     public String getById(@PathVariable("id") long id, Model model) throws MalformedURLException, IOException {
 
-        log.info("getById " + id + " api key/add:" + apiKeyRepository.findOne(id));
-        model.addAttribute("apiKey", apiKeyRepository.findOne(id));
+        log.info("getById " + id + " api key/add:" + apiKeyRepository.findById(id).orElse(null));
+        model.addAttribute("apiKey", apiKeyRepository.findById(id).orElse(null));
         return ADMIN_API_KEY_VIEW;
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public ApiKey getByIdRest(@PathVariable("id") long id) throws IOException {
-        log.info("getById " + id + " api key/add:" + apiKeyRepository.findOne(id));
-        return apiKeyRepository.findOne(id);
+        log.info("getById " + id + " api key/add:" + apiKeyRepository.findById(id).orElse(null));
+        return apiKeyRepository.findById(id).orElse(null);
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Iterable<ApiKey> deleteRest(@PathVariable("id") long id) throws IOException {
 
-        ApiKey apiKey = apiKeyRepository.findOne(id);
+        ApiKey apiKey = apiKeyRepository.findById(id).orElse(null);
         apiKey.setDeletedWhen(new Date());
         apiKeyRepository.save(apiKey);
 

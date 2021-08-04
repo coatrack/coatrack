@@ -75,7 +75,7 @@ public class GatewayApiController {
     public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
-            Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
+            Optional<Proxy> proxy = proxyRepository.findById(gatewayIdAndApiKey);
             return proxy.map(value -> new ResponseEntity<>(getApiKeysBelongingToServicesOf(value), HttpStatus.OK))
                     .orElseGet(() -> new ResponseEntity<>(null, HttpStatus.NOT_FOUND));
         } catch (Exception e) {

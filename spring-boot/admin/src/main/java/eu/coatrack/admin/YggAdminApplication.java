@@ -27,10 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.client.RestTemplate;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
-import org.thymeleaf.spring4.SpringTemplateEngine;
-import org.thymeleaf.templateresolver.ITemplateResolver;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
@@ -47,13 +44,6 @@ public class YggAdminApplication {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
-    }
-
-    private TemplateEngine templateEngine(ITemplateResolver templateResolver) {
-        SpringTemplateEngine engine = new SpringTemplateEngine();
-        engine.addDialect(new Java8TimeDialect());
-        engine.setTemplateResolver(templateResolver);
-        return engine;
     }
 
     @Bean

@@ -65,7 +65,7 @@ public class MetricsController {
         log.debug("metric {} received from proxy {} with api key {}", metricSubmitted, proxyId, apiKeyValue);
 
         // the following related entities are NOT included in metricSubmitted, therefore IDs sent separately
-        Proxy proxy = proxyRepository.findOne(proxyId);
+        Proxy proxy = proxyRepository.findById(proxyId).orElse(null);
         ApiKey apiKey = apiKeyRepository.findByKeyValue(apiKeyValue);
 
         Metric metricToBeStored = null;

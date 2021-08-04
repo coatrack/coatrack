@@ -84,7 +84,7 @@ public class MetricsAggregationCustomRepositoryTest {
         resultList = repository.getIDsOfLatestMetricsPerSession(resultItem.getProxy().getId(), null, false, true, sampleDataApiProviderUsername);
         boolean found = false;
         for (Long id : resultList) {
-            Metric item = metricRepository.findOne(id);
+            Metric item = metricRepository.findById(id).orElse(null);
             if (resultItem.getProxy().getId().equals(item.getProxy().getId())) {
                 found = true;
             }
@@ -101,7 +101,7 @@ public class MetricsAggregationCustomRepositoryTest {
         resultList = repository.getIDsOfLatestMetricsPerSession(null, resultItem.getType(), false, true, sampleDataApiProviderUsername);
         boolean found = false;
         for (Long id : resultList) {
-            Metric item = metricRepository.findOne(id);
+            Metric item = metricRepository.findById(id).orElse(null);
             if (resultItem.getType().equals(item.getType())) {
                 found = true;
             }
