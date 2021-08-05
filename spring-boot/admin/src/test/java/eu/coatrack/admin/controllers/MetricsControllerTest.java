@@ -114,7 +114,7 @@ public class MetricsControllerTest {
 
         assertEquals(noOfRowsBefore + 1, noOfRowsAfterwards);
 
-        Metric metricFromDatabase = metricRepository.findOne(newRowDbId);
+        Metric metricFromDatabase = metricRepository.findById(newRowDbId).orElse(null);
 
         assertNotNull(metricFromDatabase);
         assertEquals(someProxyFromDB, metricFromDatabase.getProxy());
@@ -152,7 +152,7 @@ public class MetricsControllerTest {
         // database entry should have been updated, therefore IDs should be identical
         assertEquals(rowIdFirstMetric, rowIdUpdatedMetric);
 
-        Metric metricFromDatabase = metricRepository.findOne(rowIdFirstMetric);
+        Metric metricFromDatabase = metricRepository.findById(rowIdFirstMetric).orElse(null);
 
         assertNotNull(metricFromDatabase);
 
@@ -177,8 +177,8 @@ public class MetricsControllerTest {
         // there should be a new database entry, so IDs should be different
         assertNotEquals(dbIdOfFirstMetric, dbIdOfSecondMetric);
 
-        Metric firstMetricFromDb = metricRepository.findOne(dbIdOfFirstMetric);
-        Metric secondMetricFromDb = metricRepository.findOne(dbIdOfSecondMetric);
+        Metric firstMetricFromDb = metricRepository.findById(dbIdOfFirstMetric).orElse(null);
+        Metric secondMetricFromDb = metricRepository.findById(dbIdOfSecondMetric).orElse(null);
 
         // value should have been updated
         assertEquals(firstMetric.getCount(), firstMetricFromDb.getCount());
@@ -271,8 +271,8 @@ public class MetricsControllerTest {
         // assure that the current was updated and that the counts are correctly set
         assertEquals(currentDatabaseEntry.getId(), updatedRowDbId);
 
-        Metric outdatedReloaded = metricRepository.findOne(outdatedDatabaseEntry.getId());
-        Metric currentReloaded = metricRepository.findOne(currentDatabaseEntry.getId());
+        Metric outdatedReloaded = metricRepository.findById(outdatedDatabaseEntry.getId()).orElse(null);
+        Metric currentReloaded = metricRepository.findById(currentDatabaseEntry.getId()).orElse(null);
 
         assertEquals(1, outdatedReloaded.getCount());
         assertEquals(3, currentReloaded.getCount());

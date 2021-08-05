@@ -22,11 +22,6 @@ package eu.coatrack.admin;
 
 import eu.coatrack.admin.security.PublicApiTokenAccessFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
@@ -34,14 +29,13 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@EnableOAuth2Sso
+
 @RestController
 @RequestMapping
 public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] PERMITALL_RESOURCE_LIST = new String[]{"/catchPaymentResponse", "/json/**", "/login", "/", "/403", "/registerUser", "/callback", "/fonts/**", "/webjars/**", "/robots.txt", "/assets/**", "/images/**"};
 
-    @Qualifier("userInfoTokenServices")
     @Autowired
     private ResourceServerTokenServices tokenServices;
 
@@ -57,13 +51,6 @@ public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("XSRF-TOKEN", "auth_code", "JSESSIONID").invalidateHttpSession(true).clearAuthentication(true).permitAll()
                 .and()
                 //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                .csrf().disable();
+                .csrf().disable().oauth2Login();
     }
-
-    @Bean
-    @Primary
-    public ResourceServerProperties resource() {
-        return new ResourceServerProperties();
-    }
-
 }

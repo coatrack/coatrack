@@ -395,7 +395,7 @@ public class DatabaseInitializer {
 
         apiKey = apiKeyRepository.save(apiKey);
 
-        serviceApi = serviceApiRepository.findOne(serviceApi.getId());
+        serviceApi = serviceApiRepository.findById(serviceApi.getId()).orElse(null);
         serviceApi.getApiKeys().add(apiKey);
         serviceApiRepository.save(serviceApi);
 
@@ -545,7 +545,7 @@ public class DatabaseInitializer {
         metric.setApiKey(apiKey);
         metricRepository.save(metric);
 
-        Metric returnMetric = metricRepository.findOne(metric.getId());
+        Metric returnMetric = metricRepository.findById(metric.getId()).orElse(null);
         Proxy proxies = returnMetric.getProxy();
         Set<ServiceApi> services = proxies.getServiceApis();
         //List<ApiKey> returnApiKeys = services.iterator().next().getApiKeys();
