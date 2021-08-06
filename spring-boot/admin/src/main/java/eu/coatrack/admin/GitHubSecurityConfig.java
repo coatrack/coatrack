@@ -44,11 +44,11 @@ public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(PERMITALL_RESOURCE_LIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                //Removed ResourceServerTokenServices, therefore tokenService is not available TODO to be re-implemented
+                //Removed ResourceServerTokenServices, therefore tokenService is not available TODO to be re-implemented?
                 //.addFilterBefore(new PublicApiTokenAccessFilter(tokenServices), AbstractPreAuthenticatedProcessingFilter.class)
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("XSRF-TOKEN", "auth_code", "JSESSIONID").invalidateHttpSession(true).clearAuthentication(true).permitAll()
                 .and()
                 //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                .csrf().disable();//.oauth2Login(); TODO to be re-implemented
+                .csrf().disable().oauth2Login();
     }
 }
