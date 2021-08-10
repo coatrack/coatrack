@@ -43,7 +43,7 @@
                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.lastcontact}"></th>
                         <th th:text="#{admin.dashboard.gatewayhealthmonitor.notification.switch}"></th>
                     </tr>
-                    <tr th:each="gateway : ${gatewayHealthMonitorProxyData.gatewayDataListForGatewayHealthMonitor}">
+                    <tr th:each="gateway : ${gatewayHealthMonitorProxyData.healthDataForAllGateways}">
                         <td align="left" th:text="${gateway.name}"></td>
 
                         <td align="center" th:switch="${gateway.status}">
