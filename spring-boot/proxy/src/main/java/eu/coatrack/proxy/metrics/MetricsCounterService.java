@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.actuate.metrics.CounterService;
 import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,8 +37,14 @@ import java.util.regex.Pattern;
 
 import eu.coatrack.api.ApiKey;
 
+//TODO to be adapted to the new Micrometer implementation
 public class MetricsCounterService {
 
+    //dummy method
+    public void increment(HttpServletRequest request, String apiKeyValue, MetricType emptyResponse, Integer httpResponseCode) {
+    }
+    
+    /*
     private static final Logger log = LoggerFactory.getLogger(MetricsCounterService.class);
 
     @Qualifier("counterService")
@@ -148,4 +153,5 @@ public class MetricsCounterService {
             return null;
         }
     }
+    */
 }

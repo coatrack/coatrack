@@ -25,15 +25,11 @@ import eu.coatrack.proxy.filters.post.ResponseLoggingFilter;
 import eu.coatrack.proxy.filters.pre.ApiKeyAuthFilter;
 import eu.coatrack.proxy.filters.pre.RequestLoggingFilter;
 import eu.coatrack.proxy.metrics.MetricsCounterService;
-import eu.coatrack.proxy.metrics.MetricsTransmitter;
 import eu.coatrack.proxy.security.SecurityConfigurer;
 import eu.coatrack.proxy.security.ServiceApiAccessRightsVoter;
 import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.metrics.buffer.BufferMetricReader;
-import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -85,38 +81,26 @@ public class GatewayApplication {
     }
 
     @Bean
-    public ErrorLoggingFilter errorLoggingFilter() {
-        return new ErrorLoggingFilter();
-    }
-
-    @Bean
     public MetricsCounterService metricsCounterService() {
         return new MetricsCounterService();
     }
 
+    /* TODO to be replaced by the new Micrometer implementation
     @Bean
     public MetricsTransmitter metricsTransmitter() {
         return new MetricsTransmitter();
     }
 
-    /**
-     * Basic Spring copy exporter that regularly exports metrics, but just in
-     * case they have changed
-     */
     @Bean
     @Autowired
     public MetricCopyExporter metricCopyExporter(BufferMetricReader metricReader, MetricsTransmitter metricsTransmitter) {
         return new MetricCopyExporter(metricReader, metricsTransmitter);
     }
+    */
 
     @Bean
     public ApiKeyAuthFilter apiKeyAuthFilter() {
         return new ApiKeyAuthFilter();
-    }
-
-    @Bean
-    public SecurityConfigurer securityConfigurer() {
-        return new SecurityConfigurer();
     }
 
     /**

@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.metrics.Metric;
-import org.springframework.boot.actuate.metrics.writer.GaugeWriter;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -41,6 +39,9 @@ import java.net.URI;
  *
  * @author gr-hovest@atb-bremen.de
  */
+
+//TODO to be adapted to the new Micrometer implementation
+/*
 public class MetricsTransmitter implements GaugeWriter {
 
     private static Logger log = LoggerFactory.getLogger(MetricsTransmitter.class);
@@ -108,25 +109,6 @@ public class MetricsTransmitter implements GaugeWriter {
             Object idOfTransmittedMetric = restTemplate.postForObject(uriToTransmitMetric, metricToTransmit, Long.class);
             log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit.toString(), idOfTransmittedMetric);
 
-            /*
-            // create relationship from transmitted metric to this proxy
-            addRelationshipFromMetricToOtherEntity(
-                    uriOfTransmittedMetric,
-                    adminBaseUrl + adminEndpointToGetProxies + "/" + myProxyID,
-                    "proxy");
-
-            // get Api key entity from CoatRack admin for given key value
-            ApiKey apiKey = getApiKeyEntityForApiKeyStringValue(metricToTransmit.getApiKey().getKeyValue());
-
-            // create relationship from transmitted metric to the api key that was used
-            addRelationshipFromMetricToOtherEntity(
-                    uriOfTransmittedMetric,
-                    adminBaseUrl + adminEndpointToGetApiKeys + "/"
-                            // TODO replace hardcoded ID
-                            + 1,
-                    "apiKey");
-            */
-
         } catch (Exception e) {
             log.error("Exception when communicating with CoatRack admin server", e);
         }
@@ -164,3 +146,4 @@ public class MetricsTransmitter implements GaugeWriter {
         return apiKey;
     }
 }
+*/
