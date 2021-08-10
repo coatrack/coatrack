@@ -76,7 +76,9 @@
                                             <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/servicecover'}|" ><i class="fa fa-image"/></button>
                                             <button th:onclick="|@{location.href='/admin/services/}${service.id}@{'}|" ><i class="fa fa-search-plus"/></button>
                                             <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button>
+                                            <!-- TODO re-implement the deletion button
                                             <button th:onclick="'javascript:deleteItem(\'' + ${service.id} + '\',\'' + ${service.name} +'\' )'"><i class="fa  fa-trash"/></button>
+                                            -->
                                         </td>
 
 

@@ -143,10 +143,12 @@
                                                                 class="fa fa-bar-chart"/>
                                     </td>
                                     <td class="right">
+                                        <!-- TODO re-implement the buttons
                                         <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|">
                                             <i class="fa  fa-pencil-square-o"/></button>
                                         <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
                                             <i class="fa  fa-trash"/></button>
+                                        -->
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(proxies)}">

@@ -221,7 +221,9 @@
                                         <td class="right">
                                             <button th:onclick="|@{location.href='/admin/api-keys/}${apiKey.id}@{'}|" ><i class="fa fa-search-plus"/></button>
                                             <!--button th:onclick="|@{location.href='/admin/api-keys/}${apiKey.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button-->
+                                            <!-- TODO re-implement the deletion button
                                             <button th:onclick="'javascript:deleteItem(' + ${apiKey.id} + ', \'' + ${apiKey.userName} + '\' )'"><i class="fa  fa-trash"/></button>
+                                            -->
                                         </td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(apiKeys)}" >
