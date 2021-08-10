@@ -20,7 +20,7 @@
         <br/>
         <div class="">
             <!-- main body -->
-            <div th:include="|admin/fragments/${currentFragment} :: body|" th:remove="tag">Main Body</div>
+            <div th:include="'admin/fragments/' + ${currentFragment} :: body" th:remove="tag">Main Body</div>
             <!-- /main body -->
         </div>
 
