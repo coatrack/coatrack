@@ -72,22 +72,27 @@
                                     </td>
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
-                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
-                                           class="glyphicon glyphicon-download-alt"></a>
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|">
+                                            <button>
+                                                <i class="glyphicon glyphicon-download-alt"></i>
+                                            </button>
+                                        </a>
                                     </td>
-                                    <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
-                                                                class="fa fa-bar-chart"></a>
+                                    <td class="text-center ">
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}|">
+                                            <button>
+                                                <i class="fa fa-bar-chart"></i>
+                                            </button>
+                                        </a>
                                     </td>
                                     <td class="right">
                                         <a th:href="|@{/admin/proxies/}${proxy.id}|">
                                             <button>
-                                                <i class="fa  fa-pencil-square-o"></i>
+                                                <i class="fa fa-pencil-square-o"></i>
                                             </button>
                                         </a>
-                                        <button th:data-proxyid="${proxy.id}"
-                                                th:data-proxyname="${proxy.name}"
-                                                th:attr="onclick='javascript:deleteProxy(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
-                                            <i class="fa  fa-trash"></i>
+                                        <button th:attr="onclick='javascript:deleteProxy(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
+                                            <i class="fa fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>
