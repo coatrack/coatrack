@@ -9,9 +9,9 @@
                 </div>
                 <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
                     <a th:href="|@{/admin/proxies/}${proxy.id}|"
-                       class="btn btn-primary glyphicon glyphicon-refresh"/>
+                       class="btn btn-primary glyphicon glyphicon-refresh"></a>
                     <a th:href="@{'/admin/proxies/'}" th:text="#{admin.proxies.button.back}"
-                       class="btn btn-primary"/>
+                       class="btn btn-primary"></a>
                 </div>
             </div>
             <div class="row">
@@ -22,7 +22,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div class="x_content">
-                            <a th:href="|${proxy.id}@{/formUpdate}|"><i class="fa  fa-pencil-square-o"/></a>
+                            <a th:href="|${proxy.id}@{/formUpdate}|"><i class="fa  fa-pencil-square-o"></i></a>
 
                             <table class="table">
                                 <tr>
@@ -51,7 +51,7 @@
                                         <span th:each="service : ${proxy.serviceApis}">
                                             <span th:text="${service.name} + ' (' + ${service.uriIdentifier}"></span>
                                             <i class="fa fa-long-arrow-right"></i>
-                                            <span th:text="${' ' + service.localUrl + ')'}"/>
+                                            <span th:text="${' ' + service.localUrl + ')'}"></span>
                                             <br/>
                                         </span>
                                     </td>
@@ -85,25 +85,25 @@
                                 <tbody>
                                     <tr th:each="metric : ${metrics}">
                                         <td>
-                                            <div th:text="${metric.serviceApiName}"/>
+                                            <div th:text="${metric.serviceApiName}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.apiUser}"/>
+                                            <div th:text="${metric.apiUser}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.requestMethod}"/>
+                                            <div th:text="${metric.requestMethod}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.path}"/>
+                                            <div th:text="${metric.path}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.type.displayString}"/>
+                                            <div th:text="${metric.type.displayString}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.httpResponseCode}"/>
+                                            <div th:text="${metric.httpResponseCode}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.count}"/>
+                                            <div th:text="${metric.count}"></div>
                                         </td>
                                     </tr>
                                 </tbody>
