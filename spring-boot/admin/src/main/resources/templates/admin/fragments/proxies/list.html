@@ -84,11 +84,11 @@
                                                 <i class="fa  fa-pencil-square-o"></i>
                                             </button>
                                         </a>
-                                        <!--
-                                        <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
+                                        <button th:data-proxyid="${proxy.id}"
+                                                th:data-proxyname="${proxy.name}"
+                                                th:attr="onclick='javascript:deleteProxy(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
                                             <i class="fa  fa-trash"></i>
                                         </button>
-                                        -->
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(proxies)}">
@@ -103,6 +103,6 @@
         </div>
         <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
         <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
-        <div th:replace="admin/fragments/deleteItems :: deleteProxy"></div>
+        <div th:replace="admin/fragments/itemDeleter :: proxyDeleter"></div>
     </body>
 </html>

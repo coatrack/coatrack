@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<div th:fragment="deleteProxy">
+<div th:fragment="proxyDeleter">
     <div id="infoDialog" title="Info">
         <div class="x_panel">
             <div class="x_content">
@@ -17,7 +17,6 @@
     </div>
     <script>
         $(function () {
-
             $("#infoDialog").dialog({
                 width: 'auto',
                 height: "auto",
@@ -40,7 +39,7 @@
                         var header = $("meta[name='_csrf_header']").attr("content");
 
                         $.ajax({
-                            url: '/admin/proxies/' + id + '.json',
+                            url: '/admin/proxies/' + id,
                             headers: {header: token},
                             type: 'DELETE',
                             success: function (result) {
@@ -64,8 +63,8 @@
             });
         });
 
-        function deleteItem(item, name) {
-            $("#message").html("Are you sure you want to delete the <strong> Service Gateway " + name + " </strong>?")
+        function deleteProxy(item, name) {
+            $("#message").html("Are you sure you want to delete <strong>" + name + "</strong>?")
             $("#infoDialog").data('deleteItem', item).dialog("open");
         }
     </script>
