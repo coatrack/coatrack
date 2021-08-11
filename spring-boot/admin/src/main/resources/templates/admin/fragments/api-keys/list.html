@@ -219,7 +219,7 @@
                                         <td><span th:id="|@{item}${apiKey.id}@{ValidUntil}|" th:attr="validUntil=${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}" class="a-center " th:text="${apiKey.validUntil != null} ? ${#dates.format(apiKey.validUntil, 'yyyy-MM-dd')}: ''">Valid until</span></td>
                                         <td><button th:onclick="'javascript:extendValidity(' + ${apiKey.id} + ' )'"><i class="glyphicon glyphicon-calendar"></i></button></td>
                                         <td class="right">
-                                            <button th:onclick="|@{location.href='/admin/api-keys/}${apiKey.id}@{'}|" ><i class="fa fa-search-plus"/></button>
+                                            <button th:onclick="|@{location.href='/admin/api-keys/}${apiKey.id}@{'}|" ><i class="fa fa-search-plus"></i></button>
                                             <!--button th:onclick="|@{location.href='/admin/api-keys/}${apiKey.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button-->
                                             <!-- TODO re-implement the deletion button
                                             <button th:onclick="'javascript:deleteItem(' + ${apiKey.id} + ', \'' + ${apiKey.userName} + '\' )'"><i class="fa  fa-trash"/></button>

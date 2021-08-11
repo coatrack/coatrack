@@ -73,9 +73,9 @@
                                         <td th:text="${service.serviceAccessPaymentPolicy} == null ? '' : ${service.serviceAccessPaymentPolicy.displayStringShort}"></td>
                                         <td th:text="${service.description}">service description</td>
                                         <td class="right">
-                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/servicecover'}|" ><i class="fa fa-image"/></button>
-                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{'}|" ><i class="fa fa-search-plus"/></button>
-                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button>
+                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/servicecover'}|" ><i class="fa fa-image"></i></button>
+                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{'}|" ><i class="fa fa-search-plus"></i></button>
+                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"></i></button>
                                             <!-- TODO re-implement the deletion button
                                             <button th:onclick="'javascript:deleteItem(\'' + ${service.id} + '\',\'' + ${service.name} +'\' )'"><i class="fa  fa-trash"/></button>
                                             -->
