@@ -3,70 +3,6 @@
       xmlns="http://www.w3.org/1999/xhtml">
     <body>
         <div th:fragment="body">
-
-            <div id="infoDialog" title="Info">
-                <div class="x_panel">
-                    <div class="x_content">
-                        <i class="fa fa-lg fa-info-circle"></i>
-                        <span id='message'>message</span>
-                    </div>
-                </div>
-            </div>
-            <script>
-                $(function () {
-
-                    $("#infoDialog").dialog({
-                        width: 'auto',
-                        height: "auto",
-                        autoOpen: false,
-                        modal: true,
-                        show: {
-                            effect: "blind",
-                            duration: 1500
-                        },
-                        hide: {
-                            effect: "blind",
-                            duration: 1000
-                        },
-                        buttons: {
-                            "Yes": function () {
-
-                                var id = $(this).data('deleteItem');
-
-                                var token = $("meta[name='_csrf']").attr("content");
-                                var header = $("meta[name='_csrf_header']").attr("content");
-
-                                $.ajax({
-                                    url: '/admin/proxies/' + id + '.json',
-                                    headers: {header: token},
-                                    type: 'DELETE',
-                                    success: function (result) {
-                                        console.log('success:' + JSON.stringify(result));
-
-                                        console.log('remove :' + id);
-
-                                        $("#item" + id).remove();
-                                    },
-                                    error: function (result) {
-                                        console.log('error:' + JSON.stringify(result));
-                                    }
-                                });
-
-                                $(this).dialog("close");
-                            },
-                            "No": function () {
-                                $(this).dialog("close");
-                            }
-                        }
-                    });
-                });
-
-                function deleteItem(item, name) {
-                    $("#message").html("Are you sure you want to delete the <strong> Service Gateway " + name + " </strong>?")
-                    $("#infoDialog").data('deleteItem', item).dialog("open");
-                }
-            </script>
-
             <div class="page-title">
                 <div class="title_left">
                     <h3>
@@ -143,11 +79,15 @@
                                                                 class="fa fa-bar-chart"></a>
                                     </td>
                                     <td class="right">
-                                        <!-- TODO re-implement the buttons
-                                        <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|">
-                                            <i class="fa  fa-pencil-square-o"/></button>
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}|">
+                                            <button>
+                                                <i class="fa  fa-pencil-square-o"></i>
+                                            </button>
+                                        </a>
+                                        <!--
                                         <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
-                                            <i class="fa  fa-trash"/></button>
+                                            <i class="fa  fa-trash"></i>
+                                        </button>
                                         -->
                                     </td>
                                 </tr>
@@ -163,5 +103,6 @@
         </div>
         <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
         <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
+        <div th:replace="admin/fragments/deleteItems :: deleteProxy"></div>
     </body>
 </html>
