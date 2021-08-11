@@ -7,7 +7,7 @@
             <div id="infoDialog" title="Info">
                 <div class="x_panel">
                     <div class="x_content">
-                        <i class="fa fa-lg fa-info-circle"/>
+                        <i class="fa fa-lg fa-info-circle"></i>
                         <span id='message'>message</span>
                     </div>
                 </div>
@@ -85,8 +85,8 @@
 
                     <div class="x_panel">
                         <div class="x_content">
-                            <i class="fa fa-lg fa-info-circle"/>
-                            <span th:text="#{admin.proxies.page.explanation}"/>
+                            <i class="fa fa-lg fa-info-circle"></i>
+                            <span th:text="#{admin.proxies.page.explanation}"></span>
                         </div>
                     </div>
 
@@ -128,19 +128,19 @@
                                     <td th:text=" ${proxy.port}">proxy port</td>
                                     <td>
                                         <span th:each="service : ${proxy.serviceApis}">
-                                            <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"/>
+                                            <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"></span>
                                             <i class="fa fa-long-arrow-right"></i>
-                                            <span th:text="${' ' + service.localUrl + ')'}"/>
+                                            <span th:text="${' ' + service.localUrl + ')'}"></span>
                                             <br/>
                                         </span>
                                     </td>
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
                                         <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
-                                           class="glyphicon glyphicon-download-alt"/>
+                                           class="glyphicon glyphicon-download-alt"></a>
                                     </td>
                                     <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
-                                                                class="fa fa-bar-chart"/>
+                                                                class="fa fa-bar-chart"></a>
                                     </td>
                                     <td class="right">
                                         <!-- TODO re-implement the buttons
