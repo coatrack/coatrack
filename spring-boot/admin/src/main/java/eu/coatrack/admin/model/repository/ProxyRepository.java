@@ -44,7 +44,7 @@ public interface ProxyRepository extends PagingAndSortingRepository<Proxy, Strin
     @PostFilter("filterObject.owner != null and filterObject.owner.username == authentication.name")
     List<Proxy> findByName(@Param("name") String name);
 
-    @PostAuthorize("returnObject.get().owner.username == authentication.principal")
+    @PostAuthorize("returnObject.get().owner.username == authentication.principal or #id == authentication.principal")
     Optional<Proxy> findById(@Param("id") String id);
 
     @PostFilter("filterObject.owner != null and filterObject.owner.username == authentication.name")
