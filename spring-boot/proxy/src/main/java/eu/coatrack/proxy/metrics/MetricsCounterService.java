@@ -59,8 +59,10 @@ public class MetricsCounterService {
     private String serviceApiName;
     private String path;
     private String apiKeyValue;
-    private String metricType;
-    private String httpResponseCode;
+    private MetricType metricType;
+    private Integer httpResponseCode;
+    private Matcher matcher;
+    private HttpServletRequest request;
 
     @Autowired
     private MetricsTransmitter metricsTransmitter;
@@ -70,19 +72,7 @@ public class MetricsCounterService {
     }
 
     public void increment(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
-        log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
-                metricType,
-                request.getRequestURI(),
-                apiKeyValue
-        ));
-        this.apiKeyValue = apiKeyValue;
-        this.metricType = metricType.toString();
-        this.httpResponseCode = String.valueOf(httpResponseCode);
-        requestMethod = request.getMethod();
-        serviceApiName = null;
-        path = null;
-
-        Matcher matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
+        init(request, apiKeyValue, metricType, httpResponseCode);
 
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
@@ -110,6 +100,11 @@ public class MetricsCounterService {
         }
         counter.increment();
 
+        Metric metricToTransmit = createMetricToTransmit(counter);
+        metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
+    }
+
+    private Metric createMetricToTransmit(Counter counter) {
         Metric metricToTransmit = new Metric();
         metricToTransmit.setCount((int) counter.count());
         metricToTransmit.setMetricsCounterSessionID(request.getRequestedSessionId());
@@ -123,8 +118,23 @@ public class MetricsCounterService {
         metricToTransmit.setApiKey(tempApiKey);
 
         metricToTransmit.setRequestMethod(requestMethod);
-        //metricToTransmit.setProxy(apiKey);
-        metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
+        return metricToTransmit;
+    }
+
+    private void init(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
+        log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
+                metricType,
+                request.getRequestURI(),
+                apiKeyValue
+        ));
+        this.apiKeyValue = apiKeyValue;
+        this.metricType = metricType;
+        this.httpResponseCode = httpResponseCode;
+        this.request = request;
+        requestMethod = request.getMethod();
+        serviceApiName = null;
+        path = null;
+        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
     }
 
     private String createCounterId() {
