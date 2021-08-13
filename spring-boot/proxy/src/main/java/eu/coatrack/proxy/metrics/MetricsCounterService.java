@@ -21,7 +21,6 @@ package eu.coatrack.proxy.metrics;
  */
 
 import eu.coatrack.api.Metric;
-import eu.coatrack.api.MetricType;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.StringJoiner;
@@ -58,21 +56,20 @@ public class MetricsCounterService {
     private String requestMethod;
     private String serviceApiName;
     private String path;
-    private String apiKeyValue;
-    private MetricType metricType;
-    private Integer httpResponseCode;
     private Matcher matcher;
-    private HttpServletRequest request;
 
     @Autowired
     private MetricsTransmitter metricsTransmitter;
+
+    private MetricsHolder mh;
 
     public MetricsCounterService(MeterRegistry meterRegistry) {
         this.meterRegistry = meterRegistry;
     }
 
-    public void increment(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
-        init(request, apiKeyValue, metricType, httpResponseCode);
+    public void increment(MetricsHolder mh) {
+        this.mh = mh;
+        initializeInstanceVariables();
 
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
@@ -89,7 +86,7 @@ public class MetricsCounterService {
                 path = path.substring(0, path.length()-1);
             }
         } else {
-            log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
+            log.warn("matcher {} did not match servlet path {}", matcher, mh.getRequest().getServletPath());
         }
 
         String counterId = createCounterId();
@@ -107,34 +104,30 @@ public class MetricsCounterService {
     private Metric createMetricToTransmit(Counter counter) {
         Metric metricToTransmit = new Metric();
         metricToTransmit.setCount((int) counter.count());
-        metricToTransmit.setMetricsCounterSessionID(request.getRequestedSessionId());
-        metricToTransmit.setHttpResponseCode(httpResponseCode);
-        metricToTransmit.setType(metricType);
+        metricToTransmit.setMetricsCounterSessionID(mh.getRequest().getRequestedSessionId());
+        metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
+        metricToTransmit.setType(mh.getMetricType());
         metricToTransmit.setDateOfApiCall(new Date());
         metricToTransmit.setPath(path);
 
         ApiKey tempApiKey = new ApiKey();
-        tempApiKey.setKeyValue(apiKeyValue);
+        tempApiKey.setKeyValue(mh.getApiKeyValue());
         metricToTransmit.setApiKey(tempApiKey);
 
         metricToTransmit.setRequestMethod(requestMethod);
         return metricToTransmit;
     }
 
-    private void init(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
+    private void initializeInstanceVariables() {
         log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
-                metricType,
-                request.getRequestURI(),
-                apiKeyValue
+                mh.getMetricType(),
+                mh.getRequest().getRequestURI(),
+                mh.getApiKeyValue()
         ));
-        this.apiKeyValue = apiKeyValue;
-        this.metricType = metricType;
-        this.httpResponseCode = httpResponseCode;
-        this.request = request;
-        requestMethod = request.getMethod();
+        requestMethod = mh.getRequest().getMethod();
         serviceApiName = null;
         path = null;
-        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
+        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(mh.getRequest().getServletPath());
     }
 
     private String createCounterId() {
@@ -142,9 +135,9 @@ public class MetricsCounterService {
         stringJoiner.add(PREFIX)
                 .add(serviceApiName)
                 .add(requestMethod)
-                .add(apiKeyValue)
-                .add(metricType.toString())
-                .add(String.valueOf(httpResponseCode))
+                .add(mh.getApiKeyValue())
+                .add(mh.getMetricType().toString())
+                .add(String.valueOf(mh.getHttpResponseCode()))
                 .add(LocalDate.now().toString())
                 .add(path);
         return stringJoiner.toString();
