@@ -55,6 +55,13 @@ public class MetricsCounterService {
     private static final String counterSessionID = UUID.randomUUID().toString();
     private final MeterRegistry meterRegistry;
 
+    private String requestMethod;
+    private String serviceApiName;
+    private String path;
+    private String apiKeyValue;
+    private String metricType;
+    private String httpResponseCode;
+
     @Autowired
     private MetricsTransmitter metricsTransmitter;
 
@@ -68,11 +75,12 @@ public class MetricsCounterService {
                 request.getRequestURI(),
                 apiKeyValue
         ));
-
-        String requestMethod = request.getMethod();
-
-        String serviceApiName = null;
-        String path = null;
+        this.apiKeyValue = apiKeyValue;
+        this.metricType = metricType.toString();
+        this.httpResponseCode = String.valueOf(httpResponseCode);
+        requestMethod = request.getMethod();
+        serviceApiName = null;
+        path = null;
 
         Matcher matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
 
@@ -94,16 +102,7 @@ public class MetricsCounterService {
             log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
         }
 
-        StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
-        stringJoiner.add(PREFIX)
-                .add(serviceApiName)
-                .add(requestMethod)
-                .add(apiKeyValue)
-                .add(metricType.toString())
-                .add(String.valueOf(httpResponseCode))
-                .add(LocalDate.now().toString())
-                .add(path);
-        String counterId = stringJoiner.toString();
+        String counterId = createCounterId();
 
         Counter counter = meterRegistry.find(counterId).counter();
         if (counter == null){
@@ -126,5 +125,18 @@ public class MetricsCounterService {
         metricToTransmit.setRequestMethod(requestMethod);
         //metricToTransmit.setProxy(apiKey);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
+    }
+
+    private String createCounterId() {
+        StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
+        stringJoiner.add(PREFIX)
+                .add(serviceApiName)
+                .add(requestMethod)
+                .add(apiKeyValue)
+                .add(metricType.toString())
+                .add(String.valueOf(httpResponseCode))
+                .add(LocalDate.now().toString())
+                .add(path);
+        return stringJoiner.toString();
     }
 }
