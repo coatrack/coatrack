@@ -20,7 +20,7 @@ package eu.coatrack.admin.security;
  * #L%
  */
 
-import eu.coatrack.admin.model.repository.ProxyRepositoryForProxyAuth;
+import eu.coatrack.admin.model.repository.UnsecuredProxyRepository;
 import eu.coatrack.api.Proxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,7 +51,7 @@ public class GatewayAuthProvider implements AuthenticationProvider {
     private static final String YGG_GATEWAY_ROLE_NAME = "ROLE_YGG_GATEWAY";
 
     @Autowired
-    private ProxyRepositoryForProxyAuth proxyRepositoryForProxyAuth;
+    private UnsecuredProxyRepository unsecuredProxyRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -89,7 +89,7 @@ public class GatewayAuthProvider implements AuthenticationProvider {
             log.debug("checking gateway's APIKEY (UUID) value {}", gatewayUUID);
 
             // search proxy with given api key value, which is equivalent to the proxy's UUID
-            Proxy proxy = proxyRepositoryForProxyAuth.findById(gatewayUUID).orElse(null);
+            Proxy proxy = unsecuredProxyRepository.findById(gatewayUUID).orElse(null);
 
             if (proxy != null) {
                 log.debug("Proxy was found by gateway api key verifier: " + proxy);

@@ -32,8 +32,13 @@ import org.springframework.security.access.prepost.PostFilter;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * These unsecured methods are only to be used within an authenticate() method. The lack of
+ * method security prevents StackOverflow exceptions when these methods are called within authenticate().
+ * @author Christoph Baier
+ */
 @RepositoryRestResource(collectionResourceRel = "proxies", path = "proxies")
-public interface ProxyRepositoryForProxyAuth extends PagingAndSortingRepository<Proxy, String> {
+public interface UnsecuredProxyRepository extends PagingAndSortingRepository<Proxy, String> {
 
     Optional<Proxy> findById(@Param("id") String id);
 
