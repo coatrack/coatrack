@@ -32,6 +32,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.StringJoiner;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -93,25 +94,16 @@ public class MetricsCounterService {
             log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
         }
 
-        LocalDate today = LocalDate.now();
-
-        String counterId = new StringBuilder()
-                .append(PREFIX) // [0]
-                .append(SEPARATOR)
-                .append(serviceApiName) // [1]
-                .append(SEPARATOR)
-                .append(requestMethod) // [2]
-                .append(SEPARATOR)
-                .append(apiKeyValue) // [3]
-                .append(SEPARATOR)
-                .append(metricType) // [4]
-                .append(SEPARATOR)
-                .append(httpResponseCode) // [5]
-                .append(SEPARATOR)
-                .append(today) // [6]
-                .append(SEPARATOR)
-                .append(path) // [7]
-                .toString();
+        StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
+        stringJoiner.add(PREFIX)
+                .add(serviceApiName)
+                .add(requestMethod)
+                .add(apiKeyValue)
+                .add(metricType.toString())
+                .add(String.valueOf(httpResponseCode))
+                .add(LocalDate.now().toString())
+                .add(path);
+        String counterId = stringJoiner.toString();
 
         Counter counter = meterRegistry.find(counterId).counter();
         if (counter == null){
@@ -125,7 +117,7 @@ public class MetricsCounterService {
         metricToTransmit.setHttpResponseCode(httpResponseCode);
         metricToTransmit.setType(metricType);
         metricToTransmit.setDateOfApiCall(new Date());
-        metricToTransmit.setPath("/");
+        metricToTransmit.setPath(path);
 
         ApiKey tempApiKey = new ApiKey();
         tempApiKey.setKeyValue(apiKeyValue);
