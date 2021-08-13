@@ -22,19 +22,15 @@ package eu.coatrack.proxy.metrics;
 
 import eu.coatrack.api.Metric;
 import eu.coatrack.proxy.security.UrlResourcesProvider;
-import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * Transmitter receives metric value updates from the buffer and transmits them to CoatRack admin
@@ -45,21 +41,13 @@ import java.net.URI;
 @Service
 public class MetricsTransmitter{
 
-    private static Logger log = LoggerFactory.getLogger(MetricsTransmitter.class);
+    private static final Logger log = LoggerFactory.getLogger(MetricsTransmitter.class);
 
     @Autowired
     private RestTemplate restTemplate;
 
-    private final HttpHeaders httpHeadersForPuttingRelationships;
-
-    @Autowired
-    private MetricsCounterService metricsCounterService;
-
     @Autowired
     private UrlResourcesProvider urlResourcesProvider;
-
-    @Value("${custom-metrics.prefix.counter}")
-    private String prefixForCustomCounterMetrics;
 
     @Value("${proxy-id}")
     private String myProxyID;
@@ -70,38 +58,26 @@ public class MetricsTransmitter{
     @Value("${ygg.admin.resources.metricsTransmission}")
     private String adminEndpointForMetricsTransmission;
 
-    @Value("${ygg.admin.resources.proxies}")
-    private String adminEndpointToGetProxies;
-
-    @Value("${ygg.admin.resources.api-keys}")
-    private String adminEndpointToGetApiKeys;
-
-    @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
-    private String adminResourceToSearchForApiKeys;
-
     public MetricsTransmitter() {
         super();
-
-        // init headers for relationship put operations
-        httpHeadersForPuttingRelationships = new HttpHeaders();
-        httpHeadersForPuttingRelationships.add("Content-Type", "text/uri-list");
     }
 
-    public void transmitToYggAdmin(Metric metricToTransmit) {
+    public void transmitToCoatRackAdmin(Metric metricToTransmit) {
         try {
-            URI uriToTransmitMetric = new URI(
-                    urlResourcesProvider.attachGatewayIdToUrl(
-                            adminBaseUrl +
-                                    adminEndpointForMetricsTransmission +
-                                    "?proxyId=" + myProxyID +
-                                    "&apiKeyValue=" + metricToTransmit.getApiKey().getKeyValue()));
-
-            log.debug("uri to transmit metric: {}", uriToTransmitMetric.toString());
+            URI uriToTransmitMetric = createUriToTransmitMetric(metricToTransmit);
+            log.debug("uri to transmit metric: {}", uriToTransmitMetric);
             Object idOfTransmittedMetric = restTemplate.postForObject(uriToTransmitMetric, metricToTransmit, Long.class);
-            log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit.toString(), idOfTransmittedMetric);
-
+            log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit, idOfTransmittedMetric);
         } catch (Exception e) {
             log.error("Exception when communicating with CoatRack admin server", e);
         }
+    }
+
+    private URI createUriToTransmitMetric(Metric metricToTransmit) throws URISyntaxException {
+        return new URI(urlResourcesProvider.attachGatewayIdToUrl(
+                adminBaseUrl +
+                adminEndpointForMetricsTransmission +
+                "?proxyId=" + myProxyID +
+                "&apiKeyValue=" + metricToTransmit.getApiKey().getKeyValue()));
     }
 }
