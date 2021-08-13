@@ -57,6 +57,7 @@ public class MetricsCounterService {
     private String serviceApiName;
     private String path;
     private Matcher matcher;
+    private Counter counter;
 
     @Autowired
     private MetricsTransmitter metricsTransmitter;
@@ -69,39 +70,73 @@ public class MetricsCounterService {
 
     public void increment(MetricsHolder mh) {
         this.mh = mh;
-        initializeInstanceVariables();
+        initializeFields();
+        adaptFields();
+        incrementCounter();
+        Metric metricToTransmit = createMetricToTransmit();
+        metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
+    }
 
+    private void initializeFields() {
+        log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
+                mh.getMetricType(),
+                mh.getRequest().getRequestURI(),
+                mh.getApiKeyValue()
+        ));
+        requestMethod = mh.getRequest().getMethod();
+        serviceApiName = null;
+        path = null;
+        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(mh.getRequest().getServletPath());
+    }
+
+    private void adaptFields() {
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
             serviceApiName = matcher.group(MATCHER_GROUP_INDEX_OF_SERVICE_API_ID);
-            // rest of the servlet path is the actual path that is called on the proxied service
-            path = matcher.group(MATCHER_GROUP_INDEX_OF_PATH);
-            log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'",
-                    matcher.group(0), serviceApiName, path);
-            if (path == null) {
-                // if api consumer did not specifc path, set as "/"
-                path = "/";
-            } else if (path.endsWith("/") && !path.equals("/")) {
-                // remove trailing "/" as this is the same path from metrics point of view
-                path = path.substring(0, path.length()-1);
-            }
+            adaptPath();
         } else {
             log.warn("matcher {} did not match servlet path {}", matcher, mh.getRequest().getServletPath());
         }
+    }
 
+    private void adaptPath() {
+        // rest of the servlet path is the actual path that is called on the proxied service
+        path = matcher.group(MATCHER_GROUP_INDEX_OF_PATH);
+        log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'",
+                matcher.group(0), serviceApiName, path);
+        if (path == null) {
+            // if api consumer did not specifc path, set as "/"
+            path = "/";
+        } else if (path.endsWith("/") && !path.equals("/")) {
+            // remove trailing "/" as this is the same path from metrics point of view
+            path = path.substring(0, path.length()-1);
+        }
+    }
+
+    private void incrementCounter() {
         String counterId = createCounterId();
 
-        Counter counter = meterRegistry.find(counterId).counter();
+        counter = meterRegistry.find(counterId).counter();
         if (counter == null){
             counter = meterRegistry.counter(counterId);
         }
         counter.increment();
-
-        Metric metricToTransmit = createMetricToTransmit(counter);
-        metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
     }
 
-    private Metric createMetricToTransmit(Counter counter) {
+    private String createCounterId() {
+        StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
+        stringJoiner.add(PREFIX)
+                .add(serviceApiName)
+                .add(requestMethod)
+                .add(mh.getApiKeyValue())
+                .add(mh.getMetricType().toString())
+                .add(String.valueOf(mh.getHttpResponseCode()))
+                .add(LocalDate.now().toString())
+                .add(path);
+        return stringJoiner.toString();
+    }
+
+    private Metric createMetricToTransmit() {
         Metric metricToTransmit = new Metric();
         metricToTransmit.setCount((int) counter.count());
         metricToTransmit.setMetricsCounterSessionID(mh.getRequest().getRequestedSessionId());
@@ -116,30 +151,5 @@ public class MetricsCounterService {
 
         metricToTransmit.setRequestMethod(requestMethod);
         return metricToTransmit;
-    }
-
-    private void initializeInstanceVariables() {
-        log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
-                mh.getMetricType(),
-                mh.getRequest().getRequestURI(),
-                mh.getApiKeyValue()
-        ));
-        requestMethod = mh.getRequest().getMethod();
-        serviceApiName = null;
-        path = null;
-        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(mh.getRequest().getServletPath());
-    }
-
-    private String createCounterId() {
-        StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
-        stringJoiner.add(PREFIX)
-                .add(serviceApiName)
-                .add(requestMethod)
-                .add(mh.getApiKeyValue())
-                .add(mh.getMetricType().toString())
-                .add(String.valueOf(mh.getHttpResponseCode()))
-                .add(LocalDate.now().toString())
-                .add(path);
-        return stringJoiner.toString();
     }
 }
