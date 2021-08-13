@@ -81,24 +81,6 @@ public class GatewayApplication {
     }
 
     @Bean
-    public MetricsCounterService metricsCounterService() {
-        return new MetricsCounterService();
-    }
-
-    /* TODO to be replaced by the new Micrometer implementation
-    @Bean
-    public MetricsTransmitter metricsTransmitter() {
-        return new MetricsTransmitter();
-    }
-
-    @Bean
-    @Autowired
-    public MetricCopyExporter metricCopyExporter(BufferMetricReader metricReader, MetricsTransmitter metricsTransmitter) {
-        return new MetricCopyExporter(metricReader, metricsTransmitter);
-    }
-    */
-
-    @Bean
     public ApiKeyAuthFilter apiKeyAuthFilter() {
         return new ApiKeyAuthFilter();
     }

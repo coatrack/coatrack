@@ -9,9 +9,9 @@ package eu.coatrack.proxy.metrics;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,34 +22,29 @@ package eu.coatrack.proxy.metrics;
 
 import eu.coatrack.api.Metric;
 import eu.coatrack.api.MetricType;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import eu.coatrack.api.ApiKey;
 
-//TODO to be adapted to the new Micrometer implementation
+@Service
 public class MetricsCounterService {
 
-    //dummy method
-    public void increment(HttpServletRequest request, String apiKeyValue, MetricType emptyResponse, Integer httpResponseCode) {
-    }
-    
-    /*
     private static final Logger log = LoggerFactory.getLogger(MetricsCounterService.class);
-
-    @Qualifier("counterService")
-    @Autowired
-    private CounterService counterService;
 
     private static final String PREFIX = "CUSTOM-METRICS";
     private static final String SEPARATOR = "___";
@@ -60,12 +55,20 @@ public class MetricsCounterService {
 
     // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
     private static final String counterSessionID = UUID.randomUUID().toString();
+    private final MeterRegistry meterRegistry;
 
-    public void increment(HttpServletRequest request, String apiKey, MetricType metricType, Integer httpResponseCode) {
+    @Autowired
+    private MetricsTransmitter metricsTransmitter;
+
+    public MetricsCounterService(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+    }
+
+    public void increment(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
         log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
                 metricType,
                 request.getRequestURI(),
-                apiKey
+                apiKeyValue
         ));
 
         String requestMethod = request.getMethod();
@@ -95,14 +98,14 @@ public class MetricsCounterService {
 
         LocalDate today = LocalDate.now();
 
-        counterService.increment(new StringBuilder()
+        String counterId = new StringBuilder()
                 .append(PREFIX) // [0]
                 .append(SEPARATOR)
                 .append(serviceApiName) // [1]
                 .append(SEPARATOR)
                 .append(requestMethod) // [2]
                 .append(SEPARATOR)
-                .append(apiKey) // [3]
+                .append(apiKeyValue) // [3]
                 .append(SEPARATOR)
                 .append(metricType) // [4]
                 .append(SEPARATOR)
@@ -111,47 +114,28 @@ public class MetricsCounterService {
                 .append(today) // [6]
                 .append(SEPARATOR)
                 .append(path) // [7]
-                .toString());
-    }
+                .toString();
 
-    public Metric filterAndTransformMetric(org.springframework.boot.actuate.metrics.Metric inputMetric) {
-
-        String[] elements = inputMetric.getName().split(SEPARATOR);
-        Assert.noNullElements(elements);
-
-        // check if this is a custom metric
-        if (elements[0].equals("counter." + PREFIX)) {
-            log.debug("Metrics for transmission: " + inputMetric.getName());
-
-            Metric outputMetric = new Metric();
-            outputMetric.setRequestMethod(elements[2]);
-            outputMetric.setCount(inputMetric.getValue().intValue());
-            outputMetric.setMetricsCounterSessionID(counterSessionID);
-            outputMetric.setType(MetricType.valueOf(elements[4]));
-
-            // add a tmp api key object with just the key value, will later be mapped to entity on CoatRack admin side
-            ApiKey tmpApiKey = new ApiKey();
-            tmpApiKey.setKeyValue(elements[3]);
-            outputMetric.setApiKey(tmpApiKey);
-
-            String httpStatusString = elements[5];
-            Integer httpStatus = httpStatusString.equals("null") ? null : new Integer(httpStatusString);
-            outputMetric.setHttpResponseCode(httpStatus);
-
-            String dateString = elements[6];
-            log.debug("date string is: {}", dateString);
-            LocalDate dateOfApiUsage = LocalDate.parse(dateString);
-            log.debug("date of api usage parsed: {}", dateOfApiUsage);
-            outputMetric.setDateOfApiCall(Date.valueOf(dateOfApiUsage));
-
-            outputMetric.setPath(elements[7]);
-
-            return outputMetric;
-        } else {
-            // generic spring metric - not to be transmitted for now
-            log.debug("Metrics not relevant for transmission: " + inputMetric);
-            return null;
+        Counter counter = meterRegistry.find(counterId).counter();
+        if (counter == null){
+            counter = meterRegistry.counter(counterId);
         }
+        counter.increment();
+
+        Metric metricToTransmit = new Metric();
+        metricToTransmit.setCount((int) counter.count());
+        metricToTransmit.setMetricsCounterSessionID(request.getRequestedSessionId());
+        metricToTransmit.setHttpResponseCode(httpResponseCode);
+        metricToTransmit.setType(metricType);
+        metricToTransmit.setDateOfApiCall(new Date());
+        metricToTransmit.setPath("/");
+
+        ApiKey tempApiKey = new ApiKey();
+        tempApiKey.setKeyValue(apiKeyValue);
+        metricToTransmit.setApiKey(tempApiKey);
+
+        metricToTransmit.setRequestMethod(requestMethod);
+        //metricToTransmit.setProxy(apiKey);
+        metricsTransmitter.transmitToYggAdmin(metricToTransmit);
     }
-    */
 }

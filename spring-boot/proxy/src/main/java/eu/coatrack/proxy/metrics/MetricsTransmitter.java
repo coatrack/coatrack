@@ -9,9 +9,9 @@ package eu.coatrack.proxy.metrics;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,7 @@ package eu.coatrack.proxy.metrics;
  * #L%
  */
 
+import eu.coatrack.api.Metric;
 import eu.coatrack.proxy.security.UrlResourcesProvider;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -40,9 +42,8 @@ import java.net.URI;
  * @author gr-hovest@atb-bremen.de
  */
 
-//TODO to be adapted to the new Micrometer implementation
-/*
-public class MetricsTransmitter implements GaugeWriter {
+@Service
+public class MetricsTransmitter{
 
     private static Logger log = LoggerFactory.getLogger(MetricsTransmitter.class);
 
@@ -86,17 +87,7 @@ public class MetricsTransmitter implements GaugeWriter {
         httpHeadersForPuttingRelationships.add("Content-Type", "text/uri-list");
     }
 
-    @Override
-    public void set(Metric<?> metric) {
-
-        // filter relevant metrics and transform them into YGG format
-        eu.coatrack.api.Metric metricToTransmit = metricsCounterService.filterAndTransformMetric(metric);
-
-        // if metric is null, it is irrelevant for transmission
-        if (metricToTransmit != null) transmitToYggAdmin(metricToTransmit);
-    }
-
-    private void transmitToYggAdmin(eu.coatrack.api.Metric metricToTransmit) {
+    public void transmitToYggAdmin(Metric metricToTransmit) {
         try {
             URI uriToTransmitMetric = new URI(
                     urlResourcesProvider.attachGatewayIdToUrl(
@@ -113,37 +104,4 @@ public class MetricsTransmitter implements GaugeWriter {
             log.error("Exception when communicating with CoatRack admin server", e);
         }
     }
-
-    private void addRelationshipFromMetricToOtherEntity(URI uriOfTransmittedMetric, String urlOfOtherEntity, String relationshipAttributeName) {
-        log.debug("call to create relationship from {} to {} {}", uriOfTransmittedMetric, relationshipAttributeName, urlOfOtherEntity);
-        // create Http Entity object for the related Entity
-        HttpEntity<String> relatedEntity
-                = new HttpEntity<>(urlOfOtherEntity, httpHeadersForPuttingRelationships);
-
-        // pass relationship to CoatRack admin api
-        ResponseEntity<String> relationshipPutResponse = restTemplate.exchange(uriOfTransmittedMetric + "/" + relationshipAttributeName,
-                HttpMethod.PUT, relatedEntity, String.class);
-        log.info(String.format("created relationship from transmitted metric %s to %s entity (url=%s), result was: %s",
-                uriOfTransmittedMetric, relationshipAttributeName, urlOfOtherEntity, relationshipPutResponse.getStatusCode()));
-    }
-
-    private ApiKey getApiKeyEntityForApiKeyStringValue(String apiKeyValue) {
-        ApiKey apiKey = null;
-        try {
-            String apiKeySearchUrl = adminBaseUrl + adminResourceToSearchForApiKeys + apiKeyValue;
-            log.debug("searchingForApiKey via {}", apiKeySearchUrl);
-            ResponseEntity<ApiKey> resultOfApiKeySearch = restTemplate.getForEntity(apiKeySearchUrl, ApiKey.class);
-
-            if (resultOfApiKeySearch != null && resultOfApiKeySearch.getBody() != null) {
-                apiKey = resultOfApiKeySearch.getBody();
-                log.debug("API key was found by CoatRack admin: " + apiKey.toString());
-            } else {
-                log.error("Communication with CoatRack admin server failed, result is: " + resultOfApiKeySearch);
-            }
-        } catch (Exception e) {
-            log.error("Exception when trying to get API consumer name from CoatRack admin", e);
-        }
-        return apiKey;
-    }
 }
-*/
