@@ -27,22 +27,20 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Metric;
 import eu.coatrack.api.MetricType;
 import eu.coatrack.api.Proxy;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest(showSql = true)
 @ContextConfiguration(classes = SpringSecurityTestConfig.class)
 public class MetricsControllerTest {
@@ -64,7 +62,7 @@ public class MetricsControllerTest {
     private Proxy someProxyFromDB;
     private ApiKey someApiKeyFromDB;
 
-    @Before
+    @BeforeEach
     public void prepareTestData() {
 
         someProxyFromDB = proxyRepository.findAll().iterator().next();

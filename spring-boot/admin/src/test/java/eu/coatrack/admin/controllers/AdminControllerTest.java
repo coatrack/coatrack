@@ -25,9 +25,8 @@ import eu.coatrack.admin.model.repository.MetricRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -37,7 +36,6 @@ import java.util.Date;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest(showSql = true)
 @ContextConfiguration(classes = SpringSecurityTestConfig.class)
 public class AdminControllerTest {
@@ -62,7 +60,7 @@ public class AdminControllerTest {
     private Proxy someProxyFromDB;
     private ApiKey someApiKeyFromDB;
 
-    @Before
+    @BeforeEach
     public void prepareTestData() {
 
         someProxyFromDB = proxyRepository.findAll().iterator().next();

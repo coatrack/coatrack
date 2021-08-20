@@ -24,23 +24,20 @@ import eu.coatrack.admin.model.vo.MetricsAggregation;
 import eu.coatrack.admin.model.vo.StatisticsPerApiUser;
 import eu.coatrack.admin.model.vo.StatisticsPerDay;
 import eu.coatrack.admin.model.vo.StatisticsPerHttpStatusCode;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author perezdf
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class MetricsAggregationCustomRepositoryTest {
 
