@@ -116,7 +116,7 @@ public class LocalApiKeyManager {
             updateApiKeyList(fetchedApiKeyList);
             updateGatewayMode(GatewayMode.ONLINE);
         } catch (Exception e) {
-            log.error("API key list fetching process failed: " + e);
+            log.error("API key list fetching process failed: ", e);
             updateGatewayMode(GatewayMode.OFFLINE);
         }
     }

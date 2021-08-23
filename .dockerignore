@@ -6,3 +6,4 @@
 # see https://github.com/moby/moby/issues/30018
 !spring-boot/admin/target/*.jar
 !spring-boot/proxy/target/*.jar
+!spring-boot/config-server/target/*.jar

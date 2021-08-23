@@ -45,6 +45,7 @@ release(s) generated in the next 9 months after the next planned release:
 -   Add scripts and instructions to facilitate deployment of independent new CoatRack instances, 
     including their own configuration server
 -   Additional visualisations on statistics dashboard (e.g. number of calls per service, distribution of errors over time)
+-   Investigate/test compatibility with FIWARE IdM/Keyrock
 -   Based on the existing integration from IoF2020, investigate specific requirements to further facilitate usage of 
     CoatRack in combination with FIWARE BAE and FIWARE Context Broker (e.g. facilitate deployment and configuration to work 
     in front of Context Broker)

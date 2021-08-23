@@ -145,8 +145,6 @@
                                     </td>
                                     <td th:text="${proxy.timeOfLastSuccessfulCallToAdmin != null ? #dates.format(new java.util.Date(proxy?.timeOfLastSuccessfulCallToAdmin)) : #{admin.dashboard.gatewayhealthmonitor.notconnectedgateway}}"></td>
                                     <td class="right">
-                                        <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{'}|"><i
-                                                class="fa fa-search-plus"/></button>
                                         <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|">
                                             <i class="fa  fa-pencil-square-o"/></button>
                                         <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
