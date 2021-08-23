@@ -21,9 +21,8 @@ package eu.coatrack.proxy.security.exceptions;
  */
 
 /**
- * Is thrown, when the local API key list shall be used but has not been initialized. The gateway
- * never received a list of API Keys from CoatRack admin before and can therefore not
- * be used for that purpose.
+ * Is thrown, when the local API key list shall be used but has not been initialized. The gateway never received a list
+ * of API Keys from CoatRack admin before and can therefore not be used for that purpose.
  */
 public class LocalApiKeyListWasNotInitializedException extends RuntimeException {
     public LocalApiKeyListWasNotInitializedException(String msg) {

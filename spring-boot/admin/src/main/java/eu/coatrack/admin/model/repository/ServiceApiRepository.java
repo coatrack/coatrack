@@ -61,11 +61,13 @@ public interface ServiceApiRepository extends PagingAndSortingRepository<Service
     @Query("select s from ServiceApi s where s.owner.username = :username")
     public List<ServiceApi> findByOwnerUsername(@Param(value = "username") String username);
 
-    public List<ServiceApi> findByServiceAccessPermissionPolicyAndDeletedWhenIsNull(ServiceAccessPermissionPolicy accessPolicy);
+    public List<ServiceApi> findByServiceAccessPermissionPolicyAndDeletedWhenIsNull(
+            ServiceAccessPermissionPolicy accessPolicy);
 
     @Query("SELECT serviceApi FROM ApiKey apiKey INNER JOIN apiKey.serviceApi serviceApi WHERE apiKey IN :apiKeyList")
     public List<ServiceApi> findByApiKeyList(@Param("apiKeyList") List<ApiKey> apiKeyList);
 
     @Query("SELECT s FROM ServiceApi s WHERE s.uriIdentifier = :uriIdentifier AND s.owner.username = :serviceOwner")
-    public ServiceApi findServiceApiByServiceOwnerAndUriIdentifier(@Param("serviceOwner") String serviceOwner, @Param("uriIdentifier") String uriIdentifier);
+    public ServiceApi findServiceApiByServiceOwnerAndUriIdentifier(@Param("serviceOwner") String serviceOwner,
+            @Param("uriIdentifier") String uriIdentifier);
 }

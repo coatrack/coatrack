@@ -101,7 +101,8 @@ public class AdminControllerTest {
     public void test() {
 
         ServiceApi randomServiceApiFromDB = serviceApiRepository.findAll().iterator().next();
-        reportController.calculateApiUsageReportForSpecificService(randomServiceApiFromDB, -1L, new Date(), new Date(), false);
+        reportController.calculateApiUsageReportForSpecificService(randomServiceApiFromDB, -1L, new Date(), new Date(),
+                false);
     }
 
 }

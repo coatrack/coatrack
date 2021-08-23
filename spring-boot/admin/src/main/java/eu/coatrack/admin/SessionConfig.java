@@ -27,5 +27,5 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 @Configuration
 @EnableJdbcHttpSession
 public class SessionConfig extends AbstractHttpSessionApplicationInitializer {
-    
+
 }

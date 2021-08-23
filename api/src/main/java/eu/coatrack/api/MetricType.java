@@ -28,8 +28,7 @@ package eu.coatrack.api;
 public enum MetricType {
 
     FORBIDDEN_REQUEST("Requests that have not been authorized"),
-    AUTHORIZED_REQUEST("Authorized requests forwarded to service API"),
-    RESPONSE("Responses from service API"),
+    AUTHORIZED_REQUEST("Authorized requests forwarded to service API"), RESPONSE("Responses from service API"),
     EMPTY_RESPONSE("Empty or no responses from service API");
 
     private final String displayString;

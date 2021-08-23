@@ -34,7 +34,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends LocalApiKeyManager_AbstractTestSetupProvider {
+public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest
+        extends LocalApiKeyManager_AbstractTestSetupProvider {
 
     @BeforeEach
     public void fillLocalApiKeyListWithListContainingValidApiKey() throws ApiKeyFetchingFailedException {
@@ -45,7 +46,8 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
 
     @Test
     public void nullApiKeyValueShouldCauseException() {
-        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class, () -> localApiKeyManager.getApiKeyEntityFromLocalCache(null));
+        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class,
+                () -> localApiKeyManager.getApiKeyEntityFromLocalCache(null));
     }
 
     @Test
@@ -61,7 +63,8 @@ public class LocalApiKeyManager_ApiKeyFindingInLocalApiKeyListTest extends Local
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenReturn(apiKeyListNotContainingTheIncomingApiKey);
         localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
 
-        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class, () -> localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
+        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class,
+                () -> localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
     }
 
     private List<ApiKey> createApiKeyListNotContainingTheIncomingApiKey() {

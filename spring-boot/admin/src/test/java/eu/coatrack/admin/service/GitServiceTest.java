@@ -64,19 +64,18 @@ public class GitServiceTest {
 
     @Autowired
     GitService gitService;
-    
+
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
     //
-    //Test
+    // Test
     public void testBasic() throws IOException, GitAPIException, URISyntaxException {
         Proxy proxy = new Proxy();
         proxy.setId(UUID.randomUUID().toString());
 
         User owner = new User();
         owner.setInitialized(Boolean.FALSE);
-        
-        
+
         ServiceApi service = new ServiceApi();
         service.setOwner(owner);
         service.setId(Calendar.getInstance().getTimeInMillis());
@@ -85,7 +84,7 @@ public class GitServiceTest {
         services.add(service);
         proxy.setServiceApis(services);
 
-        gitService.init(); 
+        gitService.init();
 
         gitService.addProxy(proxy);
         gitService.commit("Add new Proxy");

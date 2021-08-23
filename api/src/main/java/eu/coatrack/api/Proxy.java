@@ -82,8 +82,6 @@ public class Proxy {
     public void setConfigServerPassword(String credential_password) {
         this.configServerPassword = credential_password;
     }
-    
-    
 
     public User getOwner() {
         return owner;
@@ -159,11 +157,7 @@ public class Proxy {
 
     @Override
     public String toString() {
-        return "Proxy{"
-                + "id='" + id + '\''
-                + ", name='" + name + '\''
-                + ", publicUrl='" + publicUrl + '\''
-                + ", port='" + port + '\''
-                + '}';
+        return "Proxy{" + "id='" + id + '\'' + ", name='" + name + '\'' + ", publicUrl='" + publicUrl + '\''
+                + ", port='" + port + '\'' + '}';
     }
 }

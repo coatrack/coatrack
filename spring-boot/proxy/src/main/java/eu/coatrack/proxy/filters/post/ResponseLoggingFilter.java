@@ -65,7 +65,8 @@ public class ResponseLoggingFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
 
-        log.debug(String.format("Response to %s request to %s", request.getMethod(), request.getRequestURL().toString()));
+        log.debug(
+                String.format("Response to %s request to %s", request.getMethod(), request.getRequestURL().toString()));
 
         // check if this response was already logged as error
         Object contextParamLoggedAsError = ctx.get(ErrorLoggingFilter.CONTEXT_KEY_ALREADY_LOGGED_AS_ERROR);

@@ -43,7 +43,8 @@ public abstract class LocalApiKeyManager_AbstractTestSetupProvider {
 
         apiKeyFetcherMock = mock(ApiKeyFetcher.class);
         long timeInMinutesTheGatewayWorksWithoutConnectionToAdmin = 60;
-        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock, timeInMinutesTheGatewayWorksWithoutConnectionToAdmin);
+        localApiKeyManager = new LocalApiKeyManager(apiKeyFetcherMock,
+                timeInMinutesTheGatewayWorksWithoutConnectionToAdmin);
     }
 
 }

@@ -136,16 +136,9 @@ public class Metric {
 
     @Override
     public String toString() {
-        return "Metric{"
-                + "id=" + id
-                + ", proxy=" + proxy
-                + ", type=" + type
-                + ", requestMethod='" + requestMethod + '\''
-                + ", path='" + path + '\''
-                + ", httpResponseCode=" + httpResponseCode
-                + ", count=" + count
-                + ", metricsCounterSessionID='" + metricsCounterSessionID + '\''
-                + ", dateOfApiCall=" + dateOfApiCall
+        return "Metric{" + "id=" + id + ", proxy=" + proxy + ", type=" + type + ", requestMethod='" + requestMethod
+                + '\'' + ", path='" + path + '\'' + ", httpResponseCode=" + httpResponseCode + ", count=" + count
+                + ", metricsCounterSessionID='" + metricsCounterSessionID + '\'' + ", dateOfApiCall=" + dateOfApiCall
                 + '}';
     }
 }

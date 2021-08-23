@@ -38,9 +38,8 @@ import java.util.Base64;
 import java.util.Collections;
 
 /**
- * Filter that checks if there is a request parameter 'gateway-api-key'. If this
- * parameter is included in the request, it is added to the security context in
- * the form of a @{@link GatewayAuthToken}.
+ * Filter that checks if there is a request parameter 'gateway-api-key'. If this parameter is included in the request,
+ * it is added to the security context in the form of a @{@link GatewayAuthToken}.
  *
  * @author gr-hovest
  */
@@ -49,12 +48,14 @@ public class GatewayAuthFilter extends GenericFilterBean {
     private static final Logger log = LoggerFactory.getLogger(GatewayAuthFilter.class);
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
 
         if (servletRequest instanceof HttpServletRequest) {
             final HttpServletRequest req = (HttpServletRequest) servletRequest;
             final String keyParam = req.getParameter(Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME);
-            log.debug(String.format("request parameter '%s' has value '%s'", Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME, keyParam));
+            log.debug(String.format("request parameter '%s' has value '%s'",
+                    Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME, keyParam));
 
             if (keyParam != null && !keyParam.isEmpty()) {
 
@@ -77,7 +78,8 @@ public class GatewayAuthFilter extends GenericFilterBean {
                     if (values != null && values.length > 0) {
                         String user = values[0];
                         String password = values[1];
-                        Authentication authToken = new GatewayAuthToken(keyParam, user, password, Collections.emptyList());
+                        Authentication authToken = new GatewayAuthToken(keyParam, user, password,
+                                Collections.emptyList());
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     }
                 }

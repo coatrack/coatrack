@@ -35,8 +35,8 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 /**
  * WebSecurityConfigurerAdapter for the API that is accessed by the gateways.
  * <p>
- * This needs to be separated from the WebSecurityConfig because the authentication
- * is not done via form login but via an API key.
+ * This needs to be separated from the WebSecurityConfig because the authentication is not done via form login but via
+ * an API key.
  * <p>
  * The @Order annotation is used to assure that this config is considered first.
  *
@@ -57,19 +57,15 @@ public class GatewayApiSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) {
-        auth.authenticationProvider(
-                gatewayAuthProvider());
+        auth.authenticationProvider(gatewayAuthProvider());
     }
 
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.antMatcher(GATEWAY_API_RESOURCE_MATCHER)
-                .csrf().disable()
-                .addFilterAfter(new GatewayAuthFilter(), BasicAuthenticationFilter.class)
-                .authorizeRequests()
+        http.antMatcher(GATEWAY_API_RESOURCE_MATCHER).csrf().disable()
+                .addFilterAfter(new GatewayAuthFilter(), BasicAuthenticationFilter.class).authorizeRequests()
                 .anyRequest().hasRole(GATEWAY_ROLE_NAME);
 
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 }
-

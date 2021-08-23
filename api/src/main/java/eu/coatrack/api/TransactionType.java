@@ -21,10 +21,7 @@ package eu.coatrack.api;
  */
 
 public enum TransactionType {
-    DEPOSIT("Deposit"),
-    DEPOSIT_IN_TRANSIT("Deposit in transit"),
-    SERVICE_DEPOSIT("Service Deposit"),
-    FEE("Fee"),
+    DEPOSIT("Deposit"), DEPOSIT_IN_TRANSIT("Deposit in transit"), SERVICE_DEPOSIT("Service Deposit"), FEE("Fee"),
     WITHDRAWAL("Withdrawal");
 
     private final String displayString;

@@ -69,5 +69,4 @@ public class GithubEmail implements Serializable {
         this.visibility = visibility;
     }
 
-   
 }

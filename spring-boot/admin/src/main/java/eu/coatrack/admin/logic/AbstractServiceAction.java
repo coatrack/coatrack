@@ -41,7 +41,7 @@ public abstract class AbstractServiceAction implements Action {
 
     ///////////////////////////
     //
-    //  Repositories
+    // Repositories
     //
     ///////////////////////////
     @Autowired
@@ -49,7 +49,7 @@ public abstract class AbstractServiceAction implements Action {
 
     ///////////////////////////
     //
-    //  I/O Parameters
+    // I/O Parameters
     //
     ///////////////////////////
     protected User user;
@@ -70,26 +70,20 @@ public abstract class AbstractServiceAction implements Action {
         }
 
         // replace all non-alphanumeric characters by dashes and transform to lower-case
-        uriIdentifier = uriIdentifier
-                .trim()
-                .toLowerCase()
-                .replaceAll("\\W+", "-");
+        uriIdentifier = uriIdentifier.trim().toLowerCase().replaceAll("\\W+", "-");
 
         // get all service APIs by this user and assure that there is no duplicate
         List<ServiceApi> servicesByThisUser = serviceApiRepository.findByOwnerUsername(user.getUsername());
         servicesByThisUser.remove(serviceApi);
 
-        List<String> identifiersAlreadyInUse = servicesByThisUser.stream()
-                .map(s -> s.getUriIdentifier())
+        List<String> identifiersAlreadyInUse = servicesByThisUser.stream().map(s -> s.getUriIdentifier())
                 .collect(Collectors.toList());
 
         if (identifiersAlreadyInUse.contains(uriIdentifier)) {
             // the identifier is already in use and thus needs to be modified
 
             String candidateToCheckForDuplicate = uriIdentifier;
-            for (int suffixNumber = 2;
-                 identifiersAlreadyInUse.contains(candidateToCheckForDuplicate);
-                 suffixNumber++) {
+            for (int suffixNumber = 2; identifiersAlreadyInUse.contains(candidateToCheckForDuplicate); suffixNumber++) {
                 // append number as suffix
                 candidateToCheckForDuplicate = uriIdentifier + "-" + suffixNumber;
             }
@@ -103,7 +97,7 @@ public abstract class AbstractServiceAction implements Action {
 
     ///////////////////////////
     //
-    //  Getters/Setters
+    // Getters/Setters
     //
     ///////////////////////////
     public User getUser() {

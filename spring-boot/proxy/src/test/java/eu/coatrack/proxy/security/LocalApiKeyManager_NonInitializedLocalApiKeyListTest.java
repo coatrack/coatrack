@@ -33,8 +33,8 @@ public class LocalApiKeyManager_NonInitializedLocalApiKeyListTest extends LocalA
     @Test
     public void accessingNonInitializedLocalApiKeyListShouldCauseException() {
         super.setupLocalApiKeyManagerWithoutInitializingLocalApiKeyList();
-        assertThrows(LocalApiKeyListWasNotInitializedException.class, () ->
-                localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
+        assertThrows(LocalApiKeyListWasNotInitializedException.class,
+                () -> localApiKeyManager.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()));
     }
 
 }

@@ -36,8 +36,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 @EnableJpaRepositories("eu.coatrack*")
-@ComponentScan(basePackages = {"eu.coatrack*", "eu.coatrack.*"})
-@EntityScan(basePackages = {"eu.coatrack*", "eu.coatrack.*"})
+@ComponentScan(basePackages = { "eu.coatrack*", "eu.coatrack.*" })
+@EntityScan(basePackages = { "eu.coatrack*", "eu.coatrack.*" })
 public class YggAdminApplication {
 
     public static void main(String[] args) {

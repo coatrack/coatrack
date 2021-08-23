@@ -40,8 +40,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 /**
  *
- * @author perezdf // TODO Consider the idea to split up the filter in case, it
- * keep growing up
+ * @author perezdf // TODO Consider the idea to split up the filter in case, it keep growing up
  */
 @Component
 public class CheckIfUrlAndCredentialsFitWithEachOtherFilter extends GenericFilterBean {
@@ -62,7 +61,8 @@ public class CheckIfUrlAndCredentialsFitWithEachOtherFilter extends GenericFilte
     private final String CREDENTIAL_URI = "/credentials";
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+            throws IOException, ServletException {
         if (request instanceof HttpServletRequest
                 // added the following check to avoid "IllegalStateException: resource already commited"
                 && !response.isCommitted()) {
@@ -92,40 +92,42 @@ public class CheckIfUrlAndCredentialsFitWithEachOtherFilter extends GenericFilte
                         String user = values[0];
 
                         // check if the proxy is accessing only URLs that this proxy is allowed to access
-                        ConfigServerCredential credentialForUserAndResource = configServerCredentialRepository.findOneByNameAndResource(user, url);
+                        ConfigServerCredential credentialForUserAndResource = configServerCredentialRepository
+                                .findOneByNameAndResource(user, url);
                         if (credentialForUserAndResource != null) {
-                            log.debug("Credential was found: {} -> this user is authorized to access this resource", credentialForUserAndResource);
+                            log.debug("Credential was found: {} -> this user is authorized to access this resource",
+                                    credentialForUserAndResource);
                         } else {
                             log.debug("No Credential was found for user {} and resource {}", user, url);
-                            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN, "You do not have permission to access: " + url);
+                            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN,
+                                    "You do not have permission to access: " + url);
                         }
 
-                        // Retrieve the Id in Long format TODO Consider to separate the business key to the technical key which generates such kind of dirty logic
+                        // Retrieve the Id in Long format TODO Consider to separate the business key to the technical
+                        // key which generates such kind of dirty logic
                         /**
                          * For the Proxy user case
                          */
                         // It is a proxy credential key, then retrieve the credential
                         /*
-                        ConfigServerCredential credential = configServerCredentialRepository.findOneByName(user);
-                        if (url.startsWith(PROXY_URI) && credential == null) {
-                            // There is no credential, then returns an error
-                            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Credenctial is missing:" + url);
-                        } // Check Resource, not required yet a complete Resource Server because one credential has one resource
-                        else if (credential != null && credential.getResource() != null && !url.equals(credential.getResource())) {
-                            // There is no credential, then returns an error
-                            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid resource :" + url);
-                        }
-
-                        /**
-                         * For the admin case
+                         * ConfigServerCredential credential = configServerCredentialRepository.findOneByName(user); if
+                         * (url.startsWith(PROXY_URI) && credential == null) { // There is no credential, then returns
+                         * an error httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                         * "Credenctial is missing:" + url); } // Check Resource, not required yet a complete Resource
+                         * Server because one credential has one resource else if (credential != null &&
+                         * credential.getResource() != null && !url.equals(credential.getResource())) { // There is no
+                         * credential, then returns an error httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                         * "Invalid resource :" + url); }
+                         * 
+                         * /** For the admin case
                          */
                         /*
-                        if ((url.startsWith(ADMIN_URI) || url.startsWith(CREDENTIAL_URI)) && !user.equals(name)) // CKECK
-                        {
-
-                            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Provider user doesnt match with administrator user" + url);
-                        }
-                        */
+                         * if ((url.startsWith(ADMIN_URI) || url.startsWith(CREDENTIAL_URI)) && !user.equals(name)) //
+                         * CKECK {
+                         * 
+                         * httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                         * "Provider user doesnt match with administrator user" + url); }
+                         */
 
                     }
                 }

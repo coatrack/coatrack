@@ -47,9 +47,7 @@ public class UrlResourcesProvider {
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
     private String adminResourceToFetchSingleApiKey;
 
-    private String
-            apiKeyListRequestUrl,
-            apiKeyRequestUrlWithoutApiKeyValueAndGatewayId;
+    private String apiKeyListRequestUrl, apiKeyRequestUrlWithoutApiKeyValueAndGatewayId;
 
     @PostConstruct
     private void initUrls() {
@@ -63,8 +61,8 @@ public class UrlResourcesProvider {
 
     public String attachGatewayIdToUrl(String urlWithoutApiKeyRequestParam) {
         String queryStringSeparator = urlWithoutApiKeyRequestParam.contains("?") ? "&" : "?";
-        return urlWithoutApiKeyRequestParam + queryStringSeparator
-                + Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "=" + gatewayId;
+        return urlWithoutApiKeyRequestParam + queryStringSeparator + Proxy.GATEWAY_API_KEY_REQUEST_PARAMETER_NAME + "="
+                + gatewayId;
     }
 
     public String getApiKeyListRequestUrl() {

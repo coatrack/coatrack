@@ -30,7 +30,7 @@ import java.time.LocalDate;
 
 @Component
 @Scope(value = WebApplicationContext.SCOPE_SESSION, proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class UserSessionSettings implements Serializable{
+public class UserSessionSettings implements Serializable {
 
     private LocalDate dashboardDateRangeStart;
     private LocalDate dashboardDateRangeEnd;
@@ -60,9 +60,7 @@ public class UserSessionSettings implements Serializable{
 
     @Override
     public String toString() {
-        return "UserSessionSettings{" +
-                "dashboardDateRangeStart=" + dashboardDateRangeStart +
-                ", dashboardDateRangeEnd=" + dashboardDateRangeEnd +
-                '}';
+        return "UserSessionSettings{" + "dashboardDateRangeStart=" + dashboardDateRangeStart
+                + ", dashboardDateRangeEnd=" + dashboardDateRangeEnd + '}';
     }
 }

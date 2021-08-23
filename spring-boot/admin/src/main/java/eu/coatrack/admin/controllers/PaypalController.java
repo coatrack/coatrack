@@ -69,7 +69,9 @@ public class PaypalController {
     }
 
     @RequestMapping("/catchPaymentResponse")
-    public String catchPaymentResponse(Authentication authentication, @RequestParam(name = "paymentId") String paymentId, @RequestParam(name = "PayerID") String payerID) throws PayPalRESTException {
+    public String catchPaymentResponse(Authentication authentication,
+            @RequestParam(name = "paymentId") String paymentId, @RequestParam(name = "PayerID") String payerID)
+            throws PayPalRESTException {
 
         Payment payment = new Payment();
         payment.setId(paymentId);
@@ -94,17 +96,10 @@ public class PaypalController {
     public String pay5euros(Authentication authentication) throws PayPalRESTException {
 
         /*
-         * Flow would look like this:
-         * 1. Create Payer object and set PaymentMethod
-         * 2. Set RedirectUrls and set cancelURL and returnURL
-         * 3. Set Details and Add PaymentDetails
-         * 4. Set Amount
-         * 5. Set Transaction
-         * 6. Add Payment Details and set Intent to "authorize"
-         * 7. Create APIContext by passing the clientID, secret and mode
-         * 8. Create Payment object and get paymentID
-         * 9. Set payerID to PaymentExecution object
-         * 10. Execute Payment and get Authorization
+         * Flow would look like this: 1. Create Payer object and set PaymentMethod 2. Set RedirectUrls and set cancelURL
+         * and returnURL 3. Set Details and Add PaymentDetails 4. Set Amount 5. Set Transaction 6. Add Payment Details
+         * and set Intent to "authorize" 7. Create APIContext by passing the clientID, secret and mode 8. Create Payment
+         * object and get paymentID 9. Set payerID to PaymentExecution object 10. Execute Payment and get Authorization
          * 
          */
         Payer yggPayer = new Payer();

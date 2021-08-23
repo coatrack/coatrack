@@ -27,8 +27,7 @@ package eu.coatrack.api;
  */
 public enum ServiceAccessPaymentPolicy {
 
-    MONTHLY_FEE("Monthly fee", "Monthly fee"),
-    WELL_DEFINED_PRICE("Pay per call", "Pay per call"),
+    MONTHLY_FEE("Monthly fee", "Monthly fee"), WELL_DEFINED_PRICE("Pay per call", "Pay per call"),
     FOR_FREE("For free", "Access is for free");
 
     private final String displayStringShort;
@@ -53,4 +52,3 @@ public enum ServiceAccessPaymentPolicy {
     }
 
 }
-

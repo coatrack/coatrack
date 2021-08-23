@@ -35,32 +35,20 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
     private static final Logger log = LoggerFactory.getLogger(GatewayRequestLoggingInterceptor.class);
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
-        log.info(String.format(
-                "Request (preHandle): the url called is '%s' and the headers are [%s]",
-                request.getRequestURI(),
-                generateStringOfRequestHeaders(request))
-        );
+        log.info(String.format("Request (preHandle): the url called is '%s' and the headers are [%s]",
+                request.getRequestURI(), generateStringOfRequestHeaders(request)));
         return true;
     }
 
     @Override
-    public void afterCompletion(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler,
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler,
             Exception ex) {
 
         log.info(String.format(
                 "Response status '%s' after completion: the url called was '%s' and the headers were [%s] ",
-                response.getStatus(),
-                request.getRequestURI(),
-                generateStringOfRequestHeaders(request))
-        );
+                response.getStatus(), request.getRequestURI(), generateStringOfRequestHeaders(request)));
     }
 
     private String generateStringOfRequestHeaders(HttpServletRequest request) {

@@ -44,10 +44,10 @@ public class GithubUserController {
     private GithubService githubService;
 
     /**
-     * This method is used to return an empty list for the AJAX default value.
-     * It is temporally
+     * This method is used to return an empty list for the AJAX default value. It is temporally
      *
      * @return
+     * 
      * @throws IOException
      */
     @GetMapping(value = "/search_empty", produces = "application/json")
@@ -62,17 +62,19 @@ public class GithubUserController {
     /**
      * Based on https://developer.github.com/v3/search/#search-users
      *
-     * for
-     * example:https://api.github.com/search/users?q=paco+in%3Alogin+paco+in%3Aemail
+     * for example:https://api.github.com/search/users?q=paco+in%3Alogin+paco+in%3Aemail
      *
      * @param criteria
+     * 
      * @return
+     * 
      * @throws java.io.IOException
      *
      */
     @GetMapping(value = "/search/{criteria:.+}", produces = "application/json")
     @ResponseBody
-    public DataTableView apiKeyGithubUserListPageRestByCriteria(@PathVariable("criteria") String criteria) throws IOException {
+    public DataTableView apiKeyGithubUserListPageRestByCriteria(@PathVariable("criteria") String criteria)
+            throws IOException {
 
         DataTableView table = new DataTableView();
 
@@ -83,7 +85,8 @@ public class GithubUserController {
 
     @GetMapping(value = "/{username}", produces = "application/json")
     @ResponseBody
-    public DataTableView apiKeyGithubUserListPageRestByUsername(@PathVariable("username") String username) throws IOException {
+    public DataTableView apiKeyGithubUserListPageRestByUsername(@PathVariable("username") String username)
+            throws IOException {
 
         DataTableView table = new DataTableView();
 

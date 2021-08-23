@@ -38,8 +38,8 @@ public class AdminInterceptor extends HandlerInterceptorAdapter {
     private UserRepository userRepository;
 
     @Override
-    public void postHandle(HttpServletRequest req, HttpServletResponse res,
-            Object handler, ModelAndView model) throws Exception {
+    public void postHandle(HttpServletRequest req, HttpServletResponse res, Object handler, ModelAndView model)
+            throws Exception {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(auth.getName());

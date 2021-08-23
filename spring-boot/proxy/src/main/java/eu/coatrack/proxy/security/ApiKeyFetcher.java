@@ -33,8 +33,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 /**
- * Sends requests to the Coatrack admin server to receive single
- * API keys or a list of API keys for all services offered by this gateway.
+ * Sends requests to the Coatrack admin server to receive single API keys or a list of API keys for all services offered
+ * by this gateway.
  *
  * @author Christoph Baier
  */
@@ -56,13 +56,13 @@ public class ApiKeyFetcher {
         log.debug("Requesting latest API key list from CoatRack admin.");
 
         try {
-            ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
+            ResponseEntity<ApiKey[]> responseEntity = restTemplate
+                    .getForEntity(urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
             ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
             return new ArrayList<>(Arrays.asList(apiKeys));
         } catch (RestClientException e) {
-            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
-                    "connection failed.", e);
+            throw new ApiKeyFetchingFailedException(
+                    "Trying to request the latest API key list from Admin, the " + "connection failed.", e);
         }
     }
 
@@ -72,13 +72,14 @@ public class ApiKeyFetcher {
         Optional<String> errorMessage = validateResponseEntityAndCreateErrorMessageInCaseOfProblems(responseEntity);
 
         if (errorMessage.isPresent())
-            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity. "
-                    + errorMessage.get());
+            throw new ApiKeyFetchingFailedException(
+                    "A problem occurred referring to the ResponseEntity. " + errorMessage.get());
         else
             return responseEntity.getBody();
     }
 
-    private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(ResponseEntity<?> responseEntity) {
+    private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(
+            ResponseEntity<?> responseEntity) {
         Optional<String> errorMessage = Optional.empty();
 
         if (responseEntity == null) {
@@ -96,12 +97,12 @@ public class ApiKeyFetcher {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
         try {
-            ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+            ResponseEntity<ApiKey> responseEntity = restTemplate
+                    .getForEntity(urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
             return (ApiKey) extractBodyFromResponseEntity(responseEntity);
         } catch (RestClientException e) {
-            throw new ApiKeyFetchingFailedException("Trying to request the API key with the value " + apiKeyValue +
-                    " from CoatRack admin, the connection failed.", e);
+            throw new ApiKeyFetchingFailedException("Trying to request the API key with the value " + apiKeyValue
+                    + " from CoatRack admin, the connection failed.", e);
         }
     }
 }

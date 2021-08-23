@@ -49,8 +49,7 @@ public class ApiKeyFetcher_ApiKeyListFetchingTest extends ApiKeyFetcher_Abstract
 
     @Test
     public void exceptionAtApiKeyListFetchingShouldCauseException() {
-        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class)))
-                .thenThrow(new RestClientException("test"));
+        when(restTemplateMock.getForEntity(anyString(), eq(ApiKey[].class))).thenThrow(new RestClientException("test"));
         assertThrows(ApiKeyFetchingFailedException.class, () -> apiKeyFetcher.requestLatestApiKeyListFromAdmin());
     }
 

@@ -39,7 +39,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String[] PERMITALL_RESOURCE_LIST = new String[]{"/bower_components/**", "/catchPaymentResponse", "/json/**", "/login", "/", "/403", "/registerUser", "/callback", "/fonts/**", "/webjars/**", "/robots.txt", "/assets/**", "/images/**"};
+    private static final String[] PERMITALL_RESOURCE_LIST = new String[] { "/bower_components/**",
+            "/catchPaymentResponse", "/json/**", "/login", "/", "/403", "/registerUser", "/callback", "/fonts/**",
+            "/webjars/**", "/robots.txt", "/assets/**", "/images/**" };
 
     @Qualifier("userInfoTokenServices")
     @Autowired
@@ -48,15 +50,14 @@ public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http
-                .antMatcher("/**").authorizeRequests()
-                .antMatchers(PERMITALL_RESOURCE_LIST).permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .addFilterBefore(new PublicApiTokenAccessFilter(tokenServices), AbstractPreAuthenticatedProcessingFilter.class)
-                .logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("XSRF-TOKEN", "auth_code", "JSESSIONID").invalidateHttpSession(true).clearAuthentication(true).permitAll()
-                .and()
-                //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+        http.antMatcher("/**").authorizeRequests().antMatchers(PERMITALL_RESOURCE_LIST).permitAll().anyRequest()
+                .authenticated().and()
+                .addFilterBefore(new PublicApiTokenAccessFilter(tokenServices),
+                        AbstractPreAuthenticatedProcessingFilter.class)
+                .logout().logoutUrl("/logout").logoutSuccessUrl("/")
+                .deleteCookies("XSRF-TOKEN", "auth_code", "JSESSIONID").invalidateHttpSession(true)
+                .clearAuthentication(true).permitAll().and()
+                // .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
                 .csrf().disable();
     }
 

@@ -82,7 +82,7 @@ public class MetricRepositoryTest {
         Metric metric = new Metric();
         metric.setCount(1);
         metric.setApiKey(apiKey);
-        //metric.setProxy(proxy);
+        // metric.setProxy(proxy);
 
         metricRepository.save(metric);
 

@@ -43,7 +43,6 @@ public class SpringSecurityTestConfig {
 
         UserDetails basicUser = new YggUserPrincipal(user);
 
-        return new InMemoryUserDetailsManager(Arrays.asList(
-                basicUser));
+        return new InMemoryUserDetailsManager(Arrays.asList(basicUser));
     }
 }

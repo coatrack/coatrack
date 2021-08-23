@@ -53,15 +53,13 @@ public class MetricsCounterService {
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
     private static final int MATCHER_GROUP_INDEX_OF_PATH = 2;
 
-    // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
+    // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was
+    // restarted
     private static final String counterSessionID = UUID.randomUUID().toString();
 
     public void increment(HttpServletRequest request, String apiKey, MetricType metricType, Integer httpResponseCode) {
-        log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
-                metricType,
-                request.getRequestURI(),
-                apiKey
-        ));
+        log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s", metricType,
+                request.getRequestURI(), apiKey));
 
         String requestMethod = request.getMethod();
 
@@ -75,14 +73,14 @@ public class MetricsCounterService {
             serviceApiName = matcher.group(MATCHER_GROUP_INDEX_OF_SERVICE_API_ID);
             // rest of the servlet path is the actual path that is called on the proxied service
             path = matcher.group(MATCHER_GROUP_INDEX_OF_PATH);
-            log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'",
-                    matcher.group(0), serviceApiName, path);
+            log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'", matcher.group(0),
+                    serviceApiName, path);
             if (path == null) {
                 // if api consumer did not specifc path, set as "/"
                 path = "/";
             } else if (path.endsWith("/") && !path.equals("/")) {
                 // remove trailing "/" as this is the same path from metrics point of view
-                path = path.substring(0, path.length()-1);
+                path = path.substring(0, path.length() - 1);
             }
         } else {
             log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
@@ -90,22 +88,14 @@ public class MetricsCounterService {
 
         LocalDate today = LocalDate.now();
 
-        counterService.increment(new StringBuilder()
-                .append(PREFIX) // [0]
-                .append(SEPARATOR)
-                .append(serviceApiName) // [1]
-                .append(SEPARATOR)
-                .append(requestMethod) // [2]
-                .append(SEPARATOR)
-                .append(apiKey) // [3]
-                .append(SEPARATOR)
-                .append(metricType) // [4]
-                .append(SEPARATOR)
-                .append(httpResponseCode) // [5]
-                .append(SEPARATOR)
-                .append(today) // [6]
-                .append(SEPARATOR)
-                .append(path) // [7]
+        counterService.increment(new StringBuilder().append(PREFIX) // [0]
+                .append(SEPARATOR).append(serviceApiName) // [1]
+                .append(SEPARATOR).append(requestMethod) // [2]
+                .append(SEPARATOR).append(apiKey) // [3]
+                .append(SEPARATOR).append(metricType) // [4]
+                .append(SEPARATOR).append(httpResponseCode) // [5]
+                .append(SEPARATOR).append(today) // [6]
+                .append(SEPARATOR).append(path) // [7]
                 .toString());
     }
 

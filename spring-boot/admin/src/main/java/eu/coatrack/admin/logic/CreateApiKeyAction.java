@@ -44,7 +44,7 @@ public class CreateApiKeyAction implements Action {
 
     ///////////////////////////
     //
-    //  Repositories
+    // Repositories
     //
     ///////////////////////////
     @Autowired
@@ -55,7 +55,7 @@ public class CreateApiKeyAction implements Action {
 
     ///////////////////////////
     //
-    //  I/O Parameters
+    // I/O Parameters
     //
     ///////////////////////////
     private User user;
@@ -86,7 +86,7 @@ public class CreateApiKeyAction implements Action {
 
     ///////////////////////////
     //
-    //  Getters/Setters
+    // Getters/Setters
     //
     ///////////////////////////
     public User getUser() {
@@ -112,6 +112,5 @@ public class CreateApiKeyAction implements Action {
     public void setApiKey(ApiKey apiKey) {
         this.apiKey = apiKey;
     }
-    
 
 }

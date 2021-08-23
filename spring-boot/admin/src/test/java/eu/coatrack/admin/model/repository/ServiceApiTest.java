@@ -64,9 +64,9 @@ public class ServiceApiTest {
 
         service.setOwner(user);
         serviceApiRepository.save(service);
-        
+
         List<ServiceApi> services = serviceApiRepository.findByOwnerUsername("something");
-        
+
         Assert.assertNotNull(services);
 
     }

@@ -24,7 +24,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "entry_points")
-public class EntryPoint implements Comparable<EntryPoint>{
+public class EntryPoint implements Comparable<EntryPoint> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

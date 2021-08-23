@@ -49,9 +49,7 @@ public class SecurityConfigurer extends WebSecurityConfigurerAdapter {
 
         httpSecurity.addFilterBefore(apiKeyAuthFilter, BasicAuthenticationFilter.class);
 
-        httpSecurity.csrf().disable()
-                .authorizeRequests()
-                .anyRequest().authenticated()
+        httpSecurity.csrf().disable().authorizeRequests().anyRequest().authenticated()
                 .accessDecisionManager(accessDecisionManager);
     }
 

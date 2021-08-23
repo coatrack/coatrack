@@ -85,285 +85,111 @@ public class DatabaseInitializer {
             log.info("Inserting sample data into the database");
 
             log.debug("sample data api provider username is {}", sampleDataApiProviderUsername);
-            User apiProviderUser = createNewUser("WeatherSolutions Inc.", sampleDataApiProviderUsername, "Arthur", "Admin");
+            User apiProviderUser = createNewUser("WeatherSolutions Inc.", sampleDataApiProviderUsername, "Arthur",
+                    "Admin");
 
-            User simonSupermarketUser = createNewUser("Another Supermarket Chain", "Simon Supermarket", "Simon", "Supermarket");
+            User simonSupermarketUser = createNewUser("Another Supermarket Chain", "Simon Supermarket", "Simon",
+                    "Supermarket");
             User frankFarmerUser = createNewUser("Frank's Farm", sampleDataApiConsumerUsername, "Frank", "Farmer");
             User richardRetailerUser = createNewUser("My Supermarket Chain", "Richard Retailer", "Richard", "Retailer");
             User waltWholesalerUser = createNewUser("ACME Wholesale Inc.", "Walt Wholesaler", "Walt", "Wholesaler");
 
-            ServiceApi serviceApiWeather = createNewServiceAPI(
-                    apiProviderUser,
-                    "Weather Information",
-                    "weather-service",
-                    "http://192.168.55.14:8086/weather-info",
-                    ServiceAccessPermissionPolicy.PUBLIC,
-                    ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE,
-                    new BigDecimal(2.0),
-                    new BigDecimal(15.9),
+            ServiceApi serviceApiWeather = createNewServiceAPI(apiProviderUser, "Weather Information",
+                    "weather-service", "http://192.168.55.14:8086/weather-info", ServiceAccessPermissionPolicy.PUBLIC,
+                    ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE, new BigDecimal(2.0), new BigDecimal(15.9),
                     "Service for customers to get information about the weather in a specific location. Define the location via request parameters 'lat' and 'long' (mandatory).");
 
-
-
-            ServiceApi serviceApiHumidity = createNewServiceAPI(
-                    apiProviderUser,
-                    "Humidity by location",
-                    "humidity-by-location",
-                    "http://my-local-network-server:1234/humidity-info",
-                    ServiceAccessPermissionPolicy.PUBLIC,
-                    ServiceAccessPaymentPolicy.FOR_FREE,
-                    null,
-                    null,
+            ServiceApi serviceApiHumidity = createNewServiceAPI(apiProviderUser, "Humidity by location",
+                    "humidity-by-location", "http://my-local-network-server:1234/humidity-info",
+                    ServiceAccessPermissionPolicy.PUBLIC, ServiceAccessPaymentPolicy.FOR_FREE, null, null,
                     "Users can use this service to obtain the humidity in a specific location. Request parameters 'lat' and 'long' are required to specify the location.");
 
-            ServiceApi serviceApiWeatherStationsLocation = createNewServiceAPI(
-                    apiProviderUser,
-                    "Weather Station Locations",
-                    "weather-station-locations",
-                    "http://192.168.55.19:8087",
-                    ServiceAccessPermissionPolicy.PERMISSION_NECESSARY,
-                    ServiceAccessPaymentPolicy.FOR_FREE,
-                    null,
-                    null,
+            ServiceApi serviceApiWeatherStationsLocation = createNewServiceAPI(apiProviderUser,
+                    "Weather Station Locations", "weather-station-locations", "http://192.168.55.19:8087",
+                    ServiceAccessPermissionPolicy.PERMISSION_NECESSARY, ServiceAccessPaymentPolicy.FOR_FREE, null, null,
                     "Obtain the location of the weather stations. Requires weather station ID as request parameter 'station-id'.");
 
             Set<ServiceApi> collection = new HashSet<>();
             collection.add(serviceApiWeather);
             collection.add(serviceApiHumidity);
 
-            Proxy proxyWeather = createNewProxy(
-                    "aa11aa22-aa33-aa44-aa55-aa66aa77aa88",
-                    "username-aa33-aa44-aa55-aa66aa77aa88",
-                    "password-aa33-aa44-aa55-aa66aa77aa88",
-                    "Weather Information Gateway",
-                    collection,
-                    "http://localhost:8088",
+            Proxy proxyWeather = createNewProxy("aa11aa22-aa33-aa44-aa55-aa66aa77aa88",
+                    "username-aa33-aa44-aa55-aa66aa77aa88", "password-aa33-aa44-aa55-aa66aa77aa88",
+                    "Weather Information Gateway", collection, "http://localhost:8088",
                     "Gateway running in the Weather Solutions Inc. cloud", apiProviderUser);
 
             collection = new HashSet<>();
             collection.add(serviceApiWeatherStationsLocation);
-            createNewProxy(
-                    "bb11bb22-bb33-bb44-bb55-bb66bb77bb88",
-                    "username-bb33-bb44-bb55-bb66bb77bb88",
-                    "password-bb33-bb44-bb55-bb66bb77bb88",
-                    "Weather Station Locations Service Gateway",
-                    collection,
-                    "http://localhost:8089/",
-                    "Gateway running in the ACME Inc. data processing centre", apiProviderUser);
+            createNewProxy("bb11bb22-bb33-bb44-bb55-bb66bb77bb88", "username-bb33-bb44-bb55-bb66bb77bb88",
+                    "password-bb33-bb44-bb55-bb66bb77bb88", "Weather Station Locations Service Gateway", collection,
+                    "http://localhost:8089/", "Gateway running in the ACME Inc. data processing centre",
+                    apiProviderUser);
 
-            ApiKey  simonSupermarketKeyServiceApiHumidity = createNewApiKey(
-                    "ee11ee22-ee33-ee44-ee55-ee66ee77ee88",
-                    simonSupermarketUser,
-                    DateUtils.addDays(new Date(), -40), serviceApiHumidity);
+            ApiKey simonSupermarketKeyServiceApiHumidity = createNewApiKey("ee11ee22-ee33-ee44-ee55-ee66ee77ee88",
+                    simonSupermarketUser, DateUtils.addDays(new Date(), -40), serviceApiHumidity);
 
-            ApiKey frankFarmerKeyServiceApiWeather = createNewApiKey(
-                    "ff11ff22-ff33-ff44-ff55-ff66ff77-cts",
-                    frankFarmerUser,
-                    DateUtils.addDays(new Date(), -25), serviceApiWeather);
+            ApiKey frankFarmerKeyServiceApiWeather = createNewApiKey("ff11ff22-ff33-ff44-ff55-ff66ff77-cts",
+                    frankFarmerUser, DateUtils.addDays(new Date(), -25), serviceApiWeather);
 
-            ApiKey frankFarmerKeyServiceApiLocation = createNewApiKey(
-                    "ff11ff22-ff33-ff44-ff55-ff66ff77-onl",
-                    frankFarmerUser,
-                    DateUtils.addDays(new Date(), -25), serviceApiWeatherStationsLocation);
+            ApiKey frankFarmerKeyServiceApiLocation = createNewApiKey("ff11ff22-ff33-ff44-ff55-ff66ff77-onl",
+                    frankFarmerUser, DateUtils.addDays(new Date(), -25), serviceApiWeatherStationsLocation);
 
-            ApiKey richardRetailerKey = createNewApiKey(
-                    "rr11rr22-rr33-rr44-rr55-rr66rr77rr88",
-                    richardRetailerUser,
+            ApiKey richardRetailerKey = createNewApiKey("rr11rr22-rr33-rr44-rr55-rr66rr77rr88", richardRetailerUser,
                     DateUtils.addDays(new Date(), -9), serviceApiWeather);
 
-            ApiKey richardRetailerKeyExpired = createNewApiKey(
-                    "rr11rr22-rr33-rr44-rr55-rr66-expired",
-                    richardRetailerUser,
-                    DateUtils.addDays(new Date(), -100), serviceApiWeather);
+            ApiKey richardRetailerKeyExpired = createNewApiKey("rr11rr22-rr33-rr44-rr55-rr66-expired",
+                    richardRetailerUser, DateUtils.addDays(new Date(), -100), serviceApiWeather);
 
-            ApiKey waltWholesalerKey = createNewApiKey(
-                    "ww11ww22-ww33-ww44-ww55-ww66ww77ww88",
-                    waltWholesalerUser,
+            ApiKey waltWholesalerKey = createNewApiKey("ww11ww22-ww33-ww44-ww55-ww66ww77ww88", waltWholesalerUser,
                     DateUtils.addDays(new Date(), -8), serviceApiWeather);
 
             String metricsCounterSessionID = UUID.randomUUID().toString();
             LocalDate today = LocalDate.now();
 
             // Frank Farmer
-            addMetrics(proxyWeather,
-                    frankFarmerKeyServiceApiLocation,
-                    "POST",
-                    "/order/large",
-                    2,
-                    1,
-                    1,
-                    metricsCounterSessionID,
-                    today.minusDays(9));
-            addMetrics(proxyWeather,
-                   frankFarmerKeyServiceApiLocation,
-                    "POST",
-                    "/order/small",
-                    2,
-                    0,
-                    0,
-                    metricsCounterSessionID,
-                    today.minusDays(8));
-            addMetrics(proxyWeather,
-                    frankFarmerKeyServiceApiWeather,
-                    "GET",
-                    "/historic",
-                    2,
-                    0,
-                    0,
-                    metricsCounterSessionID,
-                    today.minusDays(4));
-            addMetrics(proxyWeather,
-                    frankFarmerKeyServiceApiWeather,
-                    "GET",
-                    "/current",
-                    9,
-                    0,
-                    0,
-                    metricsCounterSessionID,
-                    today.minusDays(2));
+            addMetrics(proxyWeather, frankFarmerKeyServiceApiLocation, "POST", "/order/large", 2, 1, 1,
+                    metricsCounterSessionID, today.minusDays(9));
+            addMetrics(proxyWeather, frankFarmerKeyServiceApiLocation, "POST", "/order/small", 2, 0, 0,
+                    metricsCounterSessionID, today.minusDays(8));
+            addMetrics(proxyWeather, frankFarmerKeyServiceApiWeather, "GET", "/historic", 2, 0, 0,
+                    metricsCounterSessionID, today.minusDays(4));
+            addMetrics(proxyWeather, frankFarmerKeyServiceApiWeather, "GET", "/current", 9, 0, 0,
+                    metricsCounterSessionID, today.minusDays(2));
 
             // Richard Retailer
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "GET",
-                    "/historic",
-                    82,
-                    4,
-                    8,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "GET", "/historic", 82, 4, 8, metricsCounterSessionID,
                     today.minusDays(12));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "GET",
-                    "/current",
-                    8,
-                    4,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "GET", "/current", 8, 4, 0, metricsCounterSessionID,
                     today.minusDays(6));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "PUT",
-                    "/current/modify",
-                    9,
-                    1,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "PUT", "/current/modify", 9, 1, 0, metricsCounterSessionID,
                     today.minusDays(5));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "GET",
-                    "/current",
-                    7,
-                    0,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "GET", "/current", 7, 0, 0, metricsCounterSessionID,
                     today.minusDays(4));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "POST",
-                    "/current/add",
-                    11,
-                    0,
-                    1,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "POST", "/current/add", 11, 0, 1, metricsCounterSessionID,
                     today.minusDays(3));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "GET",
-                    "/current",
-                    8,
-                    0,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "GET", "/current", 8, 0, 0, metricsCounterSessionID,
                     today.minusDays(2));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "GET",
-                    "/historic",
-                    9,
-                    0,
-                    2,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, richardRetailerKey, "GET", "/historic", 9, 0, 2, metricsCounterSessionID,
                     today.minusDays(1));
-            addMetrics(proxyWeather,
-                    richardRetailerKey,
-                    "GET",
-                    "/historic",
-                    7,
-                    0,
-                    0,
-                    metricsCounterSessionID,
-                    today);
+            addMetrics(proxyWeather, richardRetailerKey, "GET", "/historic", 7, 0, 0, metricsCounterSessionID, today);
 
             // Walt Wholesaler
-            addMetrics(proxyWeather,
-                    waltWholesalerKey,
-                    "GET",
-                    "/current",
-                    40,
-                    2,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, waltWholesalerKey, "GET", "/current", 40, 2, 0, metricsCounterSessionID,
                     today.minusDays(9));
-            addMetrics(proxyWeather,
-                    waltWholesalerKey,
-                    "GET",
-                    "/historic",
-                    18,
-                    2,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, waltWholesalerKey, "GET", "/historic", 18, 2, 0, metricsCounterSessionID,
                     today.minusDays(3));
-            addMetrics(proxyWeather,
-                    waltWholesalerKey,
-                    "GET",
-                    "/current",
-                    13,
-                    0,
-                    1,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, waltWholesalerKey, "GET", "/current", 13, 0, 1, metricsCounterSessionID,
                     today.minusDays(2));
-            addMetrics(proxyWeather,
-                    waltWholesalerKey,
-                    "GET",
-                    "/historic",
-                    17,
-                    0,
-                    0,
-                    metricsCounterSessionID,
+            addMetrics(proxyWeather, waltWholesalerKey, "GET", "/historic", 17, 0, 0, metricsCounterSessionID,
                     today.minusDays(1));
-            addMetrics(proxyWeather,
-                    waltWholesalerKey,
-                    "GET",
-                    "/current",
-                    28,
-                    0,
-                    0,
-                    metricsCounterSessionID,
-                    today);
+            addMetrics(proxyWeather, waltWholesalerKey, "GET", "/current", 28, 0, 0, metricsCounterSessionID, today);
 
             // put some credits into accounts for local testing
-            createNewCreditAccount(
-                    2150,
-                    apiProviderUser
-            );
-            createNewCreditAccount(
-                    1010,
-                    simonSupermarketUser
-            );
-            createNewCreditAccount(
-                    158,
-                    frankFarmerUser
-            );
-            createNewCreditAccount(
-                    220,
-                    richardRetailerUser
-            );
-            createNewCreditAccount(
-                    312,
-                    waltWholesalerUser
-            );
+            createNewCreditAccount(2150, apiProviderUser);
+            createNewCreditAccount(1010, simonSupermarketUser);
+            createNewCreditAccount(158, frankFarmerUser);
+            createNewCreditAccount(220, richardRetailerUser);
+            createNewCreditAccount(312, waltWholesalerUser);
         }
     }
 
@@ -379,11 +205,7 @@ public class DatabaseInitializer {
         return user;
     }
 
-    private ApiKey createNewApiKey(
-            String keyValue,
-            User consumer,
-            Date created,
-            ServiceApi serviceApi) {
+    private ApiKey createNewApiKey(String keyValue, User consumer, Date created, ServiceApi serviceApi) {
 
         ApiKey apiKey = new ApiKey();
 
@@ -402,14 +224,8 @@ public class DatabaseInitializer {
         return apiKey;
     }
 
-    private Proxy createNewProxy(
-            String uuid,
-            String configServerName,
-            String configServerPassword,
-            String name,
-            Set<ServiceApi> serviceApis,
-            String publicUrl,
-            String description, User user) {
+    private Proxy createNewProxy(String uuid, String configServerName, String configServerPassword, String name,
+            Set<ServiceApi> serviceApis, String publicUrl, String description, User user) {
 
         Proxy proxy = new Proxy();
         proxy.setId(uuid);
@@ -433,15 +249,9 @@ public class DatabaseInitializer {
         return entryPoint;
     }
 
-    private ServiceApi createNewServiceAPI(
-            User apiProvider,
-            String name,
-            String uriIdentifier,
-            String localUrl,
+    private ServiceApi createNewServiceAPI(User apiProvider, String name, String uriIdentifier, String localUrl,
             ServiceAccessPermissionPolicy serviceAccessPermissionPolicy,
-            ServiceAccessPaymentPolicy serviceAccessPaymentPolicy,
-            BigDecimal pricePerCall,
-            BigDecimal pricePerMonth,
+            ServiceAccessPaymentPolicy serviceAccessPaymentPolicy, BigDecimal pricePerCall, BigDecimal pricePerMonth,
             String description) {
 
         ServiceApi serviceApi = new ServiceApi();
@@ -465,71 +275,27 @@ public class DatabaseInitializer {
         return serviceApiRepository.save(serviceApi);
     }
 
-    private void addMetrics(
-            Proxy proxy,
-            ApiKey apiKey,
-            String requestMethod,
-            String path,
-            int countHttp200,
-            int countHttp404,
-            int countHttp500,
-            String metricsCounterSessionID,
-            LocalDate dateOfApiCall) {
+    private void addMetrics(Proxy proxy, ApiKey apiKey, String requestMethod, String path, int countHttp200,
+            int countHttp404, int countHttp500, String metricsCounterSessionID, LocalDate dateOfApiCall) {
 
-        addMetric(proxy,
-                apiKey,
-                requestMethod,
-                path,
-                MetricType.AUTHORIZED_REQUEST,
-                countHttp200 + countHttp404 + countHttp500,
-                null,
-                metricsCounterSessionID,
-                dateOfApiCall);
+        addMetric(proxy, apiKey, requestMethod, path, MetricType.AUTHORIZED_REQUEST,
+                countHttp200 + countHttp404 + countHttp500, null, metricsCounterSessionID, dateOfApiCall);
 
-        addMetric(proxy,
-                apiKey,
-                requestMethod,
-                path,
-                MetricType.RESPONSE,
-                countHttp200,
-                200,
-                metricsCounterSessionID,
+        addMetric(proxy, apiKey, requestMethod, path, MetricType.RESPONSE, countHttp200, 200, metricsCounterSessionID,
                 dateOfApiCall);
         if (countHttp404 > 0) {
-            addMetric(proxy,
-                    apiKey,
-                    requestMethod,
-                    path + "/weatherData-id",
-                    MetricType.RESPONSE,
-                    countHttp404,
-                    404,
-                    metricsCounterSessionID,
-                    dateOfApiCall);
+            addMetric(proxy, apiKey, requestMethod, path + "/weatherData-id", MetricType.RESPONSE, countHttp404, 404,
+                    metricsCounterSessionID, dateOfApiCall);
         }
         if (countHttp500 > 0) {
-            addMetric(proxy,
-                    apiKey,
-                    requestMethod,
-                    path,
-                    MetricType.RESPONSE,
-                    countHttp500,
-                    500,
-                    metricsCounterSessionID,
-                    dateOfApiCall);
+            addMetric(proxy, apiKey, requestMethod, path, MetricType.RESPONSE, countHttp500, 500,
+                    metricsCounterSessionID, dateOfApiCall);
         }
 
     }
 
-    private void addMetric(
-            Proxy proxy,
-            ApiKey apiKey,
-            String requestMethod,
-            String path,
-            MetricType type,
-            int count,
-            Integer httpResponseCode,
-            String metricsCounterSessionID,
-            LocalDate dateOfApiCall) {
+    private void addMetric(Proxy proxy, ApiKey apiKey, String requestMethod, String path, MetricType type, int count,
+            Integer httpResponseCode, String metricsCounterSessionID, LocalDate dateOfApiCall) {
 
         Metric metric = new Metric();
         metric.setProxy(proxy);
@@ -548,8 +314,8 @@ public class DatabaseInitializer {
         Metric returnMetric = metricRepository.findOne(metric.getId());
         Proxy proxies = returnMetric.getProxy();
         Set<ServiceApi> services = proxies.getServiceApis();
-        //List<ApiKey> returnApiKeys = services.iterator().next().getApiKeys();
-        //returnApiKeys.get(0).getId();
+        // List<ApiKey> returnApiKeys = services.iterator().next().getApiKeys();
+        // returnApiKeys.get(0).getId();
     }
 
     private void createNewCreditAccount(double balance, User user) {

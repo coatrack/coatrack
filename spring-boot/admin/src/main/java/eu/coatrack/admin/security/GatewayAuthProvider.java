@@ -35,12 +35,11 @@ import org.springframework.util.Assert;
 import java.util.Collections;
 
 /**
- * Authentication provider that checks gateway auth tokens, which have been
- * added to the security context by @{@link GatewayAuthFilter}, for their
- * validity.
+ * Authentication provider that checks gateway auth tokens, which have been added to the security context
+ * by @{@link GatewayAuthFilter}, for their validity.
  * <p>
- * In case the key is valid, the gateway is considered as authenticated and the
- * role YGG_GATEWAY is added to the security context.
+ * In case the key is valid, the gateway is considered as authenticated and the role YGG_GATEWAY is added to the
+ * security context.
  *
  * @author gr-hovest
  */
@@ -62,15 +61,13 @@ public class GatewayAuthProvider implements AuthenticationProvider {
             if (isAuthTokenValid(authToken)) {
 
                 // add ROLE_YGG_GATEWAY as granted authority
-                GatewayAuthToken yggGatewayAuthToken = new GatewayAuthToken(
-                        (String) authToken.getCredentials(), authToken.getUser(), authToken.getPassword(),
-                        Collections.singleton(new SimpleGrantedAuthority(YGG_GATEWAY_ROLE_NAME))
-                );
+                GatewayAuthToken yggGatewayAuthToken = new GatewayAuthToken((String) authToken.getCredentials(),
+                        authToken.getUser(), authToken.getPassword(),
+                        Collections.singleton(new SimpleGrantedAuthority(YGG_GATEWAY_ROLE_NAME)));
                 yggGatewayAuthToken.setAuthenticated(true);
                 return yggGatewayAuthToken;
             } else {
-                throw new BadCredentialsException(
-                        String.format("Gateway's auth token '%s' is not valid", authToken));
+                throw new BadCredentialsException(String.format("Gateway's auth token '%s' is not valid", authToken));
             }
         } else {
             // This provider is not able to decide about authentication
@@ -93,7 +90,8 @@ public class GatewayAuthProvider implements AuthenticationProvider {
 
             if (proxy != null) {
                 log.debug("Proxy was found by gateway api key verifier: " + proxy);
-                if (proxy.getCredentialName().equals(authToken.getUser()) && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
+                if (proxy.getCredentialName().equals(authToken.getUser())
+                        && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
                     return true;
                 } else {
                     log.debug("Gateway's Credential doesnt match for apiKey/UUID" + gatewayUUID);

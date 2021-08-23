@@ -57,10 +57,8 @@ public class MetricsController {
     AntPathMatcher parser = new AntPathMatcher();
 
     @RequestMapping(method = RequestMethod.POST)
-    public Long storeMetricAndProperlySetRelationships(
-            @RequestParam("proxyId") String proxyId,
-            @RequestParam("apiKeyValue") String apiKeyValue,
-            @RequestBody Metric metricSubmitted) {
+    public Long storeMetricAndProperlySetRelationships(@RequestParam("proxyId") String proxyId,
+            @RequestParam("apiKeyValue") String apiKeyValue, @RequestBody Metric metricSubmitted) {
 
         log.debug("metric {} received from proxy {} with api key {}", metricSubmitted, proxyId, apiKeyValue);
 
@@ -71,16 +69,11 @@ public class MetricsController {
         Metric metricToBeStored = null;
 
         // check if there is already a metric entry in the database, which can be updated instead of storing a new entry
-        List<Metric> metricToBeUpdated = metricRepository.findByProxyAndTypeAndRequestMethodAndPathAndHttpResponseCodeAndMetricsCounterSessionIDAndDateOfApiCallAndApiKeyOrderByIdDesc(
-                proxy,
-                metricSubmitted.getType(),
-                metricSubmitted.getRequestMethod(),
-                metricSubmitted.getPath(),
-                metricSubmitted.getHttpResponseCode(),
-                metricSubmitted.getMetricsCounterSessionID(),
-                metricSubmitted.getDateOfApiCall(),
-                apiKey
-        );
+        List<Metric> metricToBeUpdated = metricRepository
+                .findByProxyAndTypeAndRequestMethodAndPathAndHttpResponseCodeAndMetricsCounterSessionIDAndDateOfApiCallAndApiKeyOrderByIdDesc(
+                        proxy, metricSubmitted.getType(), metricSubmitted.getRequestMethod(), metricSubmitted.getPath(),
+                        metricSubmitted.getHttpResponseCode(), metricSubmitted.getMetricsCounterSessionID(),
+                        metricSubmitted.getDateOfApiCall(), apiKey);
 
         if (metricToBeUpdated == null || metricToBeUpdated.isEmpty()) {
             // there is no metric to be updated, just store the submitted metric in DB
@@ -104,12 +97,13 @@ public class MetricsController {
         metricToBeStored = metricRepository.save(metricToBeStored);
 
         // The proxy calls CoatRack admin two times:
-        //  1 - once for the request to the gateway
-        //  2 - once for the response from the provider service
+        // 1 - once for the request to the gateway
+        // 2 - once for the response from the provider service
         // Only case (2) is relevant for the credit transfer.
-        // In addition, the response code should be checked for number "< 400", because 4xx codes refer to client side error while the 5xx codes are related to server errors
+        // In addition, the response code should be checked for number "< 400", because 4xx codes refer to client side
+        // error while the 5xx codes are related to server errors
         // So only http response codes indicating successful calls should lead to a credit transfer
-        if(metricSubmitted.getHttpResponseCode() != null && metricSubmitted.getHttpResponseCode() < 400) {
+        if (metricSubmitted.getHttpResponseCode() != null && metricSubmitted.getHttpResponseCode() < 400) {
             log.debug("credit transfer from consumer to provider");
             // credit transfer from consumer to provider
             ServiceApi service = apiKey.getServiceApi();
@@ -132,17 +126,21 @@ public class MetricsController {
                             boolean pathsMatches = parser.match(entryPoint.getPathPattern(), metricSubmitted.getPath());
 
                             if (pathsMatches) {
-                                if (entryPoint.getHttpMethod().equals(metricSubmitted.getRequestMethod()) && !entryPoint.getHttpMethod().equals("*")
+                                if (entryPoint.getHttpMethod().equals(metricSubmitted.getRequestMethod())
+                                        && !entryPoint.getHttpMethod().equals("*")
                                         || entryPoint.getHttpMethod().equals("*")) {
                                     price = price.add(new BigDecimal(entryPoint.getPricePerCall() / 1000));
 
                                     addTransactionDetails(consumerTransaction, price);
                                     addTransactionDetails(providerTransaction, price);
 
-                                    log.debug("Transferring {} EUR from {} to {}",price.doubleValue(),consumer.getUsername(),provider.getUsername());
+                                    log.debug("Transferring {} EUR from {} to {}", price.doubleValue(),
+                                            consumer.getUsername(), provider.getUsername());
 
-                                    consumer.getAccount().setBalance(consumer.getAccount().getBalance() - price.doubleValue());
-                                    provider.getAccount().setBalance(provider.getAccount().getBalance() + price.doubleValue());
+                                    consumer.getAccount()
+                                            .setBalance(consumer.getAccount().getBalance() - price.doubleValue());
+                                    provider.getAccount()
+                                            .setBalance(provider.getAccount().getBalance() + price.doubleValue());
 
                                 }
                             }

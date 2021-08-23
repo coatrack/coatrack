@@ -73,20 +73,18 @@ public class ErrorLoggingFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
 
-        log.debug(String.format("An error occured after proxying a %s request to %s",
-                request.getMethod(), request.getRequestURL().toString()));
+        log.debug(String.format("An error occured after proxying a %s request to %s", request.getMethod(),
+                request.getRequestURL().toString()));
 
         HttpServletResponse servletResponse = ctx.getResponse();
         log.debug(String.format("Erroneous response status is: %s", servletResponse.getStatus()));
 
         if (ctx.getResponseBody() == null && ctx.getResponseDataStream() == null) {
-            log.warn("Response body and data stream are null - assuming that service is unavailable (logging status 503)");
+            log.warn(
+                    "Response body and data stream are null - assuming that service is unavailable (logging status 503)");
 
             String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
-            metricsCounterService.increment(
-                    request,
-                    apiKeyValue,
-                    MetricType.EMPTY_RESPONSE,
+            metricsCounterService.increment(request, apiKeyValue, MetricType.EMPTY_RESPONSE,
                     HttpStatus.SERVICE_UNAVAILABLE.value());
             // set context parameter to prevent ResponseLoggingFilter from "double-logging"
             ctx.set(CONTEXT_KEY_ALREADY_LOGGED_AS_ERROR, CONTEXT_VALUE_TRUE);

@@ -65,8 +65,8 @@ public class HomeController {
     @RequestMapping("/")
     public String home(Model model) {
 
-        String springVersion = webUI.parameterizedMessage("home.spring.version",
-                SpringBootVersion.getVersion(), SpringVersion.getVersion());
+        String springVersion = webUI.parameterizedMessage("home.spring.version", SpringBootVersion.getVersion(),
+                SpringVersion.getVersion());
         model.addAttribute("springVersion", springVersion);
         return HOME_VIEW;
     }
@@ -81,7 +81,7 @@ public class HomeController {
 
     @RequestMapping(value = "/covers", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Iterable<ServiceCover> serviceCoversListPageRest(){
+    public Iterable<ServiceCover> serviceCoversListPageRest() {
 
         return coverRepository.findAll();
     }

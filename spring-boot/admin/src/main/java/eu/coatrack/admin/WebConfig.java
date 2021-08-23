@@ -31,7 +31,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
-@ComponentScan(basePackages = {"eu.coatrack.admin.controllers"})
+@ComponentScan(basePackages = { "eu.coatrack.admin.controllers" })
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
@@ -44,8 +44,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
 
         // Register admin interceptor with multiple path patterns
-        registry.addInterceptor(interceptor).addPathPatterns(new String[]{"/admin", "/admin/*", "/admin/**/*", "/admin/**/**/*"});
-        registry.addInterceptor(gatewayRequestLoggingInterceptor).addPathPatterns(new String[]{"/api/**/*"});
+        registry.addInterceptor(interceptor)
+                .addPathPatterns(new String[] { "/admin", "/admin/*", "/admin/**/*", "/admin/**/**/*" });
+        registry.addInterceptor(gatewayRequestLoggingInterceptor).addPathPatterns(new String[] { "/api/**/*" });
     }
 
     /**
@@ -59,13 +60,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Override
     public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
         // Simple strategy: only path extension is taken into account
-        configurer.favorPathExtension(true).
-                favorParameter(false).
-                parameterName("mediaType").
-                ignoreAcceptHeader(false).
-                useJaf(false).
-                defaultContentType(MediaType.APPLICATION_JSON).
-                mediaType("xml", MediaType.APPLICATION_XML).
-                mediaType("json", MediaType.APPLICATION_JSON);
+        configurer.favorPathExtension(true).favorParameter(false).parameterName("mediaType").ignoreAcceptHeader(false)
+                .useJaf(false).defaultContentType(MediaType.APPLICATION_JSON)
+                .mediaType("xml", MediaType.APPLICATION_XML).mediaType("json", MediaType.APPLICATION_JSON);
     }
 }

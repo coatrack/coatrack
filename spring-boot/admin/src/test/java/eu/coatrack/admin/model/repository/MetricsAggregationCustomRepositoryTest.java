@@ -62,83 +62,56 @@ public class MetricsAggregationCustomRepositoryTest {
     private LocalDate today = LocalDate.now();
 
     /*
-    @Test
-    public void getServiceApisByMetric() {
-        List<Long> ids = repository.getIDsOfLatestMetricsPerSession(null, null, true, true, sampleDataApiProviderUsername);
-        List<ServiceApi> result = repository.getServiceApisByMetric(ids.get(0));
-        assertNotNull(result);
-    }
-
-    @Test
-    public void getIDsOfLatestMetricsPerSessionTrueTrue() {
-        List<Long> result = repository.getIDsOfLatestMetricsPerSession(null, null, true, true, sampleDataApiProviderUsername);
-        assertThat(result.size()).isEqualTo(9);
-    }
-
-    @Test
-    public void getIDsOfLatestMetricsPerSessionFindByProxyId() {
-        List<Long> resultList = repository.getIDsOfLatestMetricsPerSession(null, null, false, true, sampleDataApiProviderUsername);
-        System.out.println(resultList);
-        Metric resultItem = metricRepository.findOne(resultList.get(0));
-
-        resultList = repository.getIDsOfLatestMetricsPerSession(resultItem.getProxy().getId(), null, false, true, sampleDataApiProviderUsername);
-        boolean found = false;
-        for (Long id : resultList) {
-            Metric item = metricRepository.findOne(id);
-            if (resultItem.getProxy().getId().equals(item.getProxy().getId())) {
-                found = true;
-            }
-        }
-        assertTrue(found);
-    }
-
-    @Test
-    public void getIDsOfLatestMetricsPerSessionFindByType() {
-        List<Long> resultList = repository.getIDsOfLatestMetricsPerSession(null, null, false, true, sampleDataApiProviderUsername);
-        System.out.println(resultList);
-        Metric resultItem = metricRepository.findOne(resultList.get(0));
-
-        resultList = repository.getIDsOfLatestMetricsPerSession(null, resultItem.getType(), false, true, sampleDataApiProviderUsername);
-        boolean found = false;
-        for (Long id : resultList) {
-            Metric item = metricRepository.findOne(id);
-            if (resultItem.getType().equals(item.getType())) {
-                found = true;
-            }
-        }
-        assertTrue(found);
-    }
-
-    @Test
-    public void getIDsOfLatestMetricsPerSessionTrueFalse() {
-        List<Long> result = repository.getIDsOfLatestMetricsPerSession(null, null, true, false, sampleDataApiProviderUsername);
-        assertThat(result.size()).isEqualTo(9);
-    }
-
-    @Test
-    public void getIDsOfLatestMetricsPerSessionFalseFalse() {
-        List<Long> result = repository.getIDsOfLatestMetricsPerSession(null, null, false, false, sampleDataApiProviderUsername);
-        assertThat(result.size()).isEqualTo(41);
-    }
-
-    @Test
-    public void getSummarizedMetricsByProxyId() {
-        List<Long> idResult = repository.getIDsOfLatestMetricsPerSession(null, null, false, false, sampleDataApiProviderUsername);
-        Metric resultItem = metricRepository.findOne(idResult.get(0));
-
-        List<MetricsAggregation> result = repository.getSummarizedMetricsByProxyId(resultItem.getProxy().getId());
-        assertNotNull(result);
-        for (MetricsAggregation item : result) {
-            System.out.println("::." + item.getServiceApiName() + " " + item.getApiUser() + " " + item.getHttpResponseCode() + " " + item.getCount());
-        }
-
-    }
-    */
+     * @Test public void getServiceApisByMetric() { List<Long> ids = repository.getIDsOfLatestMetricsPerSession(null,
+     * null, true, true, sampleDataApiProviderUsername); List<ServiceApi> result =
+     * repository.getServiceApisByMetric(ids.get(0)); assertNotNull(result); }
+     * 
+     * @Test public void getIDsOfLatestMetricsPerSessionTrueTrue() { List<Long> result =
+     * repository.getIDsOfLatestMetricsPerSession(null, null, true, true, sampleDataApiProviderUsername);
+     * assertThat(result.size()).isEqualTo(9); }
+     * 
+     * @Test public void getIDsOfLatestMetricsPerSessionFindByProxyId() { List<Long> resultList =
+     * repository.getIDsOfLatestMetricsPerSession(null, null, false, true, sampleDataApiProviderUsername);
+     * System.out.println(resultList); Metric resultItem = metricRepository.findOne(resultList.get(0));
+     * 
+     * resultList = repository.getIDsOfLatestMetricsPerSession(resultItem.getProxy().getId(), null, false, true,
+     * sampleDataApiProviderUsername); boolean found = false; for (Long id : resultList) { Metric item =
+     * metricRepository.findOne(id); if (resultItem.getProxy().getId().equals(item.getProxy().getId())) { found = true;
+     * } } assertTrue(found); }
+     * 
+     * @Test public void getIDsOfLatestMetricsPerSessionFindByType() { List<Long> resultList =
+     * repository.getIDsOfLatestMetricsPerSession(null, null, false, true, sampleDataApiProviderUsername);
+     * System.out.println(resultList); Metric resultItem = metricRepository.findOne(resultList.get(0));
+     * 
+     * resultList = repository.getIDsOfLatestMetricsPerSession(null, resultItem.getType(), false, true,
+     * sampleDataApiProviderUsername); boolean found = false; for (Long id : resultList) { Metric item =
+     * metricRepository.findOne(id); if (resultItem.getType().equals(item.getType())) { found = true; } }
+     * assertTrue(found); }
+     * 
+     * @Test public void getIDsOfLatestMetricsPerSessionTrueFalse() { List<Long> result =
+     * repository.getIDsOfLatestMetricsPerSession(null, null, true, false, sampleDataApiProviderUsername);
+     * assertThat(result.size()).isEqualTo(9); }
+     * 
+     * @Test public void getIDsOfLatestMetricsPerSessionFalseFalse() { List<Long> result =
+     * repository.getIDsOfLatestMetricsPerSession(null, null, false, false, sampleDataApiProviderUsername);
+     * assertThat(result.size()).isEqualTo(41); }
+     * 
+     * @Test public void getSummarizedMetricsByProxyId() { List<Long> idResult =
+     * repository.getIDsOfLatestMetricsPerSession(null, null, false, false, sampleDataApiProviderUsername); Metric
+     * resultItem = metricRepository.findOne(idResult.get(0));
+     * 
+     * List<MetricsAggregation> result = repository.getSummarizedMetricsByProxyId(resultItem.getProxy().getId());
+     * assertNotNull(result); for (MetricsAggregation item : result) { System.out.println("::." +
+     * item.getServiceApiName() + " " + item.getApiUser() + " " + item.getHttpResponseCode() + " " + item.getCount()); }
+     * 
+     * }
+     */
 
     @Test
     public void getSummarizedMetricsPerUser() {
 
-        List<StatisticsPerApiUser> result = repository.getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(thirtyDaysAgo, today, sampleDataApiProviderUsername);
+        List<StatisticsPerApiUser> result = repository.getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
+                thirtyDaysAgo, today, sampleDataApiProviderUsername);
         assertNotNull(result);
         assertThat(result.size()).isEqualTo(3);
 
@@ -147,12 +120,14 @@ public class MetricsAggregationCustomRepositoryTest {
     @Test
     public void getTotalNumberOfLoggedApiCalls() {
 
-        int result = repository.getTotalNumberOfLoggedApiCalls(LocalDate.now().minusYears(999), LocalDate.now().plusDays(1), sampleDataApiProviderUsername);
+        int result = repository.getTotalNumberOfLoggedApiCalls(LocalDate.now().minusYears(999),
+                LocalDate.now().plusDays(1), sampleDataApiProviderUsername);
         assertTrue(result > 0);
     }
 
     // In the following there are tests for each statistic displayed on the GUIs main dashboard
-    // when logging in as the user configured as "sampleDataApiProviderUsername", which is the api provider username in the sample dataset
+    // when logging in as the user configured as "sampleDataApiProviderUsername", which is the api provider username in
+    // the sample dataset
 
     @Test
     public void getNoOfCallsToExampleCompanyIncApisThisWeekTest() {
@@ -161,17 +136,14 @@ public class MetricsAggregationCustomRepositoryTest {
 
     @Test
     public void getNoOfErrorsWhenCallingExampleCompanyIncApisThisWeek() {
-        assertEquals(11, repository.getNumberOfErroneousApiCalls(
-                LocalDate.now().minusDays(6),
-                LocalDate.now(),
+        assertEquals(11, repository.getNumberOfErroneousApiCalls(LocalDate.now().minusDays(6), LocalDate.now(),
                 sampleDataApiProviderUsername));
     }
 
     @Test
     public void getNoOfCallsToExampleCompanyIncApisThisWeekComparedToLastWeekTest() {
-        assertEquals(15,
-                repository.getTotalNumberOfLoggedApiCallsThisWeek(sampleDataApiProviderUsername)
-                        - repository.getTotalNumberOfLoggedApiCallsLastWeek(sampleDataApiProviderUsername));
+        assertEquals(15, repository.getTotalNumberOfLoggedApiCallsThisWeek(sampleDataApiProviderUsername)
+                - repository.getTotalNumberOfLoggedApiCallsLastWeek(sampleDataApiProviderUsername));
     }
 
     @Test
@@ -181,7 +153,8 @@ public class MetricsAggregationCustomRepositoryTest {
 
     @Test
     public void getStatisticsPerUserOfExampleCompanyIncApisTest() {
-        List<StatisticsPerApiUser> statsPerApiUser = repository.getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(thirtyDaysAgo, today, sampleDataApiProviderUsername);
+        List<StatisticsPerApiUser> statsPerApiUser = repository.getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
+                thirtyDaysAgo, today, sampleDataApiProviderUsername);
         assertNotNull(statsPerApiUser);
         assertEquals(3, statsPerApiUser.size());
 
@@ -203,7 +176,8 @@ public class MetricsAggregationCustomRepositoryTest {
 
     @Test
     public void getDistributionOfHttpResponseCodesForExampleCompanyIncApisTest() {
-        List<StatisticsPerHttpStatusCode> statsPerResponseCode = repository.getNoOfCallsPerHttpResponseCode(thirtyDaysAgo, today, sampleDataApiProviderUsername);
+        List<StatisticsPerHttpStatusCode> statsPerResponseCode = repository
+                .getNoOfCallsPerHttpResponseCode(thirtyDaysAgo, today, sampleDataApiProviderUsername);
         assertNotNull(statsPerResponseCode);
         assertEquals(3, statsPerResponseCode.size());
 
@@ -222,7 +196,8 @@ public class MetricsAggregationCustomRepositoryTest {
 
     @Test
     public void getNoOfExampleCompanyIncApiCallsPerDayThisWeekTest() {
-        List<StatisticsPerDay> statsPerDay = repository.getNoOfCallsPerDayForDateRange(today.minusDays(6), today, sampleDataApiProviderUsername);
+        List<StatisticsPerDay> statsPerDay = repository.getNoOfCallsPerDayForDateRange(today.minusDays(6), today,
+                sampleDataApiProviderUsername);
         assertNotNull(statsPerDay);
         assertEquals(7, statsPerDay.size());
 
@@ -250,7 +225,8 @@ public class MetricsAggregationCustomRepositoryTest {
      */
     @Test
     public void getAggregatedStatisticsPerProxyTest() {
-        List<MetricsAggregation> list = repository.getSummarizedMetricsByProxyId("aa11aa22-aa33-aa44-aa55-aa66aa77aa88");
+        List<MetricsAggregation> list = repository
+                .getSummarizedMetricsByProxyId("aa11aa22-aa33-aa44-aa55-aa66aa77aa88");
         assertNotNull(list);
         assertEquals(30, list.size());
 
@@ -296,13 +272,11 @@ public class MetricsAggregationCustomRepositoryTest {
         assertEquals(1, summarizeMetricsCounterValuesByUsernameAndHttpResponseCode(list3, "exampleApiUser", 500));
     }
 
-
-    private long summarizeMetricsCounterValuesByUsernameAndHttpResponseCode(List<MetricsAggregation> list, String username, int httpResponseCode) {
-        return list.stream()
-                .filter(m -> m.getApiUser().equals(username))
+    private long summarizeMetricsCounterValuesByUsernameAndHttpResponseCode(List<MetricsAggregation> list,
+            String username, int httpResponseCode) {
+        return list.stream().filter(m -> m.getApiUser().equals(username))
                 .filter(m -> m.getHttpResponseCode() != null && m.getHttpResponseCode().intValue() == httpResponseCode)
-                .mapToLong(m -> m.getCount())
-                .sum();
+                .mapToLong(m -> m.getCount()).sum();
     }
 
 }
