@@ -53,6 +53,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -105,61 +109,60 @@ public class AdminController {
     private static final String GITHUB_API_USER = "https://api.github.com/user";
     private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
     private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
-    private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
+	private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
-    static {
-        Map<Integer, Color> colorMap = new HashMap<Integer, Color>();
-        colorMap.put(400, Color.ORANGE);
-        colorMap.put(401, Color.SALMON);
-        colorMap.put(403, Color.LIGHT_YELLOW);
-        colorMap.put(404, new Color(255, 255, 102)); // yellow
-        colorMap.put(500, Color.RED);
-        colorMap.put(503, Color.ORANGE_RED);
-        colorMap.put(504, Color.DARK_RED);
-        chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
-    }
+	static {
+		Map<Integer, Color> colorMap = new HashMap<Integer, Color>();
+		colorMap.put(400, Color.ORANGE);
+		colorMap.put(401, Color.SALMON);
+		colorMap.put(403, Color.LIGHT_YELLOW);
+		colorMap.put(404, new Color(255, 255, 102)); // yellow
+		colorMap.put(500, Color.RED);
+		colorMap.put(503, Color.ORANGE_RED);
+		colorMap.put(504, Color.DARK_RED);
+		chartColorsPerHttpResponseCode = Collections.unmodifiableMap(colorMap);
+	}
 
-    /* REPOSITORIES */
-    @Autowired
-    MetricsAggregationCustomRepository metricsAggregationCustomRepository;
+	/* REPOSITORIES */
+	@Autowired
+	MetricsAggregationCustomRepository metricsAggregationCustomRepository;
 
-    @Autowired
-    MetricRepository metricRepository;
+	@Autowired
+	MetricRepository metricRepository;
 
-    @Autowired
-    private UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-    @Autowired
-    private ApiKeyRepository apiKeyRepository;
+	@Autowired
+	private ApiKeyRepository apiKeyRepository;
 
-    @Autowired
-    private ProxyRepository proxyRepository;
+	@Autowired
+	private ProxyRepository proxyRepository;
 
-    @Autowired
-    private ServiceApiRepository serviceApiRepository;
+	@Autowired
+	private ServiceApiRepository serviceApiRepository;
 
-    @Autowired
-    private CreateProxyAction createProxyAction;
+	@Autowired
+	private CreateProxyAction createProxyAction;
 
-    @Autowired
-    private CreateServiceAction createServiceAction;
+	@Autowired
+	private CreateServiceAction createServiceAction;
 
-    @Autowired
-    private CreateApiKeyAction createApiKeyAction;
+	@Autowired
+	private CreateApiKeyAction createApiKeyAction;
 
-    /* CONTROLLERS */
-    @Autowired
-    UserController userController;
+	/* CONTROLLERS */
+	@Autowired
+	UserController userController;
 
-    @Autowired
-    ReportController reportController;
+	@Autowired
+	ReportController reportController;
 
-    @Autowired
-    WebUI webUI;
+	@Autowired
+	WebUI webUI;
 
-    @Autowired
-    UserSessionSettings session;
-
+	@Autowired
+	UserSessionSettings session;
 
     @Autowired
     GatewayHealthMonitorService gatewayHealthMonitorService;
@@ -167,11 +170,11 @@ public class AdminController {
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
 
-        ModelAndView mav = new ModelAndView();
+		ModelAndView mav = new ModelAndView();
 
-        mav.setViewName(ADMIN_PROFILE);
-        return mav;
-    }
+		mav.setViewName(ADMIN_PROFILE);
+		return mav;
+	}
 
     @RequestMapping(value = "", method = GET)
     public ModelAndView home(Model model, HttpServletRequest request) throws IOException {
@@ -214,18 +217,33 @@ public class AdminController {
                 // The user is new for our database therefore we try to retrieve as much user info is possible from Github
                 OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
-                RestTemplate restTemplate = new RestTemplate();
-                String userInfo = restTemplate.getForObject(GITHUB_API_USER + "?access_token=" + details.getTokenValue(), String.class);
+				RestTemplate restTemplate = new RestTemplate();
+
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Authorization", "token " + details.getTokenValue());
+				HttpEntity<String> githubRequest = new HttpEntity<String>(headers);
+
+				ResponseEntity<String> userInfoResponse = restTemplate.exchange(GITHUB_API_USER, HttpMethod.GET,
+						githubRequest, String.class);
+				String userInfo = userInfoResponse.getBody();
+				// String userInfo = restTemplate.getForObject(GITHUB_API_USER +
+				// "?access_token=" + details.getTokenValue(), String.class);
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-                Map<String, Object> userMap = objectMapper.readValue(userInfo, new TypeReference<Map<String, Object>>() {
-                });
-                String email = (String) userMap.get("email");
-                if (email == null || email.isEmpty()) {
-                    String userEmails = restTemplate.getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
-                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails, objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
+				Map<String, Object> userMap = objectMapper.readValue(userInfo,
+						new TypeReference<Map<String, Object>>() {
+						});
+				String email = (String) userMap.get("email");
+				if (email == null || email.isEmpty()) {
+
+					ResponseEntity<String> userEmailsResponse = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+							githubRequest, String.class);
+					String userEmails = userEmailsResponse.getBody();
+					//String userEmails = restTemplate.getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
+					List<GithubEmail> emailsList = objectMapper.readValue(userEmails,
+							objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
 
                     Iterator<GithubEmail> it = emailsList.iterator();
                     boolean found = false;
@@ -320,11 +338,9 @@ public class AdminController {
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerHttpStatusCode> statisticsPerHttpStatusCodeList = metricsAggregationCustomRepository.getNoOfCallsPerHttpResponseCode(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                auth.getName());
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		List<StatisticsPerHttpStatusCode> statisticsPerHttpStatusCodeList = metricsAggregationCustomRepository
+				.getNoOfCallsPerHttpResponseCode(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
 
         if (statisticsPerHttpStatusCodeList.size() > 0) {
 
@@ -333,24 +349,25 @@ public class AdminController {
                 int statusCode = statisticsPerHttpStatusCodeList.get(i).getStatusCode();
                 Color colorForStatusCode = chartColorsPerHttpResponseCode.get(statusCode);
 
-                if (colorForStatusCode == null) {
-                    // there is no fixed color defined for this status code, set it based on the range
-                    if (statusCode >= 200 && statusCode < 300) {
-                        // lighter green
-                        colorForStatusCode = new Color(0, 204, 0);
-                    } else if (statusCode >= 300 && statusCode < 400) {
-                        colorForStatusCode = Color.LIGHT_BLUE;
-                    } else if (statusCode >= 404 && statusCode < 500) {
-                        colorForStatusCode = Color.DARK_ORANGE;
-                    } else if (statusCode >= 500 && statusCode < 600) {
-                        // red
-                        colorForStatusCode = new Color(255, 51, 51);
-                    } else {
-                        colorForStatusCode = Color.LIGHT_GRAY;
-                    }
-                }
-                chartColors.add(colorForStatusCode);
-            }
+				if (colorForStatusCode == null) {
+					// there is no fixed color defined for this status code, set it based on the
+					// range
+					if (statusCode >= 200 && statusCode < 300) {
+						// lighter green
+						colorForStatusCode = new Color(0, 204, 0);
+					} else if (statusCode >= 300 && statusCode < 400) {
+						colorForStatusCode = Color.LIGHT_BLUE;
+					} else if (statusCode >= 404 && statusCode < 500) {
+						colorForStatusCode = Color.DARK_ORANGE;
+					} else if (statusCode >= 500 && statusCode < 600) {
+						// red
+						colorForStatusCode = new Color(255, 51, 51);
+					} else {
+						colorForStatusCode = Color.LIGHT_GRAY;
+					}
+				}
+				chartColors.add(colorForStatusCode);
+			}
 
             DoughnutDataset dataset = new DoughnutDataset()
                     .setLabel("HTTP response codes")
@@ -450,14 +467,10 @@ public class AdminController {
         LocalDate previousTimePeriodEnd = selectedTimePeriodStart.minusDays(1);
         LocalDate previousTimePeriodStart = previousTimePeriodEnd.minusDays(timePeriodDurationInDays);
 
-        int callsThisPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                apiProviderUsername);
-        int callsPreviousPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(
-                previousTimePeriodStart,
-                previousTimePeriodEnd,
-                apiProviderUsername);
+		int callsThisPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
+				selectedTimePeriodEnd, apiProviderUsername);
+		int callsPreviousPeriod = metricsAggregationCustomRepository
+				.getTotalNumberOfLoggedApiCalls(previousTimePeriodStart, previousTimePeriodEnd, apiProviderUsername);
 
         GeneralStats stats = new GeneralStats();
         stats.dateFrom = selectedTimePeriodStart;
@@ -466,11 +479,10 @@ public class AdminController {
         stats.callsThisPeriod = callsThisPeriod;
         stats.callsDiff = callsThisPeriod - callsPreviousPeriod;
 
-        stats.errorsThisPeriod = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                apiProviderUsername);
-        stats.errorsTotal = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(previousTimePeriodStart, previousTimePeriodEnd, apiProviderUsername);
+		stats.errorsThisPeriod = metricsAggregationCustomRepository
+				.getNumberOfErroneousApiCalls(selectedTimePeriodStart, selectedTimePeriodEnd, apiProviderUsername);
+		stats.errorsTotal = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(previousTimePeriodStart,
+				previousTimePeriodEnd, apiProviderUsername);
 
         stats.users = metricsAggregationCustomRepository.getNumberOfApiCallers(
                 selectedTimePeriodStart,
