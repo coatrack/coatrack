@@ -81,7 +81,7 @@ public class HomeController {
 
     @RequestMapping(value = "/covers", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public Iterable<ServiceCover> serviceCoversListPageRest(){
+    public Iterable<ServiceCover> serviceCoversListPageRest() {
 
         return coverRepository.findAll();
     }

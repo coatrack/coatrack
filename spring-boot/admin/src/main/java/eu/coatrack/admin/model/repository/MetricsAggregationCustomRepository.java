@@ -84,7 +84,8 @@ public class MetricsAggregationCustomRepository {
     }
 
     public int getTotalNumberOfLoggedApiCallsLastWeek(String apiProviderUsername) {
-        return getTotalNumberOfLoggedApiCalls(LocalDate.now().minusDays(13), LocalDate.now().minusDays(7), apiProviderUsername);
+        return getTotalNumberOfLoggedApiCalls(LocalDate.now().minusDays(13), LocalDate.now().minusDays(7),
+                apiProviderUsername);
     }
 
     public int getTotalNumberOfLoggedApiCalls(LocalDate from, LocalDate until) {
@@ -95,14 +96,18 @@ public class MetricsAggregationCustomRepository {
         return getTotalNumberOfLoggedApiCalls(from, until, apiProviderOwnerName, null);
     }
 
-    public int getTotalNumberOfLoggedApiCalls(LocalDate from, LocalDate until, String apiProviderOwnerName, String apiProviderConsumerName) {
+    public int getTotalNumberOfLoggedApiCalls(LocalDate from, LocalDate until, String apiProviderOwnerName,
+            String apiProviderConsumerName) {
 
         int result = 0;
 
         /*
-        It is important to check if there metric id list because there is an exception in case you are using postgres and that error is skipped if you are using H2 database
+         * It is important to check if there metric id list because there is an
+         * exception in case you are using postgres and that error is skipped if you are
+         * using H2 database
          */
-        List<Long> metricIdList = getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderOwnerName);
+        List<Long> metricIdList = getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST,
+                apiProviderOwnerName);
 
         if (!metricIdList.isEmpty()) {
             String queryString = "SELECT sum(metric.count) "
@@ -156,11 +161,13 @@ public class MetricsAggregationCustomRepository {
             query.select(builder.sum(fromTable.get("count")));
             query.where(builder.and(
                     fromTable.get("id").in(idsList),
-                    builder.greaterThanOrEqualTo((javax.persistence.criteria.Expression) fromTable.get("dateOfApiCall"), Date.valueOf(from)),
-                    builder.lessThanOrEqualTo((javax.persistence.criteria.Expression) fromTable.get("dateOfApiCall"), Date.valueOf(until))
-            ));
+                    builder.greaterThanOrEqualTo((javax.persistence.criteria.Expression) fromTable.get("dateOfApiCall"),
+                            Date.valueOf(from)),
+                    builder.lessThanOrEqualTo((javax.persistence.criteria.Expression) fromTable.get("dateOfApiCall"),
+                            Date.valueOf(until))));
             Integer result = entityManager.createQuery(query).getSingleResult();
-            // result can be null in case no metrics have been recorded in the defined time period
+            // result can be null in case no metrics have been recorded in the defined time
+            // period
             numberOfErroneousApiCalls = (result == null) ? 0 : result;
         }
         return numberOfErroneousApiCalls;
@@ -171,8 +178,7 @@ public class MetricsAggregationCustomRepository {
         Query query = entityManager.createQuery("SELECT distinct metric.apiKey.user.username "
                 + " FROM  Metric metric "
                 + " WHERE metric.apiKey.serviceApi.owner.username = :apiProviderUserName"
-                + " AND metric.dateOfApiCall BETWEEN :fromDate AND :untilDate "
-        );
+                + " AND metric.dateOfApiCall BETWEEN :fromDate AND :untilDate ");
 
         query.setParameter("apiProviderUserName", apiProviderUserName);
         query.setParameter("fromDate", Date.valueOf(from));
@@ -194,18 +200,20 @@ public class MetricsAggregationCustomRepository {
             String apiProviderConsumername) {
 
         List<StatisticsPerService> statisticsPerServiceList = new ArrayList<>();
-        List<Long> metricIdList = getConsumerIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderConsumername);
+        List<Long> metricIdList = getConsumerIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST,
+                apiProviderConsumername);
 
         if (!metricIdList.isEmpty()) {
 
-            int totalNoOfCalls = getTotalNumberOfLoggedApiCalls(dateRangeStart, dateRangeEnd, null, apiProviderConsumername);
-            Query query = entityManager.createQuery("SELECT metric.apiKey.serviceApi.name, SUM(metric.count) AS noOfCalls, SUM(metric.count)*100 / :totalNoOfCalls "
-                    + " FROM  Metric metric "
-                    + " WHERE metric.id IN :idsOfRelevantMetrics"
-                    + " AND metric.dateOfApiCall BETWEEN :startDate AND :endDate"
-                    + " GROUP BY metric.apiKey.serviceApi.name"
-                    + " ORDER BY noOfCalls DESC"
-            );
+            int totalNoOfCalls = getTotalNumberOfLoggedApiCalls(dateRangeStart, dateRangeEnd, null,
+                    apiProviderConsumername);
+            Query query = entityManager.createQuery(
+                    "SELECT metric.apiKey.serviceApi.name, SUM(metric.count) AS noOfCalls, SUM(metric.count)*100 / :totalNoOfCalls "
+                            + " FROM  Metric metric "
+                            + " WHERE metric.id IN :idsOfRelevantMetrics"
+                            + " AND metric.dateOfApiCall BETWEEN :startDate AND :endDate"
+                            + " GROUP BY metric.apiKey.serviceApi.name"
+                            + " ORDER BY noOfCalls DESC");
 
             query.setParameter("totalNoOfCalls", new Integer(totalNoOfCalls).longValue());
             query.setParameter("idsOfRelevantMetrics", metricIdList);
@@ -219,8 +227,7 @@ public class MetricsAggregationCustomRepository {
 
                 StatisticsPerService statisticsPerApiUser = new StatisticsPerService((String) item[0],
                         (Long) item[1],
-                        (Long) item[2]
-                );
+                        (Long) item[2]);
                 statisticsPerServiceList.add(statisticsPerApiUser);
             }
         }
@@ -234,21 +241,23 @@ public class MetricsAggregationCustomRepository {
             String apiProviderUsername) {
 
         List<StatisticsPerApiUser> statisticsPerApiUserList = new ArrayList<>();
-        List<Long> metricIdList = getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderUsername);
+        List<Long> metricIdList = getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST,
+                apiProviderUsername);
 
         if (!metricIdList.isEmpty()) {
 
             int totalNoOfCalls = getTotalNumberOfLoggedApiCalls(apiProviderUsername);
-            Query query = entityManager.createQuery("SELECT metric.apiKey.user.username, SUM(metric.count) AS noOfCalls, SUM(metric.count)*100 / :totalNoOfCalls "
-                    + " FROM  Metric metric "
-                    + " WHERE metric.id IN :idsOfRelevantMetrics"
-                    + " AND metric.dateOfApiCall BETWEEN :startDate AND :endDate"
-                    + " GROUP BY metric.apiKey.user.username"
-                    + " ORDER BY noOfCalls DESC"
-            );
+            Query query = entityManager.createQuery(
+                    "SELECT metric.apiKey.user.username, SUM(metric.count) AS noOfCalls, SUM(metric.count)*100 / :totalNoOfCalls "
+                            + " FROM  Metric metric "
+                            + " WHERE metric.id IN :idsOfRelevantMetrics"
+                            + " AND metric.dateOfApiCall BETWEEN :startDate AND :endDate"
+                            + " GROUP BY metric.apiKey.user.username"
+                            + " ORDER BY noOfCalls DESC");
 
             query.setParameter("totalNoOfCalls", new Integer(totalNoOfCalls).longValue());
-            query.setParameter("idsOfRelevantMetrics", getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderUsername));
+            query.setParameter("idsOfRelevantMetrics",
+                    getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderUsername));
             query.setParameter("startDate", Date.valueOf(dateRangeStart));
             query.setParameter("endDate", Date.valueOf(dateRangeEnd));
 
@@ -259,8 +268,7 @@ public class MetricsAggregationCustomRepository {
 
                 StatisticsPerApiUser statisticsPerApiUser = new StatisticsPerApiUser((String) item[0],
                         (Long) item[1],
-                        (Long) item[2]
-                );
+                        (Long) item[2]);
                 statisticsPerApiUserList.add(statisticsPerApiUser);
             }
         }
@@ -290,12 +298,12 @@ public class MetricsAggregationCustomRepository {
                     builder.sum(from.get("count")));
             query.where(builder.and(
                     from.get("id")
-                            .in(getIDsOfRelevantMetricsJustForResponses(apiProviderUsername, apiProviderConsumerUsername)),
+                            .in(getIDsOfRelevantMetricsJustForResponses(apiProviderUsername,
+                                    apiProviderConsumerUsername)),
                     builder.between(
                             (javax.persistence.criteria.Expression) from.get("dateOfApiCall"),
                             Date.valueOf(dateRangeStart),
-                            Date.valueOf(dateRangeEnd))
-            ));
+                            Date.valueOf(dateRangeEnd))));
             query.groupBy(
                     from.get("httpResponseCode"));
             query.orderBy(builder.asc(
@@ -327,7 +335,8 @@ public class MetricsAggregationCustomRepository {
 
         List<StatisticsPerDay> statisticsList = null;
 
-        List<Long> idList = getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderUsername, apiProviderConsumerUsername);
+        List<Long> idList = getIDsOfRelevantMetricsByMetricType(MetricType.AUTHORIZED_REQUEST, apiProviderUsername,
+                apiProviderConsumerUsername);
         if (idList != null && !idList.isEmpty()) {
 
             query.multiselect(
@@ -338,8 +347,7 @@ public class MetricsAggregationCustomRepository {
                     builder.between(
                             (javax.persistence.criteria.Expression) from.get("dateOfApiCall"),
                             Date.valueOf(dateRangeStart),
-                            Date.valueOf(dateRangeEnd))
-            ));
+                            Date.valueOf(dateRangeEnd))));
 
             query.groupBy(
                     from.get("dateOfApiCall"));
@@ -358,8 +366,7 @@ public class MetricsAggregationCustomRepository {
 
         Query query = entityManager.createQuery("SELECT metric.apiKey.serviceApi "
                 + " FROM  Metric metric "
-                + " WHERE  metric.id = :id"
-        );
+                + " WHERE  metric.id = :id");
 
         query.setParameter("id", id);
 
@@ -398,8 +405,7 @@ public class MetricsAggregationCustomRepository {
         if (idsOfRelevantMetrics == null || idsOfRelevantMetrics.isEmpty()) {
             return Collections.emptyList();
         } else {
-            String queryString
-                    = "SELECT new eu.coatrack.admin.model.vo.MetricsAggregation("
+            String queryString = "SELECT new eu.coatrack.admin.model.vo.MetricsAggregation("
                     + "metric.apiKey.serviceApi.name, "
                     + "metric.apiKey.user.username, "
                     + "metric.type, "
@@ -464,7 +470,8 @@ public class MetricsAggregationCustomRepository {
                 apiProviderUsername);
     }
 
-    private List<Long> getIDsOfRelevantMetricsByMetricType(MetricType metricType, String apiProviderUsername, String apiProviderConsumername) {
+    private List<Long> getIDsOfRelevantMetricsByMetricType(MetricType metricType, String apiProviderUsername,
+            String apiProviderConsumername) {
         return getIDsOfLatestMetricsPerSession(
                 null,
                 null,
@@ -476,7 +483,8 @@ public class MetricsAggregationCustomRepository {
                 apiProviderUsername, apiProviderConsumername);
     }
 
-    private List<Long> getConsumerIDsOfRelevantMetricsByMetricType(MetricType metricType, String apiProviderConsumername) {
+    private List<Long> getConsumerIDsOfRelevantMetricsByMetricType(MetricType metricType,
+            String apiProviderConsumername) {
         return getIDsOfLatestMetricsPerSession(
                 null,
                 null,
@@ -500,7 +508,8 @@ public class MetricsAggregationCustomRepository {
                 apiProviderUsername);
     }
 
-    private List<Long> getIDsOfRelevantMetricsWithHttpErrorCodes(String apiProviderOwnerUsername, String apiProviderConsumerUsername) {
+    private List<Long> getIDsOfRelevantMetricsWithHttpErrorCodes(String apiProviderOwnerUsername,
+            String apiProviderConsumerUsername) {
         return getIDsOfLatestMetricsPerSession(
                 null,
                 null,
@@ -524,7 +533,8 @@ public class MetricsAggregationCustomRepository {
                 apiProviderUsername);
     }
 
-    private List<Long> getIDsOfRelevantMetricsJustForResponses(String apiProviderOwnerUsername, String apiProviderConsumerUsername) {
+    private List<Long> getIDsOfRelevantMetricsJustForResponses(String apiProviderOwnerUsername,
+            String apiProviderConsumerUsername) {
         return getIDsOfLatestMetricsPerSession(
                 null,
                 null,
@@ -558,25 +568,24 @@ public class MetricsAggregationCustomRepository {
     }
 
     /**
-     * Returns the database IDs of the latest metrics per counter session, i.e.
-     * in case the proxies transmitted regular updates of the metrics, only the
-     * latest values for each metric are returned. This way "double counting" is
-     * avoided.
+     * Returns the database IDs of the latest metrics per counter session, i.e. in
+     * case the proxies transmitted regular updates of the metrics, only the latest
+     * values for each metric are returned. This way "double counting" is avoided.
      * <p>
      * In the future this double counting should already be avoided at metrics
-     * transmission time, therefore this method should in any case stay PRIVATE,
-     * as this is an internal behaviour of the metrics repository to be changed
-     * later.
+     * transmission time, therefore this method should in any case stay PRIVATE, as
+     * this is an internal behaviour of the metrics repository to be changed later.
      *
-     * @param serviceId - optional parameter to filter by service
-     * @param proxyId - optional parameter to filter by proxy
-     * @param metricType - optional parameter to filter by metric metricType
-     * @param onlyHttpErrorCodes - if TRUE, only http codes that indicate errors
-     * are taken into account
+     * @param serviceId           - optional parameter to filter by service
+     * @param proxyId             - optional parameter to filter by proxy
+     * @param metricType          - optional parameter to filter by metric
+     *                            metricType
+     * @param onlyHttpErrorCodes  - if TRUE, only http codes that indicate errors
+     *                            are taken into account
      * @param onlyResponseMetrics
      * @param apiProviderUsername
      * @return List of Metric database IDs, which are the latest per session and
-     * thus relevant for statistics calculation.
+     *         thus relevant for statistics calculation.
      */
     private List<Long> getIDsOfLatestMetricsPerSession(
             Long serviceId,
@@ -665,11 +674,14 @@ public class MetricsAggregationCustomRepository {
         return result;
     }
 
-    public List getUsageApiConsumer(MetricType metricType, Long serviceApiId, String apiProviderUsername, Long apiConsumer, java.util.Date startDate, java.util.Date endDate) {
-        return getUsageApiConsumer(metricType, serviceApiId, apiProviderUsername, apiConsumer, startDate, endDate, false);
+    public List getUsageApiConsumer(MetricType metricType, Long serviceApiId, String apiProviderUsername,
+            Long apiConsumer, java.util.Date startDate, java.util.Date endDate) {
+        return getUsageApiConsumer(metricType, serviceApiId, apiProviderUsername, apiConsumer, startDate, endDate,
+                false);
     }
 
-    public List getUsageApiConsumer(MetricType metricType, Long serviceApiId, String apiProviderUsername, Long apiConsumer, java.util.Date startDate, java.util.Date endDate, boolean errorFiltering) {
+    public List getUsageApiConsumer(MetricType metricType, Long serviceApiId, String apiProviderUsername,
+            Long apiConsumer, java.util.Date startDate, java.util.Date endDate, boolean errorFiltering) {
 
         List result = null;
 
@@ -699,7 +711,8 @@ public class MetricsAggregationCustomRepository {
 
             Query query = entityManager.createQuery(select);
 
-            query.setParameter("idsOfRelevantMetrics", getIDsOfRelevantMetricsByMetricType(metricType, apiProviderUsername));
+            query.setParameter("idsOfRelevantMetrics",
+                    getIDsOfRelevantMetricsByMetricType(metricType, apiProviderUsername));
 
             query.setParameter("startDate", startDate, TemporalType.DATE);
             query.setParameter("endDate", endDate, TemporalType.DATE);

@@ -32,7 +32,8 @@ public class MetricsAggregation {
     private final Integer httpResponseCode;
     private final long count;
 
-    public MetricsAggregation(String serviceApiName, String apiUser, MetricType type, String requestMethod, String path, Integer httpResponseCode, long count) {
+    public MetricsAggregation(String serviceApiName, String apiUser, MetricType type, String requestMethod, String path,
+            Integer httpResponseCode, long count) {
         this.serviceApiName = serviceApiName;
         this.apiUser = apiUser;
         this.type = type;
@@ -58,7 +59,9 @@ public class MetricsAggregation {
         return requestMethod;
     }
 
-    public String getPath() { return path; }
+    public String getPath() {
+        return path;
+    }
 
     public Integer getHttpResponseCode() {
         return httpResponseCode;

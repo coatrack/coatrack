@@ -37,8 +37,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- *  Checks if the API key token value sent by the client is valid. If so, an authentication object
- *  including the granted authorities is generated, to be further handled by access decision voters.
+ * Checks if the API key token value sent by the client is valid. If so, an
+ * authentication object including the granted authorities is generated, to be
+ * further handled by access decision voters.
  *
  * @author gr-hovest, Christoph Baier
  */
@@ -54,7 +55,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
     private final Set<SimpleGrantedAuthority> authoritiesGrantedToCoatRackAdminApp = new HashSet<>();
 
     public ApiKeyAuthenticator(LocalApiKeyManager localApiKeyManager,
-                               ApiKeyFetcher apiKeyFetcher, ApiKeyValidator apiKeyValidator) {
+            ApiKeyFetcher apiKeyFetcher, ApiKeyValidator apiKeyValidator) {
         this.localApiKeyManager = localApiKeyManager;
         this.apiKeyFetcher = apiKeyFetcher;
         this.apiKeyValidator = apiKeyValidator;
@@ -81,7 +82,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
     }
 
     private String extractApiKeyValueFromAuthentication(Authentication authentication) {
-        try{
+        try {
             log.debug("Getting API key value from authentication {}.", authentication.getName());
             Assert.notNull(authentication.getCredentials(), "The credentials of " + authentication.getName()
                     + " were null.");
@@ -89,7 +90,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
             String apiKeyValue = (String) authentication.getCredentials();
             Assert.hasText(apiKeyValue, "The credentials did not contain any letters.");
             return apiKeyValue;
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw new BadCredentialsException("The credentials of the authentication " + authentication.getName()
                     + " are not valid", e);
         }
@@ -109,7 +110,8 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
 
     private Authentication createAdminAuthTokenFromApiKey(String apiKeyValue) {
         log.debug("Creating admin authentication token using API key with the value {}.", apiKeyValue);
-        ApiKeyAuthToken apiKeyAuthTokenForValidApiKey = new ApiKeyAuthToken(apiKeyValue, authoritiesGrantedToCoatRackAdminApp);
+        ApiKeyAuthToken apiKeyAuthTokenForValidApiKey = new ApiKeyAuthToken(apiKeyValue,
+                authoritiesGrantedToCoatRackAdminApp);
         apiKeyAuthTokenForValidApiKey.setAuthenticated(true);
         return apiKeyAuthTokenForValidApiKey;
     }

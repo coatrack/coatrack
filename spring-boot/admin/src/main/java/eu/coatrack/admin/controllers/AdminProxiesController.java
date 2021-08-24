@@ -148,7 +148,8 @@ public class AdminProxiesController {
 
     @PostMapping(value = "/add")
     public ModelAndView addProxy(@ModelAttribute Proxy proxy,
-            @RequestParam(required = false) List<Long> selectedServices) throws IOException, GitAPIException, URISyntaxException {
+            @RequestParam(required = false) List<Long> selectedServices)
+            throws IOException, GitAPIException, URISyntaxException {
         log.debug("POST call to proxy/add: " + proxy.toString());
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -170,7 +171,8 @@ public class AdminProxiesController {
 
     @PostMapping(value = "/update")
     public ModelAndView updateProxy(@ModelAttribute Proxy proxy,
-            @RequestParam(required = false) List<String> selectedServices) throws IOException, GitAPIException, URISyntaxException, Exception {
+            @RequestParam(required = false) List<String> selectedServices)
+            throws IOException, GitAPIException, URISyntaxException, Exception {
         log.debug("Update proxy: " + proxy.toString());
 
         Proxy proxyStored = proxyRepository.findOne(proxy.getId());
@@ -198,7 +200,8 @@ public class AdminProxiesController {
             return updateFormWithErrorMessage(proxyStored, "updateProxyGitError");
         }
 
-        // call proxy so that it will get the latest config from git (by calling the config server)
+        // call proxy so that it will get the latest config from git (by calling the
+        // config server)
         try {
             informProxyAboutUpdatedConfiguration(proxyStored);
         } catch (Exception e) {
@@ -216,7 +219,8 @@ public class AdminProxiesController {
         return updateFormWithErrorMessage(proxyStored, errorMessageKey, null);
     }
 
-    private ModelAndView updateFormWithErrorMessage(Proxy proxyStored, String errorMessageKey, String errorMessageText) {
+    private ModelAndView updateFormWithErrorMessage(Proxy proxyStored, String errorMessageKey,
+            String errorMessageText) {
         ModelAndView updateForm = updateProxyForm(proxyStored.getId());
         updateForm.addObject("errorMessageKey", errorMessageKey);
 
@@ -252,7 +256,8 @@ public class AdminProxiesController {
         log.debug("providing file as download: " + proxyDownloadFile);
 
         response.setContentType(PROXY_DOWNLOAD_MIMETYPE);
-        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", proxyDownloadFile.getName()));
+        response.setHeader("Content-Disposition",
+                String.format("attachment; filename=\"%s\"", proxyDownloadFile.getName()));
         response.setContentLength((int) proxyDownloadFile.length());
 
         InputStream inputStream = new BufferedInputStream(new FileInputStream(proxyDownloadFile));
@@ -274,7 +279,8 @@ public class AdminProxiesController {
         return proxyListPageRest();
     }
 
-    public void transmitConfigChangesToGitConfigRepository(Proxy updatedProxy) throws IOException, GitAPIException, URISyntaxException {
+    public void transmitConfigChangesToGitConfigRepository(Proxy updatedProxy)
+            throws IOException, GitAPIException, URISyntaxException {
 
         log.debug("deleting old proxy config from git repository for proxy {}", updatedProxy.getId());
         gitService.init();
@@ -291,9 +297,11 @@ public class AdminProxiesController {
 
         String refreshUrl = updatedProxy.getPublicUrl().trim();
         refreshUrl = refreshUrl.endsWith("/") ? refreshUrl + "refresh" : refreshUrl + "/refresh";
-        refreshUrl = refreshUrl + "?" + ApiKey.API_KEY_REQUEST_PARAMETER_NAME + "=" + ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES;
+        refreshUrl = refreshUrl + "?" + ApiKey.API_KEY_REQUEST_PARAMETER_NAME + "="
+                + ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES;
 
-        log.debug("inform proxy {} about updated config - calling refresh at URL: {}", updatedProxy.getId(), refreshUrl);
+        log.debug("inform proxy {} about updated config - calling refresh at URL: {}", updatedProxy.getId(),
+                refreshUrl);
         Object responseOfRefreshCall = restTemplate.postForObject(new URI(refreshUrl), null, Object.class);
         log.info("refresh call to proxy returned: {}", responseOfRefreshCall);
     }

@@ -78,8 +78,6 @@ public class User {
     public void setAccount(CreditAccount account) {
         this.account = account;
     }
-    
-    
 
     public Boolean getEmailVerified() {
         return emailVerified;
@@ -121,7 +119,7 @@ public class User {
         this.company = company;
     }
 
-    //standard getters and setters
+    // standard getters and setters
     public String getFirstname() {
         return firstname;
     }

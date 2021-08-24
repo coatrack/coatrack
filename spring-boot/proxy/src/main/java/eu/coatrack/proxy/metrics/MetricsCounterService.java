@@ -53,15 +53,15 @@ public class MetricsCounterService {
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
     private static final int MATCHER_GROUP_INDEX_OF_PATH = 2;
 
-    // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
+    // this ID should be unique for each start of the proxy application, so that
+    // CoatRack admin knows when counting was restarted
     private static final String counterSessionID = UUID.randomUUID().toString();
 
     public void increment(HttpServletRequest request, String apiKey, MetricType metricType, Integer httpResponseCode) {
         log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
                 metricType,
                 request.getRequestURI(),
-                apiKey
-        ));
+                apiKey));
 
         String requestMethod = request.getMethod();
 
@@ -73,7 +73,8 @@ public class MetricsCounterService {
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
             serviceApiName = matcher.group(MATCHER_GROUP_INDEX_OF_SERVICE_API_ID);
-            // rest of the servlet path is the actual path that is called on the proxied service
+            // rest of the servlet path is the actual path that is called on the proxied
+            // service
             path = matcher.group(MATCHER_GROUP_INDEX_OF_PATH);
             log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'",
                     matcher.group(0), serviceApiName, path);
@@ -82,7 +83,7 @@ public class MetricsCounterService {
                 path = "/";
             } else if (path.endsWith("/") && !path.equals("/")) {
                 // remove trailing "/" as this is the same path from metrics point of view
-                path = path.substring(0, path.length()-1);
+                path = path.substring(0, path.length() - 1);
             }
         } else {
             log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
@@ -124,7 +125,8 @@ public class MetricsCounterService {
             outputMetric.setMetricsCounterSessionID(counterSessionID);
             outputMetric.setType(MetricType.valueOf(elements[4]));
 
-            // add a tmp api key object with just the key value, will later be mapped to entity on CoatRack admin side
+            // add a tmp api key object with just the key value, will later be mapped to
+            // entity on CoatRack admin side
             ApiKey tmpApiKey = new ApiKey();
             tmpApiKey.setKeyValue(elements[3]);
             outputMetric.setApiKey(tmpApiKey);

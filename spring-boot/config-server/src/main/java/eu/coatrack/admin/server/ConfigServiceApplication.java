@@ -30,8 +30,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableConfigServer
 @SpringBootApplication
 @EnableJpaRepositories("eu.coatrack.admin.server.repository")
-@EntityScan(basePackages = {"eu.coatrack.api", "eu.coatrack.config"})
-@ComponentScan(basePackages = {"eu.coatrack.admin.server.principal.entrypoint", "eu.coatrack.admin.server.service", "eu.coatrack.admin.server", "eu.coatrack.admin.server.config", "eu.coatrack.admin.server.service.filter"})
+@EntityScan(basePackages = { "eu.coatrack.api", "eu.coatrack.config" })
+@ComponentScan(basePackages = { "eu.coatrack.admin.server.principal.entrypoint", "eu.coatrack.admin.server.service",
+        "eu.coatrack.admin.server", "eu.coatrack.admin.server.config", "eu.coatrack.admin.server.service.filter" })
 public class ConfigServiceApplication {
 
     public static void main(String[] args) {

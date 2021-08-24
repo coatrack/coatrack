@@ -70,9 +70,11 @@ public class GatewayApiController {
         return serviceApiRepository.findByApiKeyValue(apiKeyValue);
     }
 
-    //Due to legacy code reasons the gateway API key and the gateway id are exactly the same.
+    // Due to legacy code reasons the gateway API key and the gateway id are exactly
+    // the same.
     @GetMapping("/api/gateways/api-keys")
-    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(@RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
+    public ResponseEntity<List<ApiKey>> findApiKeyListByGatewayApiKey(
+            @RequestParam("gateway-api-key") String gatewayIdAndApiKey) {
         log.debug("The gateway with the ID {} requests its latest API key list.", gatewayIdAndApiKey);
         try {
             Optional<Proxy> proxy = Optional.ofNullable(proxyRepository.findById(gatewayIdAndApiKey));
@@ -91,7 +93,7 @@ public class GatewayApiController {
         } else
             return proxy.getServiceApis().stream()
                     .flatMap(
-                            serviceApi -> serviceApi.getApiKeys().stream()
-                    ).collect(Collectors.toList());
+                            serviceApi -> serviceApi.getApiKeys().stream())
+                    .collect(Collectors.toList());
     }
 }

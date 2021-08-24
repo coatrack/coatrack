@@ -33,11 +33,9 @@ public class ApiKeyValidatorTest {
     private ApiKey apiKey;
     private ApiKeyValidator apiKeyValidator;
 
-    private static final long
-            oneMinuteInMillis = 1000 * 60;
+    private static final long oneMinuteInMillis = 1000 * 60;
 
-    private final Timestamp
-            now = new Timestamp(System.currentTimeMillis()),
+    private final Timestamp now = new Timestamp(System.currentTimeMillis()),
             oneMinuteAfterNow = new Timestamp(now.getTime() + oneMinuteInMillis),
             oneMinuteBeforeNow = new Timestamp(now.getTime() - oneMinuteInMillis);
 

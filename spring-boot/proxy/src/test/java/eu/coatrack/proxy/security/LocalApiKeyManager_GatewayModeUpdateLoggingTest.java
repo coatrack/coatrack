@@ -72,7 +72,7 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
 
     @Test
     public void stayingInOfflineModeShouldNotBeLogged() {
-        //Gateway starts in offline mode and does therefore not switch modes.
+        // Gateway starts in offline mode and does therefore not switch modes.
         letLocalApiKeyManagerSwitchToOfflineMode();
 
         assertEquals(0, logEventStorage.getNumberOfLogEventsContaining(switchingToOnlineModeMessage));
@@ -134,7 +134,8 @@ public class LocalApiKeyManager_GatewayModeUpdateLoggingTest extends LocalApiKey
         reset(apiKeyFetcherMock);
         when(apiKeyFetcherMock.requestLatestApiKeyListFromAdmin()).thenThrow(new ApiKeyFetchingFailedException("test"));
 
-        //This method fails due to the thrown ApiKeyFetchingException and causes the gateway to switch to offline mode.
+        // This method fails due to the thrown ApiKeyFetchingException and causes the
+        // gateway to switch to offline mode.
         localApiKeyManager.refreshLocalApiKeyCacheWithApiKeysFromAdmin();
     }
 

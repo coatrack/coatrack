@@ -27,7 +27,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 
 /**
- * Provides auxiliary methods to build URLs for requests to CoatRack admin server.
+ * Provides auxiliary methods to build URLs for requests to CoatRack admin
+ * server.
  *
  * @author Christoph Baier
  */
@@ -47,8 +48,7 @@ public class UrlResourcesProvider {
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
     private String adminResourceToFetchSingleApiKey;
 
-    private String
-            apiKeyListRequestUrl,
+    private String apiKeyListRequestUrl,
             apiKeyRequestUrlWithoutApiKeyValueAndGatewayId;
 
     @PostConstruct

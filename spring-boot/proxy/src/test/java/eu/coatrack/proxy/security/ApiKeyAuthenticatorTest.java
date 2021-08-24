@@ -70,8 +70,7 @@ public class ApiKeyAuthenticatorTest {
         return new ApiKeyAuthenticator(
                 localApiKeyManagerMock,
                 apiKeyFetcherMock,
-                apiKeyValidatorMock
-        );
+                apiKeyValidatorMock);
     }
 
     @Test
@@ -112,7 +111,8 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void apiKeyNotFoundInLocalApiKeyListShouldCauseException() {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+                ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(false);
 
         assertThrows(BadCredentialsException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
@@ -120,7 +120,8 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void apiKeyAuthorizedByLocalApiKeyListAndShouldBeAuthorized() {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+                ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(true);
 
@@ -129,7 +130,8 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void invalidApiKeyFromLocalApiKeyListAndShouldCauseException() {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+                ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(true);
         addBehaviorToApiKeyVerifierMock_ShallGivenApiKeyBeConsideredValid(false);
 
@@ -146,15 +148,19 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void triggerApiKeyNotFoundInLocalApiKeyListExceptionAndExpectNull() {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
-        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue())).thenThrow(ApiKeyNotFoundInLocalApiKeyListException.class);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+                ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()))
+                .thenThrow(ApiKeyNotFoundInLocalApiKeyListException.class);
 
-        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class, () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
+        assertThrows(ApiKeyNotFoundInLocalApiKeyListException.class,
+                () -> apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
     @Test
     public void triggerLocalApiKeyListWasNotInitializedExceptionAndExpectNull() {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+                ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()))
                 .thenThrow(LocalApiKeyListWasNotInitializedException.class);
 
@@ -163,25 +169,28 @@ public class ApiKeyAuthenticatorTest {
 
     @Test
     public void triggerOfflineWorkingTimeExceedingExceptionAndExpectNull() {
-        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
+        addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+                ResultOfApiKeyRequestToAdmin.API_KEY_FETCHING_FAILED_EXCEPTION);
         when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()))
                 .thenThrow(OfflineWorkingTimeExceedingException.class);
 
         assertNull(apiKeyAuthenticator.authenticate(apiKeyAuthToken));
     }
 
-    private void addBehaviorToApiKeyFetcherMock_SetExpectedResponse(ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin)
+    private void addBehaviorToApiKeyFetcherMock_SetExpectedResponse(
+            ResultOfApiKeyRequestToAdmin resultOfApiKeyRequestToAdmin)
             throws ApiKeyFetchingFailedException {
         switch (resultOfApiKeyRequestToAdmin) {
-            case NULL:
-                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
-                break;
-            case API_KEY:
-                when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
-                break;
-            case API_KEY_FETCHING_FAILED_EXCEPTION:
-                when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenThrow(new ApiKeyFetchingFailedException("test"));
-                break;
+        case NULL:
+            when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString())).thenReturn(null);
+            break;
+        case API_KEY:
+            when(apiKeyFetcherMock.requestApiKeyFromAdmin(apiKey.getKeyValue())).thenReturn(apiKey);
+            break;
+        case API_KEY_FETCHING_FAILED_EXCEPTION:
+            when(apiKeyFetcherMock.requestApiKeyFromAdmin(anyString()))
+                    .thenThrow(new ApiKeyFetchingFailedException("test"));
+            break;
         }
     }
 
@@ -195,6 +204,7 @@ public class ApiKeyAuthenticatorTest {
 
     private void addBehaviorToApiKeyManagerMock_ShallApiKeyBeFoundInLocalApiKeyList(boolean isFoundInLocalApiKeyList) {
         ApiKey expectedReturnValue = isFoundInLocalApiKeyList ? apiKey : null;
-        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue())).thenReturn(expectedReturnValue);
+        when(localApiKeyManagerMock.getApiKeyEntityFromLocalCache(apiKey.getKeyValue()))
+                .thenReturn(expectedReturnValue);
     }
 }

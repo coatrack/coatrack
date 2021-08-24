@@ -100,12 +100,13 @@ public class GatewayApplication {
     }
 
     /**
-     * Basic Spring copy exporter that regularly exports metrics, but just in
-     * case they have changed
+     * Basic Spring copy exporter that regularly exports metrics, but just in case
+     * they have changed
      */
     @Bean
     @Autowired
-    public MetricCopyExporter metricCopyExporter(BufferMetricReader metricReader, MetricsTransmitter metricsTransmitter) {
+    public MetricCopyExporter metricCopyExporter(BufferMetricReader metricReader,
+            MetricsTransmitter metricsTransmitter) {
         return new MetricCopyExporter(metricReader, metricsTransmitter);
     }
 
@@ -120,15 +121,14 @@ public class GatewayApplication {
     }
 
     /**
-     * Rest template to be used for communication with CoatRack admin,
-     * configured with auth credentials.
+     * Rest template to be used for communication with CoatRack admin, configured
+     * with auth credentials.
      */
     @Bean("restTemplate")
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add(
-                new BasicAuthorizationInterceptor(config_server_username, config_server_password)
-        );
+                new BasicAuthorizationInterceptor(config_server_username, config_server_password));
         return restTemplate;
     }
 
@@ -144,8 +144,7 @@ public class GatewayApplication {
         List<AccessDecisionVoter<? extends Object>> accessDecisionVoters = Arrays.asList(
                 new AuthenticatedVoter(),
                 new WebExpressionVoter(),
-                new ServiceApiAccessRightsVoter()
-        );
+                new ServiceApiAccessRightsVoter());
         return new UnanimousBased(accessDecisionVoters);
     }
 }

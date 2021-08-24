@@ -33,8 +33,8 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 /**
- * Sends requests to the Coatrack admin server to receive single
- * API keys or a list of API keys for all services offered by this gateway.
+ * Sends requests to the Coatrack admin server to receive single API keys or a
+ * list of API keys for all services offered by this gateway.
  *
  * @author Christoph Baier
  */
@@ -78,7 +78,8 @@ public class ApiKeyFetcher {
             return responseEntity.getBody();
     }
 
-    private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(ResponseEntity<?> responseEntity) {
+    private Optional<String> validateResponseEntityAndCreateErrorMessageInCaseOfProblems(
+            ResponseEntity<?> responseEntity) {
         Optional<String> errorMessage = Optional.empty();
 
         if (responseEntity == null) {

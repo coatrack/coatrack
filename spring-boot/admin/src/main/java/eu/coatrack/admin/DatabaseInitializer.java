@@ -85,9 +85,11 @@ public class DatabaseInitializer {
             log.info("Inserting sample data into the database");
 
             log.debug("sample data api provider username is {}", sampleDataApiProviderUsername);
-            User apiProviderUser = createNewUser("WeatherSolutions Inc.", sampleDataApiProviderUsername, "Arthur", "Admin");
+            User apiProviderUser = createNewUser("WeatherSolutions Inc.", sampleDataApiProviderUsername, "Arthur",
+                    "Admin");
 
-            User simonSupermarketUser = createNewUser("Another Supermarket Chain", "Simon Supermarket", "Simon", "Supermarket");
+            User simonSupermarketUser = createNewUser("Another Supermarket Chain", "Simon Supermarket", "Simon",
+                    "Supermarket");
             User frankFarmerUser = createNewUser("Frank's Farm", sampleDataApiConsumerUsername, "Frank", "Farmer");
             User richardRetailerUser = createNewUser("My Supermarket Chain", "Richard Retailer", "Richard", "Retailer");
             User waltWholesalerUser = createNewUser("ACME Wholesale Inc.", "Walt Wholesaler", "Walt", "Wholesaler");
@@ -102,8 +104,6 @@ public class DatabaseInitializer {
                     new BigDecimal(2.0),
                     new BigDecimal(15.9),
                     "Service for customers to get information about the weather in a specific location. Define the location via request parameters 'lat' and 'long' (mandatory).");
-
-
 
             ServiceApi serviceApiHumidity = createNewServiceAPI(
                     apiProviderUser,
@@ -151,7 +151,7 @@ public class DatabaseInitializer {
                     "http://localhost:8089/",
                     "Gateway running in the ACME Inc. data processing centre", apiProviderUser);
 
-            ApiKey  simonSupermarketKeyServiceApiHumidity = createNewApiKey(
+            ApiKey simonSupermarketKeyServiceApiHumidity = createNewApiKey(
                     "ee11ee22-ee33-ee44-ee55-ee66ee77ee88",
                     simonSupermarketUser,
                     DateUtils.addDays(new Date(), -40), serviceApiHumidity);
@@ -195,7 +195,7 @@ public class DatabaseInitializer {
                     metricsCounterSessionID,
                     today.minusDays(9));
             addMetrics(proxyWeather,
-                   frankFarmerKeyServiceApiLocation,
+                    frankFarmerKeyServiceApiLocation,
                     "POST",
                     "/order/small",
                     2,
@@ -346,24 +346,19 @@ public class DatabaseInitializer {
             // put some credits into accounts for local testing
             createNewCreditAccount(
                     2150,
-                    apiProviderUser
-            );
+                    apiProviderUser);
             createNewCreditAccount(
                     1010,
-                    simonSupermarketUser
-            );
+                    simonSupermarketUser);
             createNewCreditAccount(
                     158,
-                    frankFarmerUser
-            );
+                    frankFarmerUser);
             createNewCreditAccount(
                     220,
-                    richardRetailerUser
-            );
+                    richardRetailerUser);
             createNewCreditAccount(
                     312,
-                    waltWholesalerUser
-            );
+                    waltWholesalerUser);
         }
     }
 
@@ -548,8 +543,8 @@ public class DatabaseInitializer {
         Metric returnMetric = metricRepository.findOne(metric.getId());
         Proxy proxies = returnMetric.getProxy();
         Set<ServiceApi> services = proxies.getServiceApis();
-        //List<ApiKey> returnApiKeys = services.iterator().next().getApiKeys();
-        //returnApiKeys.get(0).getId();
+        // List<ApiKey> returnApiKeys = services.iterator().next().getApiKeys();
+        // returnApiKeys.get(0).getId();
     }
 
     private void createNewCreditAccount(double balance, User user) {

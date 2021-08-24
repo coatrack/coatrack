@@ -26,7 +26,8 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 /**
- * Represents an API key token that was transmitted by the client in the proxied request
+ * Represents an API key token that was transmitted by the client in the proxied
+ * request
  *
  * @author gr-hovest
  */

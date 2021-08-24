@@ -59,7 +59,7 @@ public class ReportController {
     private List<String> getPayPerCallServicesIds(List<ServiceApi> serviceApis) {
 
         List<String> payPerCallServicesIds = new ArrayList<>();
-        if(!serviceApis.isEmpty()) {
+        if (!serviceApis.isEmpty()) {
             payPerCallServicesIds = serviceApis
                     .stream()
                     .filter(serviceApi -> serviceApi.getServiceAccessPaymentPolicy().equals(WELL_DEFINED_PRICE))
@@ -95,8 +95,7 @@ public class ReportController {
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId,
-            @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
-    ) {
+            @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls) {
         Date dateFromDate = new Date();
         if (dateFrom != null) {
             try {
@@ -126,7 +125,7 @@ public class ReportController {
                 .distinct()
                 .collect(Collectors.toList());
 
-        List <String> payPerCallServicesIds = getPayPerCallServicesIds(servicesProvidedByLoggedInUser);
+        List<String> payPerCallServicesIds = getPayPerCallServicesIds(servicesProvidedByLoggedInUser);
 
         ModelAndView mav = new ModelAndView();
 
@@ -138,8 +137,10 @@ public class ReportController {
         mav.getModel().put("dateUntil", df.format(dateUntilDate));
         mav.addObject("selectedServiceId", selectedServiceId);
         mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findOne(selectedServiceId));
-        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findOne(selectedApiConsumerUserId));
+        mav.addObject("serviceApiSelectedForReport",
+                (selectedServiceId == -1L) ? null : serviceApiRepository.findOne(selectedServiceId));
+        mav.addObject("consumerUserSelectedForReport",
+                (selectedApiConsumerUserId == -1L) ? null : userRepository.findOne(selectedApiConsumerUserId));
         mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
         mav.addObject("exportUser", exportUser);
         mav.addObject("isReportForConsumer", false);
@@ -155,8 +156,7 @@ public class ReportController {
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("apiConsumerId") Long apiConsumerId,
-            @PathVariable("onlyPaidCalls") boolean onlyPaidCalls
-    ) throws IOException, ParseException {
+            @PathVariable("onlyPaidCalls") boolean onlyPaidCalls) throws IOException, ParseException {
 
         ServiceApi serviceApi = serviceApiRepository.findOne(selectedServiceId);
         List<ApiUsageReport> result;
@@ -166,7 +166,8 @@ public class ReportController {
             Date dateFromDate = df.parse(dateFrom);
             Date dateUntilDate = df.parse(dateUntil);
 
-            result = calculateApiUsageReportForSpecificService(serviceApi, apiConsumerId, dateFromDate, dateUntilDate, onlyPaidCalls);
+            result = calculateApiUsageReportForSpecificService(serviceApi, apiConsumerId, dateFromDate, dateUntilDate,
+                    onlyPaidCalls);
 
         } else {
             // in case there is no valid API selected, the result is an empty list
@@ -179,33 +180,36 @@ public class ReportController {
         return table;
     }
 
-    public double calculateTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
+    public double calculateTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart,
+            LocalDate timePeriodEnd) {
 
         List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
-        for (ServiceApi offeredService: serviceApiRepository.findByOwnerUsername(apiProviderUsername)) {
-           apiUsageReportsForAllOfferedServices.addAll(
-                   calculateApiUsageReportForSpecificService(
-                           offeredService,
-                           -1L, // for all consumers
-                           java.sql.Date.valueOf(timePeriodStart),
-                           java.sql.Date.valueOf(timePeriodEnd),
-                           true));
+        for (ServiceApi offeredService : serviceApiRepository.findByOwnerUsername(apiProviderUsername)) {
+            apiUsageReportsForAllOfferedServices.addAll(
+                    calculateApiUsageReportForSpecificService(
+                            offeredService,
+                            -1L, // for all consumers
+                            java.sql.Date.valueOf(timePeriodStart),
+                            java.sql.Date.valueOf(timePeriodEnd),
+                            true));
         }
-        return apiUsageReportsForAllOfferedServices.stream().mapToDouble(apiUsageReport -> apiUsageReport.getTotal()).sum();
+        return apiUsageReportsForAllOfferedServices.stream().mapToDouble(apiUsageReport -> apiUsageReport.getTotal())
+                .sum();
     }
 
     AntPathMatcher parser = new AntPathMatcher();
 
-    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi serviceApi, Long apiConsumerId, Date dateFromDate, Date dateUntilDate, boolean onlyPaidCalls) {
+    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi serviceApi, Long apiConsumerId,
+            Date dateFromDate, Date dateUntilDate, boolean onlyPaidCalls) {
         /**
-         * ********
-         * Retrieve the usage
+         * ******** Retrieve the usage
          */
-        List metricResult = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, serviceApi.getId(), serviceApi.getOwner().getUsername(), apiConsumerId, dateFromDate, dateUntilDate, true);
+        List metricResult = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE,
+                serviceApi.getId(), serviceApi.getOwner().getUsername(), apiConsumerId, dateFromDate, dateUntilDate,
+                true);
 
         /**
-         * ********
-         * Calculate the cost
+         * ******** Calculate the cost
          */
         List<ApiUsageReport> result = new ArrayList<>();
         AtomicLong noOfCallsThatDoNotMatchEntryPoints = new AtomicLong(0L);
@@ -251,7 +255,8 @@ public class ReportController {
                                 boolean pathMatches = parser.match(entryPoint.getPathPattern(), path);
 
                                 if (pathMatches) {
-                                    if (entryPoint.getHttpMethod().equals(requestMethod) && !entryPoint.getHttpMethod().equals("*")
+                                    if (entryPoint.getHttpMethod().equals(requestMethod)
+                                            && !entryPoint.getHttpMethod().equals("*")
                                             || entryPoint.getHttpMethod().equals("*")) {
 
                                         noOfCallsPerEntryPoint.get(entryPoint).addAndGet(noCalls);
@@ -269,20 +274,29 @@ public class ReportController {
             });
             // Sums all the calls whom have matching rules
             if (!noOfCallsPerEntryPoint.isEmpty()) {
-                for (EntryPoint entryPoint : serviceApi.getEntryPoints())
-                {
-                    ApiUsageReport apiUsageReport = new ApiUsageReport(entryPoint.getName() + " (" + entryPoint.getHttpMethod() + " " + entryPoint.getPathPattern() + ")", noOfCallsPerEntryPoint.get(entryPoint).longValue(), new BigDecimal(entryPoint.getPricePerCall()).doubleValue(), new BigDecimal(entryPoint.getPricePerCall() * noOfCallsPerEntryPoint.get(entryPoint).longValue() / 1000).doubleValue());
+                for (EntryPoint entryPoint : serviceApi.getEntryPoints()) {
+                    ApiUsageReport apiUsageReport = new ApiUsageReport(
+                            entryPoint.getName() + " (" + entryPoint.getHttpMethod() + " " + entryPoint.getPathPattern()
+                                    + ")",
+                            noOfCallsPerEntryPoint.get(entryPoint).longValue(),
+                            new BigDecimal(entryPoint.getPricePerCall()).doubleValue(),
+                            new BigDecimal(entryPoint.getPricePerCall()
+                                    * noOfCallsPerEntryPoint.get(entryPoint).longValue() / 1000).doubleValue());
                     result.add(apiUsageReport);
                 }
             }
             // Sums all calls for the Other calls if they exist
             if (noOfCallsThatDoNotMatchEntryPoints.get() > 0L) {
-                ApiUsageReport apiUsageReport = new ApiUsageReport("Other Calls", noOfCallsThatDoNotMatchEntryPoints.longValue(), new BigDecimal(0).doubleValue(), new BigDecimal(0).doubleValue());
+                ApiUsageReport apiUsageReport = new ApiUsageReport("Other Calls",
+                        noOfCallsThatDoNotMatchEntryPoints.longValue(), new BigDecimal(0).doubleValue(),
+                        new BigDecimal(0).doubleValue());
                 result.add(apiUsageReport);
             }
             // Sums all calls for free services, if any
             if (noOfCallsToFreeService.get() > 0L) {
-                ApiUsageReport apiUsageReportForFreeServices = new ApiUsageReport("All Calls", noOfCallsToFreeService.longValue(), new BigDecimal(0).doubleValue(), new BigDecimal(0).doubleValue());
+                ApiUsageReport apiUsageReportForFreeServices = new ApiUsageReport("All Calls",
+                        noOfCallsToFreeService.longValue(), new BigDecimal(0).doubleValue(),
+                        new BigDecimal(0).doubleValue());
                 result.add(apiUsageReportForFreeServices);
             }
             // Sums all calls for montly flatrate services, if any
@@ -296,14 +310,15 @@ public class ReportController {
                 int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
                 int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
 
-                ApiUsageReport apiUsageReportForMonthlyFlatrate = new ApiUsageReport("All Calls", noOfCallsToMonthlyFlatrateService.longValue(), serviceApi.getMonthlyFee(), serviceApi.getMonthlyFee() * diffMonth);
+                ApiUsageReport apiUsageReportForMonthlyFlatrate = new ApiUsageReport("All Calls",
+                        noOfCallsToMonthlyFlatrateService.longValue(), serviceApi.getMonthlyFee(),
+                        serviceApi.getMonthlyFee() * diffMonth);
                 result.add(apiUsageReportForMonthlyFlatrate);
             }
         }
         result.forEach(reportRow -> log.debug("row for report: " + reportRow));
         return result;
     }
-
 
     @RequestMapping(value = "/consumer", method = GET)
     public ModelAndView showGenerateReportPageForServiceConsumer() {
@@ -317,8 +332,7 @@ public class ReportController {
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId,
-            @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
-    ) {
+            @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls) {
 
         Date dateFromDate = new Date();
         if (dateFrom != null) {
@@ -348,7 +362,7 @@ public class ReportController {
             servicesThatLoggedInUserHasAKeyFor = serviceApiRepository.findByApiKeyList(apiKeysByLoggedInUser);
         }
 
-        List <String> payPerCallServicesIds = getPayPerCallServicesIds(servicesThatLoggedInUserHasAKeyFor);
+        List<String> payPerCallServicesIds = getPayPerCallServicesIds(servicesThatLoggedInUserHasAKeyFor);
 
         ModelAndView mav = new ModelAndView();
         mav.setViewName(REPORT_VIEW);
@@ -358,7 +372,8 @@ public class ReportController {
         mav.addObject("selectedServiceId", selectedServiceId);
         mav.addObject("selectedApiConsumerUserId", user.getId());
         mav.addObject("consumerUserSelectedForReport", user);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findOne(selectedServiceId));
+        mav.addObject("serviceApiSelectedForReport",
+                (selectedServiceId == -1L) ? null : serviceApiRepository.findOne(selectedServiceId));
         mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
         mav.addObject("isReportForConsumer", true);
         mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);

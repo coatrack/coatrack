@@ -43,8 +43,7 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
         log.info(String.format(
                 "Request (preHandle): the url called is '%s' and the headers are [%s]",
                 request.getRequestURI(),
-                generateStringOfRequestHeaders(request))
-        );
+                generateStringOfRequestHeaders(request)));
         return true;
     }
 
@@ -59,8 +58,7 @@ public class GatewayRequestLoggingInterceptor extends HandlerInterceptorAdapter 
                 "Response status '%s' after completion: the url called was '%s' and the headers were [%s] ",
                 response.getStatus(),
                 request.getRequestURI(),
-                generateStringOfRequestHeaders(request))
-        );
+                generateStringOfRequestHeaders(request)));
     }
 
     private String generateStringOfRequestHeaders(HttpServletRequest request) {

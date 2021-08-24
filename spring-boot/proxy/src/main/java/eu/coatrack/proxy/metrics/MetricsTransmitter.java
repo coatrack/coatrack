@@ -37,7 +37,8 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 
 /**
- * Transmitter receives metric value updates from the buffer and transmits them to CoatRack admin
+ * Transmitter receives metric value updates from the buffer and transmits them
+ * to CoatRack admin
  *
  * @author gr-hovest@atb-bremen.de
  */
@@ -92,7 +93,8 @@ public class MetricsTransmitter implements GaugeWriter {
         eu.coatrack.api.Metric metricToTransmit = metricsCounterService.filterAndTransformMetric(metric);
 
         // if metric is null, it is irrelevant for transmission
-        if (metricToTransmit != null) transmitToYggAdmin(metricToTransmit);
+        if (metricToTransmit != null)
+            transmitToYggAdmin(metricToTransmit);
     }
 
     private void transmitToYggAdmin(eu.coatrack.api.Metric metricToTransmit) {
@@ -105,44 +107,45 @@ public class MetricsTransmitter implements GaugeWriter {
                                     "&apiKeyValue=" + metricToTransmit.getApiKey().getKeyValue()));
 
             log.debug("uri to transmit metric: {}", uriToTransmitMetric.toString());
-            Object idOfTransmittedMetric = restTemplate.postForObject(uriToTransmitMetric, metricToTransmit, Long.class);
-            log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit.toString(), idOfTransmittedMetric);
+            Object idOfTransmittedMetric = restTemplate.postForObject(uriToTransmitMetric, metricToTransmit,
+                    Long.class);
+            log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit.toString(),
+                    idOfTransmittedMetric);
 
             /*
-            // create relationship from transmitted metric to this proxy
-            addRelationshipFromMetricToOtherEntity(
-                    uriOfTransmittedMetric,
-                    adminBaseUrl + adminEndpointToGetProxies + "/" + myProxyID,
-                    "proxy");
-
-            // get Api key entity from CoatRack admin for given key value
-            ApiKey apiKey = getApiKeyEntityForApiKeyStringValue(metricToTransmit.getApiKey().getKeyValue());
-
-            // create relationship from transmitted metric to the api key that was used
-            addRelationshipFromMetricToOtherEntity(
-                    uriOfTransmittedMetric,
-                    adminBaseUrl + adminEndpointToGetApiKeys + "/"
-                            // TODO replace hardcoded ID
-                            + 1,
-                    "apiKey");
-            */
+             * // create relationship from transmitted metric to this proxy
+             * addRelationshipFromMetricToOtherEntity( uriOfTransmittedMetric, adminBaseUrl
+             * + adminEndpointToGetProxies + "/" + myProxyID, "proxy");
+             * 
+             * // get Api key entity from CoatRack admin for given key value ApiKey apiKey =
+             * getApiKeyEntityForApiKeyStringValue(metricToTransmit.getApiKey().getKeyValue(
+             * ));
+             * 
+             * // create relationship from transmitted metric to the api key that was used
+             * addRelationshipFromMetricToOtherEntity( uriOfTransmittedMetric, adminBaseUrl
+             * + adminEndpointToGetApiKeys + "/" // TODO replace hardcoded ID + 1,
+             * "apiKey");
+             */
 
         } catch (Exception e) {
             log.error("Exception when communicating with CoatRack admin server", e);
         }
     }
 
-    private void addRelationshipFromMetricToOtherEntity(URI uriOfTransmittedMetric, String urlOfOtherEntity, String relationshipAttributeName) {
-        log.debug("call to create relationship from {} to {} {}", uriOfTransmittedMetric, relationshipAttributeName, urlOfOtherEntity);
+    private void addRelationshipFromMetricToOtherEntity(URI uriOfTransmittedMetric, String urlOfOtherEntity,
+            String relationshipAttributeName) {
+        log.debug("call to create relationship from {} to {} {}", uriOfTransmittedMetric, relationshipAttributeName,
+                urlOfOtherEntity);
         // create Http Entity object for the related Entity
-        HttpEntity<String> relatedEntity
-                = new HttpEntity<>(urlOfOtherEntity, httpHeadersForPuttingRelationships);
+        HttpEntity<String> relatedEntity = new HttpEntity<>(urlOfOtherEntity, httpHeadersForPuttingRelationships);
 
         // pass relationship to CoatRack admin api
-        ResponseEntity<String> relationshipPutResponse = restTemplate.exchange(uriOfTransmittedMetric + "/" + relationshipAttributeName,
+        ResponseEntity<String> relationshipPutResponse = restTemplate.exchange(
+                uriOfTransmittedMetric + "/" + relationshipAttributeName,
                 HttpMethod.PUT, relatedEntity, String.class);
         log.info(String.format("created relationship from transmitted metric %s to %s entity (url=%s), result was: %s",
-                uriOfTransmittedMetric, relationshipAttributeName, urlOfOtherEntity, relationshipPutResponse.getStatusCode()));
+                uriOfTransmittedMetric, relationshipAttributeName, urlOfOtherEntity,
+                relationshipPutResponse.getStatusCode()));
     }
 
     private ApiKey getApiKeyEntityForApiKeyStringValue(String apiKeyValue) {

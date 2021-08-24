@@ -80,16 +80,14 @@ public class CreditAccountController {
     @RequestMapping(value = "/{id}/", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public CreditAccount getAccount(
-            @PathVariable("id") Long id
-    ) {
+            @PathVariable("id") Long id) {
         return creditAccountRepository.findOne(id);
     }
 
     @RequestMapping(value = "/withDrawal", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public CreditAccount withdrawal(
-            Authentication authentication, @RequestBody Transaction amount
-    ) throws MessagingException {
+            Authentication authentication, @RequestBody Transaction amount) throws MessagingException {
 
         // Retrieve bank account
         String sendAmountTo = "";
@@ -155,12 +153,10 @@ public class CreditAccountController {
     @RequestMapping(value = "/bankAccount", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public CreditAccount postBankAccount(
-            Authentication authentication, @RequestBody BankAccount bankAccount
-    ) {
+            Authentication authentication, @RequestBody BankAccount bankAccount) {
 
         User user = userRepository.findByUsername(authentication.getName());
-        if(user.getAccount().getBankAccount().isEmpty())
-        {
+        if (user.getAccount().getBankAccount().isEmpty()) {
             bankAccount.setDefaultAccount(true);
         }
         user.getAccount().getBankAccount().add(bankAccount);
@@ -175,8 +171,7 @@ public class CreditAccountController {
     @RequestMapping(value = "/bankAccount/{id}/setDefault")
     @ResponseBody
     public CreditAccount setDefaultBankAccount(
-            Authentication authentication, @PathVariable("id") long id
-    ) {
+            Authentication authentication, @PathVariable("id") long id) {
         User user = userRepository.findByUsername(authentication.getName());
         List<BankAccount> bankAccounts = user.getAccount().getBankAccount();
 

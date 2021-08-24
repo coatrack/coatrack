@@ -129,25 +129,29 @@ public class UserController {
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.debug", "true");
         props.put("mail.smtp.ssl.enable", "true");
-        
+
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(user.getEmail());
         helper.setFrom("coatrack@kyoe.es");
         helper.setSubject("Verification of your email address");
-        helper.setText("Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
-                + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/" + user.getEmailVerifiedUrl() + "\">Verify, please </a></p>\n"
-                + "\n"
-                + "<p>Best regards</p>\n"
-                + "\n"
-                + "<p>Coatrack Team</p>", true);
+        helper.setText(
+                "Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
+                        + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/"
+                        + user.getEmailVerifiedUrl() + "\">Verify, please </a></p>\n"
+                        + "\n"
+                        + "<p>Best regards</p>\n"
+                        + "\n"
+                        + "<p>Coatrack Team</p>",
+                true);
         mailSender.send(message);
 
         return "redirect:/admin";
     }
 
     @GetMapping(value = "users/{id}/verify/{emailVerificationCode}")
-    public ModelAndView userEmailVeritification(@PathVariable("id") Long id, @PathVariable("emailVerificationCode") String emailVerificationCode) {
+    public ModelAndView userEmailVeritification(@PathVariable("id") Long id,
+            @PathVariable("emailVerificationCode") String emailVerificationCode) {
 
         User user = userRepository.findOne(id);
 

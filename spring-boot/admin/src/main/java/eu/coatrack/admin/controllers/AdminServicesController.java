@@ -97,11 +97,11 @@ public class AdminServicesController {
 
     @Autowired
     private CreateApiKeyAction createApiKeyAction;
-    
-    private int ADMIN_SERVICE_ADD_MODE =0;
-    
-private int ADMIN_SERVICE_UPDATE_MODE =1;
-    
+
+    private int ADMIN_SERVICE_ADD_MODE = 0;
+
+    private int ADMIN_SERVICE_UPDATE_MODE = 1;
+
     @RequestMapping(value = "", method = GET)
     public ModelAndView serviceListPage() {
         ModelAndView mav = new ModelAndView();
@@ -135,14 +135,14 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         mav.setViewName(ADMIN_SERVICE_CREATE);
         return mav;
     }
-    
+
     @GetMapping(value = "{id}/servicecover")
     public ModelAndView updateServiceCoverForm(@PathVariable("id") long id) {
         log.debug("Update Service");
 
         ModelAndView mav = new ModelAndView();
         mav.addObject("service", serviceApiRepository.findOne(id));
-       
+
         mav.setViewName(ADMIN_SERVICE_COVER_EDITOR);
         return mav;
     }
@@ -184,7 +184,8 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         ServiceApi serviceStored = serviceApiRepository.findOne(service.getId());
 
         // check if the attributes relevant to the proxy config have changed
-        boolean theProxyConfigNeedsToBeUpdated = !((serviceStored.getLocalUrl() != null) && serviceStored.getLocalUrl().equals(service.getLocalUrl())
+        boolean theProxyConfigNeedsToBeUpdated = !((serviceStored.getLocalUrl() != null)
+                && serviceStored.getLocalUrl().equals(service.getLocalUrl())
                 && serviceStored.getUriIdentifier().equals(service.getUriIdentifier()));
 
         serviceStored.setDescription(service.getDescription());
@@ -216,7 +217,8 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
                 log.error("Error when trying to transmit config to git repository: ", e);
                 return updateFormWithErrorMessage(serviceStored, "updateProxyGitError");
             }
-            // call refresh on all proxies so that it will get the latest config from git (by calling the config server)
+            // call refresh on all proxies so that it will get the latest config from git
+            // (by calling the config server)
             Map<Proxy, String> errorsOccuredWhenUpdatingProxy = new HashMap<>();
             for (Proxy proxy : proxyList) {
                 try {
@@ -229,13 +231,14 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
             if (!errorsOccuredWhenUpdatingProxy.isEmpty()) {
                 String errorMessageToDisplayInGUI = "";
                 for (Proxy proxy : errorsOccuredWhenUpdatingProxy.keySet()) {
-                    errorMessageToDisplayInGUI +=
-                            String.format("Refresh on '%s' (public url: '%s') failed: %s; ", proxy.getName(), proxy.getPublicUrl(), errorsOccuredWhenUpdatingProxy.get(proxy));
+                    errorMessageToDisplayInGUI += String.format("Refresh on '%s' (public url: '%s') failed: %s; ",
+                            proxy.getName(), proxy.getPublicUrl(), errorsOccuredWhenUpdatingProxy.get(proxy));
                 }
                 return updateFormWithErrorMessage(serviceStored, "updateProxyRefreshError", errorMessageToDisplayInGUI);
             }
         } else {
-            log.debug("the service '{}' was updated, but the changes are not relevant for the related prox(y/ies)", serviceStored);
+            log.debug("the service '{}' was updated, but the changes are not relevant for the related prox(y/ies)",
+                    serviceStored);
         }
         return serviceListPage();
     }
@@ -245,9 +248,12 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
     }
 
     // Someone reconigze this code, please contact to @perezdf
-    // TODO the following method puts the error message into the form, however it is never displayed to the user, as this code is called via AJAX
-    //          so we should either replace AJAX with normal form submit OR send these error messages as AJAX response rather than via ModelAndView
-    private ModelAndView updateFormWithErrorMessage(ServiceApi serviceStored, String errorMessageKey, String errorMessageText) {
+    // TODO the following method puts the error message into the form, however it is
+    // never displayed to the user, as this code is called via AJAX
+    // so we should either replace AJAX with normal form submit OR send these error
+    // messages as AJAX response rather than via ModelAndView
+    private ModelAndView updateFormWithErrorMessage(ServiceApi serviceStored, String errorMessageKey,
+            String errorMessageText) {
         ModelAndView updateForm = updateServiceForm(serviceStored.getId());
         updateForm.addObject("errorMessageKey", errorMessageKey);
         if (errorMessageText != null && !errorMessageText.isEmpty()) {
@@ -259,8 +265,8 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
 
     @RequestMapping(value = "{id}", method = GET)
     public String get(@PathVariable("id") long id, Model model,
-                      @RequestParam(value = "dateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
-                      @RequestParam(value = "dateUntil", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
+            @RequestParam(value = "dateFrom", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
+            @RequestParam(value = "dateUntil", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
         if (selectedTimePeriodStart != null && selectedTimePeriodEnd != null) {
             session.setDashboardDateRangeStart(selectedTimePeriodStart);
@@ -269,8 +275,9 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
 
         model.addAttribute("service", serviceApiRepository.findOne(id));
 
-        List<MetricsAggregation> metricsForThisService = metricsAggregationRepo.getSummarizedMetricsByServiceIdAndDateRange(
-                id, session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd());
+        List<MetricsAggregation> metricsForThisService = metricsAggregationRepo
+                .getSummarizedMetricsByServiceIdAndDateRange(
+                        id, session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd());
         model.addAttribute("metrics", metricsForThisService);
 
         model.addAttribute("statisticsPerConsumerMap", buildMapOfStatisticsPerApiConsumer(metricsForThisService));
@@ -300,7 +307,8 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
 
     private static final String TOTAL_MAP_KEY = "Total";
 
-    private Map<String, Map<String, Map<String, Map<String, Long>>>> buildMapOfStatisticsPerApiConsumer(List<MetricsAggregation> metricsForThisService) {
+    private Map<String, Map<String, Map<String, Map<String, Long>>>> buildMapOfStatisticsPerApiConsumer(
+            List<MetricsAggregation> metricsForThisService) {
 
         Map<String, Map<String, Map<String, Map<String, Long>>>> statsPerApiConsumer = new TreeMap<>();
         metricsForThisService.forEach(m -> {
@@ -346,13 +354,15 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         Map<String, Long> totalsPerResponseCode = new TreeMap<>();
         metricsForThisService.forEach(m -> {
             if (m.getType().equals(MetricType.RESPONSE) || m.getType().equals(MetricType.EMPTY_RESPONSE)) {
-                totalsPerResponseCode.merge(m.getHttpResponseCode().toString(), m.getCount(), (countOld, countNew) -> countOld + countNew);
+                totalsPerResponseCode.merge(m.getHttpResponseCode().toString(), m.getCount(),
+                        (countOld, countNew) -> countOld + countNew);
             }
         });
         return totalsPerResponseCode;
     }
 
-    private Map<String, Map<String, Map<String, Long>>> buildMapOfStatisticsPerResponseCode(List<MetricsAggregation> metricsForThisService) {
+    private Map<String, Map<String, Map<String, Long>>> buildMapOfStatisticsPerResponseCode(
+            List<MetricsAggregation> metricsForThisService) {
 
         Map<String, Map<String, Map<String, Long>>> statsPerResponseCode = new TreeMap<>();
 
@@ -361,12 +371,14 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
                 .filter(m -> m.getType().equals(MetricType.RESPONSE) || m.getType().equals(MetricType.EMPTY_RESPONSE))
                 .forEach(m -> {
                     statsPerResponseCode.putIfAbsent(m.getHttpResponseCode().toString(), new TreeMap<>());
-                    Map<String, Map<String, Long>> statsPerPath = statsPerResponseCode.get(m.getHttpResponseCode().toString());
+                    Map<String, Map<String, Long>> statsPerPath = statsPerResponseCode
+                            .get(m.getHttpResponseCode().toString());
                     statsPerPath.putIfAbsent(m.getRequestMethod(), new TreeMap<>());
                     Map<String, Long> statsPerRequestMethod = statsPerPath.get(m.getRequestMethod());
                     statsPerRequestMethod.merge(m.getPath(), m.getCount(), (countOld, countNew) -> countOld + countNew);
                     // Total per response key, summing up over all paths
-                    statsPerRequestMethod.merge(TOTAL_MAP_KEY, m.getCount(), (countOld, countNew) -> countOld + countNew);
+                    statsPerRequestMethod.merge(TOTAL_MAP_KEY, m.getCount(),
+                            (countOld, countNew) -> countOld + countNew);
                 });
         return statsPerResponseCode;
     }
@@ -380,12 +392,14 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         Color[] doughnutChartColors = {
                 Color.LIGHT_BLUE, Color.LIGHT_GRAY, Color.LIGHT_SALMON,
                 Color.RED, Color.AZURE, Color.BLACK,
-                Color.GREEN, Color.GREEN_YELLOW, Color.DARK_OLIVE_GREEN};
+                Color.GREEN, Color.GREEN_YELLOW, Color.DARK_OLIVE_GREEN };
 
-        List<MetricsAggregation> metricsForThisService = metricsAggregationRepo.getSummarizedMetricsByServiceIdAndDateRange(
-                id, session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd());
+        List<MetricsAggregation> metricsForThisService = metricsAggregationRepo
+                .getSummarizedMetricsByServiceIdAndDateRange(
+                        id, session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd());
 
-        // stats per user: build doughnut charts for each combination of user-name + method
+        // stats per user: build doughnut charts for each combination of user-name +
+        // method
         buildMapOfStatisticsPerApiConsumer(metricsForThisService).forEach((consumer, statsPerMethodMap) -> {
             statsPerMethodMap.forEach((method, statsPerResponseCodeMap) -> {
                 DoughnutDataset dataset = new DoughnutDataset()
@@ -400,15 +414,15 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
                         dataset.addData(
                                 noOfCallsPerPathMap.entrySet().stream()
                                         .filter(callsPerPath -> !TOTAL_MAP_KEY.equals(callsPerPath.getKey()))
-                                        .collect(Collectors.summingLong(Map.Entry::getValue))
-                        );
+                                        .collect(Collectors.summingLong(Map.Entry::getValue)));
                     }
                 });
                 returnMap.put("CONSUMER_" + consumer + "_" + method, new DoughnutChart(data));
             });
         });
 
-        // stats per response code: build doughnut charts for each combination of responseCode + method
+        // stats per response code: build doughnut charts for each combination of
+        // responseCode + method
         buildMapOfStatisticsPerResponseCode(metricsForThisService).forEach((responseCode, statsPerMethodMap) -> {
             statsPerMethodMap.forEach((method, callsPerPathMap) -> {
                 DoughnutDataset dataset = new DoughnutDataset()
@@ -467,11 +481,13 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         ModelAndView mav = new ModelAndView();
 
         List<ApiKey> userApiKeys = apiKeyRepository.findByLoggedInAPIConsumer();
-        List<Long> idListOfServicesUserCanAccess = userApiKeys.stream().map(ApiKey::getServiceApi).map(ServiceApi::getId).collect(Collectors.toList());
+        List<Long> idListOfServicesUserCanAccess = userApiKeys.stream().map(ApiKey::getServiceApi)
+                .map(ServiceApi::getId).collect(Collectors.toList());
 
-        mav.addObject("loggedInUser",  SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        mav.addObject("loggedInUser", SecurityContextHolder.getContext().getAuthentication().getPrincipal());
         mav.addObject("idsOfServicesUserCanAccess", idListOfServicesUserCanAccess);
-        mav.addObject("services", serviceApiRepository.findByServiceAccessPermissionPolicyAndDeletedWhenIsNull(ServiceAccessPermissionPolicy.PUBLIC));
+        mav.addObject("services", serviceApiRepository
+                .findByServiceAccessPermissionPolicyAndDeletedWhenIsNull(ServiceAccessPermissionPolicy.PUBLIC));
         mav.setViewName(ADMIN_SERVICES_LIST_VIEW_FOR_CONSUMER);
         return mav;
     }

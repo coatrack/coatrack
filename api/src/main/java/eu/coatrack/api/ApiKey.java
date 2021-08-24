@@ -69,8 +69,6 @@ public class ApiKey {
         this.user = owner;
     }
 
-    
-    
     public Date getDeletedWhen() {
         return deletedWhen;
     }
@@ -79,8 +77,6 @@ public class ApiKey {
         this.deletedWhen = deletedWhen;
     }
 
-    
-
     public String getUserName() {
         String username = "";
         if (user != null) {
@@ -88,8 +84,6 @@ public class ApiKey {
         }
         return username;
     }
-
-   
 
     public ServiceApi getServiceApi() {
         return serviceApi;
@@ -135,6 +129,7 @@ public class ApiKey {
     public void setId(Long id) {
         this.id = id;
     }
+
     private static final Logger LOG = Logger.getLogger(ApiKey.class.getName());
 
     public Long getId() {

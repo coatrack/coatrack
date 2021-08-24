@@ -36,7 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Error-filter, which logs errors that occur when proxying the request to the target service
+ * Error-filter, which logs errors that occur when proxying the request to the
+ * target service
  *
  * @author gr-hovest
  */
@@ -80,7 +81,8 @@ public class ErrorLoggingFilter extends ZuulFilter {
         log.debug(String.format("Erroneous response status is: %s", servletResponse.getStatus()));
 
         if (ctx.getResponseBody() == null && ctx.getResponseDataStream() == null) {
-            log.warn("Response body and data stream are null - assuming that service is unavailable (logging status 503)");
+            log.warn(
+                    "Response body and data stream are null - assuming that service is unavailable (logging status 503)");
 
             String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
             metricsCounterService.increment(

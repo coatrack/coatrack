@@ -36,7 +36,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CoverImageReadService {
 
-    public void readExcelInputStream(InputStream coverImageStream, File file) throws ParseException, FileNotFoundException, IOException {
+    public void readExcelInputStream(InputStream coverImageStream, File file)
+            throws ParseException, FileNotFoundException, IOException {
 
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
 

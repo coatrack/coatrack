@@ -42,8 +42,8 @@ public interface MetricRepository extends PagingAndSortingRepository<Metric, Lon
     public List<Metric> findMetrics(@Param(value = "proxyId") long proxyId);
 
     @Query("select m from Metric m where m.apiKey.user.username = :username   AND m.dateOfApiCall BETWEEN :from AND :until ")
-    public List<Metric> retrieveByUserConsumer(@Param(value = "username") String username , @Param(value = "from") Date from, @Param(value = "until") Date until);
-   
+    public List<Metric> retrieveByUserConsumer(@Param(value = "username") String username,
+            @Param(value = "from") Date from, @Param(value = "until") Date until);
 
     public List<Metric> findByProxyAndTypeAndRequestMethodAndPathAndHttpResponseCodeAndMetricsCounterSessionIDAndDateOfApiCallAndApiKeyOrderByIdDesc(
             Proxy proxy,
@@ -53,7 +53,6 @@ public interface MetricRepository extends PagingAndSortingRepository<Metric, Lon
             Integer httpResponseCode,
             String metricsCounterSessionID,
             Date dateOfApiCall,
-            ApiKey apiKey
-    );
+            ApiKey apiKey);
 
 }

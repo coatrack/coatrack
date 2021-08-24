@@ -27,7 +27,7 @@ import java.util.List;
  * @author perezdf
  */
 public class DataTableView {
-    
+
     private List<List<String>> data;
 
     public List<List<String>> getData() {
@@ -37,5 +37,5 @@ public class DataTableView {
     public void setData(List<List<String>> data) {
         this.data = data;
     }
-    
+
 }

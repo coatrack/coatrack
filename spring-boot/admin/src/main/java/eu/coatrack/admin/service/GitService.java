@@ -54,10 +54,10 @@ public class GitService {
 
     @Value("${ygg.admin.gitService.url}")
     private String gitServiceUrl;
-    
+
     @Value("${ygg.admin.gitService.user}")
     private String gitServiceUser;
-    
+
     @Value("${ygg.admin.gitService.password}")
     private String gitServicePassword;
 
@@ -65,7 +65,6 @@ public class GitService {
     private String adminApiBaseUrlForGateway;
 
     public void init() throws IOException, GitAPIException {
-        
 
         String tmpDirStr = System.getProperty("java.io.tmpdir");
         if (tmpDirStr == null) {
@@ -85,7 +84,7 @@ public class GitService {
         if (resultDir.exists()) {
             throw new IOException(" attempts to generate a non-existent directory name failed, giving up");
         }
-    
+
         boolean created = resultDir.mkdir();
         if (!created) {
             throw new IOException("Failed to create tmp directory");
@@ -99,7 +98,8 @@ public class GitService {
 
     }
 
-    public void addProxy(Proxy proxy) throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
+    public void addProxy(Proxy proxy)
+            throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
 
         PrintWriter writer = new PrintWriter(resultDir + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
@@ -122,7 +122,8 @@ public class GitService {
 
     }
 
-    public void deleteProxy(Proxy proxy) throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
+    public void deleteProxy(Proxy proxy)
+            throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
 
         RmCommand deleteCommand = git.rm();
         deleteCommand.addFilepattern("ygg-proxy-" + proxy.getId() + ".yml");

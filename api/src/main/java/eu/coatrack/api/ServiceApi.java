@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "service_apis")
-public class ServiceApi implements ServiceApiInterface{
+public class ServiceApi implements ServiceApiInterface {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -76,16 +76,13 @@ public class ServiceApi implements ServiceApiInterface{
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
 
-    /*@OneToOne(optional = true)
-    private ServiceCover cover;
-
-    public ServiceCover getCover() {
-        return cover;
-    }
-
-    public void setCover(ServiceCover cover) {
-        this.cover = cover;
-    }*/
+    /*
+     * @OneToOne(optional = true) private ServiceCover cover;
+     * 
+     * public ServiceCover getCover() { return cover; }
+     * 
+     * public void setCover(ServiceCover cover) { this.cover = cover; }
+     */
 
     public User getOwner() {
         return owner;
@@ -158,8 +155,7 @@ public class ServiceApi implements ServiceApiInterface{
 
     /**
      *
-     * @return the part of the service gateway URI that identifies this service
-     * API
+     * @return the part of the service gateway URI that identifies this service API
      */
     public String getUriIdentifier() {
         return uriIdentifier;
@@ -171,8 +167,8 @@ public class ServiceApi implements ServiceApiInterface{
 
     /**
      *
-     * @return the URL in the local area network of the service API provider
-     * where the service can be reached via the service gateway
+     * @return the URL in the local area network of the service API provider where
+     *         the service can be reached via the service gateway
      */
     public String getLocalUrl() {
         return localUrl;

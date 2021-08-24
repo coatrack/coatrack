@@ -64,8 +64,7 @@ public class GatewayAuthProvider implements AuthenticationProvider {
                 // add ROLE_YGG_GATEWAY as granted authority
                 GatewayAuthToken yggGatewayAuthToken = new GatewayAuthToken(
                         (String) authToken.getCredentials(), authToken.getUser(), authToken.getPassword(),
-                        Collections.singleton(new SimpleGrantedAuthority(YGG_GATEWAY_ROLE_NAME))
-                );
+                        Collections.singleton(new SimpleGrantedAuthority(YGG_GATEWAY_ROLE_NAME)));
                 yggGatewayAuthToken.setAuthenticated(true);
                 return yggGatewayAuthToken;
             } else {
@@ -88,12 +87,14 @@ public class GatewayAuthProvider implements AuthenticationProvider {
 
             log.debug("checking gateway's APIKEY (UUID) value {}", gatewayUUID);
 
-            // search proxy with given api key value, which is equivalent to the proxy's UUID
+            // search proxy with given api key value, which is equivalent to the proxy's
+            // UUID
             Proxy proxy = proxyRepository.findOne(gatewayUUID);
 
             if (proxy != null) {
                 log.debug("Proxy was found by gateway api key verifier: " + proxy);
-                if (proxy.getCredentialName().equals(authToken.getUser()) && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
+                if (proxy.getCredentialName().equals(authToken.getUser())
+                        && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
                     return true;
                 } else {
                     log.debug("Gateway's Credential doesnt match for apiKey/UUID" + gatewayUUID);

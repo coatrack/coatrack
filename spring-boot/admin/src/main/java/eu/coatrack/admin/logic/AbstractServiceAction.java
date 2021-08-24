@@ -41,7 +41,7 @@ public abstract class AbstractServiceAction implements Action {
 
     ///////////////////////////
     //
-    //  Repositories
+    // Repositories
     //
     ///////////////////////////
     @Autowired
@@ -49,7 +49,7 @@ public abstract class AbstractServiceAction implements Action {
 
     ///////////////////////////
     //
-    //  I/O Parameters
+    // I/O Parameters
     //
     ///////////////////////////
     protected User user;
@@ -57,7 +57,8 @@ public abstract class AbstractServiceAction implements Action {
     protected ServiceApi serviceApi;
 
     /**
-     * This method assures that the URI identifier is valid and that there are no duplicates
+     * This method assures that the URI identifier is valid and that there are no
+     * duplicates
      */
     protected void assureThatServiceApiHasValidUriIdentifier() {
 
@@ -87,9 +88,7 @@ public abstract class AbstractServiceAction implements Action {
             // the identifier is already in use and thus needs to be modified
 
             String candidateToCheckForDuplicate = uriIdentifier;
-            for (int suffixNumber = 2;
-                 identifiersAlreadyInUse.contains(candidateToCheckForDuplicate);
-                 suffixNumber++) {
+            for (int suffixNumber = 2; identifiersAlreadyInUse.contains(candidateToCheckForDuplicate); suffixNumber++) {
                 // append number as suffix
                 candidateToCheckForDuplicate = uriIdentifier + "-" + suffixNumber;
             }
@@ -103,7 +102,7 @@ public abstract class AbstractServiceAction implements Action {
 
     ///////////////////////////
     //
-    //  Getters/Setters
+    // Getters/Setters
     //
     ///////////////////////////
     public User getUser() {

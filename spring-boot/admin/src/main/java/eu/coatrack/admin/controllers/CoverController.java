@@ -68,7 +68,8 @@ public class CoverController {
     private String serviceCoversUrl;
 
     @RequestMapping(value = "/{id}/upload")
-    public ModelAndView fileUpload(Authentication auth, @PathVariable("id") Long serviceId, @RequestParam("file") MultipartFile file) throws IOException, ParseException, java.text.ParseException {
+    public ModelAndView fileUpload(Authentication auth, @PathVariable("id") Long serviceId,
+            @RequestParam("file") MultipartFile file) throws IOException, ParseException, java.text.ParseException {
 
         ServiceApi service = serviceRepository.findOne(serviceId);
 

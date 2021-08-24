@@ -139,10 +139,13 @@ public class AdminConsumerController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        List<StatisticsPerService> userStatsList = metricsAggregationCustomRepository.getConsumerStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
+        List<StatisticsPerService> userStatsList = metricsAggregationCustomRepository
+                .getConsumerStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart,
+                        selectedTimePeriodEnd, auth.getName());
         DoughnutDataset dataset = new DoughnutDataset()
                 .setLabel("API calls")
-                .addBackgroundColors(Color.AQUA_MARINE, Color.LIGHT_BLUE, Color.LIGHT_SALMON, Color.LIGHT_BLUE, Color.GRAY)
+                .addBackgroundColors(Color.AQUA_MARINE, Color.LIGHT_BLUE, Color.LIGHT_SALMON, Color.LIGHT_BLUE,
+                        Color.GRAY)
                 .setBorderWidth(2);
         userStatsList.forEach(stats -> dataset.addData(stats.getNoOfCalls()));
         if (userStatsList.size() > 0) {
@@ -214,14 +217,16 @@ public class AdminConsumerController {
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerHttpStatusCode> statsList = metricsAggregationCustomRepository.getNoOfCallsPerHttpResponseCode(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd, null,
-                auth.getName());
+        List<StatisticsPerHttpStatusCode> statsList = metricsAggregationCustomRepository
+                .getNoOfCallsPerHttpResponseCode(
+                        selectedTimePeriodStart,
+                        selectedTimePeriodEnd, null,
+                        auth.getName());
         if (statsList.size() > 0) {
             DoughnutDataset dataset = new DoughnutDataset()
                     .setLabel("HTTP response codes")
-                    .addBackgroundColors(Color.LIGHT_BLUE, Color.LIGHT_GRAY, Color.LIGHT_SALMON, Color.AZURE, Color.BLACK)
+                    .addBackgroundColors(Color.LIGHT_BLUE, Color.LIGHT_GRAY, Color.LIGHT_SALMON, Color.AZURE,
+                            Color.BLACK)
                     .setBorderWidth(2);
             statsList.forEach(stats -> dataset.addData(stats.getNoOfCalls()));
 
@@ -239,10 +244,12 @@ public class AdminConsumerController {
     private Iterable<Metric> loadCallsStatistics(
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
-        log.debug("List of Calls by the user during the date range from " + selectedTimePeriodStart + " and " + selectedTimePeriodEnd);
+        log.debug("List of Calls by the user during the date range from " + selectedTimePeriodStart + " and "
+                + selectedTimePeriodEnd);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return metricRepository.retrieveByUserConsumer(auth.getName(), Date.valueOf(selectedTimePeriodStart), Date.valueOf(selectedTimePeriodEnd));
+        return metricRepository.retrieveByUserConsumer(auth.getName(), Date.valueOf(selectedTimePeriodStart),
+                Date.valueOf(selectedTimePeriodEnd));
     }
 
 }

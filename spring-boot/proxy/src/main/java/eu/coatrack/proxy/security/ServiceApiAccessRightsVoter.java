@@ -33,12 +33,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This custom access decision voter checks if the API key that was
- * transmitted by the API consumer is valid for the service API that
- * the consumer is trying to access.
+ * This custom access decision voter checks if the API key that was transmitted
+ * by the API consumer is valid for the service API that the consumer is trying
+ * to access.
  * <p>
- * This check is done by comparing the service API's URI identifier
- * to the relevant part of the called URL.
+ * This check is done by comparing the service API's URI identifier to the
+ * relevant part of the called URL.
  *
  * @author gr-hovest
  */
@@ -64,7 +64,8 @@ public class ServiceApiAccessRightsVoter implements AccessDecisionVoter<FilterIn
     }
 
     @Override
-    public int vote(Authentication authentication, FilterInvocation filterInvocation, Collection<ConfigAttribute> attributes) {
+    public int vote(Authentication authentication, FilterInvocation filterInvocation,
+            Collection<ConfigAttribute> attributes) {
         log.debug("authentication '{}' filter invocation '{}' attributes '{}'",
                 authentication, filterInvocation, attributes.stream().map(Object::toString));
 

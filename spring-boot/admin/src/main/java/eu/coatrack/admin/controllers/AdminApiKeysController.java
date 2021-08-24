@@ -138,8 +138,7 @@ public class AdminApiKeysController {
     }
 
     @RequestMapping(value = "{id}/formUpdate", method = GET)
-    public ModelAndView formUpdateNewApiKey(@PathVariable("id") long id
-    ) {
+    public ModelAndView formUpdateNewApiKey(@PathVariable("id") long id) {
         log.debug("Update Form");
 
         Iterable<ServiceApi> services = serviceApiRepository.findByDeletedWhen(null);
@@ -158,8 +157,7 @@ public class AdminApiKeysController {
     @RequestMapping(value = "/add", method = POST)
     public ModelAndView addApiKey(
             @RequestParam(required = false) Long selectedServiceId,
-            @RequestParam(required = false) String selectedUserId
-    ) throws IOException {
+            @RequestParam(required = false) String selectedUserId) throws IOException {
         log.debug("POST call to api key/add:");
 
         User user = userRepository.findByUsername(selectedUserId);
@@ -167,7 +165,7 @@ public class AdminApiKeysController {
         if (user == null) {
             List<GithubUserProfile> githubUser = githubService.findGithubUserProfileByUsername(selectedUserId);
             if (githubUser != null && !githubUser.isEmpty()) {
-                
+
                 // Create User
                 user = new User();
                 user.setUsername(githubUser.get(0).getLogin());
@@ -192,8 +190,7 @@ public class AdminApiKeysController {
 
     @RequestMapping(value = "/update", method = POST)
     public ModelAndView postApiKey(@ModelAttribute ApiKey apiKey,
-            @RequestParam(required = false) String selectedServiceId
-    ) {
+            @RequestParam(required = false) String selectedServiceId) {
         log.debug("Update Api Key:" + apiKey.toString());
         ServiceApi selectedService = serviceApiRepository.findOne(Long.parseLong(selectedServiceId));
 
@@ -209,7 +206,7 @@ public class AdminApiKeysController {
         return showApiKeyListbyLoggedInServiceApiOwner();
     }
 
-    String[] parsePatterns = {"dd/MM/yyyy", "dd-MMM-yyyy", "dd.MM.yyyy", "dd/mm/yy"};
+    String[] parsePatterns = { "dd/MM/yyyy", "dd-MMM-yyyy", "dd.MM.yyyy", "dd/mm/yy" };
 
     @RequestMapping(value = "{id}/extendValidity", method = POST, produces = "application/json")
     @ResponseBody
@@ -256,13 +253,14 @@ public class AdminApiKeysController {
     public ModelAndView showApiKeyListForLoggedInApiConsumer() {
 
         // Get the ApiKeys for the services consumed by the Logged in User
-        List <ApiKey> apiKeys = apiKeyRepository.findByLoggedInAPIConsumer();
+        List<ApiKey> apiKeys = apiKeyRepository.findByLoggedInAPIConsumer();
 
         // Map the APiKeys to the specific Proxies URLs
-        Map<String, List <String>> proxyURLsPerApiKey = new TreeMap<>();
+        Map<String, List<String>> proxyURLsPerApiKey = new TreeMap<>();
         for (ApiKey apiKey : apiKeys) {
             String apiKeyString = apiKey.getKeyValue();
-            List<String> proxiesUrlList = proxyRepository.customSearchForAllProxiesForGivenServiceApiId(apiKey.getServiceApi().getId())
+            List<String> proxiesUrlList = proxyRepository
+                    .customSearchForAllProxiesForGivenServiceApiId(apiKey.getServiceApi().getId())
                     .stream()
                     .filter(proxy -> proxy.getPublicUrl() != null)
                     .filter(proxy -> proxy.getPublicUrl() != "")

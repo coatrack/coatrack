@@ -50,7 +50,7 @@ public class CreateProxyAction implements Action {
 
     ///////////////////////////
     //
-    //  Services
+    // Services
     //
     ///////////////////////////
     @Autowired
@@ -61,7 +61,7 @@ public class CreateProxyAction implements Action {
 
     ///////////////////////////
     //
-    //  Repositories
+    // Repositories
     //
     ///////////////////////////
     @Autowired
@@ -72,7 +72,7 @@ public class CreateProxyAction implements Action {
 
     ///////////////////////////
     //
-    //  I/O Parameters
+    // I/O Parameters
     //
     ///////////////////////////
     private User user;
@@ -85,7 +85,7 @@ public class CreateProxyAction implements Action {
 
     ///////////////////////////
     //
-    //  Config Server Parameters
+    // Config Server Parameters
     //
     ///////////////////////////
     @Value("${spring.cloud.config.uri}")
@@ -116,9 +116,12 @@ public class CreateProxyAction implements Action {
             configServerCredential.setPassword(proxy.getConfigServerPassword());
             configServerCredential.setResource("/ygg-proxy-" + proxy.getId() + "/default");
 
-            restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(config_server_admin_name, config_server_password));
+            restTemplate.getInterceptors()
+                    .add(new BasicAuthorizationInterceptor(config_server_admin_name, config_server_password));
 
-            ConfigServerCredential credentialGenerated = restTemplate.postForObject(config_server_credentials_url+"/credentials", configServerCredential, ConfigServerCredential.class);
+            ConfigServerCredential credentialGenerated = restTemplate.postForObject(
+                    config_server_credentials_url + "/credentials", configServerCredential,
+                    ConfigServerCredential.class);
             proxy.setConfigServerName(credentialGenerated.getName());
 
             proxy.setOwner(user);
@@ -137,7 +140,7 @@ public class CreateProxyAction implements Action {
 
     ///////////////////////////
     //
-    //  Getters/Setters
+    // Getters/Setters
     //
     ///////////////////////////
     public User getUser() {

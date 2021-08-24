@@ -107,8 +107,7 @@ public class MetricsControllerTest {
         long newRowDbId = metricsController.storeMetricAndProperlySetRelationships(
                 someProxyFromDB.getId(),
                 someApiKeyFromDB.getKeyValue(),
-                testMetric
-        );
+                testMetric);
 
         long noOfRowsAfterwards = metricRepository.count();
 
@@ -136,8 +135,7 @@ public class MetricsControllerTest {
         long rowIdFirstMetric = metricsController.storeMetricAndProperlySetRelationships(
                 someProxyFromDB.getId(),
                 someApiKeyFromDB.getKeyValue(),
-                testMetric
-        );
+                testMetric);
 
         Metric testMetricCopyWithUpdatedCounter = copyOfTestMetric;
         int newCounterValue = testMetric.getCount() + 10;
@@ -146,8 +144,7 @@ public class MetricsControllerTest {
         long rowIdUpdatedMetric = metricsController.storeMetricAndProperlySetRelationships(
                 someProxyFromDB.getId(),
                 someApiKeyFromDB.getKeyValue(),
-                testMetricCopyWithUpdatedCounter
-        );
+                testMetricCopyWithUpdatedCounter);
 
         // database entry should have been updated, therefore IDs should be identical
         assertEquals(rowIdFirstMetric, rowIdUpdatedMetric);
@@ -165,14 +162,12 @@ public class MetricsControllerTest {
         long dbIdOfFirstMetric = metricsController.storeMetricAndProperlySetRelationships(
                 someProxyFromDB.getId(),
                 someApiKeyFromDB.getKeyValue(),
-                firstMetric
-        );
+                firstMetric);
 
         long dbIdOfSecondMetric = metricsController.storeMetricAndProperlySetRelationships(
                 someProxyFromDB.getId(),
                 someApiKeyFromDB.getKeyValue(),
-                secondMetric
-        );
+                secondMetric);
 
         // there should be a new database entry, so IDs should be different
         assertNotEquals(dbIdOfFirstMetric, dbIdOfSecondMetric);
@@ -257,7 +252,8 @@ public class MetricsControllerTest {
         outdatedDatabaseEntry = metricRepository.save(outdatedDatabaseEntry);
         currentDatabaseEntry = metricRepository.save(currentDatabaseEntry);
 
-        // assure that we have two database entries that have been assigned a different ID
+        // assure that we have two database entries that have been assigned a different
+        // ID
         assertNotEquals(currentDatabaseEntry.getId(), outdatedDatabaseEntry.getId());
         assertEquals(1, outdatedDatabaseEntry.getCount());
         assertEquals(2, currentDatabaseEntry.getCount());
@@ -265,8 +261,7 @@ public class MetricsControllerTest {
         long updatedRowDbId = metricsController.storeMetricAndProperlySetRelationships(
                 someProxyFromDB.getId(),
                 someApiKeyFromDB.getKeyValue(),
-                latestSubmittedMetricToUpdateCurrent
-        );
+                latestSubmittedMetricToUpdateCurrent);
 
         // assure that the current was updated and that the counts are correctly set
         assertEquals(currentDatabaseEntry.getId(), updatedRowDbId);

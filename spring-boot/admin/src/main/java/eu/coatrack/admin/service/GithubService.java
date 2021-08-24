@@ -156,7 +156,8 @@ public class GithubService {
                 headers.set("Authorization", "Bearer " + details.getTokenValue());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
-                ResponseEntity<String> response = restTemplate.exchange(URI.create(githubUser.getUrl()), HttpMethod.GET, request, String.class);
+                ResponseEntity<String> response = restTemplate.exchange(URI.create(githubUser.getUrl()), HttpMethod.GET,
+                        request, String.class);
                 githubUserProfile = objectMapper.readValue(response.getBody(), GithubUserProfile.class);
                 Element githubUserProfileWrapper = new Element(githubUserProfile.getId(), githubUserProfile);
                 githubUserCache.put(githubUserProfileWrapper);
@@ -183,7 +184,8 @@ public class GithubService {
         String queryResult = null;
         if (githubQueeyWrapperCached == null) {
             try {
-                URI uri = URI.create(GITHUB_API_SEARCH_USERS + "?q=" + criteria + "+in:login+" + criteria + "+in:email+" + criteria + "+in:name");
+                URI uri = URI.create(GITHUB_API_SEARCH_USERS + "?q=" + criteria + "+in:login+" + criteria + "+in:email+"
+                        + criteria + "+in:name");
                 log.debug("Attempting: " + uri.toString());
 
                 MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
@@ -202,7 +204,8 @@ public class GithubService {
                 }
 
             } catch (HttpClientErrorException e) {
-                log.error("Error during the call : " + GITHUB_API_SEARCH_USERS + "?q=" + criteria + "\n" + e.getMessage());
+                log.error("Error during the call : " + GITHUB_API_SEARCH_USERS + "?q=" + criteria + "\n"
+                        + e.getMessage());
             }
         } else {
             queryResult = (String) githubQueeyWrapperCached.getObjectValue();
@@ -246,7 +249,8 @@ public class GithubService {
                 }
 
             } catch (HttpClientErrorException e) {
-                log.error("Error during the call : " + GITHUB_API_SEARCH_USERS + "?q=" + criteria + "\n" + e.getMessage());
+                log.error("Error during the call : " + GITHUB_API_SEARCH_USERS + "?q=" + criteria + "\n"
+                        + e.getMessage());
             }
         } else {
             queryResult = (String) githubQueeyWrapperCached.getObjectValue();

@@ -39,7 +39,8 @@ import java.io.IOException;
 import java.util.Collections;
 
 /**
- * Simple filter that extracts the API key token value from the incoming request and adds it to the security context
+ * Simple filter that extracts the API key token value from the incoming request
+ * and adds it to the security context
  *
  * @author gr-hovest
  */
@@ -51,13 +52,15 @@ public class ApiKeyAuthFilter extends GenericFilterBean {
     private ApiKeyAuthenticator apiKeyAuthenticator;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
+            throws IOException, ServletException {
         log.debug(String.format("Api key auth filter received request of type %s", servletRequest.getClass()));
 
         if (servletRequest instanceof HttpServletRequest) {
             final HttpServletRequest req = (HttpServletRequest) servletRequest;
             final String keyParam = req.getParameter(ApiKey.API_KEY_REQUEST_PARAMETER_NAME);
-            log.debug(String.format("request parameter '%s' has value '%s'", ApiKey.API_KEY_REQUEST_PARAMETER_NAME, keyParam));
+            log.debug(String.format("request parameter '%s' has value '%s'", ApiKey.API_KEY_REQUEST_PARAMETER_NAME,
+                    keyParam));
 
             Authentication authToken = new ApiKeyAuthToken(keyParam, Collections.emptyList());
             SecurityContextHolder.getContext().setAuthentication(authToken);

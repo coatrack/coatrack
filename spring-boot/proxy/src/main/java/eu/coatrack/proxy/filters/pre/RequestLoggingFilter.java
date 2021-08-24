@@ -64,7 +64,8 @@ public class RequestLoggingFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
 
-        log.debug(String.format("Received a %s request to %s", request.getMethod(), request.getRequestURL().toString()));
+        log.debug(
+                String.format("Received a %s request to %s", request.getMethod(), request.getRequestURL().toString()));
 
         String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
         metricsCounterService.increment(request, apiKeyValue, MetricType.AUTHORIZED_REQUEST, null);

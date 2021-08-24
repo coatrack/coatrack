@@ -82,8 +82,6 @@ public class Proxy {
     public void setConfigServerPassword(String credential_password) {
         this.configServerPassword = credential_password;
     }
-    
-    
 
     public User getOwner() {
         return owner;

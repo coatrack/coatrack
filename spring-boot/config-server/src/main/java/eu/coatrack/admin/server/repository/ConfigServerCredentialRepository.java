@@ -30,7 +30,7 @@ import org.springframework.security.access.prepost.PostFilter;
 
 @RepositoryRestResource(collectionResourceRel = "credentials", path = "credentials")
 public interface ConfigServerCredentialRepository extends PagingAndSortingRepository<ConfigServerCredential, Long> {
-    
+
     public ConfigServerCredential findOneByName(String name);
 
     public ConfigServerCredential findOneByNameAndResource(String name, String resource);

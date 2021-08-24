@@ -52,8 +52,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider
-                = new DaoAuthenticationProvider();
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
         authProvider.setUserDetailsService(userDetailsService);
 
         return authProvider;
@@ -67,18 +66,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeRequests()
-                // proxies are allowed to access proxy config - detailed mapping is done in separate filter
+                // proxies are allowed to access proxy config - detailed mapping is done in
+                // separate filter
                 .antMatchers(
-                        PROXY_CONFIG_URI_PATTERN
-                )
+                        PROXY_CONFIG_URI_PATTERN)
                 .hasRole("USER")
                 // admin is allowed to access admin config and credentials
                 .antMatchers(
                         ADMIN_CONFIG_URI_PATTERN,
-                        CREDENTIALS_URI_PATTERN
-                )
+                        CREDENTIALS_URI_PATTERN)
                 .hasRole("ADMIN")
-                // add a "catchall" rule to assure that no URLs are accessible without authentication (e.g. "/" not covered by above patterns)
+                // add a "catchall" rule to assure that no URLs are accessible without
+                // authentication (e.g. "/" not covered by above patterns)
                 .anyRequest()
                 .hasRole("ADMIN")
                 .and()
@@ -86,7 +85,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .and()
                 .sessionManagement()
-                // do not create sessions, because proxies/admin should be authenticated on each request
+                // do not create sessions, because proxies/admin should be authenticated on each
+                // request
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http.addFilterAfter(filter,
                 BasicAuthenticationFilter.class).csrf().disable();
