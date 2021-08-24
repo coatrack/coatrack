@@ -1,15 +1,29 @@
 # CoatRack
 
-CoatRack is an API gateway management framework that supports:
+[![FIWARE Third Party](https://nexus.lab.fiware.org/static/badges/chapters/api-management.svg)](https://www.fiware.org/developers/catalogue/)
+[![License: Apache](https://img.shields.io/github/license/coatrack/coatrack.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Docker badge](https://img.shields.io/docker/pulls/coatrack/admin.svg)](https://hub.docker.com/r/coatrack/admin/)
+[![SOF support badge](https://nexus.lab.fiware.org/repository/raw/public/badges/stackoverflow/fiware.svg)](http://stackoverflow.com/questions/tagged/fiware)
+<br/>
+![Status](https://nexus.lab.fiware.org/static/badges/statuses/incubating.svg)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/4948/badge)](https://bestpractices.coreinfrastructure.org/projects/4948)
 
-* Monitoring APIs calls
-* Authentication/Authorization of API calls
-* Monetization of APIs
+CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of:
 
-CoatRack consists of:
+* distributed, lightweight API gateways and
+* a centralized web application to generate and manage those API gateways.
 
-* Distributed, lightweight API gateways
-* A centralized web application to generate and manage the API gateways.
+CoatRack can facilitate your work if you have existing REST APIs and you want to do one (or more) of the following: 
+
+* monitoring the access to your APIs,
+* authentication/authorization of calls to your APIs via API keys,
+* monetization of API calls, based on pay-per-call rules or flatrates.
+
+This project is part of [FIWARE](https://www.fiware.org/). For more information check the FIWARE Catalogue entry for
+[API Management](https://github.com/FIWARE/catalogue/tree/master/data-publication).
+
+| :books: [Documentation](https://github.com/coatrack/coatrack/wiki) |  :whale: [Docker Hub](https://hub.docker.com/r/coatrack/admin/) | :dart: [Roadmap](https://github.com/coatrack/coatrack/blob/master/docs/roadmap.md) |
+| ----------------------------------------------| ----------------------------------------------------------------| --------------------------------------------------------------------|
 
 ## Contents
 
@@ -20,11 +34,21 @@ CoatRack consists of:
 
 ## Background
 
-In case a company/organization would like to offer services to third parties in the form of REST APIs, a lot of additional work is usually required in addition to developing the actual API, e.g. implementing mechanisms for authentication/authorisation, providing access credentials to the users, monitoring calls to the API, generating statistics.
+In case you would like to manage backend-to-backend communication via REST APIs, e.g. offering backend services to other parties, some general work is required in addition to developing the actual service API, e.g.:
 
-CoatRack facilitates these general tasks by providing an API gateway management framework, consisting of distributed, lightweight API gateways and a centralized web application to generate and manage the API gateways. 
+* implementing mechanisms for authentication/authorisation, 
+* providing access credentials to the users, 
+* monitoring calls to the API, 
+* generating statistics. 
 
-The following figure shows a typical architecture. The calls to a software service API are routed and logged by a custom CoatRack Gateway, which can be install in the service provider's local network. Configuration and statistics are accessible via the CoatRack website.
+CoatRack facilitates these general tasks, so that you can focus on developing the actual service API. 
+
+CoatRack comprises a central web application and distributed lighweight API gateways, which are:
+
+* generated/configured via the central application and 
+* delivering statistics about monitored service API calls to the central application.
+
+The following figure shows the typical CoatRack architecture, the CoatRack web application is depicted on the right and one CoatRack Service gateway is depicted on the left. The calls from the client to the service API are routed and logged by a custom CoatRack Gateway, which can be installed in the service provider's local network. Configuration and statistics are accessible via the CoatRack web application.
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
@@ -42,12 +66,18 @@ To run the CoatRack web application, use:
 ```
 After starting up, the CoatRack web application will be accessible at `http://localhost:8080` 
 
+*Optional:* If you are a CoatRack developer and want to run the application using a custom Spring profile, you can pass the profile name to the run script as follows:
+
+```console
+./run-admin-application.sh [optional-spring-profile-name]
+```
+
 ## Usage
 
 To start using CoatRack: 
 
 - either run the admin application locally, as explained in the [Install](#install) section
-- or open the public instance available at `https://coatrack.eu`.
+- or open the public instance available at (https://coatrack.eu).
 
 To log-in to CoatRack, a Github account is required. After logging in and filling in the registration form, the CoatRack admin application will open. Use the "Getting started tutorials" that are accessible from inside the application to learn the basics of using CoatRack.
 
@@ -60,4 +90,4 @@ There are two tutorials inside the application:
 
 CoatRack is licenced under [Apache 2.0 License](./LICENSE).
 
-© 2013 - 2020 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
+© 2013 - 2021 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)

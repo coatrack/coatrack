@@ -20,7 +20,7 @@ package eu.coatrack.proxy.metrics;
  * #L%
  */
 
-import eu.coatrack.proxy.security.SecurityUtil;
+import eu.coatrack.proxy.security.UrlResourcesProvider;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class MetricsTransmitter implements GaugeWriter {
     private MetricsCounterService metricsCounterService;
 
     @Autowired
-    private SecurityUtil securityUtil;
+    private UrlResourcesProvider urlResourcesProvider;
 
     @Value("${custom-metrics.prefix.counter}")
     private String prefixForCustomCounterMetrics;
@@ -101,7 +101,7 @@ public class MetricsTransmitter implements GaugeWriter {
     private void transmitToYggAdmin(eu.coatrack.api.Metric metricToTransmit) {
         try {
             URI uriToTransmitMetric = new URI(
-                    securityUtil.attachGatewayApiKeyToUrl(
+                    urlResourcesProvider.attachGatewayIdToUrl(
                             adminBaseUrl +
                                     adminEndpointForMetricsTransmission +
                                     "?proxyId=" + myProxyID +
@@ -159,7 +159,7 @@ public class MetricsTransmitter implements GaugeWriter {
                 apiKey = resultOfApiKeySearch.getBody();
                 log.debug("API key was found by CoatRack admin: " + apiKey.toString());
             } else {
-                log.error("Communication with Admin server failed, result is: " + resultOfApiKeySearch);
+                log.error("Communication with CoatRack admin server failed, result is: " + resultOfApiKeySearch);
             }
         } catch (Exception e) {
             log.error("Exception when trying to get API consumer name from CoatRack admin", e);

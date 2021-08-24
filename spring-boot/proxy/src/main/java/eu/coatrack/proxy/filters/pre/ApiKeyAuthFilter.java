@@ -21,7 +21,7 @@ package eu.coatrack.proxy.filters.pre;
  */
 
 import eu.coatrack.proxy.security.ApiKeyAuthToken;
-import eu.coatrack.proxy.security.ApiKeyAuthTokenVerifier;
+import eu.coatrack.proxy.security.ApiKeyAuthenticator;
 import eu.coatrack.api.ApiKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class ApiKeyAuthFilter extends GenericFilterBean {
     private static final Logger log = LoggerFactory.getLogger(ApiKeyAuthFilter.class);
 
     @Autowired
-    private ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier;
+    private ApiKeyAuthenticator apiKeyAuthenticator;
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {

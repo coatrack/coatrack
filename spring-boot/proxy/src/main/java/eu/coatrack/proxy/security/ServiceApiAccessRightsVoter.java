@@ -9,9 +9,9 @@ package eu.coatrack.proxy.security;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,7 @@ public class ServiceApiAccessRightsVoter implements AccessDecisionVoter<FilterIn
     private static final Pattern PATTERN_TO_GET_SERVICE_API_ID = Pattern.compile("^/?([^/?]+).*");
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
 
-    Logger log = LoggerFactory.getLogger(ServiceApiAccessRightsVoter.class);
+    private static final Logger log = LoggerFactory.getLogger(ServiceApiAccessRightsVoter.class);
 
     @Override
     public boolean supports(ConfigAttribute attribute) {
@@ -66,7 +66,7 @@ public class ServiceApiAccessRightsVoter implements AccessDecisionVoter<FilterIn
     @Override
     public int vote(Authentication authentication, FilterInvocation filterInvocation, Collection<ConfigAttribute> attributes) {
         log.debug("authentication '{}' filter invocation '{}' attributes '{}'",
-                authentication, filterInvocation, attributes.stream().map(a -> a.toString()).toString());
+                authentication, filterInvocation, attributes.stream().map(Object::toString));
 
         HttpServletRequest httpServletRequest = filterInvocation.getHttpRequest();
 

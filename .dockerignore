@@ -1,0 +1,9 @@
+# don't send anything to the docker daemon
+**
+# except for the files below
+!Dockerfile
+# need to specify each directory because ignore exceptions do not support wildcards in paths
+# see https://github.com/moby/moby/issues/30018
+!spring-boot/admin/target/*.jar
+!spring-boot/proxy/target/*.jar
+!spring-boot/config-server/target/*.jar

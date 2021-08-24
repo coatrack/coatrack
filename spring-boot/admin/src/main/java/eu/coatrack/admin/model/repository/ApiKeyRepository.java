@@ -36,7 +36,6 @@ import org.springframework.security.access.prepost.PostFilter;
 @RepositoryRestResource(collectionResourceRel = "api-keys", path = "api-keys")
 public interface ApiKeyRepository extends PagingAndSortingRepository<ApiKey, Long> {
 
-    @RestResource(path = "findByKeyValue")
     public ApiKey findByKeyValue(@Param("keyValue") String keyValue);
 
     @RestResource(path = "findByDeletedWhen")

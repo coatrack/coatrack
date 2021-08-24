@@ -21,6 +21,7 @@ package eu.coatrack.admin;
  */
 
 import eu.coatrack.admin.interceptor.AdminInterceptor;
+import eu.coatrack.admin.interceptor.GatewayRequestLoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -36,11 +37,15 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     @Autowired
     AdminInterceptor interceptor;
 
+    @Autowired
+    GatewayRequestLoggingInterceptor gatewayRequestLoggingInterceptor;
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 
         // Register admin interceptor with multiple path patterns
         registry.addInterceptor(interceptor).addPathPatterns(new String[]{"/admin", "/admin/*", "/admin/**/*", "/admin/**/**/*"});
+        registry.addInterceptor(gatewayRequestLoggingInterceptor).addPathPatterns(new String[]{"/api/**/*"});
     }
 
     /**

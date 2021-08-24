@@ -26,12 +26,11 @@ import eu.coatrack.proxy.filters.pre.ApiKeyAuthFilter;
 import eu.coatrack.proxy.filters.pre.RequestLoggingFilter;
 import eu.coatrack.proxy.metrics.MetricsCounterService;
 import eu.coatrack.proxy.metrics.MetricsTransmitter;
-import eu.coatrack.proxy.security.ApiKeyAuthTokenVerifier;
 import eu.coatrack.proxy.security.SecurityConfigurer;
-import eu.coatrack.proxy.security.SecurityUtil;
 import eu.coatrack.proxy.security.ServiceApiAccessRightsVoter;
 import org.apache.catalina.authenticator.jaspic.AuthConfigFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.metrics.buffer.BufferMetricReader;
 import org.springframework.boot.actuate.metrics.export.MetricCopyExporter;
@@ -41,6 +40,7 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.cloud.netflix.zuul.filters.ZuulProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.support.BasicAuthorizationInterceptor;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AuthenticatedVoter;
@@ -60,6 +60,12 @@ import java.util.List;
 @EnableZuulProxy
 @SpringBootApplication
 public class GatewayApplication {
+
+    @Value("${spring.cloud.config.username}")
+    String config_server_username;
+
+    @Value("${spring.cloud.config.password}")
+    String config_server_password;
 
     public static void main(String[] args) {
         if (AuthConfigFactory.getFactory() == null) {
@@ -109,18 +115,21 @@ public class GatewayApplication {
     }
 
     @Bean
-    public ApiKeyAuthTokenVerifier apiKeyAuthTokenVerifier() {
-        return new ApiKeyAuthTokenVerifier();
-    }
-
-    @Bean
     public SecurityConfigurer securityConfigurer() {
         return new SecurityConfigurer();
     }
 
-    @Bean
+    /**
+     * Rest template to be used for communication with CoatRack admin,
+     * configured with auth credentials.
+     */
+    @Bean("restTemplate")
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getInterceptors().add(
+                new BasicAuthorizationInterceptor(config_server_username, config_server_password)
+        );
+        return restTemplate;
     }
 
     @Bean(name = "zuul-org.springframework.cloud.netflix.zuul.filters.ZuulProperties")
@@ -138,10 +147,5 @@ public class GatewayApplication {
                 new ServiceApiAccessRightsVoter()
         );
         return new UnanimousBased(accessDecisionVoters);
-    }
-
-    @Bean
-    public SecurityUtil securityUtil() {
-        return new SecurityUtil();
     }
 }
