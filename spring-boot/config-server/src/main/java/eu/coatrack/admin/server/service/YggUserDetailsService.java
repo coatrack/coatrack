@@ -53,7 +53,7 @@ public class YggUserDetailsService implements UserDetailsService {
 
         if (username.equals(name)) {
 
-            userDetails = new AdminPrincipal(name, password);
+            userDetails = new AdminPrincipal(name, "{noop}" + password);
         } else {
 
             ConfigServerCredential credential = configServerCredentialRepository.findOneByName(username);
