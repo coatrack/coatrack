@@ -72,7 +72,7 @@ public class ApiKeyFetcher {
         Optional<String> errorMessage = validateResponseEntityAndCreateErrorMessageInCaseOfProblems(responseEntity);
 
         if (errorMessage.isPresent())
-            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity. "
+            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity received from Admin. "
                     + errorMessage.get());
         else
             return responseEntity.getBody();
@@ -84,7 +84,7 @@ public class ApiKeyFetcher {
         if (responseEntity == null) {
             errorMessage = Optional.of("The ResponseEntity was null.");
         } else if (responseEntity.getBody() == null) {
-            errorMessage = Optional.of("The body was null");
+            errorMessage = Optional.of("The API key could not be found.");
         } else if (responseEntity.getStatusCode() != HttpStatus.OK) {
             errorMessage = Optional.of("The HTTP status was not OK.");
         }

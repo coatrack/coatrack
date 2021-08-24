@@ -33,7 +33,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -72,7 +71,7 @@ public class LocalApiKeyManager {
     }
 
     public ApiKey getApiKeyEntityFromLocalCache(String apiKeyValue) {
-        //This is only a fallback solution if connection to admin does not work. Therefore offline mode is triggered.
+        //This is only a fallback solution if connection to admin does not work. Therefore, offline mode is triggered.
         updateGatewayMode(GatewayMode.OFFLINE);
 
         if (!isLocalApiKeyListInitialized) {
@@ -83,7 +82,7 @@ public class LocalApiKeyManager {
             throw new OfflineWorkingTimeExceedingException("The predefined time for working in offline mode is exceeded. The " +
                     "gateway will reject every request until a connection to CoatRack admin could be re-established.");
         } else {
-            return extractApiKeyFromLocalApiKeyList(apiKeyValue);
+            return getApiKeyFromLocalApiKeyList(apiKeyValue);
         }
     }
 
@@ -91,8 +90,8 @@ public class LocalApiKeyManager {
         return LocalDateTime.now().isAfter(deadlineWhenOfflineModeShallStopWorking);
     }
 
-    private ApiKey extractApiKeyFromLocalApiKeyList(String apiKeyValue) {
-        log.debug("Trying to extract the API key with the value {} from the local list.", apiKeyValue);
+    private ApiKey getApiKeyFromLocalApiKeyList(String apiKeyValue) {
+        log.debug("Trying to get the API key with the value {} from the local API key list.", apiKeyValue);
 
         Optional<ApiKey> optionalApiKey = localApiKeyList.stream().filter(
                 apiKeyFromLocalList -> apiKeyFromLocalList.getKeyValue().equals(apiKeyValue)

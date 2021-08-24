@@ -129,8 +129,8 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
         } catch (ApiKeyFetchingFailedException e) {
-            log.debug("Trying to verify consumers API key with the value {}, the connection to admin failed. " +
-                    "Therefore checking the local API key list as fallback solution.", apiKeyValue);
+            log.info("An error occurred for api key {}. " +
+                    "Therefore checking the local API key list as fallback solution.", apiKeyValue, e);
             apiKey = localApiKeyManager.getApiKeyEntityFromLocalCache(apiKeyValue);
         }
         return apiKey;
