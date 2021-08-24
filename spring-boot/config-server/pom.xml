@@ -11,13 +11,13 @@
     <groupId>eu.coatrack</groupId>
     <artifactId>coatrack-config-server</artifactId>
     <packaging>jar</packaging>
-    
-   
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-    </properties>    
-    
+        <coatrack.basedir>${project.basedir}/../..</coatrack.basedir>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

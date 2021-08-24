@@ -14,8 +14,10 @@
     <packaging>jar</packaging>
 
     <name>coatrack-admin</name>
+
     <properties>
         <start-class>eu.coatrack.admin.YggAdminApplication</start-class>
+        <coatrack.basedir>${project.basedir}/../..</coatrack.basedir>
     </properties>
 
     <dependencies>
