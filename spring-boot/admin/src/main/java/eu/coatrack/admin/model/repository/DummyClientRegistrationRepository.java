@@ -5,7 +5,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class MyClientRepository implements ClientRegistrationRepository {
+public class DummyClientRegistrationRepository implements ClientRegistrationRepository {
 
     public ClientRegistration findByRegistrationId(String s) {
         return null; //TODO This seems not to be correct. However it was required to let the AdminControllerTest pass.
