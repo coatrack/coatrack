@@ -32,17 +32,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
 @DataJpaTest(showSql = true)
 @ContextConfiguration(classes = SpringSecurityTestConfig.class)
+@WithUserDetails("edeka")
 public class MetricsControllerTest {
 
     @Autowired
@@ -63,7 +68,7 @@ public class MetricsControllerTest {
     private ApiKey someApiKeyFromDB;
 
     @BeforeEach
-    public void prepareTestData() {
+    public void prepareTestData() throws NoSuchFieldException, IllegalAccessException {
 
         someProxyFromDB = proxyRepository.findAll().iterator().next();
         someApiKeyFromDB = apiKeyRepository.findAll().iterator().next();
@@ -78,6 +83,13 @@ public class MetricsControllerTest {
         testMetric.setType(MetricType.RESPONSE);
 
         copyOfTestMetric = createCopyOfMetricObject(testMetric);
+
+        //This serves to bypass the security of proxyRepository.findById()
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication auth = context.getAuthentication();
+        Field f1 = auth.getClass().getDeclaredField("principal");
+        f1.setAccessible(true);
+        f1.set(auth, "aa11aa22-aa33-aa44-aa55-aa66aa77aa88");
 
     }
 
@@ -97,7 +109,6 @@ public class MetricsControllerTest {
     }
 
     @Test
-    @WithUserDetails("edeka")
     public void storeNewMetricInDatabaseTest() {
 
         long noOfRowsBefore = metricRepository.count();
