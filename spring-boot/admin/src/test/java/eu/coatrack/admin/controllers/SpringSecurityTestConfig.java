@@ -24,6 +24,7 @@ import java.util.Arrays;
 import eu.coatrack.admin.model.vo.YggUserPrincipal;
 import eu.coatrack.admin.service.YggUserDetailsService;
 import eu.coatrack.api.User;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
@@ -45,5 +46,10 @@ public class SpringSecurityTestConfig {
 
         return new InMemoryUserDetailsManager(Arrays.asList(
                 basicUser));
+    }
+
+    @Bean
+    public ResourceServerProperties resourceServerProperties(){
+        return new ResourceServerProperties();
     }
 }

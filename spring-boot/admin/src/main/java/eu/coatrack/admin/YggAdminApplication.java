@@ -52,9 +52,4 @@ public class YggAdminApplication {
         return new Java8TimeDialect();
     }
 
-    @Bean
-    public ResourceServerProperties resourceServerProperties(){
-        return new ResourceServerProperties();
-    }
-
 }
