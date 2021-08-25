@@ -23,6 +23,7 @@ package eu.coatrack.admin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -49,6 +50,11 @@ public class YggAdminApplication {
     @Bean
     public Java8TimeDialect java8TimeDialect() {
         return new Java8TimeDialect();
+    }
+
+    @Bean
+    public ResourceServerProperties resourceServerProperties(){
+        return new ResourceServerProperties();
     }
 
 }
