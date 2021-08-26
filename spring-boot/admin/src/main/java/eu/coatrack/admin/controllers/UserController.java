@@ -112,6 +112,7 @@ public class UserController {
         CreditAccount creditAccount = new CreditAccount();
 
         user.setAccount(creditAccount);
+        creditAccount.setUser(user);
 
         userRepository.save(user);
 
