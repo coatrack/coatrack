@@ -125,6 +125,7 @@ public class MetricsCounterService {
 
     private String createCounterId() {
         long now = new Date().getTime();
+        //Set the time of day to a constant value. The counterId should be day specific but not more precise.
         Date todayAtConstantTime = new Date(now - now % (24 * 60 * 60 * 1000));
 
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
