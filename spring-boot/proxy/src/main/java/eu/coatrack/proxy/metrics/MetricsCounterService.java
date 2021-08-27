@@ -124,6 +124,9 @@ public class MetricsCounterService {
     }
 
     private String createCounterId() {
+        long now = new Date().getTime();
+        Date todayAtConstantTime = new Date(now - now % (24 * 60 * 60 * 1000));
+
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
                 .add(serviceApiName)
@@ -131,7 +134,7 @@ public class MetricsCounterService {
                 .add(mh.getApiKeyValue())
                 .add(mh.getMetricType().toString())
                 .add(String.valueOf(mh.getHttpResponseCode()))
-                .add(LocalDate.now().toString())
+                .add(todayAtConstantTime.toString())
                 .add(path);
         return stringJoiner.toString();
     }
@@ -139,7 +142,7 @@ public class MetricsCounterService {
     private Metric createMetricToTransmit() {
         Metric metricToTransmit = new Metric();
         metricToTransmit.setCount((int) counter.count());
-        metricToTransmit.setMetricsCounterSessionID(mh.getRequest().getRequestedSessionId());
+        metricToTransmit.setMetricsCounterSessionID(counterSessionID);
         metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
         metricToTransmit.setType(mh.getMetricType());
         metricToTransmit.setDateOfApiCall(new Date());
