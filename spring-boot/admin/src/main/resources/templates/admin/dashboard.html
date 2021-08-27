@@ -34,7 +34,7 @@
                     });
                 }
                 function loadStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(dateRangeUrlSuffix) {
-                    var url = "/admin/dashboard/statisticsPerApiConsumerInDescendingOrderByNoOfCalls.json" + dateRangeUrlSuffix;
+                    var url = "/admin/dashboard/statisticsPerApiConsumerInDescendingOrderByNoOfCalls" + dateRangeUrlSuffix;
                     $.getJSON(url, function (json) {
 
                         console.log("success");
