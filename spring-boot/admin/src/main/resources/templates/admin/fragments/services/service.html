@@ -118,8 +118,10 @@
                                                             <table class="table collapse"
                                                                    th:id="|collapseRow${statsPerConsumer.key}-${statsPerConsumerAndMethod.key}-${statsPerResponseCode.key}|">
                                                                 <thead>
-                                                                    <th>Path</th>
-                                                                    <th>Count</th>
+                                                                    <tr>
+                                                                        <th>Path</th>
+                                                                        <th>Count</th>
+                                                                    </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr th:each="statsPerPath: ${statsPerResponseCode.value}">
