@@ -52,6 +52,7 @@
                                     <th th:text="#{admin.proxies.list.col.description}">Description</th>
                                     <th th:text="#{admin.proxies.list.col.download}">...</th>
                                     <th th:text="#{admin.proxies.list.col.details}">...</th>
+                                    <th th:text="#{admin.proxies.list.col.activity}">...</th>
                                     <th></th>
 
                                 </tr>
@@ -85,6 +86,7 @@
                                             </button>
                                         </a>
                                     </td>
+                                    <td th:text="${proxy.timeOfLastSuccessfulCallToAdmin != null ? #dates.format(new java.util.Date(proxy?.timeOfLastSuccessfulCallToAdmin)) : #{admin.dashboard.gatewayhealthmonitor.notconnectedgateway}}"></td>
                                     <td class="right">
                                         <a th:href="|@{/admin/proxies/}${proxy.id}|">
                                             <button>

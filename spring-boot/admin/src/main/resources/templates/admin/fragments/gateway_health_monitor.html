@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+
+<body>
+<div th:fragment="gateway-health-monitor">
+    <div class="x_panel">
+        <div class="x_title">
+            <h2>
+                Gateway Health Monitor
+                <a data-toggle="modal" data-target=".help-gateway-health-monitor">
+                    <i class="fa fa-question-circle"></i>
+                </a>
+            </h2>
+            <div class="clearfix"></div>
+        </div>
+        <div class="x_content">
+            <div class="demo-container" style="height:300px">
+
+                <div th:switch="${gatewayHealthMonitorProxyData.statusSummary}">
+                    <th:block th:case="${T(eu.coatrack.api.ProxyHealthStatus).WARNING}">
+                           <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
+                           <span class="warning-exclamation-mark">&#9888;</span>
+                    </th:block>
+                    <th:block th:case="${T(eu.coatrack.api.ProxyHealthStatus).CRITICAL}">
+                        <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.warning_critical}"></span>
+                        <span class="critical-exclamation-mark">&#9888;</span>
+                    </th:block>
+                    <th:block th:case="${T(eu.coatrack.api.ProxyHealthStatus).OK}">
+                        <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.ok}"></span>
+                        <span class="everything-ok-symbol">&#10004;</span>
+                    </th:block>
+                    <th:block th:case="${T(eu.coatrack.api.ProxyHealthStatus).NEVER_CONNECTED}">
+                        <span th:text="#{admin.dashboard.gatewayhealthmonitor.state.notconnected}"></span>
+                        <span class="warning-not-connected-exclamation-mark">&#9888;</span>
+                    </th:block>
+                </div>
+
+                <table class="health-monitor-data-table">
+                    <tr>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.gatewayname}"></th>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.status}"></th>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.lastcontact}"></th>
+                        <th th:text="#{admin.dashboard.gatewayhealthmonitor.notification.switch}"></th>
+                    </tr>
+                    <tr th:each="gateway : ${gatewayHealthMonitorProxyData.healthDataForAllGateways}">
+                        <td align="left" th:text="${gateway.name}"></td>
+
+                        <td align="center" th:switch="${gateway.status}">
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).WARNING}" th:class="'neutral-state-symbol warning-state'"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).CRITICAL}" th:class="'neutral-state-symbol critical-state'"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).OK}" th:class="'neutral-state-symbol ok-state'"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).NEVER_CONNECTED}" th:class="'neutral-state-symbol'"></span>
+                            <span th:case="${T(eu.coatrack.api.ProxyHealthStatus).IGNORE}" th:class="'neutral-state-symbol ignore-state'"></span>
+                        </td>
+
+                        <th:block th:if="${gateway.isMonitoringEnabled}">
+                            <td align="left" th:if="${gateway.minutesPassedSinceLastContact != null}"
+                                th:text="${gateway.minutesPassedSinceLastContact &lt; 1 ? 'Less than 1 minute ago' : gateway.minutesPassedSinceLastContact + ' min ago'}">
+                            </td>
+                            <td align="left" th:if="${gateway.minutesPassedSinceLastContact == null}"
+                                th:text="#{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}">
+                            </td>
+                        </th:block>
+                        <td align="center" th:if="${!gateway.isMonitoringEnabled}">
+                            -
+                        </td>
+                        <td align="center">
+                            <label class="switch">
+                                <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
+                                       th:checked="${gateway.isMonitoringEnabled}"
+                                       th:onchange="'javascript:informAdminAboutMonitoringEnabledSwitchUpdate(\'' + ${gateway?.gatewayId} + '\')'"/>
+                                <span class="slider round"></span>
+                            </label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

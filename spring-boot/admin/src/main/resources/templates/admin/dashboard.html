@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
     <head>
         <div th:include="admin/fragments/head :: head" th:remove="tag">Global Header</div>
         <div th:include="admin/fragments/js :: functions('/admin')" th:remove="tag">Functions</div>
@@ -8,6 +8,7 @@
         <link type="text/css" th:href="@{/dashboard/css/maps/jquery-jvectormap-2.0.3.css}" rel="stylesheet"/>
         <link type="text/css" th:href="@{/dashboard/css/icheck/flat/red.css}" rel="stylesheet"/>
         <link type="text/css" th:href="@{/dashboard/css/floatexamples.css}" rel="stylesheet"/>
+        <link type="text/css" th:href="@{/dashboard/css/gateway-health-monitor.css}" rel="stylesheet"/>
         <title>CoatRack Administration</title>
 
         <script th:inline="javascript">
@@ -140,7 +141,35 @@
                 var dateRangeUrlSuffix = "?dateFrom=" + dateRangeStartDateFromServer;
                 dateRangeUrlSuffix += "&dateUntil=" + dateRangeEndDateFromServer;
                 loadChartsForNewDateRange(dateRangeUrlSuffix);
+
+                updateGatewayHealthMonitorWithLatestDataFromAdmin();
             });
+
+            // This function calls automatically (each 30 seconds) the Backend to update the Gateway Health Monitor
+            setInterval(function(){
+                updateGatewayHealthMonitorWithLatestDataFromAdmin()
+            }, 30000)
+
+            function updateGatewayHealthMonitorWithLatestDataFromAdmin() {
+                $('#gatewayHealthMonitor').load("/admin/dashboard/gateway-health-monitor");
+            }
+
+            function informAdminAboutMonitoringEnabledSwitchUpdate(proxyId) {
+                console.log("The monitoring status of the proxy " + proxyId + " is being changed");
+                const delay = 1000;
+                const checkboxId = proxyId + '_monitorSwitch';
+                const isMonitoringEnabled = ($('#' + checkboxId).is(':checked') ? true : false);
+                $.ajax({
+                    type: "POST",
+                    url: "admin/dashboard/gateway-health-monitor/notification-status",
+                    data: {proxyId: proxyId, isMonitoringEnabled: isMonitoringEnabled},
+                    complete: function () {
+                        setTimeout(function () {
+                            updateGatewayHealthMonitorWithLatestDataFromAdmin();
+                        }, delay);
+                    },
+                })
+            }
 
             /*]]>*/
         </script>
