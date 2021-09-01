@@ -43,7 +43,7 @@ public class SpringSecurityTestConfig {
     public UserDetailsService userDetailsService() {
 
         User user = new User();
-        user.setUsername("edeka");
+        user.setUsername("aa11aa22-aa33-aa44-aa55-aa66aa77aa88");
 
         UserDetails basicUser = new YggUserPrincipal(user);
 

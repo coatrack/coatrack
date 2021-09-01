@@ -95,7 +95,7 @@ public class AdminControllerTest {
     }
 
     @Test
-    @WithUserDetails("edeka")
+    @WithUserDetails("aa11aa22-aa33-aa44-aa55-aa66aa77aa88")
     public void test() {
 
         ServiceApi randomServiceApiFromDB = serviceApiRepository.findAll().iterator().next();
