@@ -51,7 +51,9 @@ public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilterBefore(new PublicApiTokenAccessFilter(tokenServices), AbstractPreAuthenticatedProcessingFilter.class)
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("XSRF-TOKEN", "auth_code", "JSESSIONID").invalidateHttpSession(true).clearAuthentication(true).permitAll()
                 .and()
+                .oauth2Login()
+                .and()
                 //.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
-                .csrf().disable().oauth2Login();
+                .csrf().disable();
     }
 }
