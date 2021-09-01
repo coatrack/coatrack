@@ -24,7 +24,6 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
 public class DummyClientRegistrationRepository implements ClientRegistrationRepository {
 
     public ClientRegistration findByRegistrationId(String s) {

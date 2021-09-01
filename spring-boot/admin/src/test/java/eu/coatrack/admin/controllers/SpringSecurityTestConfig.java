@@ -21,6 +21,8 @@ package eu.coatrack.admin.controllers;
  */
 
 import java.util.Arrays;
+
+import eu.coatrack.admin.model.repository.DummyClientRegistrationRepository;
 import eu.coatrack.admin.model.vo.YggUserPrincipal;
 import eu.coatrack.admin.service.YggUserDetailsService;
 import eu.coatrack.api.User;
@@ -30,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @TestConfiguration
@@ -51,5 +54,10 @@ public class SpringSecurityTestConfig {
     @Bean
     public ResourceServerProperties resourceServerProperties(){
         return new ResourceServerProperties();
+    }
+
+    @Bean
+    public ClientRegistrationRepository clientRegistrationRepository(){
+        return new DummyClientRegistrationRepository();
     }
 }
