@@ -19,7 +19,7 @@
                 window.charts = new Object();
 
                 function loadGeneralStatistics(dateRangeUrlSuffix) {
-                    var url = "/admin/dashboard/generalStatistics.json";
+                    var url = "/admin/dashboard/generalStatistics";
                     url += dateRangeUrlSuffix;
 
                     $.getJSON(url, function (json) {
