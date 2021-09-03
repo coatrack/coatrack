@@ -40,18 +40,17 @@ public class MetricsCounterService {
 
     private static final Logger log = LoggerFactory.getLogger(MetricsCounterService.class);
 
+    // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
+    private static final String counterSessionID = UUID.randomUUID().toString();
     private static final String PREFIX = "CUSTOM-METRICS";
     private static final String SEPARATOR = "___";
 
-    // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
-    private static final String counterSessionID = UUID.randomUUID().toString();
     private final MeterRegistry meterRegistry;
+    private final MetricsTransmitter metricsTransmitter;
 
-    @Autowired
-    private MetricsTransmitter metricsTransmitter;
-
-    public MetricsCounterService(MeterRegistry meterRegistry) {
+    public MetricsCounterService(MeterRegistry meterRegistry, MetricsTransmitter metricsTransmitter) {
         this.meterRegistry = meterRegistry;
+        this.metricsTransmitter = metricsTransmitter;
     }
 
     public void increment(MetricsHolder mh) {
