@@ -28,6 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
@@ -56,7 +57,7 @@ public class MetricsCounterService {
     public void increment(MetricsHolder mh) {
         logBeginningOfIncrementation(mh);
         Counter currentCounter = incrementAndReturnFittingCounter(mh);
-        Metric metricToTransmit = createMetricToTransmit(mh, currentCounter);
+        Metric metricToTransmit = createMetricToTransmit(mh, (int) currentCounter.count());
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
     }
 
@@ -80,10 +81,6 @@ public class MetricsCounterService {
     }
 
     private String createCounterId(MetricsHolder mh) {
-        long now = new Date().getTime();
-        //Set the time of day to a constant value. The counterId should be day specific but not more precise.
-        Date todayAtConstantTime = new Date(now - now % (24 * 60 * 60 * 1000));
-
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
                 .add(mh.getServiceApiName())
@@ -91,14 +88,14 @@ public class MetricsCounterService {
                 .add(mh.getApiKeyValue())
                 .add(mh.getMetricType().toString())
                 .add(String.valueOf(mh.getHttpResponseCode()))
-                .add(todayAtConstantTime.toString())
+                .add(LocalDate.now().toString())
                 .add(mh.getPath());
         return stringJoiner.toString();
     }
 
-    private Metric createMetricToTransmit(MetricsHolder mh, Counter counter) {
+    private Metric createMetricToTransmit(MetricsHolder mh, int count) {
         Metric metricToTransmit = new Metric();
-        metricToTransmit.setCount((int) counter.count());
+        metricToTransmit.setCount(count);
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
         metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
         metricToTransmit.setType(mh.getMetricType());
