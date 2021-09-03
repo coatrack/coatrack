@@ -21,6 +21,7 @@ package eu.coatrack.proxy.metrics;
  */
 
 import eu.coatrack.api.Metric;
+import eu.coatrack.api.ServiceApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
@@ -94,17 +95,21 @@ public class MetricsCounterService {
 
     private Metric createMetricToTransmit(MetricsHolder mh) {
         Metric metricToTransmit = new Metric();
-        metricToTransmit.setMetricsCounterSessionID(counterSessionID);
-        metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
-        metricToTransmit.setType(mh.getMetricType());
-        metricToTransmit.setDateOfApiCall(new Date());
-        metricToTransmit.setPath(mh.getPath());
 
-        ApiKey tempApiKey = new ApiKey();
-        tempApiKey.setKeyValue(mh.getApiKeyValue());
-        metricToTransmit.setApiKey(tempApiKey);
+        ServiceApi serviceApi = new ServiceApi();
+        serviceApi.setName(mh.getServiceApiName().toString());
+        ApiKey apiKey = new ApiKey();
+        apiKey.setKeyValue(mh.getApiKeyValue());
+        apiKey.setServiceApi(serviceApi);
+        metricToTransmit.setApiKey(apiKey);
 
         metricToTransmit.setRequestMethod(mh.getRequestMethod());
+        metricToTransmit.setType(mh.getMetricType());
+        metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
+        metricToTransmit.setDateOfApiCall(new Date());
+        metricToTransmit.setPath(mh.getPath());
+        metricToTransmit.setMetricsCounterSessionID(counterSessionID);
+
         return metricToTransmit;
     }
 }
