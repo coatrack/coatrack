@@ -25,7 +25,6 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -55,8 +54,8 @@ public class MetricsCounterService {
 
     public void increment(MetricsHolder mh) {
         logBeginningOfIncrementation(mh);
-        int currentCount = incrementAndReturnCurrentCount(mh);
-        Metric metricToTransmit = createMetricToTransmit(mh, currentCount);
+        Metric metricToTransmit = createMetricToTransmit(mh);
+        incrementAndSetCount(metricToTransmit);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
     }
 
@@ -68,33 +67,33 @@ public class MetricsCounterService {
         ));
     }
 
-    private int incrementAndReturnCurrentCount(MetricsHolder mh) {
-        String counterId = createCounterId(mh);
+    private void incrementAndSetCount(Metric metricToTransmit) {
+        String counterId = createCounterIdFromMetric(metricToTransmit);
 
         Counter counter = meterRegistry.find(counterId).counter();
         if (counter == null){
             counter = meterRegistry.counter(counterId);
         }
         counter.increment();
-        return (int) counter.count();
+        int currentCount = (int) counter.count();
+        metricToTransmit.setCount(currentCount);
     }
 
-    private String createCounterId(MetricsHolder mh) {
+    private String createCounterIdFromMetric(Metric metric) {
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
-                .add(mh.getServiceApiName())
-                .add(mh.getRequestMethod())
-                .add(mh.getApiKeyValue())
-                .add(mh.getMetricType().toString())
-                .add(String.valueOf(mh.getHttpResponseCode()))
+                .add(metric.getApiKey().getServiceApiName())
+                .add(metric.getRequestMethod())
+                .add(metric.getApiKey().getKeyValue())
+                .add(metric.getType().toString())
+                .add(String.valueOf(metric.getHttpResponseCode()))
                 .add(LocalDate.now().toString())
-                .add(mh.getPath());
+                .add(metric.getPath());
         return stringJoiner.toString();
     }
 
-    private Metric createMetricToTransmit(MetricsHolder mh, int count) {
+    private Metric createMetricToTransmit(MetricsHolder mh) {
         Metric metricToTransmit = new Metric();
-        metricToTransmit.setCount(count);
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
         metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
         metricToTransmit.setType(mh.getMetricType());
