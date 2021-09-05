@@ -1,17 +1,17 @@
-package eu.coatrack.admin.server.config;
+package eu.coatrack.api;
 
 /*-
  * #%L
- * coatrack-config-server
+ * coatrack-api
  * %%
  * Copyright (C) 2013 - 2021 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,22 +20,11 @@ package eu.coatrack.admin.server.config;
  * #L%
  */
 
-import eu.coatrack.config.ConfigServerCredential;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
+public enum ProxyHealthStatus {
 
-/**
- *
- * @author perezdf
- */
-@Configuration
-public class AppRepositoryRestMvcConfiguration extends RepositoryRestMvcConfiguration {
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
-        config().exposeIdsFor(ConfigServerCredential.class);
-
-    }
-
+    CRITICAL,
+    WARNING,
+    OK,
+    IGNORE,
+    NEVER_CONNECTED;
 }

@@ -5,6 +5,7 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -19,3 +20,5 @@ jobs:
         java-version: 11
     - name: Build
       run: bash build.sh
+    - name: Push to docker
+      run: bash build-docker.sh

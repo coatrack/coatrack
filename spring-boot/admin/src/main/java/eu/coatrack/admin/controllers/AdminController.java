@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,6 +42,7 @@ import eu.coatrack.admin.logic.CreateProxyAction;
 import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
+import eu.coatrack.admin.service.GatewayHealthMonitorService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -52,6 +53,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -73,9 +78,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
+ * @author Bruno Silva <silva@atb-bremen.de>
  */
 @Controller
 @RequestMapping(value = "/admin")
@@ -95,19 +102,13 @@ public class AdminController {
     private String gettingStartedTestServiceIdentifier;
 
     private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
-
     private static final String ADMIN_WIZARD_VIEW = "admin/wizard/wizard";
-
     private static final String ADMIN_STARTPAGE = "admin/startpage";
-
     private static final String ADMIN_CONSUMER_WIZARD = "admin/consumer_wizard/wizard";
-
     private static final String ADMIN_PROFILE = "admin/profile/profile";
-
     private static final String GITHUB_API_USER = "https://api.github.com/user";
-
     private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
-
+    private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
     static {
@@ -115,7 +116,7 @@ public class AdminController {
         colorMap.put(400, Color.ORANGE);
         colorMap.put(401, Color.SALMON);
         colorMap.put(403, Color.LIGHT_YELLOW);
-        colorMap.put(404, new Color(255,255,102)); // yellow
+        colorMap.put(404, new Color(255, 255, 102)); // yellow
         colorMap.put(500, Color.RED);
         colorMap.put(503, Color.ORANGE_RED);
         colorMap.put(504, Color.DARK_RED);
@@ -163,6 +164,9 @@ public class AdminController {
     @Autowired
     UserSessionSettings session;
 
+    @Autowired
+    GatewayHealthMonitorService gatewayHealthMonitorService;
+
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
 
@@ -175,7 +179,9 @@ public class AdminController {
     @RequestMapping(value = "", method = GET)
     public ModelAndView home(Model model, HttpServletRequest request) throws IOException {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
 
         ModelAndView mav = new ModelAndView();
 
@@ -192,9 +198,11 @@ public class AdminController {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
                     mav.addObject("stats", loadGeneralStatistics(
-                            session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
+                            session.getDashboardDateRangeStart(),
+                            session.getDashboardDateRangeEnd()));
                     mav.addObject("userStatistics", getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
-                            session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
+                            session.getDashboardDateRangeStart(),
+                            session.getDashboardDateRangeEnd()));
                 } else {
                     if (!user.getInitialized()) {
 
@@ -214,17 +222,30 @@ public class AdminController {
                 OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
                 RestTemplate restTemplate = new RestTemplate();
-                String userInfo = restTemplate.getForObject(GITHUB_API_USER + "?access_token=" + details.getTokenValue(), String.class);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Authorization", "token " + details.getTokenValue());
+                HttpEntity<String> githubRequest = new HttpEntity<String>(headers);
+
+                ResponseEntity<String> userInfoResponse = restTemplate.exchange(GITHUB_API_USER, HttpMethod.GET,
+                        githubRequest, String.class);
+                String userInfo = userInfoResponse.getBody();
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-                Map<String, Object> userMap = objectMapper.readValue(userInfo, new TypeReference<Map<String, Object>>() {
-                });
+                Map<String, Object> userMap = objectMapper.readValue(userInfo,
+                        new TypeReference<Map<String, Object>>() {
+                        });
                 String email = (String) userMap.get("email");
                 if (email == null || email.isEmpty()) {
-                    String userEmails = restTemplate.getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
-                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails, objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
+
+                    ResponseEntity<String> userEmailsResponse = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+                            githubRequest, String.class);
+                    String userEmails = userEmailsResponse.getBody();
+                    //String userEmails = restTemplate.getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
+                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails,
+                            objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
 
                     Iterator<GithubEmail> it = emailsList.iterator();
                     boolean found = false;
@@ -259,7 +280,8 @@ public class AdminController {
         } else {
             // User is not authenticated, it is quite weird according to the Github login page but I prefer to prevent the case
             String springVersion = webUI.parameterizedMessage("home.spring.version",
-                    SpringBootVersion.getVersion(), SpringVersion.getVersion());
+                    SpringBootVersion.getVersion(),
+                    SpringVersion.getVersion());
             model.addAttribute("springVersion", springVersion);
             mav.setViewName("home");
         }
@@ -283,7 +305,9 @@ public class AdminController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         List<StatisticsPerApiUser> userStatistics = metricsAggregationCustomRepository
-                .getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
+                .getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart,
+                        selectedTimePeriodEnd,
+                        auth.getName());
 
         return userStatistics;
     }
@@ -296,7 +320,10 @@ public class AdminController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        List<StatisticsPerApiUser> userStatsList = metricsAggregationCustomRepository.getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
+        List<StatisticsPerApiUser> userStatsList = metricsAggregationCustomRepository.
+                getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart,
+                        selectedTimePeriodEnd,
+                        auth.getName());
         DoughnutDataset dataset = new DoughnutDataset()
                 .setLabel("API calls")
                 .addBackgroundColors(Color.AQUA_MARINE, Color.LIGHT_BLUE, Color.LIGHT_SALMON, Color.LIGHT_BLUE, Color.GRAY)
@@ -320,10 +347,8 @@ public class AdminController {
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerHttpStatusCode> statisticsPerHttpStatusCodeList = metricsAggregationCustomRepository.getNoOfCallsPerHttpResponseCode(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
-                auth.getName());
+        List<StatisticsPerHttpStatusCode> statisticsPerHttpStatusCodeList = metricsAggregationCustomRepository
+                .getNoOfCallsPerHttpResponseCode(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
 
         if (statisticsPerHttpStatusCodeList.size() > 0) {
 
@@ -333,17 +358,18 @@ public class AdminController {
                 Color colorForStatusCode = chartColorsPerHttpResponseCode.get(statusCode);
 
                 if (colorForStatusCode == null) {
-                    // there is no fixed color defined for this status code, set it based on the range
+                    // there is no fixed color defined for this status code, set it based on the
+                    // range
                     if (statusCode >= 200 && statusCode < 300) {
                         // lighter green
-                        colorForStatusCode = new Color(0, 204,0);
+                        colorForStatusCode = new Color(0, 204, 0);
                     } else if (statusCode >= 300 && statusCode < 400) {
                         colorForStatusCode = Color.LIGHT_BLUE;
                     } else if (statusCode >= 404 && statusCode < 500) {
                         colorForStatusCode = Color.DARK_ORANGE;
                     } else if (statusCode >= 500 && statusCode < 600) {
                         // red
-                        colorForStatusCode = new Color(255,51,51);
+                        colorForStatusCode = new Color(255, 51, 51);
                     } else {
                         colorForStatusCode = Color.LIGHT_GRAY;
                     }
@@ -449,14 +475,13 @@ public class AdminController {
         LocalDate previousTimePeriodEnd = selectedTimePeriodStart.minusDays(1);
         LocalDate previousTimePeriodStart = previousTimePeriodEnd.minusDays(timePeriodDurationInDays);
 
-        int callsThisPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(
-                selectedTimePeriodStart,
+        int callsThisPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
                 selectedTimePeriodEnd,
                 apiProviderUsername);
-        int callsPreviousPeriod = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(
-                previousTimePeriodStart,
-                previousTimePeriodEnd,
-                apiProviderUsername);
+        int callsPreviousPeriod = metricsAggregationCustomRepository
+                .getTotalNumberOfLoggedApiCalls(previousTimePeriodStart,
+                        previousTimePeriodEnd,
+                        apiProviderUsername);
 
         GeneralStats stats = new GeneralStats();
         stats.dateFrom = selectedTimePeriodStart;
@@ -465,19 +490,25 @@ public class AdminController {
         stats.callsThisPeriod = callsThisPeriod;
         stats.callsDiff = callsThisPeriod - callsPreviousPeriod;
 
-        stats.errorsThisPeriod = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd,
+        stats.errorsThisPeriod = metricsAggregationCustomRepository
+                .getNumberOfErroneousApiCalls(selectedTimePeriodStart,
+                        selectedTimePeriodEnd,
+                        apiProviderUsername);
+        stats.errorsTotal = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(previousTimePeriodStart,
+                previousTimePeriodEnd,
                 apiProviderUsername);
-        stats.errorsTotal = metricsAggregationCustomRepository.getNumberOfErroneousApiCalls(previousTimePeriodStart, previousTimePeriodEnd, apiProviderUsername);
 
         stats.users = metricsAggregationCustomRepository.getNumberOfApiCallers(
                 selectedTimePeriodStart,
                 selectedTimePeriodEnd,
                 apiProviderUsername);
-        stats.callsTotal = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart, selectedTimePeriodEnd, apiProviderUsername);
+        stats.callsTotal = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
+                selectedTimePeriodEnd,
+                apiProviderUsername);
 
-        stats.revenueTotal = reportController.calculateTotalRevenueForApiProvider(auth.getName(), selectedTimePeriodStart, selectedTimePeriodEnd);
+        stats.revenueTotal = reportController.calculateTotalRevenueForApiProvider(auth.getName(),
+                selectedTimePeriodStart,
+                selectedTimePeriodEnd);
 
         return stats;
     }
@@ -647,4 +678,24 @@ public class AdminController {
         return testServiceApi;
     }
 
+    @RequestMapping(value = "/dashboard/gateway-health-monitor", method = GET)
+    @ResponseBody
+    public ModelAndView getGatewayHealthMonitorGuiFragment() {
+        ModelAndView mav = new ModelAndView();
+        log.debug("client request for Gateway Health Monitor Data");
+        GatewayHealthMonitorService.DataForGatewayHealthMonitor dataForGatewayHealthMonitor = gatewayHealthMonitorService
+                .getGatewayHealthMonitorData();
+        mav.addObject("gatewayHealthMonitorProxyData", dataForGatewayHealthMonitor);
+        mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
+        return mav;
+    }
+
+    @RequestMapping(value = "/dashboard/gateway-health-monitor/notification-status", method = POST)
+    @ResponseBody
+    public void updateNotificationStatusOnGatewayHealthMonitor(@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
+        Proxy proxy = proxyRepository.findById(proxyId);
+        proxy.setHealthMonitoringEnabled(isMonitoringEnabled);
+        log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isHealthMonitoringEnabled());
+        proxyRepository.save(proxy);
+    }
 }
