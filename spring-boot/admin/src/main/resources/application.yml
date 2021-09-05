@@ -8,8 +8,7 @@ ygg.mail.verification.server.url: http://localhost:8080
 
 logging:
   level:
-    org.springframework.security: DEBUG
-    org: DEBUG
+    org.springframework.security: INFO
     nl.corizon.ygg: DEBUG
 
 # Necessary in order to run offline     

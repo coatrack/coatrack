@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: coatrack-admin-container
-        image: coatrack/admin:1.3.0-SNAPSHOT
+        image: coatrack/admin:1.6.0
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
@@ -51,14 +51,14 @@ spec:
     spec:
       containers:
         - name: coatrack-config-server-container
-          image: coatrack/config-server:1.3.0-SNAPSHOT
+          image: coatrack/config-server:1.6.0
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: coatrack-config
           env:
             - name: server.port
-              value: 8998
+              value: '8998'
           ports:
             - containerPort: 8998
       hostNetwork: true
