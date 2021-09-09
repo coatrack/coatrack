@@ -21,15 +21,14 @@ package eu.coatrack.proxy.metrics;
  */
 
 import eu.coatrack.api.Metric;
-import eu.coatrack.api.ServiceApi;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
@@ -103,7 +102,7 @@ public class MetricsCounterService {
         metricToTransmit.setRequestMethod(mh.getRequestMethod());
         metricToTransmit.setType(mh.getMetricType());
         metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
-        metricToTransmit.setDateOfApiCall(new Date());
+        metricToTransmit.setDateOfApiCall(Date.valueOf(LocalDate.now()));
         metricToTransmit.setPath(mh.getPath());
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
 
