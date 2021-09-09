@@ -4,11 +4,25 @@ metadata:
   name: coatrack-config
   namespace: coatrack
 data:
+  spring.datasource.username: coatrack
+  spring.datasource.password: coatrack123
+  spring.datasource.dbname: coatrack
+  spring.datasource.host: cockroachdb-public.default
+  spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   logging.level.org.springframework: INFO
-  logging.level.nl.bebr: DEBUG
+  logging.level.nl.bebr: INFO
+  eu.coatrack.proxy: INFO
+  org: INFO
+  org.springframework.security: INFO
+  nl.corizon.ygg: INFO
   ygg.mail.sender.user: "" 
   ygg.mail.sender.password: ""
   ygg.mail.server.url: ""
   ygg.mail.server.port: "0"
+  spring.cloud.config.uri: coatrack-config-server
+  spring.cloud.config.uri: http://coatrack-config-server
+  spring.cloud.config.username: admin
+  spring.cloud.config.password: password
+#  spring.profiles.active: dev

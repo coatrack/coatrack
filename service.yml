@@ -10,8 +10,8 @@ spec:
     - protocol: TCP
       name: http
       port: 80
-      targetPort: 8080
-  type: LoadBalancer
+#      targetPort: 8080
+  type: ClusterIP
 ---
 apiVersion: v1
 kind: Service
@@ -24,6 +24,7 @@ spec:
   ports:
     - protocol: TCP
       name: http
-      port: 8998
-      targetPort: 8998
-  type: LoadBalancer
+      port: 80
+#      port: 8998
+#      targetPort: 8998
+  type: ClusterIP
