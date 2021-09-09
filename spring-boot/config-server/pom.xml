@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -11,13 +12,13 @@
     <groupId>eu.coatrack</groupId>
     <artifactId>coatrack-config-server</artifactId>
     <packaging>jar</packaging>
-    
-   
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-    </properties>    
-    
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -28,8 +29,8 @@
                 <scope>import</scope>
             </dependency>
         </dependencies>
-    </dependencyManagement>  
-    
+    </dependencyManagement>
+
 
     <build>
         <plugins>
@@ -38,23 +39,23 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <executable>true</executable>
-                </configuration>                
+                </configuration>
             </plugin>
         </plugins>
-    </build>        
-    
+    </build>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-config-server</artifactId>
         </dependency>
 
-             
+
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
@@ -64,10 +65,10 @@
 
         <dependency>
             <groupId>eu.coatrack</groupId>
-	    <artifactId>coatrack-api</artifactId>
+            <artifactId>coatrack-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-rest</artifactId>
@@ -82,11 +83,11 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>
 
-    </dependencies>  
+    </dependencies>
 </project>
