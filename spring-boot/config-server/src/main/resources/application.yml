@@ -17,6 +17,7 @@ spring:
     multipart:
       max-file-size: 100MB
       max-request-size: 100MB
+  jpa:
     hibernate:
       show-sql: true
       generate-ddl: true
