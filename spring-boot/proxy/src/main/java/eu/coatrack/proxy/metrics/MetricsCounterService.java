@@ -96,11 +96,8 @@ public class MetricsCounterService {
     private Metric createMetricToTransmit(MetricsHolder mh) {
         Metric metricToTransmit = new Metric();
 
-        ServiceApi serviceApi = new ServiceApi();
-        serviceApi.setName(mh.getServiceApiName().toString());
         ApiKey apiKey = new ApiKey();
         apiKey.setKeyValue(mh.getApiKeyValue());
-        apiKey.setServiceApi(serviceApi);
         metricToTransmit.setApiKey(apiKey);
 
         metricToTransmit.setRequestMethod(mh.getRequestMethod());
