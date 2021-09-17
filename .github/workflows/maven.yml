@@ -19,7 +19,7 @@ jobs:
       with:
         java-version: 11
     - name: Log in to Docker Hub
-      run: docker login -u ${{ secrets.DOCKER_USERNAME }} --p ${{ secrets.DOCKERHUB_PASSWORD }} docker.io/coatrack 
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }} docker.io/coatrack 
     - name: Build
       run: bash build.sh
     - name: Push to docker
