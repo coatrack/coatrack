@@ -54,8 +54,9 @@ public class MetricsCounterService {
 
     public void increment(MetricsHolder mh) {
         logBeginningOfIncrementation(mh);
+        int currentCounter = incrementAndReturnCurrentCounter(mh);
         Metric metricToTransmit = createMetricToTransmit(mh);
-        incrementAndSetCount(metricToTransmit);
+        metricToTransmit.setCount(currentCounter);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
     }
 
@@ -67,28 +68,27 @@ public class MetricsCounterService {
         ));
     }
 
-    private void incrementAndSetCount(Metric metricToTransmit) {
-        String counterId = createCounterIdFromMetric(metricToTransmit);
+    private int incrementAndReturnCurrentCounter(MetricsHolder mh) {
+        String counterId = createCounterIdFromMetric(mh);
 
         Counter counter = meterRegistry.find(counterId).counter();
         if (counter == null){
             counter = meterRegistry.counter(counterId);
         }
         counter.increment();
-        int currentCount = (int) counter.count();
-        metricToTransmit.setCount(currentCount);
+        return (int) counter.count();
     }
 
-    private String createCounterIdFromMetric(Metric metric) {
+    private String createCounterIdFromMetric(MetricsHolder mh) {
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
-                .add(metric.getApiKey().getServiceApiName())
-                .add(metric.getRequestMethod())
-                .add(metric.getApiKey().getKeyValue())
-                .add(metric.getType().toString())
-                .add(String.valueOf(metric.getHttpResponseCode()))
+                .add(mh.getServiceApiName())
+                .add(mh.getRequestMethod())
+                .add(mh.getApiKeyValue())
+                .add(mh.getMetricType().toString())
+                .add(String.valueOf(mh.getHttpResponseCode()))
                 .add(LocalDate.now().toString())
-                .add(metric.getPath());
+                .add(mh.getPath());
         return stringJoiner.toString();
     }
 
