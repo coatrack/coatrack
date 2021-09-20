@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,7 @@ import eu.coatrack.admin.logic.CreateProxyAction;
 import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
+import eu.coatrack.admin.service.GatewayHealthMonitorService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -51,6 +52,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
@@ -72,9 +77,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
+ * @author Bruno Silva <silva@atb-bremen.de>
  */
 @Controller
 @RequestMapping(value = "/admin")
@@ -94,19 +101,13 @@ public class AdminController {
     private String gettingStartedTestServiceIdentifier;
 
     private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
-
     private static final String ADMIN_WIZARD_VIEW = "admin/wizard/wizard";
-
     private static final String ADMIN_STARTPAGE = "admin/startpage";
-
     private static final String ADMIN_CONSUMER_WIZARD = "admin/consumer_wizard/wizard";
-
     private static final String ADMIN_PROFILE = "admin/profile/profile";
-
     private static final String GITHUB_API_USER = "https://api.github.com/user";
-
     private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
-
+    private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
     static {
@@ -162,6 +163,9 @@ public class AdminController {
     @Autowired
     UserSessionSettings session;
 
+    @Autowired
+    GatewayHealthMonitorService gatewayHealthMonitorService;
+
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
 
@@ -174,7 +178,9 @@ public class AdminController {
     @RequestMapping(value = "", method = GET)
     public ModelAndView home(Model model, HttpServletRequest request) throws IOException {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
 
         ModelAndView mav = new ModelAndView();
 
@@ -193,7 +199,8 @@ public class AdminController {
                     mav.addObject("stats", loadGeneralStatistics(session.getDashboardDateRangeStart(),
                             session.getDashboardDateRangeEnd()));
                     mav.addObject("userStatistics", getStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(
-                            session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd()));
+                            session.getDashboardDateRangeStart(),
+                            session.getDashboardDateRangeEnd()));
                 } else {
                     if (!user.getInitialized()) {
 
@@ -214,8 +221,14 @@ public class AdminController {
                 OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
                 RestTemplate restTemplate = new RestTemplate();
-                String userInfo = restTemplate
-                        .getForObject(GITHUB_API_USER + "?access_token=" + details.getTokenValue(), String.class);
+
+                HttpHeaders headers = new HttpHeaders();
+                headers.add("Authorization", "token " + details.getTokenValue());
+                HttpEntity<String> githubRequest = new HttpEntity<String>(headers);
+
+                ResponseEntity<String> userInfoResponse = restTemplate.exchange(GITHUB_API_USER, HttpMethod.GET,
+                        githubRequest, String.class);
+                String userInfo = userInfoResponse.getBody();
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -225,8 +238,10 @@ public class AdminController {
                 });
                 String email = (String) userMap.get("email");
                 if (email == null || email.isEmpty()) {
-                    String userEmails = restTemplate
-                            .getForObject(GITHUB_API_EMAIL + "?access_token=" + details.getTokenValue(), String.class);
+
+                    ResponseEntity<String> userEmailsResponse = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+                            githubRequest, String.class);
+                    String userEmails = userEmailsResponse.getBody();
                     List<GithubEmail> emailsList = objectMapper.readValue(userEmails,
                             objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
 
@@ -615,8 +630,7 @@ public class AdminController {
                     "Please notice the list of proxies is larger than one, so for test consumer we will take into account only first one");
         }
         List<String> defaultProxyList = new ArrayList();
-        if(!proxiesUrlList.isEmpty())
-        {
+        if (!proxiesUrlList.isEmpty()) {
             defaultProxyList.add(proxiesUrlList.get(0));
         }
 
@@ -646,4 +660,24 @@ public class AdminController {
         return testServiceApi;
     }
 
+    @RequestMapping(value = "/dashboard/gateway-health-monitor", method = GET)
+    @ResponseBody
+    public ModelAndView getGatewayHealthMonitorGuiFragment() {
+        ModelAndView mav = new ModelAndView();
+        log.debug("client request for Gateway Health Monitor Data");
+        GatewayHealthMonitorService.DataForGatewayHealthMonitor dataForGatewayHealthMonitor = gatewayHealthMonitorService
+                .getGatewayHealthMonitorData();
+        mav.addObject("gatewayHealthMonitorProxyData", dataForGatewayHealthMonitor);
+        mav.setViewName(GATEWAY_HEALTH_MONITOR_FRAGMENT);
+        return mav;
+    }
+
+    @RequestMapping(value = "/dashboard/gateway-health-monitor/notification-status", method = POST)
+    @ResponseBody
+    public void updateNotificationStatusOnGatewayHealthMonitor(@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
+        Proxy proxy = proxyRepository.findById(proxyId);
+        proxy.setHealthMonitoringEnabled(isMonitoringEnabled);
+        log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isHealthMonitoringEnabled());
+        proxyRepository.save(proxy);
+    }
 }

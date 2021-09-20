@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping
 public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private static final String[] PERMITALL_RESOURCE_LIST = new String[]{"/catchPaymentResponse", "/json/**", "/login", "/", "/403", "/registerUser", "/callback", "/fonts/**", "/webjars/**", "/robots.txt", "/assets/**", "/images/**"};
+    private static final String[] PERMITALL_RESOURCE_LIST = new String[]{"/bower_components/**", "/catchPaymentResponse", "/json/**", "/login", "/", "/403", "/registerUser", "/callback", "/fonts/**", "/webjars/**", "/robots.txt", "/assets/**", "/images/**"};
 
     @Qualifier("userInfoTokenServices")
     @Autowired

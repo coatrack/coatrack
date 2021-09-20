@@ -58,6 +58,7 @@ public class ServiceApi implements ServiceApiInterface{
     @Enumerated(EnumType.STRING)
     private ServiceAccessPermissionPolicy serviceAccessPermissionPolicy;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<ApiKey> apiKeys = new ArrayList<>(0);
 
@@ -203,14 +204,6 @@ public class ServiceApi implements ServiceApiInterface{
 
     public void setEntryPoints(List<EntryPoint> entryPoints) {
         this.entryPoints = entryPoints;
-    }
-
-    /**
-     *
-     * @return a simple String to display the Service API in a GUI
-     */
-    public String getGuiStringRepresentation() {
-        return String.format("%s / %s (%s)", name, uriIdentifier, localUrl);
     }
 
     @Override
