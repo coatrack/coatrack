@@ -27,7 +27,7 @@ jobs:
       run: bash build.sh
     - name: Push to docker
       run: bash build-docker.sh
-    - name: Set KUBECONFIG
+    - shell: bash
       env:
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
       run: echo "$KUBECONFIG" | base64 -d > kubeconfig.yml
