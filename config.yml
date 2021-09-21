@@ -18,7 +18,7 @@ data:
   logging.level.eu.coatrack: DEBUG
 
   ygg.mail.sender.from: ktveenstra@bebr.nl
-  ygg.mail.sender.user: "XXXX@kyoe.es" 
+  ygg.mail.sender.user: "dev@coatrack.eu" 
   ygg.mail.sender.password: "PEPE1234"
   ygg.mail.server.url: ""
   ygg.mail.server.port: "0"

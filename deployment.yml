@@ -6,6 +6,8 @@ metadata:
   name: coatrack-admin
   namespace: coatrack
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -38,6 +40,8 @@ metadata:
   name: coatrack-config-server
   namespace: coatrack
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
