@@ -27,6 +27,8 @@ jobs:
       run: bash build.sh
     - name: Push to docker
       run: bash build-docker.sh
+    - name: Set KUBECONFIG
+      run: echo $KUBECONFIG | base64 -d > kubeconfig.yml
     - name: Update container image coatrack-admin
       run: kubectl --kubeconfig=kubeconfig.yml --namespace=coatrack set image deployment/coatrack-admin coatrack-admin-container=coatrack/coatrack-admin:2.0.0-SNAPSHOT
     - name: Update container image coatrack-config-server
