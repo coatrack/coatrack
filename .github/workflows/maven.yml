@@ -30,7 +30,8 @@ jobs:
     - shell: bash
       env:
         KUBECONFIG: ${{ secrets.KUBECONFIG }}
-      run: echo "$KUBECONFIG" | base64 -d > kubeconfig.yml
+      run: |
+        echo "$KUBECONFIG" | base64 -d > kubeconfig.yml
     - name: Update container image coatrack-admin
       run: kubectl --kubeconfig=kubeconfig.yml --namespace=coatrack set image deployment/coatrack-admin coatrack-admin-container=coatrack/coatrack-admin:2.0.0-SNAPSHOT
     - name: Update container image coatrack-config-server
