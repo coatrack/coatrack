@@ -27,7 +27,9 @@ jobs:
       run: bash build.sh
     - name: Push to docker
       run: bash build-docker.sh
-    - name: Update container images and restart kubernetes containers
+    - name: Update container image coatrack-admin
       run: kubectl --kubeconfig=kubeconfig.yml --namespace=coatrack set image deployment/coatrack-admin coatrack-admin-container=coatrack/coatrack-admin:2.0.0-SNAPSHOT
+    - name: Update container image coatrack-config-server
       run: kubectl --kubeconfig=kubeconfig.yml --namespace=coatrack set image deployment/coatrack-config-server coatrack-config-server-container=coatrack/coatrack-config-server:2.0.0-SNAPSHOT
+    - name: restart containers
       run: kubectl --kubeconfig=kubeconfig.yml --namespace=coatrack rollout restart deploy
