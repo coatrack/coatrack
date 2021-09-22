@@ -5,7 +5,7 @@ metadata:
   namespace: coatrack
 data:
   spring.datasource.username: coatrack
-  spring.datasource.password: coatrack123
+  spring.datasource.password: s838RFixF93Hv9fa
   spring.datasource.dbname: coatrack
   spring.datasource.host: cockroachdb-public.default
   spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
