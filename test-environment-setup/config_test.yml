@@ -17,22 +17,23 @@ data:
   org.springframework.security: INFO
   logging.level.eu.coatrack: DEBUG
 
-  ygg.mail.sender.from: ktveenstra@bebr.nl
-  ygg.mail.sender.user: "dev@coatrack.eu" 
-  ygg.mail.sender.password: "PEPE1234"
-  ygg.mail.server.url: ""
-  ygg.mail.server.port: "0"
+  ygg.mail.sender.from: "coatrack@kyoe.es"
+  ygg.mail.sender.user: "coatrack@kyoe.es" 
+  ygg.mail.sender.password: "Pepe1234"
+  ygg.mail.server.url: "smtp.serviciodecorreo.es"
+  ygg.mail.server.port: "465"
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
-  ygg.admin.api-base-url-for-gateway: "https://dev.coatrack.eu/api/"
-  ygg.admin.server.url: "https://dev.coatrack.eu"
+  ygg.admin.api-base-url-for-gateway: "https://test.coatrack.eu/api/"
+  ygg.admin.server.url: "https://test.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
   ygg.admin.gettingStarted.consumer.testService.id: "1"
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
-  ygg.proxy.executable-jar.path: /coatrack-warehouse/proxies
+  ygg.proxy.executable-jar.path: /tmp
+#  ygg.proxy.executable-jar.path: /coatrack-warehouse/proxies
   ygg.proxy.executable-jar.filename-original-prefix: coatrack-proxy-
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
@@ -56,4 +57,4 @@ data:
   security.oauth2.client.scope.user: email
   security.oauth2.client.scope.read: user
   security.oauth2.resource.userInfoUri: https://api.github.com/user
-  spring.profiles.active: dev
+  spring.profiles.active: test
