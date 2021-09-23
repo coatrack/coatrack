@@ -139,7 +139,7 @@ public class UserController {
         helper.setFrom(mail_sender_from);
         helper.setSubject("Verification of your email address");
         helper.setText("Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
-                + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/" + user.getEmailVerifiedUrl() + "\">Verify, please </a></p>\n"
+                + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/" + user.getEmailVerifiedUrl() + "\">Click</a></p>\n"
                 + "\n"
                 + "<p>Best regards</p>\n"
                 + "\n"
