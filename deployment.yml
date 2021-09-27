@@ -6,6 +6,8 @@ metadata:
   name: coatrack-admin
   namespace: coatrack
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -17,18 +19,16 @@ spec:
     spec:
       containers:
       - name: coatrack-admin-container
-        image: coatrack/admin:1.3.0-SNAPSHOT
+        image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
         imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: coatrack-config
         env:
         - name: server.port
-          value: '8080'
+          value: '80'
         ports:
-        - containerPort: 8080
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+        - containerPort: 80
       imagePullSecrets:
       - name: docker-login
 ---
@@ -40,6 +40,8 @@ metadata:
   name: coatrack-config-server
   namespace: coatrack
 spec:
+  strategy:
+    type: Recreate
   replicas: 1
   selector:
     matchLabels:
@@ -51,18 +53,16 @@ spec:
     spec:
       containers:
         - name: coatrack-config-server-container
-          image: coatrack/config-server:1.3.0-SNAPSHOT
+          image: coatrack/coatrack-config-server:2.0.0-SNAPSHOT
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: coatrack-config
           env:
             - name: server.port
-              value: 8998
+              value: '80'
           ports:
-            - containerPort: 8998
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
+            - containerPort: 80
       imagePullSecrets:
         - name: docker-login
 

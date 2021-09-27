@@ -86,7 +86,10 @@
                                             </button>
                                         </a>
                                     </td>
-                                    <td th:text="${proxy.timeOfLastSuccessfulCallToAdmin != null} ? ${#dates.format(new java.util.Date(proxy?.timeOfLastSuccessfulCallToAdmin))} : #{admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text}"></td>
+                                    <td th:text="${proxy.timeOfLastSuccessfulCallToAdmin != null ?
+                                        #dates.format(new java.util.Date(proxy.timeOfLastSuccessfulCallToAdmin)) :
+                                        #messages.msg('admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text')}">
+                                    </td>
                                     <td class="right">
                                         <a th:href="|@{/admin/proxies/}${proxy.id}|">
                                             <button>
