@@ -22,6 +22,7 @@ data:
   ygg.mail.sender.password: "Pepe1234"
   ygg.mail.server.url: "smtp.serviciodecorreo.es"
   ygg.mail.server.port: "465"
+  ygg.mail.verification.server.url: "https://integration.coatrack.eu"
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
@@ -38,7 +39,7 @@ data:
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
   ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: ygg-proxy-
-  ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://integration-config.coatrack.eu
+  ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.dev.coatrack.eu
 
   spring.cloud.config.uri: http://coatrack-config-server
   spring.cloud.config.username: admin
