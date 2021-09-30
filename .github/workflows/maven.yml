@@ -39,6 +39,9 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBE_CONFIG }}
+      - name: Update configmap
+        run: |
+          kubectl --namespace=coatrack apply -f dev-environment-setup/config_dev.yml
       - name: Update container image coatrack-admin
         run: |
           kubectl --namespace=coatrack set image deployment/coatrack-admin coatrack-admin-container=coatrack/coatrack-admin:2.0.0-SNAPSHOT
