@@ -10,6 +10,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: github.ref != 'refs/heads/master'
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK 11
@@ -19,8 +20,7 @@ jobs:
       - name: Build
         run: bash build.sh
   
-  push_to_docker:
-    needs: build
+  build_and_push_to_docker:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
@@ -32,9 +32,11 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Push to docker
         run: bash build-docker.sh
+      - name: Build
+        run: bash build.sh        
 
   deploy_to_kubernetes:
-    needs: push_to_docker
+    needs: build_and_push_to_docker
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
