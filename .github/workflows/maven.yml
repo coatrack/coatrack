@@ -21,7 +21,7 @@ jobs:
   
   push_to_docker:
     needs: build
-    runs-on: unbuntu-latest
+    runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
       - name: Log in to Docker Hub
