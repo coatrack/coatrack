@@ -22,7 +22,7 @@ data:
   ygg.mail.sender.password: "Pepe1234"
   ygg.mail.server.url: "smtp.serviciodecorreo.es"
   ygg.mail.server.port: "465"
-  ygg.mail.verification.server.url: "https://integration.coatrack.eu"
+  ygg.mail.verification.server.url: "https://dev.coatrack.eu"
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
