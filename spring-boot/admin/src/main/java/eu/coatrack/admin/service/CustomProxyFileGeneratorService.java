@@ -1,4 +1,4 @@
-package eu.coatrack.admin.util;
+package eu.coatrack.admin.service;
 
 /*-
  * #%L
@@ -19,8 +19,9 @@ package eu.coatrack.admin.util;
  * limitations under the License.
  * #L%
  */
-
 import eu.coatrack.api.Proxy;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,31 +31,38 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.Properties;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
+import org.apache.commons.io.FileUtils;
 
 /**
- * Generates custom CoatRack proxy jars, which can then be downloaded and installed
- * on API provider side
+ * Generates custom CoatRack proxy jars, which can then be downloaded and
+ * installed on API provider side
  *
  * @author gr-hovest(at)atb-bremen.de
  */
 @Service
-public class CustomProxyFileGenerator {
+public class CustomProxyFileGeneratorService {
 
-    private static final Logger log = LoggerFactory.getLogger(CustomProxyFileGenerator.class);
+    private static final Logger log = LoggerFactory.getLogger(CustomProxyFileGeneratorService.class);
 
-    @Value("${ygg.proxy.executable-jar.path}")
-    private String PATH_TO_YGG_PROXY_JAR;
+    // ****************  Config Properties  ****************  
+    @Value("${ygg.proxy.executable-jar.template.url}")
+    private String URL_TO_YGG_PROXY_TEMPLATE_JAR;
 
-    @Value("${ygg.proxy.executable-jar.filename-original-prefix}")
-    private String YGG_PROXY_FILENAME_ORIGINAL_PREFIX;
+    @Value("${ygg.proxy.executable-jar.generated.path}")
+    private String PATH_TO_GENERATED_YGG_PROXY_JAR;
 
     @Value("${mvn.pom.project.version}")
     private String MVN_POM_PROJECT_VERSION;
@@ -65,6 +73,13 @@ public class CustomProxyFileGenerator {
     @Value("${ygg.proxy.executable-jar.filename-custom.suffix}")
     private String YGG_PROXY_FILENAME_CUSTOM_SUFFIX;
 
+    @Value("${ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix}")
+    private String CUSTOM_PROPERTIES_APPLICATION_NAME_PREFIX;
+
+    @Value("${ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri}")
+    private String CUSTOM_PROPERTIES_CLOUD_CONFIG_URI_VALUE;
+
+    // ****************  Config Properties  ****************  
     // Please note: the following also works on Windows because the JAR file API seems to use "/" as separator on every system
     private static final String CUSTOM_CONFIG_FILE = "BOOT-INF/classes/bootstrap.properties";
 
@@ -75,37 +90,44 @@ public class CustomProxyFileGenerator {
 
     private static final String CUSTOM_PROPERTIES_CREDENTIAL_PASSWORD = "spring.cloud.config.password";
 
-    @Value("${ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix}")
-    private String CUSTOM_PROPERTIES_APPLICATION_NAME_PREFIX;
+    /**
+     * This method generates the proxy file from an Proxy Entity using a jar
+     * template and overwriting specific properties
+     *
+     * @param proxy
+     * @return
+     * @throws java.net.MalformedURLException
+     */
+    public File getCustomJarForDownload(Proxy proxy) throws MalformedURLException, IOException {
 
-    @Value("${ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri}")
-    private String CUSTOM_PROPERTIES_CLOUD_CONFIG_URI_VALUE;
+        // ***
+        // Retrieve proxy template
+        // ***
+        URL urlProxyOriginalExecutableFile = new URL(URL_TO_YGG_PROXY_TEMPLATE_JAR);
 
+        Path localTemplateProxyJar = Files.createTempFile("proxy-template", ".jar");
 
-    public File getCustomJarForDownload(Proxy proxy) {
+        FileUtils.copyURLToFile(urlProxyOriginalExecutableFile, localTemplateProxyJar.toFile());
 
+        // ***
+        // Create generate proxy file
+        // ***
         String newCustomProxyFilename = YGG_PROXY_FILENAME_CUSTOM_PREFIX + MVN_POM_PROJECT_VERSION + "-" + proxy.getId() + YGG_PROXY_FILENAME_CUSTOM_SUFFIX;
 
-        String proxyOriginalExecutableFilePath = PATH_TO_YGG_PROXY_JAR + File.separator
-                + YGG_PROXY_FILENAME_ORIGINAL_PREFIX
-                + MVN_POM_PROJECT_VERSION
-                + ".jar";
-
-        log.debug("obtaining the original path from  '{}'", proxyOriginalExecutableFilePath);
-
-        File proxyOriginalExecutableFile = new File(proxyOriginalExecutableFilePath);
-
         File newCustomProxyFile = new File(
-                PATH_TO_YGG_PROXY_JAR + File.separator
+                PATH_TO_GENERATED_YGG_PROXY_JAR + File.separator
                 + newCustomProxyFilename);
 
-        log.debug("generating new file '{}' based on original file '{}'", newCustomProxyFile, proxyOriginalExecutableFile);
+        log.debug("generating new file '{}' based on original file '{}'", newCustomProxyFile, localTemplateProxyJar.toFile());
 
+        // ***
+        // Prepare jar
+        // ***
         try {
-            JarFile jarToCopy = new JarFile(proxyOriginalExecutableFile);
+            JarFile jarToCopy = new JarFile(localTemplateProxyJar.toFile());
             Enumeration<JarEntry> entriesInsideJarToCopy = jarToCopy.entries();
 
-            JarInputStream originalJarInputStream = new JarInputStream(new FileInputStream(proxyOriginalExecutableFile));
+            JarInputStream originalJarInputStream = new JarInputStream(new FileInputStream(localTemplateProxyJar.toFile()));
             JarOutputStream customJarOutputStream = new JarOutputStream(new FileOutputStream(newCustomProxyFile));
 
             // copy all elements from the original CoatRack proxy jar, except for custom config file
@@ -151,6 +173,13 @@ public class CustomProxyFileGenerator {
         return newCustomProxyFile;
     }
 
+    /**
+     * This method aims to fill the necessary properties for the generated proxy
+     * based on spring boot
+     *
+     * @param proxy
+     * @return
+     */
     private Properties generateCustomProperties(Proxy proxy) {
 
         Properties bootstrapPropsForGeneratedFile = new Properties();
@@ -168,7 +197,6 @@ public class CustomProxyFileGenerator {
                 CUSTOM_PROPERTIES_CREDENTIAL_PASSWORD,
                 proxy.getConfigServerPassword());
 
-        // TODO clean up
         bootstrapPropsForGeneratedFile.setProperty("management.security.enabled", "false");
 
         return bootstrapPropsForGeneratedFile;
