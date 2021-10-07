@@ -18,10 +18,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - config.coatrack.eu
+    - config.prod.coatrack.eu
     secretName: coatrack-config-server-tls
   rules:
-  - host: config.coatrack.eu
+  - host: config.prod.coatrack.eu
     http:
       paths:
       - path: /

@@ -4,7 +4,6 @@ metadata:
   name: coatrack-config
   namespace: coatrack
 data:
-#cockroach broken on production
   spring.datasource.username: coatrack
   spring.datasource.password: CvWigZ36HJAf6kP9tNJQ
   spring.datasource.dbname: coatrack
@@ -26,8 +25,8 @@ data:
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
-  ygg.admin.api-base-url-for-gateway: "https://coatrack.eu/api/"
-  ygg.admin.server.url: "https://coatrack.eu"
+  ygg.admin.api-base-url-for-gateway: "https://prod.coatrack.eu/api/"
+  ygg.admin.server.url: "https://prod.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
   ygg.admin.gettingStarted.consumer.testService.id: "1"
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
@@ -39,7 +38,7 @@ data:
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
   ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: ygg-proxy-
-  ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.coatrack.eu
+  ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.prod.coatrack.eu
 
   spring.cloud.config.uri: http://coatrack-config-server
   spring.cloud.config.username: admin
