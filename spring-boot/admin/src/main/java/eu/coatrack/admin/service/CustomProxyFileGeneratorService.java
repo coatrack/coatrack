@@ -174,7 +174,7 @@ public class CustomProxyFileGeneratorService {
     }
 
     /**
-     * This method aims to fill the necessary properties for the generated proxy
+     * This method aims to fill the necessary bootstrap properties for the generated proxy,
      * enabling the proxy to get its config from the CoatRack config server
      *
      * @param proxy
