@@ -18,17 +18,25 @@ spec:
         app.kubernetes.io/name: coatrack-admin
     spec:
       containers:
-      - name: coatrack-admin-container
-        image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
-        imagePullPolicy: Always
-        envFrom:
-        - configMapRef:
-            name: coatrack-config
-        env:
-        - name: server.port
-          value: '80'
-        ports:
-        - containerPort: 80
+        - name: coatrack-admin-container
+          image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: coatrack-config
+          env:
+            - name: server.port
+              value: '80'
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: gluster
+              mountPath: /mnt/coatrack
+              readOnly: false
+      volumes:
+        - name: gluster
+          persistentVolumeClaim:
+            claimName: coatrack-pvc
       imagePullSecrets:
       - name: docker-login
 ---
@@ -63,6 +71,13 @@ spec:
               value: '80'
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: gluster
+              mountPath: /mnt/coatrack
+              readOnly: false
+      volumes:
+        - name: gluster
+          persistentVolumeClaim:
+            claimName: coatrack-pvc
       imagePullSecrets:
         - name: docker-login
-
