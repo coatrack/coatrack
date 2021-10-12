@@ -40,6 +40,7 @@ data:
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
   ygg.proxy.executable-jar.template.url: "https://www.kyoe.es/proxies/coatrack-proxy-"
+  ygg.proxy.executable-jar.generated.path: "/tmp"
   ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: ygg-proxy-
   ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.dev.coatrack.eu
 
