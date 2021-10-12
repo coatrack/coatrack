@@ -103,7 +103,10 @@ public class CustomProxyFileGeneratorService {
         // ***
         // Retrieve proxy template
         // ***
-        URL urlProxyOriginalExecutableFile = new URL(URL_TO_YGG_PROXY_TEMPLATE_JAR);
+        URL urlProxyOriginalExecutableFile = new URL(URL_TO_YGG_PROXY_TEMPLATE_PREFIX);
+                + YGG_PROXY_FILENAME_ORIGINAL_PREFIX
+                + MVN_POM_PROJECT_VERSION
+                + ".jar");
 
         Path localTemplateProxyJar = Files.createTempFile("proxy-template", ".jar");
 
