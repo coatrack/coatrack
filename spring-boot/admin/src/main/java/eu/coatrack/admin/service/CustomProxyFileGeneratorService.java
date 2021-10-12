@@ -59,7 +59,7 @@ public class CustomProxyFileGeneratorService {
 
     // ****************  Config Properties  ****************  
     @Value("${ygg.proxy.executable-jar.template.url}")
-    private String URL_TO_YGG_PROXY_TEMPLATE_JAR;
+    private String YGG_PROXY_FILENAME_ORIGINAL_PREFIX;
 
     @Value("${ygg.proxy.executable-jar.generated.path}")
     private String PATH_TO_GENERATED_YGG_PROXY_JAR;
@@ -103,8 +103,8 @@ public class CustomProxyFileGeneratorService {
         // ***
         // Retrieve proxy template
         // ***
-        URL urlProxyOriginalExecutableFile = new URL(URL_TO_YGG_PROXY_TEMPLATE_PREFIX);
-                + YGG_PROXY_FILENAME_ORIGINAL_PREFIX
+        URL urlProxyOriginalExecutableFile = new URL(
+                YGG_PROXY_FILENAME_ORIGINAL_PREFIX
                 + MVN_POM_PROJECT_VERSION
                 + ".jar");
 
@@ -177,8 +177,9 @@ public class CustomProxyFileGeneratorService {
     }
 
     /**
-     * This method aims to fill the necessary bootstrap properties for the generated proxy,
-     * enabling the proxy to get its config from the CoatRack config server
+     * This method aims to fill the necessary bootstrap properties for the
+     * generated proxy, enabling the proxy to get its config from the CoatRack
+     * config server
      *
      * @param proxy
      * @return the bootstrap properties for the generated proxy
