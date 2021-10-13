@@ -84,7 +84,7 @@ public class ApiKeyFetcher {
         if (responseEntity == null) {
             errorMessage = Optional.of("The ResponseEntity was null.");
         } else if (responseEntity.getBody() == null) {
-            errorMessage = Optional.of("The API key could not be found.");
+            errorMessage = Optional.of("The API key could not be found in the response body, which was 'null'.");
         } else if (responseEntity.getStatusCode() != HttpStatus.OK) {
             errorMessage = Optional.of("The HTTP status was not OK.");
         }
