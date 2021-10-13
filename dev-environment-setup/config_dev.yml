@@ -34,7 +34,7 @@ data:
   # Test service id for the tutorial
   # ****
  
-  ygg.admin.gettingStarted.consumer.testService.id: "1"
+  ygg.admin.gettingStarted.consumer.testService.id: "701448633002360833"
 
   # ****
   # Git Service
