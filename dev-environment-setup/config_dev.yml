@@ -33,7 +33,7 @@ data:
   # ****
   # Test service id for the tutorial
   # ****
-  ygg.admin.gettingStarted.consumer.testService.id: 108
+  ygg.admin.gettingStarted.consumer.testService.id: "108"
   ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
   ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
 
