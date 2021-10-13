@@ -129,7 +129,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
         try {
             apiKey = apiKeyFetcher.requestApiKeyFromAdmin(apiKeyValue);
         } catch (ApiKeyFetchingFailedException e) {
-            log.info("An error occurred for api key {}. " +
+            log.info("An error occurred fetching the API key {} from the CoatRack Web Application. " +
                     "Therefore checking the local API key list as fallback solution.", apiKeyValue, e);
             apiKey = localApiKeyManager.getApiKeyEntityFromLocalCache(apiKeyValue);
         }

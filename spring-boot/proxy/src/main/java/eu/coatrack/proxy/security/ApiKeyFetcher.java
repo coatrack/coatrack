@@ -72,8 +72,8 @@ public class ApiKeyFetcher {
         Optional<String> errorMessage = validateResponseEntityAndCreateErrorMessageInCaseOfProblems(responseEntity);
 
         if (errorMessage.isPresent())
-            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity received from Admin. "
-                    + errorMessage.get());
+            throw new ApiKeyFetchingFailedException("A problem occurred regarding the ResponseEntity received from " +
+                    "CoatRack Web Application. " + errorMessage.get());
         else
             return responseEntity.getBody();
     }
