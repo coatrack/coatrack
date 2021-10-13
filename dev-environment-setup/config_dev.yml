@@ -35,7 +35,7 @@ data:
   # ****
   ygg.admin.gettingStarted.consumer.testService.id: 108
   ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
-  ygg.admin.gettingStarted.consumer.testService.uriIdentifier: raincoat-service
+  ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
 
   # ****
   # Git Service
