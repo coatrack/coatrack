@@ -29,13 +29,26 @@ data:
   ygg.admin.api-base-url-for-gateway: "https://dev.coatrack.eu/api/"
   ygg.admin.server.url: "https://dev.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
+  
+  # ****
+  # Test service id for the tutorial
+  # ****
+ 
   ygg.admin.gettingStarted.consumer.testService.id: "1"
+
+  # ****
+  # Git Service
+  # ****
+
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
-  ygg.proxy.executable-jar.path: /mnt/coatrack/
-#  ygg.proxy.executable-jar.path: "http://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar"
-#  ygg.proxy.executable-jar.path: /coatrack-warehouse/proxies
+
+  # ****
+  # Proxy
+  # ****
+
+  ygg.proxy.executable-jar.path: /mnt/coatrack
   ygg.proxy.executable-jar.filename-original-prefix: coatrack-proxy-
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
@@ -50,7 +63,8 @@ data:
   spring.session.store-type: jdbc
   spring.session.jdbc.initialize-schema: always
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
-  spring.jpa.hibernate.ddl-auto: create-drop
+  #spring.jpa.hibernate.ddl-auto: create-drop
+  spring.jpa.hibernate.ddl-auto: update
   security.oauth2.client.clientId: 21a84668d01527c4b788
   security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
