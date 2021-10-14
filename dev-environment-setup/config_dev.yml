@@ -11,7 +11,7 @@ data:
   spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-  logging.level: INFO
+  logging.level: DEBUG
   logging.level.org: INFO
   logging.level.org.springframework: INFO
   org.springframework.security: INFO
