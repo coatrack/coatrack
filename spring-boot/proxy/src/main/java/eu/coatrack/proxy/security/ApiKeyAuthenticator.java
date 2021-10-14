@@ -103,7 +103,7 @@ public class ApiKeyAuthenticator implements AuthenticationManager {
     }
 
     private boolean doesApiKeyBelongToAdminApp(String apiKeyValue) {
-        log.debug("Checking if '{}' is an API key of the admin application.", apiKeyValue);
+        log.debug("Checking if '{}' is an API key of the CoatRack Web Application.", apiKeyValue);
         return apiKeyValue.equals(ApiKey.API_KEY_FOR_YGG_ADMIN_TO_ACCESS_PROXIES);
     }
 

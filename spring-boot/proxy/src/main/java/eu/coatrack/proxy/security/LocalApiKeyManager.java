@@ -38,8 +38,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Provides a local cache for API keys, allowing the gateway to validate API keys without connection to CoatRack
- * admin application. Caches (and periodically refreshes) a list of all API keys assigned to all services offered
+ * Provides a local cache for API keys, allowing the gateway to validate API keys without connection to the CoatRack
+ * Web Application. Caches (and periodically refreshes) a list of all API keys assigned to all services offered
  * by the gateway.
  *
  * @author Christoph Baier

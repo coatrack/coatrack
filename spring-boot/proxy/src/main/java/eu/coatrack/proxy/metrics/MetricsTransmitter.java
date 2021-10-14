@@ -109,7 +109,7 @@ public class MetricsTransmitter implements GaugeWriter {
 
             log.debug("uri to transmit metric: {}", uriToTransmitMetric.toString());
             Object idOfTransmittedMetric = restTemplate.postForObject(uriToTransmitMetric, metricToTransmit, Long.class);
-            log.info("transmitted Metrics to admin: {} - response was metric ID {}", metricToTransmit.toString(), idOfTransmittedMetric);
+            log.info("transmitted Metrics to CoatRack Web Application: {} - response was metric ID {}", metricToTransmit.toString(), idOfTransmittedMetric);
 
             /*
             // create relationship from transmitted metric to this proxy
@@ -161,10 +161,10 @@ public class MetricsTransmitter implements GaugeWriter {
                 apiKey = resultOfApiKeySearch.getBody();
                 log.debug("API key was found by CoatRack admin: " + apiKey.toString());
             } else {
-                log.error("Communication with CoatRack admin server failed, result is: " + resultOfApiKeySearch);
+                log.error("Communication with CoatRack Web Application failed, result is: " + resultOfApiKeySearch);
             }
         } catch (Exception e) {
-            log.error("Exception when trying to get API consumer name from CoatRack admin", e);
+            log.error("Exception when trying to get API consumer name from the CoatRack Web Application.", e);
         }
         return apiKey;
     }
