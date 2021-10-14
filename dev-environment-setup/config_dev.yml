@@ -33,8 +33,9 @@ data:
   # ****
   # Test service id for the tutorial
   # ****
- 
-  ygg.admin.gettingStarted.consumer.testService.id: "1"
+  ygg.admin.gettingStarted.consumer.testService.id: "108"
+  ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
+  ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
 
   # ****
   # Git Service
@@ -61,10 +62,9 @@ data:
   spring.cloud.config.username: admin
   spring.cloud.config.password: password
   spring.session.store-type: jdbc
-  spring.session.jdbc.initialize-schema: always
+  spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
-  #spring.jpa.hibernate.ddl-auto: create-drop
-  spring.jpa.hibernate.ddl-auto: update
+  spring.jpa.hibernate.ddl-auto: create-drop
   security.oauth2.client.clientId: 21a84668d01527c4b788
   security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
