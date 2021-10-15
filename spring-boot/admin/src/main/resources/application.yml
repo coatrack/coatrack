@@ -3,29 +3,105 @@
 
 mvn.pom.project.version: @@project.version@@
 
-# user and password are expected to be for a gmail account
-ygg.mail.verification.server.url: http://localhost:8080
-
 logging:
   level:
     org.springframework.security: INFO
     nl.corizon.ygg: DEBUG
 
+
+
 # Necessary in order to run offline     
-ygg.admin.database.insertSampleDataOnStartup: true
-ygg.admin.gettingStarted.consumer.testService.id: 1
-ygg.admin.gitService.url: http://localhost
-ygg.admin.gitService.user: user
-ygg.admin.gitService.password: password
-ygg.admin.api-base-url-for-gateway: http://localhost
-ygg.proxy.executable-jar.path: path
-ygg.proxy.executable-jar.filename-original-prefix: prefix
-ygg.proxy.executable-jar.filename-custom.prefix: prefix
-ygg.proxy.executable-jar.filename-custom.suffix: suffix
-ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: prefix
-ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: http://localhost
+ygg:
+
+# user and password are expected to be for a gmail account
+
+   mail:
+      server:
+         url: "smtp.serviciodecorreo.es"
+         port: 465
+      sender:
+         from: "coatrack@kyoe.es"
+         user: ""
+         password: ""
+      verification.server.url: http://localhost:8080
+
+   admin:
+      database.insertSampleDataOnStartup: true
+      server:
+         url: http://localhost:8080
+      servicecovers:
+         path: /tmp
+         url: http://localhost/coatrack-servicecovers/
+      payment.commision:
+         variable: 50
+         fix: 1
+         bookKeeping.contact: fperezduran@bebr.nl
+      call-request-fee: 0
+    
+      gettingStarted.consumer.testService.id: 1
+      gitService:
+          url: http://localhost
+          user: user
+          password: password
+      api-base-url-for-gateway: http://localhost
+
+      gettingStarted:
+         consumer:
+           testService:
+# the following two elements are required to load the test service for getting started wizard
+                provider.username: BrunoSilvaATB
+                uriIdentifier: getting-started-service-consumer
+   proxy:
+      executable-jar:
+         generated.path: /tmp
+         template.url: https://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar
+         path: path
+         filename-original-prefix: prefix
+         filename-custom:
+            prefix: prefix
+            suffix: suffix
+      generate-bootstrap-properties:
+         spring.application.name.prefix: prefix
+         spring.cloud.config.uri: http://localhost
+      server.port.defaultValue: 8088
 
 # Necessary to define the threshold times to display different
 # status (warning and critical) on the Gateway Health Monitor
-ygg.gateway-health-monitor.warning.threshold.minutes: 5
-ygg.gateway-health-monitor.critical.threshold.minutes: 60
+ygg.gateway-health-monitor:
+   warning.threshold.minutes: 5
+   critical.threshold.minutes: 60
+   
+
+security:
+  oauth2:
+    client:
+      clientId: e188a243cc57ef90f2b5
+      clientSecret: a5630e2f873890bdc8366aac0155e8113ece0997
+      accessTokenUri: https://github.com/login/oauth/access_token
+      userAuthorizationUri: https://github.com/login/oauth/authorize
+      tokenName: oauth_token
+      # send client id/secret to Github as ...
+      #clientAuthenticationScheme: form # form fields
+      clientAuthenticationScheme: header # headers
+      # send oauth token to Github as ...
+      authenticationScheme: header # header
+      #authenticationScheme: query # query parameter
+      scope:
+        - user:email
+        - read:user
+    resource:
+      userInfoUri: https://api.github.com/user
+spring:
+  data:
+    rest:
+      base-path: /api   
+      
+spring.application.name: ygg-admin
+spring.cloud.config.uri: https://config.coatrack.eu
+
+# Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
+spring.cloud.config:
+        username: admin
+        password: password
+
+management.security.enabled: false
