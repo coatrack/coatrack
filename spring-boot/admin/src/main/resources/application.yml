@@ -58,7 +58,7 @@ ygg:
          path: path
          filename-original-prefix: prefix
          filename-custom:
-            prefix: prefix
+            prefix: coatrack-gateway-
             suffix: suffix
       generate-bootstrap-properties:
          spring.application.name.prefix: prefix
