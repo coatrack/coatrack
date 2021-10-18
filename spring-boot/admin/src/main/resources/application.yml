@@ -8,13 +8,8 @@ logging:
     org.springframework.security: INFO
     nl.corizon.ygg: DEBUG
 
-
-
 # Necessary in order to run offline     
 ygg:
-
-# user and password are expected to be for a gmail account
-
    mail:
       server:
          url: "smtp.serviciodecorreo.es"
@@ -71,6 +66,19 @@ ygg.gateway-health-monitor:
    warning.threshold.minutes: 5
    critical.threshold.minutes: 60
    
+spring:
+  data:
+    rest:
+      base-path: /api   
+      
+spring.application.name: ygg-admin
+
+# Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
+spring.cloud.config:
+        username: admin
+        password: password
+        uri: https://config.coatrack.eu
+
 
 security:
   oauth2:
@@ -91,17 +99,5 @@ security:
         - read:user
     resource:
       userInfoUri: https://api.github.com/user
-spring:
-  data:
-    rest:
-      base-path: /api   
-      
-spring.application.name: ygg-admin
-spring.cloud.config.uri: https://config.coatrack.eu
-
-# Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
-spring.cloud.config:
-        username: admin
-        password: password
 
 management.security.enabled: false
