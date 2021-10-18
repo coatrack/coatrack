@@ -47,6 +47,10 @@ data:
   spring.session.jdbc.initialize-schema: always
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
   spring.jpa.hibernate.ddl-auto: create-drop
+  
+  # ***********
+  # Security
+  # ***********
   security.oauth2.client.clientId: 3bf52b2c263318ee1d6f
   security.oauth2.client.clientSecret: 611835f590b73197ea3a750c0ae3008a887f6a9b
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
@@ -57,4 +61,4 @@ data:
   security.oauth2.client.scope.user: email
   security.oauth2.client.scope.read: user
   security.oauth2.resource.userInfoUri: https://api.github.com/user
-#  spring.profiles.active: test
+  spring.profiles.active: test
