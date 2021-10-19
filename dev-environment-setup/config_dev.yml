@@ -64,7 +64,7 @@ data:
   spring.session.store-type: jdbc
   spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
-  spring.jpa.hibernate.ddl-auto: update
+  spring.jpa.hibernate.ddl-auto: create-drop
   security.oauth2.client.clientId: 21a84668d01527c4b788
   security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
