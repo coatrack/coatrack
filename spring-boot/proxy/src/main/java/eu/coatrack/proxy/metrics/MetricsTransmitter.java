@@ -43,7 +43,7 @@ import java.net.URI;
  */
 public class MetricsTransmitter implements GaugeWriter {
 
-    private static Logger log = LoggerFactory.getLogger(MetricsTransmitter.class);
+    private static final Logger log = LoggerFactory.getLogger(MetricsTransmitter.class);
 
     @Autowired
     private RestTemplate restTemplate;
@@ -56,26 +56,14 @@ public class MetricsTransmitter implements GaugeWriter {
     @Autowired
     private UrlResourcesProvider urlResourcesProvider;
 
-    @Value("${custom-metrics.prefix.counter}")
-    private String prefixForCustomCounterMetrics;
-
     @Value("${proxy-id}")
     private String myProxyID;
 
     @Value("${ygg.admin.api-base-url}")
     private String adminBaseUrl;
 
-    @Value("${ygg.admin.server.url}")
-    private String adminServerUrl;
-
     @Value("${ygg.admin.resources.metricsTransmission}")
     private String adminEndpointForMetricsTransmission;
-
-    @Value("${ygg.admin.resources.proxies}")
-    private String adminEndpointToGetProxies;
-
-    @Value("${ygg.admin.resources.api-keys}")
-    private String adminEndpointToGetApiKeys;
 
     @Value("${ygg.admin.resources.search-api-keys-by-token-value}")
     private String adminResourceToSearchForApiKeys;
@@ -133,7 +121,7 @@ public class MetricsTransmitter implements GaugeWriter {
         } catch (Exception e) {
             log.error("An unexpected error occurred when Gateway contacted the CoatRack Web Application in order " +
                     "to send the statistics/metrics from this call. Please assure that your CoatRack gateway has a " +
-                    "network connection and can reach {}.", adminServerUrl, e);
+                    "network connection to the CoatRack Web Application.", e);
         }
     }
 

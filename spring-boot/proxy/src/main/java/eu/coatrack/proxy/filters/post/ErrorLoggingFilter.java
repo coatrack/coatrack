@@ -49,10 +49,7 @@ public class ErrorLoggingFilter extends ZuulFilter {
     public static final String CONTEXT_KEY_ALREADY_LOGGED_AS_ERROR = "YGG-LOGGED-AS-ERROR";
     public static final String CONTEXT_VALUE_TRUE = "TRUE";
 
-    private static Logger log = LoggerFactory.getLogger(ErrorLoggingFilter.class);
-
-    @Value("${ygg.admin.server.url}")
-    private String adminServerUrl;
+    private static final Logger log = LoggerFactory.getLogger(ErrorLoggingFilter.class);
 
     @Autowired
     private MetricsCounterService metricsCounterService;
@@ -85,8 +82,8 @@ public class ErrorLoggingFilter extends ZuulFilter {
 
         if (ctx.getResponseBody() == null && ctx.getResponseDataStream() == null) {
             log.error("An unexpected error occurred the Gateway contacted the CoatRack Web Application in order to " +
-                    "verify an API key that was sent by a client. Please check if the service is accessible and " +
-                    "Gateway config in {}/admin/proxies.", adminServerUrl);
+                    "verify an API key that was sent by a client. Please check if the service is accessible and check " +
+                    "the Gateway config in the CoatRack Web Application.");
 
             String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
             metricsCounterService.increment(
