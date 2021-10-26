@@ -11,7 +11,7 @@ data:
   spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-  logging.level: INFO
+  logging.level: DEBUG
   logging.level.org: INFO
   logging.level.org.springframework: INFO
   org.springframework.security: INFO
@@ -29,16 +29,32 @@ data:
   ygg.admin.api-base-url-for-gateway: "https://dev.coatrack.eu/api/"
   ygg.admin.server.url: "https://dev.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
-  ygg.admin.gettingStarted.consumer.testService.id: "1"
+  
+  # ****
+  # Test service id for the tutorial
+  # ****
+  ygg.admin.gettingStarted.consumer.testService.id: "108"
+  ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
+  ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
+
+  # ****
+  # Git Service
+  # ****
+
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
-  ygg.proxy.executable-jar.path: /mnt/coatrack/
-#  ygg.proxy.executable-jar.path: "http://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar"
-#  ygg.proxy.executable-jar.path: /coatrack-warehouse/proxies
+
+  # ****
+  # Proxy
+  # ****
+
+  ygg.proxy.executable-jar.path: /mnt/coatrack
   ygg.proxy.executable-jar.filename-original-prefix: coatrack-proxy-
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
+  ygg.proxy.executable-jar.template.url: "https://www.kyoe.es/proxies/coatrack-proxy-"
+  ygg.proxy.executable-jar.generated.path: "/tmp"
   ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: ygg-proxy-
   ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.dev.coatrack.eu
 
@@ -46,7 +62,7 @@ data:
   spring.cloud.config.username: admin
   spring.cloud.config.password: password
   spring.session.store-type: jdbc
-  spring.session.jdbc.initialize-schema: always
+  spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
   spring.jpa.hibernate.ddl-auto: create-drop
   security.oauth2.client.clientId: 21a84668d01527c4b788
