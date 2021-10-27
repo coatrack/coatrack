@@ -10,7 +10,7 @@ data:
   #spring.datasource.host: cockroachdb-public.default
   spring.datasource.host: 5.9.13.240
   spring.datasource.port: 5432
-  spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
+  spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.dbname}?ssl=true&sslmode=require
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   logging.level: DEBUG
