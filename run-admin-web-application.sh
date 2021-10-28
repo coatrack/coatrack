@@ -33,5 +33,5 @@ if [ ! -z $1 ]; then
 	VM_ARG_SPRING_PROFILE="-Dspring.profiles.active=$1"
 fi
 
-java -jar $VM_ARG_SPRING_PROFILE -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y -Dygg.mail.sender.user=$2 -Dygg.mail.sender.password=$3  $COATRACK_JAR_FILE
+java -jar $VM_ARG_SPRING_PROFILE -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n -Dygg.mail.sender.user=$2 -Dygg.mail.sender.password=$3  $COATRACK_JAR_FILE
 
