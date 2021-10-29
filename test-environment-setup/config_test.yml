@@ -6,8 +6,8 @@ metadata:
 data:
   spring.datasource.username: coatrack
   spring.datasource.password: s838RFixF93Hv9fa
-  spring.datasource.dbname: coatrack
-  spring.datasource.host: cockroachdb-public.default
+  spring.datasource.dbname: coatrack_test
+  spring.datasource.host: "5.9.13.240"
   spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -17,34 +17,65 @@ data:
   org.springframework.security: INFO
   logging.level.eu.coatrack: DEBUG
 
+
+  # ***********
+  # Mail
+  # ***********
   ygg.mail.sender.from: "coatrack@kyoe.es"
   ygg.mail.sender.user: "coatrack@kyoe.es" 
   ygg.mail.sender.password: "Pepe1234"
   ygg.mail.server.url: "smtp.serviciodecorreo.es"
   ygg.mail.server.port: "465"
+  ygg.mail.verification.server.url: "https://test.coatrack.eu"
+  
+  
+  # ***********
+  # Payment
+  # ***********
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
   ygg.admin.api-base-url-for-gateway: "https://test.coatrack.eu/api/"
   ygg.admin.server.url: "https://test.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
+  
+  # ****
+  # Test service id for the tutorial
+  # ****
   ygg.admin.gettingStarted.consumer.testService.id: "1"
+  ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
+  ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
+  
+  # ****
+  # Git Service
+  # ****
+  
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
+  
+  # ****
+  # Proxy
+  # ****
   ygg.proxy.executable-jar.path: /tmp
-#  ygg.proxy.executable-jar.path: /coatrack-warehouse/proxies
   ygg.proxy.executable-jar.filename-original-prefix: coatrack-proxy-
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
   ygg.proxy.executable-jar.filename-custom.suffix: ".jar"
   ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: ygg-proxy-
   ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.test.coatrack.eu
 
+  # ****
+  # Cloud
+  # ****
   spring.cloud.config.uri: http://coatrack-config-server
   spring.cloud.config.username: admin
   spring.cloud.config.password: password
+  
+  # ****
+  # Session
+  # ****
   spring.session.store-type: jdbc
-  spring.session.jdbc.initialize-schema: always
+  spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
   spring.jpa.hibernate.ddl-auto: create-drop
   
@@ -61,4 +92,9 @@ data:
   security.oauth2.client.scope.user: email
   security.oauth2.client.scope.read: user
   security.oauth2.resource.userInfoUri: https://api.github.com/user
+  
+  
+  # ***********
+  # Profile
+  # ***********
   spring.profiles.active: test
