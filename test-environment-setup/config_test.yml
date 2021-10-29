@@ -84,7 +84,7 @@ data:
   # Security
   # ***********
   security.oauth2.client.clientId: 3bf52b2c263318ee1d6f
-  security.oauth2.client.clientSecret: 611835f590b73197ea3a750c0ae3008a887f6a9b
+  security.oauth2.client.clientSecret: 175293f28486d6b4d405f1b7b273e2a349244739
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
   security.oauth2.client.userAuthorizationUri: https://github.com/login/oauth/authorize
   security.oauth2.client.tokenName: oauth_token
