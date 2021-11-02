@@ -59,6 +59,7 @@ data:
   # Proxy
   # ****
 
+  ygg.proxy.server.port.defaultValue: 8088
   ygg.proxy.executable-jar.path: /mnt/coatrack
   ygg.proxy.executable-jar.filename-original-prefix: coatrack-proxy-
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
