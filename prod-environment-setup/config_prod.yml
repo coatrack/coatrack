@@ -54,6 +54,7 @@ data:
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
+  ygg.admin.servicecovers.path: "/tmp"
   
   # ****
   # Proxy
