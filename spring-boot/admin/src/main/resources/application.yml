@@ -69,7 +69,6 @@ spring:
     rest:
       base-path: /api   
       
-spring.application.name: ygg-admin
 
 # Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
 spring.cloud.config:
