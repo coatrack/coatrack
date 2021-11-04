@@ -6,9 +6,11 @@ metadata:
 data:
   spring.datasource.username: coatrack
   spring.datasource.password: coatrack123
-  spring.datasource.dbname: coatrack
-  spring.datasource.host: cockroachdb-public.default
-  spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:26257/${spring.datasource.dbname}?ssl=true&sslmode=require
+  spring.datasource.dbname: coatrack_dev
+  #spring.datasource.host: kyoe.es
+  spring.datasource.host: "5.9.13.240"
+  spring.datasource.port: "5432"
+  spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.dbname}
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
   logging.level: DEBUG
@@ -44,6 +46,7 @@ data:
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
+  ygg.admin.servicecovers.path: "/tmp"
 
   # ****
   # Proxy
@@ -58,13 +61,27 @@ data:
   ygg.proxy.generate-bootstrap-properties.spring.application.name.prefix: ygg-proxy-
   ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri: https://config.dev.coatrack.eu
 
+  # ****
+  # Cloud
+  # ****
+
   spring.cloud.config.uri: http://coatrack-config-server
   spring.cloud.config.username: admin
   spring.cloud.config.password: password
+  
+  # ****
+  # Session
+  # ****
+
   spring.session.store-type: jdbc
   spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
   spring.jpa.hibernate.ddl-auto: update
+ 
+  # ****
+  # Security
+  # ****
+
   security.oauth2.client.clientId: 21a84668d01527c4b788
   security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
