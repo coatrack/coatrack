@@ -37,7 +37,7 @@ ygg:
           url: http://localhost
           user: user
           password: password
-      api-base-url-for-gateway: http://localhost
+      api-base-url-for-gateway: http://localhost:8080/api
 
       gettingStarted:
          consumer:
