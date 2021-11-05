@@ -104,4 +104,4 @@ data:
   # ***********
   # Profile
   # ***********
-  spring.profiles.active: nothing
+  spring.profiles.active: prod
