@@ -104,4 +104,4 @@ data:
   # ***********
   # Profile
   # ***********
-  spring.profiles.active: test
+  spring.profiles.active: nothing
