@@ -5,6 +5,11 @@
     <artifactId>coatrack-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>coatrack</name>
+    <description>Coatrack</description>
+    <url>https://coatrack.eu</url>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -125,6 +130,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <repositories>
         <repository>
             <id>spring-releases</id>
@@ -161,4 +167,20 @@
           </plugin>
        </plugins>
     </reporting>    
+https://github.com/coatrack/coatrack.git
+
+   <scm>
+       <connection>scm:git:git://github.com/coatrack/coatrack.git</connection>
+       <developerConnection>scm:git:ssh://github.com:coatrack/coatrack.git</developerConnection>
+       <url>http://github.com/coatrack/coatrack/tree/master</url>
+   </scm>
+
+   <developers>
+       <developer>
+          <name>Francisco Perez</name>
+          <email>perez@kyoe.es</email>
+          <organization>Kyoe</organization>
+          <organizationUrl>https://www.kyoe.es</organizationUrl>
+       </developer>
+   </developers>
 </project>
