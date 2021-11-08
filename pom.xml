@@ -121,5 +121,14 @@
         <name>Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)</name>
         <url>https://corizon.nl | https://www.atb-bremen.de/</url>
     </organization>
-    
+
+    <reporting>
+       <plugins>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-javadoc-plugin</artifactId>
+             <version>3.3.1</version>
+          </plugin>
+       </plugins>
+    </reporting>    
 </project>
