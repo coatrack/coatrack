@@ -18,10 +18,12 @@
         <spring-cloud.version>Dalston.SR3</spring-cloud.version>
         <licenseName>apache_v2</licenseName>
     </properties>
+
     <modules>
         <module>api</module>
         <module>spring-boot</module>
     </modules>
+
     <build>
         <plugins>
 
@@ -39,7 +41,6 @@
                   </execution>
                </executions>
             </plugin>
-
 
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
@@ -183,4 +184,19 @@
           <organizationUrl>https://www.kyoe.es</organizationUrl>
        </developer>
    </developers>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
+
+
 </project>
