@@ -137,6 +137,7 @@
             <url>https://repo.spring.io/libs-release</url>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>spring-releases</id>
@@ -167,7 +168,6 @@
           </plugin>
        </plugins>
     </reporting>    
-https://github.com/coatrack/coatrack.git
 
    <scm>
        <connection>scm:git:git://github.com/coatrack/coatrack.git</connection>
