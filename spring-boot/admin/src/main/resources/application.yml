@@ -33,7 +33,6 @@ ygg:
          bookKeeping.contact: fperezduran@bebr.nl
       call-request-fee: 0
     
-      gettingStarted.consumer.testService.id: 1
       gitService:
           url: http://localhost
           user: user
