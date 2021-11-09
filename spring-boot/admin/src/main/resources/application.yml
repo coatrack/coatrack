@@ -56,7 +56,7 @@ ygg:
             prefix: coatrack-gateway-
             suffix: .jar
       generate-bootstrap-properties:
-         spring.application.name.prefix: prefix
+         spring.application.name.prefix: ygg-proxy-
          spring.cloud.config.uri: http://localhost
       server.port.defaultValue: 8088
 
