@@ -51,7 +51,6 @@ ygg:
          generated.path: /tmp
          template.url: https://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar
          path: path
-         filename-original-prefix: prefix
          filename-custom:
             prefix: coatrack-gateway-
             suffix: .jar
