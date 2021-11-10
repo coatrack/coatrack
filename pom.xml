@@ -7,7 +7,10 @@
     <packaging>pom</packaging>
 
     <name>CoatRack</name>
-    <description>Coatrack</description>
+    <description>
+        CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of
+        distributed, lightweight API gateways and a centralized web application to generate and manage those API gateways.
+    </description>
     <url>https://coatrack.eu</url>
 
     <properties>
