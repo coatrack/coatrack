@@ -31,32 +31,32 @@
         <plugins>
 
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-source-plugin</artifactId>
-               <version>3.2.0</version>
-               <executions>
-                  <execution>
-                     <id>attach-sources</id>
-                     <phase>verify</phase>
-                     <goals>
-                        <goal>jar-no-fork</goal>
-                     </goals>
-                  </execution>
-               </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-gpg-plugin</artifactId>
-               <executions>
-                  <execution>
-                     <id>sign-artifacts</id>
-                     <phase>verify</phase>
-                     <goals>
-                        <goal>sign</goal>
-                     </goals>
-                  </execution>
-               </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -105,6 +105,19 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
     
@@ -135,7 +148,7 @@
         </dependencies>
     </dependencyManagement>
 
-    <repositories>
+    <!--repositories>
         <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
@@ -147,7 +160,7 @@
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </pluginRepository>
-    </pluginRepositories>
+    </pluginRepositories-->
     
     <licenses>
         <license>
@@ -164,42 +177,36 @@
     </organization>
 
     <reporting>
-       <plugins>
-          <plugin>
-             <groupId>org.apache.maven.plugins</groupId>
-             <artifactId>maven-javadoc-plugin</artifactId>
-             <version>3.3.1</version>
-          </plugin>
-       </plugins>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.3.1</version>
+            </plugin>
+        </plugins>
     </reporting>    
 
-   <scm>
-       <connection>scm:git:git://github.com/coatrack/coatrack.git</connection>
-       <developerConnection>scm:git:ssh://github.com:coatrack/coatrack.git</developerConnection>
-       <url>http://github.com/coatrack/coatrack/tree/master</url>
-   </scm>
+    <scm>
+        <connection>scm:git:git://github.com/coatrack/coatrack.git</connection>
+        <developerConnection>scm:git:ssh://github.com:coatrack/coatrack.git</developerConnection>
+        <url>http://github.com/coatrack/coatrack/tree/master</url>
+    </scm>
 
-   <developers>
-       <developer>
-          <name>Francisco Perez</name>
-          <email>perez@kyoe.es</email>
-          <organization>Kyoe</organization>
-          <organizationUrl>https://www.kyoe.es</organizationUrl>
-       </developer>
-   </developers>
+    <developers>
+        <developer>
+            <name>Francisco Perez</name>
+            <email>paco@corizon.nl</email>
+            <organization>Corizon</organization>
+            <organizationUrl>https://www.corizon.nl</organizationUrl>
+        </developer>
+    </developers>
 
-  <distributionManagement>
-    <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <name>Sonatype Nexus Snapshots</name>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <name>Nexus Release Repository</name>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-    </repository>
-  </distributionManagement>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 
 </project>
