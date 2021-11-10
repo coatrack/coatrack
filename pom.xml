@@ -5,6 +5,14 @@
     <artifactId>coatrack-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
+
+    <name>CoatRack</name>
+    <description>
+        CoatRack is a framework to manage backend-to-backend communication via REST services, consisting of
+        distributed, lightweight API gateways and a centralized web application to generate and manage those API gateways.
+    </description>
+    <url>https://coatrack.eu</url>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -13,12 +21,43 @@
         <spring-cloud.version>Dalston.SR3</spring-cloud.version>
         <licenseName>apache_v2</licenseName>
     </properties>
+
     <modules>
         <module>api</module>
         <module>spring-boot</module>
     </modules>
+
     <build>
         <plugins>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-source-plugin</artifactId>
+               <version>3.2.0</version>
+               <executions>
+                  <execution>
+                     <id>attach-sources</id>
+                     <phase>verify</phase>
+                     <goals>
+                        <goal>jar-no-fork</goal>
+                     </goals>
+                  </execution>
+               </executions>
+            </plugin>
+
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <executions>
+                  <execution>
+                     <id>sign-artifacts</id>
+                     <phase>verify</phase>
+                     <goals>
+                        <goal>sign</goal>
+                     </goals>
+                  </execution>
+               </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -95,12 +134,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <repositories>
         <repository>
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>spring-releases</id>
@@ -121,5 +162,44 @@
         <name>Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)</name>
         <url>https://corizon.nl | https://www.atb-bremen.de/</url>
     </organization>
-    
+
+    <reporting>
+       <plugins>
+          <plugin>
+             <groupId>org.apache.maven.plugins</groupId>
+             <artifactId>maven-javadoc-plugin</artifactId>
+             <version>3.3.1</version>
+          </plugin>
+       </plugins>
+    </reporting>    
+
+   <scm>
+       <connection>scm:git:git://github.com/coatrack/coatrack.git</connection>
+       <developerConnection>scm:git:ssh://github.com:coatrack/coatrack.git</developerConnection>
+       <url>http://github.com/coatrack/coatrack/tree/master</url>
+   </scm>
+
+   <developers>
+       <developer>
+          <name>Francisco Perez</name>
+          <email>perez@kyoe.es</email>
+          <organization>Kyoe</organization>
+          <organizationUrl>https://www.kyoe.es</organizationUrl>
+       </developer>
+   </developers>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype Nexus Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Nexus Release Repository</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+    </repository>
+  </distributionManagement>
+
+
 </project>
