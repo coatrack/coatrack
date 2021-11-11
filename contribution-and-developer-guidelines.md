@@ -70,7 +70,7 @@ We use GitHub to host code, track issues and feature requests, as well as accept
 * Tell us what behavior of the application you expected and what you actually encountered.
 * Screenshots and log files are very helpful for us.
 * You should be able to reproduce the bug and enable us to do the same. Write down every single step that leads to the bug.
-* If you have a guess why this bug might be happening or why you think, it didn't work, then tell us.
+* If you have a guess why this bug might be happening or why you think it didn't work, then tell us.
 
 
 
