@@ -48,8 +48,14 @@ ygg:
    proxy:
       executable-jar:
          generated.path: /tmp
+<<<<<<< HEAD
          template.url: https://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar
          filename-original-prefix: prefix
+=======
+         # URL of the "template jar" that CoatRack uses as basis to generate proxies (without the trailing version number and .jar filename extension)
+         template.url: https://www.kyoe.es/proxies/coatrack-proxy-
+         path: path
+>>>>>>> 1cf6dd8b63d8fb6c6846b6081dd4dbdf3326e06c
          filename-custom:
             prefix: coatrack-gateway-
             suffix: .jar
