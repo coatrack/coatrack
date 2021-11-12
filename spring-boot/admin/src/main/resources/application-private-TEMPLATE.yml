@@ -14,6 +14,11 @@
 # if you want to override the default values (see "application.yml" for all configuration options).
 #
 ygg:
+  mail:
+    # Define if CoatRack should send user verification emails in your local setup
+    # (Please note: if you specifically want to test the mailing feature, you have to add the
+    #  "ygg.mail.*" parameters from "application.yml" here and adjust them to your own mail server).
+    verify-new-users-via-mail: false
   admin:
     gitService:
       # URL and credentials for the Git repository to be used by CoatRack to store gateway config files

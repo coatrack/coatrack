@@ -12,6 +12,7 @@ logging:
 # Necessary in order to run offline     
 ygg:
   mail:
+    verify-new-users-via-mail: true
     # Settings for the validation email to be sent to new users
     server:
       url: "smtp.serviciodecorreo.es"

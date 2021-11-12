@@ -79,6 +79,9 @@ public class UserController {
         return "register";
     }
 
+    @Value("${ygg.mail.verify-new-users-via-mail}")
+    private boolean verifyNewUsersViaEmail;
+
     @Value("${ygg.mail.sender.user}")
     private String mail_sender_user;
 
@@ -118,6 +121,13 @@ public class UserController {
 
         userRepository.save(user);
 
+        if (verifyNewUsersViaEmail) sendVerificationEmail(user);
+
+        return "redirect:/admin";
+    }
+
+    private void sendVerificationEmail(User user) throws MessagingException {
+
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(mail_server_url);
         mailSender.setPort(mail_server_port);
@@ -145,8 +155,6 @@ public class UserController {
                 + "\n"
                 + "<p>Coatrack Team</p>", true);
         mailSender.send(message);
-
-        return "redirect:/admin";
     }
 
     @GetMapping(value = "users/{id}/verify/{emailVerificationCode}")
