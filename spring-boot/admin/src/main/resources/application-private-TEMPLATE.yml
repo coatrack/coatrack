@@ -42,3 +42,5 @@ ygg:
       # URL of the config server for gateways to get their config at start-up/runtime
       spring.cloud.config.uri: http://localhost:8998
 
+# URL to be used by admin to inform config server about credentials generated for proxies
+spring.cloud.config.uri: http://localhost:8998
