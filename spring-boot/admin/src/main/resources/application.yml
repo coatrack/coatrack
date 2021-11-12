@@ -5,6 +5,7 @@ mvn.pom.project.version: @@project.version@@
 
 logging:
   level:
+    root: info
     org.springframework.security: INFO
     eu.coatrack: DEBUG
 
@@ -41,7 +42,7 @@ ygg:
       password: password
 
     # URL of the CoatRack web application's API that will be called by CoatRack gateways
-    api-base-url-for-gateway: http://localhost:8080/api
+    api-base-url-for-gateway: http://localhost:8080/api/
 
     gettingStarted:
       consumer:
