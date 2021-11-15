@@ -8,7 +8,10 @@ When submitting a pull request for the first time, you will need to agree to the
 
 ## Structure of the 'cla' folder
 
-For transparency reasons, we will briefly explain here how our CLA system works. Harmony provides [templates](http://harmonyagreements.org/agreements.html) for CLA's in ODT format which are stored in the [original](https://github.com/coatrack/cla/source/original) folder. Based on that, we made some customizations fitting our requirements which are stored in the [customized](https://github.com/coatrack/cla/source/customized) folder. With LibreOffice, for example, you can easily see the differences between the original and our customized version by comparing the two ODT files. The customized CLA ODT's are converted to PDF's and stored in the [latest](https://github.com/coatrack/cla/latest) folder. These PDF files are the ones that have to be signed/hashed in order to be allowed to contribute to CoatRack.
+For transparency reasons, we will briefly explain here how our CLA was created and how the signing process works. 
+Harmony provides [templates](http://harmonyagreements.org/agreements.html) for CLA's in ODT format which are stored in the [original](https://github.com/coatrack/cla/source/original) folder. Based on those templates we made custom versions, adapted to our CoatRack requirements, which are stored in the [customized](https://github.com/coatrack/cla/source/customized) folder. If you want to see the differences between the original and our customized version, you can easily compare the two ODT files (e.g. using LibreOffice). 
+
+The customized CLA ODT's are converted to PDF's and stored in the [latest](https://github.com/coatrack/cla/latest) folder. These PDF files are the ones that have to be signed/hashed in order to be allowed to contribute to CoatRack.
 
 
 
