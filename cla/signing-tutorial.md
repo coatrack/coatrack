@@ -1,4 +1,6 @@
-# CoatRack CLA Signing Tutorial
+# CoatRack CLA Signing Instructions
+
+## Signing Instructions
 
 When submitting a pull request for the first time, you will need to agree to the contributor license agreement (CLA). For example single, private persons must agree on the [CLA for individuals](https://github.com/coatrack/cla/latest/individual-cla.pdf) and organizations must agree on the [CLA for entities](https://github.com/coatrack/cla/latest/entity-cla.pdf). To do this, copy, rename and move [signing-template.md](https://github.com/coatrack/cla/signing-template.md) to `/cla/contributors/<your-github-username>.md`. Fill in the missing information, including the SHA-256 checksum of the corresponding CLA just mentioned, and add this file to your first pull request.
 

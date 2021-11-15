@@ -6,5 +6,5 @@ I furthermore declare that I am authorized and able to make this agreement and s
 
 Signed,
 
-<firstname> <lastname> https://github.com/<github-username>
+https://github.com/<github-username>
 

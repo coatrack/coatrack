@@ -30,7 +30,7 @@ Note: If you want to contribute to CoatRack you need to sign the corresponding C
 The establishment of best practices in CoatRack and compliance of these is important to us. We put great effort to our review process to steadily improve the quality of our code base and we expect the same willingness from you. Here are a few practices that should always be considered: 
 
 * Code is written for readers and should be quickly understood by them. Use descriptive names, a clear architecture, short functions and small, cohesive classes. Add Java Docs if necessary.
-* Use a consistent coding style that goes along with the already existing code. Please do not change the formatting of exiting code that is not relevant to the issue you are working on.
+* Use a consistent coding style that goes along with the already existing code. Please do not change the formatting of existing code that is not relevant to the issue you are working on.
 * Spaces should be used for indentation, not tabs.
 * Newly added code should be delivered with automated tests, for example unit tests or integration tests. Ensure to have a high code coverage.
 
@@ -40,7 +40,7 @@ The establishment of best practices in CoatRack and compliance of these is impor
 
 We use GitHub to host code, track issues and feature requests, as well as accept pull requests. We use the following workflow:
 
-1. Fork the repo. Of course, this step must be performed only once. All others are run again for each issue.
+1. Fork the repo. Make sure to disable the GitHub action that tries to push the code of the master branch to our 'dev' deployment environment. Of course, this step must be performed only once. All other steps are run again for each issue.
 
 2. You can either work on an existing issue or you have to create a descriptive issue before you can make code changes. 
 
