@@ -19,7 +19,7 @@ Hello, dear prospective contributor. You can support CoatRack in many ways:
 
 
 
-Note: If you want to contribute to CoatRack you need to sign the corresponding Contributors License Agreement (CLA) previously. Signing instructions can be found in [signing-tutorial.md](https://github.com/coatrack/signing-tutorial.md). 
+Note: If you want to contribute to CoatRack you need to sign the corresponding Contributors License Agreement (CLA) beforehand. Signing instructions can be found in [signing-tutorial.md](https://github.com/coatrack/signing-tutorial.md). 
 
 
 
