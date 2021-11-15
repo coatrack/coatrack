@@ -55,6 +55,8 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/
 
+#personal profiles
+**/application-paco.yml
 
 
 

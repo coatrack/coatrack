@@ -1,12 +1,8 @@
-# application yml just for parameters to be set at build time
-# all other config properties are to be received from cloud config server
-
-mvn.pom.project.version: @@project.version@@
 
 logging:
   level:
     org.springframework.security: INFO
-    nl.corizon.ygg: DEBUG
+    nl.corizon.ygg: INFO
 
 # Necessary in order to run offline     
 ygg:
@@ -34,9 +30,9 @@ ygg:
       call-request-fee: 0
     
       gitService:
-          url: http://localhost
-          user: user
-          password: password
+          url: https://bitbucket.org/perezdf/anthill-settings.git
+          user: fpd.judo@gmail.com
+          password: fpdvip1234
       api-base-url-for-gateway: http://localhost:8080/api
 
       gettingStarted:
@@ -48,7 +44,7 @@ ygg:
    proxy:
       executable-jar:
          generated.path: /tmp
-         template.url: https://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar
+         template.url: https://www.kyoe.es/proxies/coatrack-proxy-
          filename-original-prefix: prefix
          filename-custom:
             prefix: coatrack-gateway-
@@ -75,6 +71,8 @@ spring.cloud.config:
         username: admin
         password: password
         uri: https://config.coatrack.eu
+        
+        
 
 
 security:
