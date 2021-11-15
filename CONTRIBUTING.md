@@ -1,4 +1,4 @@
-# CoatRack Contribution and Developer Guidelines
+# CoatRack Contributor Guidelines
 
 
 
@@ -8,8 +8,8 @@
 
 Hello, dear prospective contributor. You can support CoatRack in many ways:
 
-- Report bugs using GitHub's issue tracker.
-- Discuss the current state of the code in open Pull Requests.
+- Report bugs using CoatRack's GitHub issue tracker.
+- Discuss suggested code changes in open Pull Requests.
 - Submit a bugfix.
 - Propose new features and improvement ideas.
 - Improve the documentation.
@@ -91,9 +91,27 @@ To avoid misunderstandings, we have decided to provide a uniform terminology rec
 
 ## Contributor License Agreement
 
+### License
+
+By contributing, you agree that your contributions will be licensed under Apache License 2.0. When you submit code changes, your submissions are understood to be under the same Apache License 2.0 that covers the project.
+
+
+
 ### Signing Instructions
 
-When submitting a pull request for the first time, you will need to agree to the contributor license agreement (CLA). For example single, private persons must agree on the [CLA for individuals](https://github.com/coatrack/cla/latest/individual-cla.pdf) and organizations must agree on the [CLA for entities](https://github.com/coatrack/cla/latest/entity-cla.pdf). To do this, copy, rename and move [signing-template.md](https://github.com/coatrack/cla/signing-template.md) to `/cla/contributors/<your-github-username>.md`. Fill in the missing information, including the SHA-256 checksum of the corresponding CLA just mentioned, and add this file to your first pull request.
+When submitting a pull request for the first time, you will need to agree to the contributor license agreement (CLA). 
+
+* Individual private persons must agree on the [CLA for individuals](https://github.com/coatrack/cla/latest/individual-cla.pdf) and 
+
+* Organizations must agree on the [CLA for entities](https://github.com/coatrack/cla/latest/entity-cla.pdf). 
+
+If you agree to the respective CLA, you have to create a pull request including a file that officially and transparently documents your intention to sign the CLA:
+
+1. Copy, rename and move [signing-template.md](https://github.com/coatrack/cla/signing-template.md) to `/cla/contributors/<your-github-username>.md`. 
+2. Fill in the missing information, including the SHA-256 checksum of the CLA PDF file you want to sign, and add this file to your first pull request. The checksum clearly documents the version of the CLA that you agree to.
+3. After you created the pull request, please send an email to `info@coatrack.eu` to inform us about the pull request. 
+
+By merging your pull request, the information that you agreed to the CLA will be part of the official public code base of CoatRack.
 
 
 
@@ -113,13 +131,7 @@ If you have questions, remarks or you want to get involved in the project, pleas
 
 
 
-### License
-
-By contributing, you agree that your contributions will be licensed under Apache License 2.0. When you submit code changes, your submissions are understood to be under the same Apache License 2.0 that covers the project.
-
-
-
 #### References
 
-This document was derived from the works of [briandk](https://gist.github.com/briandk/3d2e8b3ec8daf5a27a62) and [adam-p](https://github.com/adam-p/markdown-here/blob/master/CONTRIBUTING.md). The content of the [signing-template.md](https://github.com/coatrack/signing-template.md) was derived from [adam-p's agreement file](https://github.com/adam-p/markdown-here/blob/master/contributors/adam-p.md). The signing method was adopted from the [medium/opensource](https://github.com/medium/opensource) project.
+This document was inspired from the works of [briandk](https://gist.github.com/briandk/3d2e8b3ec8daf5a27a62) and [adam-p](https://github.com/adam-p/markdown-here/blob/master/CONTRIBUTING.md). The content of the [signing-template.md](https://github.com/coatrack/signing-template.md) was derived from [adam-p's agreement file](https://github.com/adam-p/markdown-here/blob/master/contributors/adam-p.md). The signing method was adopted from the [medium/opensource](https://github.com/medium/opensource) project.
 
