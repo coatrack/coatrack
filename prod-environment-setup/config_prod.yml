@@ -84,7 +84,7 @@ data:
   spring.session.store-type: jdbc
   spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
-  spring.jpa.hibernate.ddl-auto: create-drop
+  spring.jpa.hibernate.ddl-auto: update
   
   # ***********
   # Security

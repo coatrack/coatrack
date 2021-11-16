@@ -29,6 +29,8 @@ data:
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
   ygg.admin.api-base-url-for-gateway: "https://dev.coatrack.eu/api/"
+  # **** Doubts about possible duplication
+  ygg.admin.api-base-url: "https://dev.coatrack.eu/api/"
   ygg.admin.server.url: "https://dev.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
   
@@ -46,6 +48,7 @@ data:
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
+  ygg.admin.servicecovers.path: "/tmp"
 
   # ****
   # Proxy
