@@ -1,0 +1,31 @@
+logging:
+  level:
+    org.springframework.security: INFO
+    org: INFO
+    nl.corizon.ygg: INFO
+    
+
+security:
+  oauth2:
+    client:
+      clientId: e188a243cc57ef90f2b5
+      clientSecret: a5630e2f873890bdc8366aac0155e8113ece0997
+      accessTokenUri: https://github.com/login/oauth/access_token
+      userAuthorizationUri: https://github.com/login/oauth/authorize
+      tokenName: oauth_token
+      # send client id/secret to Github as ...
+      #clientAuthenticationScheme: form # form fields
+      clientAuthenticationScheme: header # headers
+      # send oauth token to Github as ...
+      authenticationScheme: header # header
+      #authenticationScheme: query # query parameter
+      scope:
+        - user:email
+        - read:user
+    resource:
+      userInfoUri: https://api.github.com/user
+
+
+
+
+

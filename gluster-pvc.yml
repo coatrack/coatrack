@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+ name: coatrack-pvc
+ namespace: coatrack
+ annotations:
+   volume.beta.kubernetes.io/storage-class: glusterfs-default
+spec:
+ accessModes:
+  - ReadWriteMany
+ resources:
+   requests:
+     storage: 5Gi

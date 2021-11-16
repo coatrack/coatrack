@@ -1,6 +1,9 @@
 # Mac OS
 .DS_Store
 
+#personal-profiles
+application-paco.yml
+
 # Idea
 *.iml
 .idea/

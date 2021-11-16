@@ -6,54 +6,62 @@ metadata:
 data:
   spring.datasource.username: coatrack
   spring.datasource.password: coatrack123
-  spring.datasource.dbname: coatrack_dev
-  #spring.datasource.host: kyoe.es
+  spring.datasource.dbname: coatrack_prod
   spring.datasource.host: "5.9.13.240"
   spring.datasource.port: "5432"
   spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.dbname}
   spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
   spring.jpa.properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
-  logging.level: DEBUG
+  logging.level: INFO
   logging.level.org: INFO
   logging.level.org.springframework: INFO
   org.springframework.security: INFO
   logging.level.eu.coatrack: DEBUG
 
+
+  # ***********
+  # Mail
+  # ***********
   ygg.mail.sender.from: "coatrack@kyoe.es"
   ygg.mail.sender.user: "coatrack@kyoe.es" 
   ygg.mail.sender.password: "Pepe1234"
   ygg.mail.server.url: "smtp.serviciodecorreo.es"
   ygg.mail.server.port: "465"
-  ygg.mail.verification.server.url: "https://dev.coatrack.eu"
+  ygg.mail.verification.server.url: "https://prod.coatrack.eu"
+  
+  
+  # ***********
+  # Payment
+  # ***********
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
-  ygg.admin.api-base-url-for-gateway: "https://dev.coatrack.eu/api/"
-  # **** Doubts about possible duplication
-  ygg.admin.api-base-url: "https://dev.coatrack.eu/api/"
-  ygg.admin.server.url: "https://dev.coatrack.eu"
+  ygg.admin.api-base-url-for-gateway: "https://prod.coatrack.eu/api/"
+  ygg.admin.server.url: "https://prod.coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
   
   # ****
   # Test service id for the tutorial
   # ****
-  ygg.admin.gettingStarted.consumer.testService.id: "108"
+  ygg.admin.gettingStarted.consumer.testService.id: "1"
   ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
   ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
-
+  
   # ****
   # Git Service
   # ****
-
+  
   ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
   ygg.admin.gitService.user: fpd.judo@gmail.com
   ygg.admin.gitService.password: "fpdvip1234"
   ygg.admin.servicecovers.path: "/tmp"
-
+  ygg.admin.servicecovers.url: "http://localhost/coatrack-servicecovers/"
+  
   # ****
   # Proxy
   # ****
 
+  ygg.proxy.server.port.defaultValue: "8088"
   ygg.proxy.executable-jar.path: /mnt/coatrack
   ygg.proxy.executable-jar.filename-original-prefix: coatrack-proxy-
   ygg.proxy.executable-jar.filename-custom.prefix: coatrack-gateway-
@@ -66,7 +74,6 @@ data:
   # ****
   # Cloud
   # ****
-
   spring.cloud.config.uri: http://coatrack-config-server
   spring.cloud.config.username: admin
   spring.cloud.config.password: password
@@ -74,18 +81,16 @@ data:
   # ****
   # Session
   # ****
-
   spring.session.store-type: jdbc
   spring.session.jdbc.initialize-schema: never
   spring.session.jdbc.schema: org/springframework/session/jdbc/schema-postgresql.sql
   spring.jpa.hibernate.ddl-auto: update
- 
-  # ****
+  
+  # ***********
   # Security
-  # ****
-
-  security.oauth2.client.clientId: 21a84668d01527c4b788
-  security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
+  # ***********
+  security.oauth2.client.clientId: 5098fcd9de9e12fa7c80
+  security.oauth2.client.clientSecret: 52652f90dfdca7b8b141b80d9d1f09a5713cf66c
   security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
   security.oauth2.client.userAuthorizationUri: https://github.com/login/oauth/authorize
   security.oauth2.client.tokenName: oauth_token
@@ -94,4 +99,9 @@ data:
   security.oauth2.client.scope.user: email
   security.oauth2.client.scope.read: user
   security.oauth2.resource.userInfoUri: https://api.github.com/user
-  spring.profiles.active: dev
+  
+  
+  # ***********
+  # Profile
+  # ***********
+  spring.profiles.active: prod
