@@ -47,11 +47,11 @@ We use GitHub to host code, track issues and feature requests, as well as accept
 3. Create a branch from `master` for the issue you are working on. 
 
    * Use this naming scheme: 
-     * `<commit-type>/#<issue-number>-<short-description>`. 
+     * `<commit-type>/<issue-number>-<short-description>`. 
      * Commits types are 'enhancement', 'feature' and 'bugfix'.
 
    * Example: 
-     * `enhancement/#122-update-of-pom.xml-dependencies`
+     * `enhancement/122-update-of-pom.xml-dependencies`
 
 4. If you intend to do fundamental changes, e.g. changing APIs, please contact us beforehand. This is to avoid breaking existing functionality.
 
