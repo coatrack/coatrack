@@ -101,9 +101,9 @@ By contributing, you agree that your contributions will be licensed under Apache
 
 When submitting a pull request for the first time, you will need to agree to the contributor license agreement (CLA). 
 
-* Individual private persons must agree to the [CLA for individuals](https://github.com/coatrack/coatrack/blob/master/cla/latest/individual-cla.pdf) and 
+* Individual private persons must agree to the [CLA for individuals](https://github.com/coatrack/coatrack/blob/master/cla/latest/coatrack-individual-cla.pdf) and 
 
-* Organizations must agree to the [CLA for entities](https://github.com/coatrack/coatrack/blob/master/cla/latest/entity-cla.pdf). 
+* Organizations must agree to the [CLA for entities](https://github.com/coatrack/coatrack/blob/master/cla/latest/coatrack-entity-cla.pdf). 
 
 If you agree to the respective CLA, you have to create a pull request including a file that officially and transparently documents your intention to sign the CLA:
 
