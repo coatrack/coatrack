@@ -6,12 +6,14 @@ services:
     environment:
       POSTGRES_PASSWORD: password1234
     container_name: coatrack-postgres
+    ports:
+      - 5432:5432
   coatrack-config-server:
     depends_on: 
       - coatrack-postgres
     image: coatrack/coatrack-config-server:2.0.0-SNAPSHOT
     container_name: coatrack-config-server
-    entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/coatrack-config-server.jar --spring.datasource.url=jdbc:postgresql://coatrack-postgres/ygg_config_server"]
+    entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/coatrack-config-server.jar --spring.datasource.url=jdbc:postgresql://coatrack-postgres/ygg_config_server --spring.datasource.password=password1234"]
   
 volumes:
   coatrack-postgres:
