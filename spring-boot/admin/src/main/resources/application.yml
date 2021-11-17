@@ -48,8 +48,8 @@ ygg:
       consumer:
         testService:
           # Provider and identifier to define the test service to be used in the getting started tutorial
-          provider.username: github-username-of-service-provider
-          uriIdentifier: getting-started-service-identifier
+          provider.username: exampleCompanyInc
+          uriIdentifier: humidity-by-location
   proxy:
     executable-jar:
       generated.path: /tmp
