@@ -1,6 +1,6 @@
 services:
   coatrack-postgres:
-    image: postgres
+    image: postgres:9.4.26
     volumes:
       - coatrack-postgres:/var/lib/postgresql/data
     environment:
