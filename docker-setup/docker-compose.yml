@@ -14,7 +14,15 @@ services:
     image: coatrack/coatrack-config-server:2.0.0-SNAPSHOT
     container_name: coatrack-config-server
     entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/coatrack-config-server.jar --spring.datasource.url=jdbc:postgresql://coatrack-postgres/ygg_config_server --spring.datasource.password=password1234"]
-  
+  coatrack-admin:
+    image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
+    depends_on:
+      - coatrack-config-server
+      - coatrack-postgres
+    ports:
+      - 8080:8080
+    entrypoint: [ "sh", "-c", "sleep 30 && java -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/coatrack-admin.jar --ygg.admin.gitService.url=https://bitbucket.org/perezdf/anthill-settings.git --ygg.admin.gitService.user=fpd.judo@gmail.com --ygg.admin.gitService.password=fpdvip1234" ]
+
 volumes:
   coatrack-postgres:
     name: coatrack-postgres
