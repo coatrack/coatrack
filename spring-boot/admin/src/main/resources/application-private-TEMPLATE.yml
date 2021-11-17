@@ -33,8 +33,8 @@ ygg:
       # as service api consumer). PLEASE NOTE: the following two usernames can NOT be identical (that would lead to
       # errors), so you should use your own Github username for only one of those parameters.
       sample-data.username:
-          api-provider: api-provider-github-username
-          api-consumer: api-consumer-github-username
+        api-provider: api-provider-github-username
+        api-consumer: api-consumer-github-username
   proxy:
     executable-jar:
       # URL of the "template jar" that CoatRack uses as basis to generate proxies.
