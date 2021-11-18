@@ -40,7 +40,9 @@ services:
       --ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri=http://localhost:8998 \
       --spring.cloud.config.uri=http://coatrack-config-server:8998 \
       --spring.cloud.config.username=admin \
-      --spring.cloud.config.password=password"]
+      --spring.cloud.config.password=password \
+      --logging.level.eu.coatrack.proxy=DEBUG \
+      --logging.level.org.springframework.security=DEBUG"]
 
 volumes:
   coatrack-postgres:
