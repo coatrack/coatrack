@@ -13,7 +13,10 @@ services:
       - coatrack-postgres
     ports:
       - 8998:8998
-    entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/coatrack-config-server.jar --spring.datasource.url=jdbc:postgresql://coatrack-postgres/ygg_config_server --spring.datasource.password=password1234"]
+    entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom \
+      -jar /opt/coatrack/lib/coatrack-config-server.jar \
+      --spring.datasource.url=jdbc:postgresql://coatrack-postgres/ygg_config_server \
+      --spring.datasource.password=password1234"]
   coatrack-admin:
     image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
     container_name: coatrack-admin
@@ -22,7 +25,22 @@ services:
       - coatrack-postgres
     ports:
       - 8080:8080
-    entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/coatrack-admin.jar --ygg.admin.gitService.url=https://bitbucket.org/perezdf/anthill-settings.git --ygg.admin.gitService.user=fpd.judo@gmail.com --ygg.admin.gitService.password=fpdvip1234 --spring.datasource.url=jdbc:postgresql://coatrack-postgres/coatrack --spring.datasource.username=postgres --spring.datasource.password=password1234 --spring.jpa.hibernate.ddl-auto=update --spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect --spring.datasource.initialization-mode=always --ygg.admin.database.insertSampleDataOnStartup=false --ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri=http://localhost:8998 --spring.cloud.config.uri=http://coatrack-config-server:8998 --spring.cloud.config.username=admin --spring.cloud.config.password=password"]
+    entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
+      -jar /opt/coatrack/lib/coatrack-admin.jar \
+      --ygg.admin.gitService.url=https://bitbucket.org/perezdf/anthill-settings.git \
+      --ygg.admin.gitService.user=fpd.judo@gmail.com \
+      --ygg.admin.gitService.password=fpdvip1234 \
+      --spring.datasource.url=jdbc:postgresql://coatrack-postgres/coatrack \
+      --spring.datasource.username=postgres \
+      --spring.datasource.password=password1234 \
+      --spring.jpa.hibernate.ddl-auto=update \
+      --spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect \
+      --spring.datasource.initialization-mode=always \
+      --ygg.admin.database.insertSampleDataOnStartup=false \
+      --ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri=http://localhost:8998 \
+      --spring.cloud.config.uri=http://coatrack-config-server:8998 \
+      --spring.cloud.config.username=admin \
+      --spring.cloud.config.password=password"]
 
 volumes:
   coatrack-postgres:
