@@ -20,6 +20,8 @@ services:
   coatrack-admin:
     image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
     container_name: coatrack-admin
+    volumes:
+      - coatrack-admin:/home
     depends_on:
       - coatrack-config-server
       - coatrack-postgres
@@ -42,8 +44,11 @@ services:
       --spring.cloud.config.username=admin \
       --spring.cloud.config.password=password \
       --logging.level.eu.coatrack.proxy=DEBUG \
-      --logging.level.org.springframework.security=DEBUG"]
+      --logging.level.org.springframework.security=DEBUG \
+      --ygg.proxy.executable-jar.template.url=file:///home/coatrack-proxy-"]
 
 volumes:
   coatrack-postgres:
     name: coatrack-postgres
+  coatrack-admin:
+    name: coatrack-admin
