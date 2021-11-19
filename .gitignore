@@ -1,8 +1,10 @@
 # Mac OS
 .DS_Store
 
-#personal-profiles
+# personal/private profiles
 application-paco.yml
+application-private-*.yml
+!application-private-TEMPLATE.yml
 
 # Idea
 *.iml
