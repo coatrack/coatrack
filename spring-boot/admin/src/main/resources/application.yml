@@ -11,8 +11,9 @@ logging:
 # Necessary in order to run offline     
 ygg:
   mail:
+    # Define if CoatRack should send verification emails to newly registered users
     verify-new-users-via-mail: true
-    # Settings for the validation email to be sent to new users
+    # Settings for the verification email to be sent to new users
     server:
       url: smtp-server-url
       port: 465
@@ -20,7 +21,7 @@ ygg:
       from: verification-email-sender@example.org
       user: email-sender-username
       password: email-sender-password
-    # base URL of CoatRack (basis to generate the verification link)
+    # Base URL of CoatRack (basis to generate the verification link)
     verification.server.url: http://localhost:8080
 
   admin:
