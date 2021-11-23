@@ -5,8 +5,7 @@ mvn.pom.project.version: @@project.version@@
 
 logging:
   level:
-    root: info
-    org.springframework.security: INFO
+    root: INFO
     eu.coatrack: DEBUG
 
 # Necessary in order to run offline     
@@ -15,12 +14,13 @@ ygg:
     verify-new-users-via-mail: true
     # Settings for the validation email to be sent to new users
     server:
-      url: "smtp.serviciodecorreo.es"
+      url: smtp-server-url
       port: 465
     sender:
-      from: "coatrack@kyoe.es"
-      user: ""
-      password: ""
+      from: verification-email-sender@example.org
+      user: email-sender-username
+      password: email-sender-password
+    # base URL of CoatRack (basis to generate the verification link)
     verification.server.url: http://localhost:8080
 
   admin:
@@ -33,7 +33,7 @@ ygg:
     payment.commision:
       variable: 50
       fix: 1
-      bookKeeping.contact: fperezduran@bebr.nl
+      bookKeeping.contact: your-email-address@example.org
     call-request-fee: 0
 
     gitService:
@@ -48,9 +48,9 @@ ygg:
     gettingStarted:
       consumer:
         testService:
-          # Provider and identifier to identify the test service to be used in the getting started tutorial
-          provider.username: BrunoSilvaATB
-          uriIdentifier: getting-started-service-consumer
+          # Provider and identifier to define the test service to be used in the getting started tutorial
+          provider.username: exampleCompanyInc
+          uriIdentifier: humidity-by-location
   proxy:
     executable-jar:
       generated.path: /tmp
@@ -82,8 +82,7 @@ spring.application.name: ygg-admin
 spring.cloud.config:
   username: admin
   password: password
-  uri: https://config.coatrack.eu
-
+  uri: http://localhost:8998
 
 security:
   oauth2:
