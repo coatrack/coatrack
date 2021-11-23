@@ -64,17 +64,17 @@ public class DatabaseInitializer {
     @Autowired
     CreditAccountRepository creditAccountRepository;
 
-    @Value("${ygg.admin.database.insertSampleDataOnStartup}")
+    @Value("${ygg.admin.database.insertSampleDataOnStartup:false}")
     private boolean sampleDataShouldBeInserted;
 
     // api provider username can be configured as test user's github login name
     // use exampleCompanyInc as default value, e.g. for unit testing
-    @Value("${ygg.admin.database.sampleDataUsername:exampleCompanyInc}")
+    @Value("${ygg.admin.database.sample-data.username.api-provider:exampleCompanyInc}")
     private String sampleDataApiProviderUsername;
 
     // api consumer username can be configured as test user's github login name
     // use exampleApiUser as default value, e.g. for unit testing
-    @Value("${ygg.admin.database.sampleDataUsernameApiConsumer:exampleApiUser}")
+    @Value("${ygg.admin.database.sample-data.username.api-consumer:exampleApiUser}")
     private String sampleDataApiConsumerUsername;
 
     @PostConstruct

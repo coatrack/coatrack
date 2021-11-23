@@ -118,6 +118,7 @@ public class CreateProxyAction implements Action {
 
             restTemplate.getInterceptors().add(new BasicAuthorizationInterceptor(config_server_admin_name, config_server_password));
 
+            log.debug("Trying to POST credentials of new proxy {} to config server at {}", proxy.getId(), config_server_credentials_url);
             ConfigServerCredential credentialGenerated = restTemplate.postForObject(config_server_credentials_url+"/credentials", configServerCredential, ConfigServerCredential.class);
             proxy.setConfigServerName(credentialGenerated.getName());
 

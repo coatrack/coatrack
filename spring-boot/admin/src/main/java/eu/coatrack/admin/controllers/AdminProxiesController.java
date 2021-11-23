@@ -24,7 +24,6 @@ import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.service.GitService;
-import eu.coatrack.admin.util.CustomProxyFileGenerator;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -49,12 +48,12 @@ import java.util.List;
 import java.util.UUID;
 import eu.coatrack.admin.logic.CreateProxyAction;
 import eu.coatrack.admin.model.repository.UserRepository;
+import eu.coatrack.admin.service.CustomProxyFileGeneratorService;
 import eu.coatrack.api.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
@@ -86,7 +85,7 @@ public class AdminProxiesController {
     private CreateProxyAction createProxyAction;
 
     @Autowired
-    private CustomProxyFileGenerator customProxyFileGenerator;
+    private CustomProxyFileGeneratorService customProxyFileGenerator;
 
     @Autowired
     private GitService gitService;
