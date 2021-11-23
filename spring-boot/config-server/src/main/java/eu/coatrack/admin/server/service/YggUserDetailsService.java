@@ -62,7 +62,7 @@ public class YggUserDetailsService implements UserDetailsService {
 
             if (credential != null) {
 
-                userDetails = new UserPrincipal(credential.getName(), credential.getPassword());
+                userDetails = new UserPrincipal(credential.getName(), "{noop}" + credential.getPassword());
             }
         }
         return userDetails;
