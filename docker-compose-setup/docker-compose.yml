@@ -45,7 +45,7 @@ services:
       --spring.cloud.config.password=password \
       --logging.level.eu.coatrack.proxy=DEBUG \
       --logging.level.org.springframework.security=DEBUG \
-      --ygg.proxy.executable-jar.template.url=file:///home/coatrack-proxy-"]
+      --ygg.proxy.executable-jar.template.url=file:///opt/coatrack/lib/coatrack-proxy-"]
 
 volumes:
   coatrack-postgres:
