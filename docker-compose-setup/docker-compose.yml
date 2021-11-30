@@ -1,30 +1,30 @@
 services:
   coatrack-database:
-    image: postgres:9.4.26
-    container_name: coatrack-database
+    image: postgres:${POSTGRES_VERSION}
+    container_name: ${DATABASE_CONTAINER_NAME}
     volumes:
-      - coatrack-database-volume:/var/lib/postgresql/data
+      - ${DATABASE_VOLUME}:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: password1234
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   coatrack-config-server:
-    image: coatrack/coatrack-config-server:2.0.0-SNAPSHOT
-    container_name: coatrack-config-server
+    image: coatrack/coatrack-config-server:${TAG}
+    container_name: ${CONFIG_SERVER_CONTAINER_NAME}
     depends_on:
-      - coatrack-database
+      - ${DATABASE_CONTAINER_NAME}
     ports:
       - 8998:8998
     entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-config-server.jar \
       --spring.datasource.url=jdbc:postgresql://coatrack-database/ygg_config_server \
-      --spring.datasource.password=password1234"]
+      --spring.datasource.password=${POSTGRES_PASSWORD}"]
   coatrack-admin:
-    image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
-    container_name: coatrack-admin
+    image: coatrack/coatrack-admin:${TAG}
+    container_name: $ADMIN_CONTAINER_NAME
     volumes:
-      - coatrack-admin:/home
+      - ${ADMIN_VOLUME}:/home
     depends_on:
-      - coatrack-config-server
-      - coatrack-database
+      - ${CONFIG_SERVER_CONTAINER_NAME}
+      - ${DATABASE_CONTAINER_NAME}
     ports:
       - 8080:8080
     entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
@@ -32,9 +32,9 @@ services:
       --ygg.admin.gitService.url=https://bitbucket.org/perezdf/anthill-settings.git \
       --ygg.admin.gitService.user=fpd.judo@gmail.com \
       --ygg.admin.gitService.password=fpdvip1234 \
-      --spring.datasource.url=jdbc:postgresql://coatrack-database/coatrack \
+      --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/coatrack \
       --spring.datasource.username=postgres \
-      --spring.datasource.password=password1234 \
+      --spring.datasource.password=${POSTGRES_PASSWORD} \
       --spring.jpa.hibernate.ddl-auto=update \
       --spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect \
       --spring.datasource.initialization-mode=always \
@@ -49,6 +49,6 @@ services:
 
 volumes:
   coatrack-database-volume:
-    name: coatrack-database-volume
-  coatrack-admin:
-    name: coatrack-admin
+    name: ${DATABASE_VOLUME}
+  coatrack-admin-volume:
+    name: ${ADMIN_VOLUME}
