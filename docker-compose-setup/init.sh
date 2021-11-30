@@ -14,6 +14,3 @@ sleep 5
 docker exec coatrack-postgres psql -U postgres -c "create database coatrack;"
 docker exec coatrack-postgres psql -U postgres -c "create database ygg_config_server;"
 docker stop coatrack-postgres
-
-cd "docker-compose-setup" || exit
-docker-compose up
