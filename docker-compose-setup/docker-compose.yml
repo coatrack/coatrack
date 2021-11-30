@@ -16,7 +16,9 @@ services:
     entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-config-server.jar \
       --spring.datasource.url=jdbc:postgresql://coatrack-database/ygg_config_server \
-      --spring.datasource.password=${POSTGRES_PASSWORD}"]
+      --spring.datasource.password=${POSTGRES_PASSWORD} \
+      --ygg.admin.config.access.user.name=${CONFIG_SERVER_USERNAME} \
+      --ygg.admin.config.access.user.password=${CONFIG_SERVER_PASSWORD}"]
   coatrack-admin:
     image: coatrack/coatrack-admin:${TAG}
     container_name: $ADMIN_CONTAINER_NAME
@@ -41,8 +43,8 @@ services:
       --ygg.admin.database.insertSampleDataOnStartup=false \
       --ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri=http://localhost:8998 \
       --spring.cloud.config.uri=http://coatrack-config-server:8998 \
-      --spring.cloud.config.username=admin \
-      --spring.cloud.config.password=password \
+      --spring.cloud.config.username=${CONFIG_SERVER_USERNAME} \
+      --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
       --logging.level.eu.coatrack.proxy=DEBUG \
       --logging.level.org.springframework.security=DEBUG \
       --ygg.proxy.executable-jar.template.url=file:///home/coatrack-proxy-"]
