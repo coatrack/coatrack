@@ -68,7 +68,11 @@ docker-compose up
 
 After starting up, the CoatRack web application will be accessible at `http://localhost:8080`.
 
-If you want to reset CoatRack, stop/remove all containers, remove all volumes and start the ```init.sh``` script again.
+If you want to remove CoatRack and all associated traces, execute:
+
+```sh
+sh uninstall.sh
+```
 
 ## Usage
 
