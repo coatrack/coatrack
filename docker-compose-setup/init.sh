@@ -7,10 +7,10 @@ docker cp ./spring-boot/proxy/target/coatrack-proxy-2.0.0-SNAPSHOT.jar coatrack-
 docker stop coatrack-admin
 
 docker run --rm -d -p 5432:5432 \
-  --name coatrack-postgres \
-  -v coatrack-postgres:/var/lib/postgresql/data \
+  --name coatrack-database \
+  -v coatrack-database-volume:/var/lib/postgresql/data \
   -e POSTGRES_PASSWORD=password1234 postgres:9.4.26
 sleep 5
-docker exec coatrack-postgres psql -U postgres -c "create database coatrack;"
-docker exec coatrack-postgres psql -U postgres -c "create database ygg_config_server;"
-docker stop coatrack-postgres
+docker exec coatrack-database psql -U postgres -c "create database coatrack;"
+docker exec coatrack-database psql -U postgres -c "create database ygg_config_server;"
+docker stop coatrack-database

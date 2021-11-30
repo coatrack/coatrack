@@ -1,21 +1,21 @@
 services:
-  coatrack-postgres:
+  coatrack-database:
     image: postgres:9.4.26
-    container_name: coatrack-postgres
+    container_name: coatrack-database
     volumes:
-      - coatrack-postgres:/var/lib/postgresql/data
+      - coatrack-database-volume:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: password1234
   coatrack-config-server:
     image: coatrack/coatrack-config-server:2.0.0-SNAPSHOT
     container_name: coatrack-config-server
     depends_on:
-      - coatrack-postgres
+      - coatrack-database
     ports:
       - 8998:8998
     entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-config-server.jar \
-      --spring.datasource.url=jdbc:postgresql://coatrack-postgres/ygg_config_server \
+      --spring.datasource.url=jdbc:postgresql://coatrack-database/ygg_config_server \
       --spring.datasource.password=password1234"]
   coatrack-admin:
     image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
@@ -24,7 +24,7 @@ services:
       - coatrack-admin:/home
     depends_on:
       - coatrack-config-server
-      - coatrack-postgres
+      - coatrack-database
     ports:
       - 8080:8080
     entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
@@ -32,7 +32,7 @@ services:
       --ygg.admin.gitService.url=https://bitbucket.org/perezdf/anthill-settings.git \
       --ygg.admin.gitService.user=fpd.judo@gmail.com \
       --ygg.admin.gitService.password=fpdvip1234 \
-      --spring.datasource.url=jdbc:postgresql://coatrack-postgres/coatrack \
+      --spring.datasource.url=jdbc:postgresql://coatrack-database/coatrack \
       --spring.datasource.username=postgres \
       --spring.datasource.password=password1234 \
       --spring.jpa.hibernate.ddl-auto=update \
@@ -48,7 +48,7 @@ services:
       --ygg.proxy.executable-jar.template.url=file:///home/coatrack-proxy-"]
 
 volumes:
-  coatrack-postgres:
-    name: coatrack-postgres
+  coatrack-database-volume:
+    name: coatrack-database-volume
   coatrack-admin:
     name: coatrack-admin
