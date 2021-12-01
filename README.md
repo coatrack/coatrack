@@ -52,36 +52,28 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
-## Installation for local usage
+## Install
 
 Go to the docker-compose-setup folder and execute:
 
  ```sh
- .init.sh
+ sh init.sh
  ```
 
-The script only needs to be executed once at the very first time to initialize the docker volumes. After that, executing 'docker-compose up/down' is sufficient. After starting up, the CoatRack web application will be accessible at `http://localhost:8080`.
+The script only needs to be executed once at the very first time to initialize the docker volumes. After that, it would be sufficient to run CoatRack via execution of:
 
-If you want to reset CoatRack, stop/remove all containers, remove all volumes and start the ```init.sh``` script again.
+``````sh
+docker-compose up
+``````
 
-## Installation for development
+After starting up, the CoatRack web application will be accessible at `http://localhost:8080`.
 
-At first you have to build the project:
+If you want to remove CoatRack and all associated traces, execute:
 
 ```sh
-.build.sh 
+sh uninstall.sh
 ```
 
-When you want to run CoatRack you have to execute the script below. You also have the option to use a custom Spring profile, which can be passed to the script as follows:
-
-```console
-./run-admin-application.sh [optional-spring-profile-name]
-```
-To create your personal custom Spring profile for CoatRack, please follow the instructions in the following template file:
-
-```
-spring-boot/admin/src/main/resources/application-private-TEMPLATE.yml
-```
 ## Usage
 
 To start using CoatRack: 
