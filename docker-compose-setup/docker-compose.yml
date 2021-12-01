@@ -20,8 +20,6 @@ services:
   coatrack-admin:
     image: coatrack/coatrack-admin:2.0.0-SNAPSHOT
     container_name: coatrack-admin
-    volumes:
-      - coatrack-admin:/home
     depends_on:
       - coatrack-config-server
       - coatrack-postgres
@@ -50,5 +48,3 @@ services:
 volumes:
   coatrack-postgres:
     name: coatrack-postgres
-  coatrack-admin:
-    name: coatrack-admin
