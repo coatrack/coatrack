@@ -35,6 +35,9 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static org.apache.commons.lang3.SystemUtils.IS_OS_LINUX;
+import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
+
 /**
  *
  * @author perezdf, ChristophBaier
@@ -43,7 +46,16 @@ import javax.annotation.PostConstruct;
 public class GitService {
 
     private static final Logger log = LoggerFactory.getLogger(GitService.class);
-    private static final String proxyConfigFilesFolderPath = "/root/proxy-config-files";
+    private static final String proxyConfigFilesFolderPath;
+
+    static {
+        if (IS_OS_LINUX) //for docker containers
+            proxyConfigFilesFolderPath = "/root/proxy-config-files";
+        else if (IS_OS_WINDOWS) //for development
+            proxyConfigFilesFolderPath = System.getProperty("java.io.tmpdir");
+        else
+            throw new OperatingSystemNotSupportedException("Only Linux and Windows are supported.");
+    }
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
