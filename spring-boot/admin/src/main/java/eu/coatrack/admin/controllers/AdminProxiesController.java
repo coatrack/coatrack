@@ -160,9 +160,7 @@ public class AdminProxiesController {
         createProxyAction.setSelectedServices(selectedServices);
         createProxyAction.execute();
 
-        gitService.init();
         gitService.addProxy(proxy);
-        gitService.commit("Add new proxy with id:" + proxy.getId());
 
         return proxyListPage();
     }
@@ -274,16 +272,10 @@ public class AdminProxiesController {
     }
 
     public void transmitConfigChangesToGitConfigRepository(Proxy updatedProxy) throws IOException, GitAPIException, URISyntaxException {
-
         log.debug("deleting old proxy config from git repository for proxy {}", updatedProxy.getId());
-        gitService.init();
         gitService.deleteProxy(updatedProxy);
-        gitService.commit("Delete proxy with id:" + updatedProxy.getId());
-
         log.debug("writing new proxy config into git repository {}", updatedProxy);
-        gitService.init();
         gitService.addProxy(updatedProxy);
-        gitService.commit("Add new proxy with id:" + updatedProxy.getId());
     }
 
     public void informProxyAboutUpdatedConfiguration(Proxy updatedProxy) throws URISyntaxException {

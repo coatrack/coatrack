@@ -85,10 +85,6 @@ public class GitServiceTest {
         services.add(service);
         proxy.setServiceApis(services);
 
-        gitService.init(); 
-
         gitService.addProxy(proxy);
-        gitService.commit("Add new Proxy");
-
     }
 }

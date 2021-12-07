@@ -125,12 +125,9 @@ public class CreateProxyAction implements Action {
             proxy.setOwner(user);
             proxy = proxyRepository.save(proxy);
 
-            gitService.init();
-
             gitService.addProxy(proxy);
-            gitService.commit("Add new proxy with id:" + proxy.getId());
 
-        } catch (GitAPIException | URISyntaxException | IOException exception) {
+        } catch (IOException exception) {
             this.ex = exception;
             log.error("Error occurred when creating proxy:" + exception.getMessage(), exception);
         }

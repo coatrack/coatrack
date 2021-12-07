@@ -41,105 +41,56 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.xml.registry.DeleteException;
+
 /**
  *
- * @author perezdf
+ * @author perezdf, ChristophBaier
  */
 @Component
 public class GitService {
 
     private static final Logger log = LoggerFactory.getLogger(GitService.class);
-    private File resultDir;
-    private Git git;
-
-    @Value("${ygg.admin.gitService.url}")
-    private String gitServiceUrl;
-    
-    @Value("${ygg.admin.gitService.user}")
-    private String gitServiceUser;
-    
-    @Value("${ygg.admin.gitService.password}")
-    private String gitServicePassword;
+    private static final String tmpDirStr = System.getProperty("java.io.tmpdir");
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    public void init() throws IOException, GitAPIException {
-        
-
-        String tmpDirStr = System.getProperty("java.io.tmpdir");
+    @PostConstruct
+    public void makeInitializationChecks() throws IOException {
         if (tmpDirStr == null) {
             throw new IOException(
                     "System property 'java.io.tmpdir' does not specify a tmp dir");
         }
-
-        File tmpDir = new File(tmpDirStr);
-        if (!tmpDir.exists()) {
-            boolean created = tmpDir.mkdirs();
-            if (!created) {
-                throw new IOException("Unable to create tmp dir " + tmpDir);
-            }
-        }
-
-        resultDir = new File(tmpDir, "ygg-admin-" + UUID.randomUUID());
-        if (resultDir.exists()) {
-            throw new IOException(" attempts to generate a non-existent directory name failed, giving up");
-        }
-    
-        boolean created = resultDir.mkdir();
-        if (!created) {
-            throw new IOException("Failed to create tmp directory");
-        }
-
-        // TODO parametrize
-        git = Git.cloneRepository()
-                .setURI(gitServiceUrl)
-                .setDirectory(resultDir)
-                .call();
-
     }
 
-    public void addProxy(Proxy proxy) throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
-        String tmpDirStr = System.getProperty("java.io.tmpdir");
+    public void addProxy(Proxy proxy) throws FileNotFoundException, UnsupportedEncodingException {
         PrintWriter writer = new PrintWriter(tmpDirStr + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
-
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);
         if (proxy.getPort() != null) {
             writer.println("server.port: " + proxy.getPort());
         }
-
         for (ServiceApi service : proxy.getServiceApis()) {
-
             writer.println("zuul.routes." + service.getUriIdentifier() + ".url : " + service.getLocalUrl());
         }
         writer.println("zuul.host.connect-timeout-millis: 150000");
         writer.println("zuul.host.socket-timeout-millis: 150000");
         writer.close();
-
     }
 
-    public void deleteProxy(Proxy proxy) throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
-
-        RmCommand deleteCommand = git.rm();
-        deleteCommand.addFilepattern("ygg-proxy-" + proxy.getId() + ".yml");
-        deleteCommand.call();
-
-    }
-
-    public void commit(String message) throws GitAPIException, URISyntaxException {
-
-        CommitCommand command = git.commit();
-
-        command.setMessage(message).call();
-
-        // push to remote:
-        PushCommand pushCommand = git.push();
-        pushCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitServiceUser, gitServicePassword));
-        // you can add more settings here if needed
-        pushCommand.call();
-        git.close();
-
+    public void deleteProxy(Proxy proxy) throws FileNotFoundException, FileCouldNotBeDeletedException {
+        File proxyConfigToBeDeleted = new File(tmpDirStr + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
+        if (!proxyConfigToBeDeleted.exists())
+            throw new FileNotFoundException("Tried to delete the configuration for proxy " + proxy.getId()
+                    + ", but there is no according file.");
+        else {
+            if (proxyConfigToBeDeleted.delete())
+                log.debug("Proxy {} was successfully deleted.", proxy.getId());
+            else
+                throw new FileCouldNotBeDeletedException("Configuration file of proxy " + proxy.getId() + " could not be deleted.");
+        }
     }
 
 }
