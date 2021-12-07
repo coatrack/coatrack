@@ -15,11 +15,6 @@
 #
 ygg:
   admin:
-    gitService:
-      # URL and credentials for the Git repository to be used by CoatRack to store gateway config files
-      url: https://git-repository-url
-      user: git-username
-      password: git-password
     gettingStarted:
       consumer:
         testService:
