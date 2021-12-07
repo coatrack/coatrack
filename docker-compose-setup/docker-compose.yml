@@ -9,11 +9,13 @@ services:
   coatrack-config-server:
     image: coatrack/coatrack-config-server:${TAG}
     container_name: ${CONFIG_SERVER_CONTAINER_NAME}
+    volumes:
+      - ${PROXY_CONFIG_FILES_VOLUME}:/root/proxy-config-files
     depends_on:
       - ${DATABASE_CONTAINER_NAME}
     ports:
       - 8998:8998
-    entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom \
+    entrypoint: ["sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-config-server.jar \
       --spring.datasource.url=jdbc:postgresql://coatrack-database/ygg_config_server \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
@@ -24,6 +26,7 @@ services:
     container_name: $ADMIN_CONTAINER_NAME
     volumes:
       - ${ADMIN_VOLUME}:/home
+      - ${PROXY_CONFIG_FILES_VOLUME}:/root/proxy-config-files
     depends_on:
       - ${CONFIG_SERVER_CONTAINER_NAME}
       - ${DATABASE_CONTAINER_NAME}
@@ -31,9 +34,6 @@ services:
       - 8080:8080
     entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-admin.jar \
-      --ygg.admin.gitService.url=https://bitbucket.org/perezdf/anthill-settings.git \
-      --ygg.admin.gitService.user=fpd.judo@gmail.com \
-      --ygg.admin.gitService.password=fpdvip1234 \
       --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/coatrack \
       --spring.datasource.username=postgres \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
@@ -52,3 +52,5 @@ volumes:
     name: ${DATABASE_VOLUME}
   coatrack-admin-volume:
     name: ${ADMIN_VOLUME}
+  coatrack-proxy-config-files-volume:
+    name: ${PROXY_CONFIG_FILES_VOLUME}

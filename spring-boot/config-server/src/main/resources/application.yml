@@ -34,7 +34,7 @@ spring:
             ddl-auto: create-drop
             #ddl-auto: update
     profiles.active: native
-    cloud.config.server.native.searchLocations: file:///${user.home}/AppData/Local/Temp
+    cloud.config.server.native.searchLocations: file:///root/proxy-config-files
                     
 ygg:
     admin:

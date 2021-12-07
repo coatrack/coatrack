@@ -25,24 +25,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.util.UUID;
+
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
-import org.eclipse.jgit.api.AddCommand;
-import org.eclipse.jgit.api.CommitCommand;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PushCommand;
-import org.eclipse.jgit.api.RmCommand;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.xml.registry.DeleteException;
 
 /**
  *
@@ -52,21 +43,13 @@ import javax.xml.registry.DeleteException;
 public class GitService {
 
     private static final Logger log = LoggerFactory.getLogger(GitService.class);
-    private static final String tmpDirStr = System.getProperty("java.io.tmpdir");
+    private static final String proxyConfigFilesFolderPath = "/root/proxy-config-files";
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    @PostConstruct
-    public void makeInitializationChecks() throws IOException {
-        if (tmpDirStr == null) {
-            throw new IOException(
-                    "System property 'java.io.tmpdir' does not specify a tmp dir");
-        }
-    }
-
     public void addProxy(Proxy proxy) throws FileNotFoundException, UnsupportedEncodingException {
-        PrintWriter writer = new PrintWriter(tmpDirStr + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
+        PrintWriter writer = new PrintWriter(proxyConfigFilesFolderPath + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);
         if (proxy.getPort() != null) {
@@ -81,7 +64,7 @@ public class GitService {
     }
 
     public void deleteProxy(Proxy proxy) throws FileNotFoundException, FileCouldNotBeDeletedException {
-        File proxyConfigToBeDeleted = new File(tmpDirStr + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
+        File proxyConfigToBeDeleted = new File(proxyConfigFilesFolderPath + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         if (!proxyConfigToBeDeleted.exists())
             throw new FileNotFoundException("Tried to delete the configuration for proxy " + proxy.getId()
                     + ", but there is no according file.");
