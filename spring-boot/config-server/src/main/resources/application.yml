@@ -33,14 +33,8 @@ spring:
             generate-ddl: true
             ddl-auto: create-drop
             #ddl-auto: update
-    cloud:
-        config:
-            server:
-                git:
-                    uri: https://bitbucket.org/perezdf/anthill-settings.git
-                    username: fpd.judo@gmail.com
-                    password: fpdvip1234
-                    timeout: 100
+    profiles.active: native
+    cloud.config.server.native.searchLocations: file:///${user.home}/AppData/Local/Temp
                     
 ygg:
     admin:

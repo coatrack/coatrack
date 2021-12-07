@@ -100,8 +100,9 @@ public class GitService {
     }
 
     public void addProxy(Proxy proxy) throws GitAPIException, URISyntaxException, FileNotFoundException, UnsupportedEncodingException {
+        String tmpDirStr = System.getProperty("java.io.tmpdir");
+        PrintWriter writer = new PrintWriter(tmpDirStr + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
 
-        PrintWriter writer = new PrintWriter(resultDir + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);
         if (proxy.getPort() != null) {
@@ -115,10 +116,6 @@ public class GitService {
         writer.println("zuul.host.connect-timeout-millis: 150000");
         writer.println("zuul.host.socket-timeout-millis: 150000");
         writer.close();
-
-        AddCommand addCommand = git.add();
-        addCommand.addFilepattern(".");
-        addCommand.call();
 
     }
 
