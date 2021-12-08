@@ -34,16 +34,15 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author perezdf
  */
-public class GitServiceTest {
+public class ProxyConfigFilesStorageTest {
 
-    public GitServiceTest() {
+    public ProxyConfigFilesStorageTest() {
     }
 
     @BeforeClass
@@ -63,7 +62,7 @@ public class GitServiceTest {
     }
 
     @Autowired
-    GitService gitService;
+    ProxyConfigFilesStorage proxyConfigFilesStorage;
     
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
@@ -85,10 +84,6 @@ public class GitServiceTest {
         services.add(service);
         proxy.setServiceApis(services);
 
-        gitService.init(); 
-
-        gitService.addProxy(proxy);
-        gitService.commit("Add new Proxy");
-
+        proxyConfigFilesStorage.addProxy(proxy);
     }
 }
