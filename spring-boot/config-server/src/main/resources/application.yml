@@ -11,8 +11,7 @@ security:
         enabled: true
         path: /ygg-admin/**
         ignored: /health**,/info**,/metrics**,/trace**
-   
-        
+
 spring:
     http:
       multipart:
@@ -34,7 +33,7 @@ spring:
             ddl-auto: create-drop
             #ddl-auto: update
     profiles.active: native
-    cloud.config.server.native.searchLocations: file:///${user.home}/AppData/Local/Temp
+    cloud.config.server.native.searchLocations: file:///${user.home}/AppData/Local/Temp/coatrack
                     
 ygg:
     admin:

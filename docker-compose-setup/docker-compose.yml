@@ -10,7 +10,7 @@ services:
     image: coatrack/coatrack-config-server:${TAG}
     container_name: ${CONFIG_SERVER_CONTAINER_NAME}
     volumes:
-      - ${PROXY_CONFIG_FILES_VOLUME}:/root/proxy-config-files
+      - ${PROXY_CONFIG_FILES_VOLUME}:${PROXY_CONFIG_FILES_FOLDER}
     depends_on:
       - ${DATABASE_CONTAINER_NAME}
     ports:
@@ -22,13 +22,14 @@ services:
       --ygg.admin.config.access.user.name=${CONFIG_SERVER_USERNAME} \
       --ygg.admin.config.access.user.password=${CONFIG_SERVER_PASSWORD} \
       --spring.profiles.active=native \
-      --spring.cloud.config.server.native.searchLocations=file:///root/proxy-config-files"]
+      --spring.cloud.config.server.native.searchLocations=file://${PROXY_CONFIG_FILES_FOLDER}"]
+
   coatrack-admin:
     image: coatrack/coatrack-admin:${TAG}
     container_name: $ADMIN_CONTAINER_NAME
     volumes:
       - ${ADMIN_VOLUME}:/home
-      - ${PROXY_CONFIG_FILES_VOLUME}:/root/proxy-config-files
+      - ${PROXY_CONFIG_FILES_VOLUME}:${PROXY_CONFIG_FILES_FOLDER}
     depends_on:
       - ${CONFIG_SERVER_CONTAINER_NAME}
       - ${DATABASE_CONTAINER_NAME}
@@ -47,7 +48,8 @@ services:
       --spring.cloud.config.uri=http://coatrack-config-server:8998 \
       --spring.cloud.config.username=${CONFIG_SERVER_USERNAME} \
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
-      --ygg.proxy.executable-jar.template.url=file:///home/coatrack-proxy-"]
+      --ygg.proxy.executable-jar.template.url=file:///home/coatrack-proxy- \
+      --proxy.config.files.folder=${PROXY_CONFIG_FILES_FOLDER}"]
 
 volumes:
   coatrack-database-volume:

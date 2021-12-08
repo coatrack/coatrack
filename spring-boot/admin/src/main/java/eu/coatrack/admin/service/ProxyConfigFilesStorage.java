@@ -20,47 +20,35 @@ package eu.coatrack.admin.service;
  * #L%
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
-
-import static org.apache.commons.lang3.SystemUtils.IS_OS_LINUX;
-import static org.apache.commons.lang3.SystemUtils.IS_OS_WINDOWS;
 
 /**
  *
  * @author perezdf, ChristophBaier
  */
+
+@Slf4j
 @Component
-public class GitService {
+public class ProxyConfigFilesStorage {
 
-    private static final Logger log = LoggerFactory.getLogger(GitService.class);
-    private static final String proxyConfigFilesFolderPath;
-
-    static {
-        if (IS_OS_LINUX) //for docker containers
-            proxyConfigFilesFolderPath = "/root/proxy-config-files";
-        else if (IS_OS_WINDOWS) //for development
-            proxyConfigFilesFolderPath = System.getProperty("java.io.tmpdir");
-        else
-            throw new OperatingSystemNotSupportedException("Only Linux and Windows are supported.");
-    }
+    @Value("${proxy.config.files.folder}")
+    private String proxyConfigFilesFolderPath;
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    public void addProxy(Proxy proxy) throws FileNotFoundException, UnsupportedEncodingException {
+    public void addProxy(Proxy proxy) throws IOException {
+        File proxyConfigFilesFolder = new File(proxyConfigFilesFolderPath);
+        if (!proxyConfigFilesFolder.exists())
+            if (!proxyConfigFilesFolder.mkdirs())
+                throw new IOException("Could not create directory " + proxyConfigFilesFolderPath);
+
         PrintWriter writer = new PrintWriter(proxyConfigFilesFolderPath + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);

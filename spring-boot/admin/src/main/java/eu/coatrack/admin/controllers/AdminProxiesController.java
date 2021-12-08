@@ -23,7 +23,7 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.admin.service.GitService;
+import eu.coatrack.admin.service.ProxyConfigFilesStorage;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -88,7 +88,7 @@ public class AdminProxiesController {
     private CustomProxyFileGeneratorService customProxyFileGenerator;
 
     @Autowired
-    private GitService gitService;
+    private ProxyConfigFilesStorage proxyConfigFilesStorage;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -160,7 +160,7 @@ public class AdminProxiesController {
         createProxyAction.setSelectedServices(selectedServices);
         createProxyAction.execute();
 
-        gitService.addProxy(proxy);
+        proxyConfigFilesStorage.addProxy(proxy);
 
         return proxyListPage();
     }
@@ -273,9 +273,9 @@ public class AdminProxiesController {
 
     public void transmitConfigChangesToGitConfigRepository(Proxy updatedProxy) throws IOException, GitAPIException, URISyntaxException {
         log.debug("deleting old proxy config from git repository for proxy {}", updatedProxy.getId());
-        gitService.deleteProxy(updatedProxy);
+        proxyConfigFilesStorage.deleteProxy(updatedProxy);
         log.debug("writing new proxy config into git repository {}", updatedProxy);
-        gitService.addProxy(updatedProxy);
+        proxyConfigFilesStorage.addProxy(updatedProxy);
     }
 
     public void informProxyAboutUpdatedConfiguration(Proxy updatedProxy) throws URISyntaxException {
