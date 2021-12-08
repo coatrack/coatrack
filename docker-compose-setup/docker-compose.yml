@@ -1,4 +1,5 @@
 services:
+
   coatrack-database:
     image: postgres:${POSTGRES_VERSION}
     container_name: ${DATABASE_CONTAINER_NAME}
@@ -6,6 +7,7 @@ services:
       - ${DATABASE_VOLUME}:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
   coatrack-config-server:
     image: coatrack/coatrack-config-server:${TAG}
     container_name: ${CONFIG_SERVER_CONTAINER_NAME}
@@ -17,12 +19,15 @@ services:
       - 8998:8998
     entrypoint: ["sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-config-server.jar \
-      --spring.datasource.url=jdbc:postgresql://coatrack-database/ygg_config_server \
-      --spring.datasource.password=${POSTGRES_PASSWORD} \
       --ygg.admin.config.access.user.name=${CONFIG_SERVER_USERNAME} \
       --ygg.admin.config.access.user.password=${CONFIG_SERVER_PASSWORD} \
       --spring.profiles.active=native \
-      --spring.cloud.config.server.native.searchLocations=file://${PROXY_CONFIG_FILES_FOLDER}"]
+      --spring.cloud.config.server.native.searchLocations=file://${PROXY_CONFIG_FILES_FOLDER} \
+      --spring.datasource.username=postgres \
+      --spring.datasource.password=${POSTGRES_PASSWORD} \
+      --spring.datasource.url=jdbc:postgresql://coatrack-database/ygg_config_server \
+      --spring.datasource.driver=org.postgresql.Driver \
+      --spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect"]
 
   coatrack-admin:
     image: coatrack/coatrack-admin:${TAG}
