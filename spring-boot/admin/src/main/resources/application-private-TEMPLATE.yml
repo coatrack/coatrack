@@ -42,7 +42,3 @@ ygg:
 
 # URL to be used by admin to inform config server about credentials generated for proxies
 spring.cloud.config.uri: http://localhost:8998
-
-# Proxy configuration files are stored in this directory. The value of this parameter needs to direct to the same
-# folder as spring.cloud.config.server.native.searchLocations from the Config Servers application.yml.
-proxy.config.files.folder: ${user.home}/AppData/Local/Temp/coatrack
