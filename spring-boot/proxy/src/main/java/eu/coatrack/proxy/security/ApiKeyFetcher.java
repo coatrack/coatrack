@@ -53,7 +53,7 @@ public class ApiKeyFetcher {
     }
 
     public List<ApiKey> requestLatestApiKeyListFromAdmin() {
-        log.debug("Requesting latest API key list from CoatRack Web Application.");
+        log.debug("Requesting latest API key list from " + urlResourcesProvider.getApiKeyListRequestUrl());
 
         try {
             ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
