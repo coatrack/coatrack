@@ -25,12 +25,16 @@ This project is part of [FIWARE](https://www.fiware.org/). For more information 
 | :books: [Documentation](https://github.com/coatrack/coatrack/wiki) |  :whale: [Docker Hub](https://hub.docker.com/r/coatrack/admin/) | :dart: [Roadmap](https://github.com/coatrack/coatrack/blob/master/docs/roadmap.md) |
 | ----------------------------------------------| ----------------------------------------------------------------| --------------------------------------------------------------------|
 
+
+
 ## Contents
 
 * [Background](#background)
 * [Install](#install)
 * [Usage](#usage)
 * [License](#license)
+
+
 
 ## Background
 
@@ -52,12 +56,36 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
+
+
+## Preconditions
+
+There are two possibilities to run CoatRack. 
+
+### 1. Deployment with Docker 
+
+The easiest way is to use Docker as described in the [Install](#Install) section which requires:
+
+*  a Linux shell - Windows users can use WSL of the Git Bash shell instead
+* docker
+* docker-compose
+
+### 2. Build from scratch
+
+Another approach is to build CoatRack from the source code which is meant for developers, see instructions in the Wiki page on GitHub. The required dependencies are:
+
+* Linux shell as mentioned above
+* OpenJDK 11
+* Maven 3.6.3 or higher
+
+
+
 ## Install
 
 Go to the docker-compose-setup folder and execute:
 
  ```sh
- sh init.sh
+ ./init.sh
  ```
 
 The script only needs to be executed once at the very first time to initialize the docker volumes. After that, it would be sufficient to run CoatRack via execution of:
@@ -71,8 +99,10 @@ After starting up, the CoatRack web application will be accessible at `http://lo
 If you want to remove CoatRack and all associated traces, execute:
 
 ```sh
-sh uninstall.sh
+./uninstall.sh
 ```
+
+
 
 ## Usage
 
@@ -87,6 +117,8 @@ There are two tutorials inside the application:
 
 - Offering service APIs via CoatRack
 - Using service APIs offered via CoatRack
+
+
 
 ## License
 
