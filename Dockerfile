@@ -12,4 +12,6 @@ COPY spring-boot/proxy/target/coatrack-proxy-${MODULE_VERSION}.jar /opt/coatrack
 RUN if [ ${MODULE_NAME} != "coatrack-admin" ]; then rm /opt/coatrack/lib/coatrack-proxy-${MODULE_VERSION}.jar; fi
 ENV JAVA_OPTS=""
 ENV MODULE_NAME=${MODULE_NAME}
+RUN adduser -D -s /bin/false -g coatrack coatrack coatrack
+USER coatrack
 ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar /opt/coatrack/lib/$MODULE_NAME.jar" ]
