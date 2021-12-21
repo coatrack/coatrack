@@ -58,37 +58,21 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 
 
-## Preconditions
+## Deployment with Docker 
 
-There are two possibilities to run CoatRack. 
-
-### 1. Deployment with Docker 
-
-The easiest way is to use Docker as described in the [Install](#Install) section which requires:
+The easiest way is to use the already prefabricated Docker images from Dockerhub. The following prerequisites are required:
 
 *  a Linux shell - Windows users can use WSL of the Git Bash shell instead
-* docker
-* docker-compose
-
-### 2. Build from scratch
-
-Another approach is to build CoatRack from the source code which is meant for developers, see instructions in the Wiki page on GitHub. The required dependencies are:
-
-* Linux shell as mentioned above
-* OpenJDK 11
-* Maven 3.6.3 or higher
-
-
-
-## Install
+*  docker
+*  docker-compose
 
 Go to the docker-compose-setup folder and execute:
 
  ```sh
- ./init.sh
+ ./install.sh
  ```
 
-The script only needs to be executed once at the very first time to initialize the docker volumes. After that, it would be sufficient to run CoatRack via execution of:
+The script only needs to be executed once at the very first time to initialize the docker volumes by creating the Postgres databases. After that, it would be sufficient to run CoatRack via execution of:
 
 ``````sh
 docker-compose up
@@ -101,6 +85,21 @@ If you want to remove CoatRack and all associated traces, execute:
 ```sh
 ./uninstall.sh
 ```
+
+
+
+## Installation from scratch
+
+Another approach is to build CoatRack from the source code which is meant for developers. The following prerequisites are required in addition to the dependencies mentioned in the previous section:
+
+* OpenJDK 11
+* Maven 3.6.3 or higher
+
+To do so, go to the `docker-compose-setup` directory and execute:
+
+``````
+./build-from-scratch.sh
+``````
 
 
 

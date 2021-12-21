@@ -5,5 +5,5 @@ cd ..
 mvn package -DskipTests
 ./build-docker.sh
 cd docker-compose-setup
-./init.sh
+./install.sh
 docker-compose up
