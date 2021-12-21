@@ -12,7 +12,7 @@ services:
     image: coatrack/coatrack-config-server:${TAG}
     container_name: ${CONFIG_SERVER_CONTAINER_NAME}
     volumes:
-      - ${PROXY_CONFIG_FILES_VOLUME}:${PROXY_CONFIG_FILES_FOLDER}
+      - ${PROXY_CONFIG_FILES_VOLUME}:${PROXY_CONFIG_FILES_FOLDER}:ro
     depends_on:
       - ${DATABASE_CONTAINER_NAME}
     ports:
