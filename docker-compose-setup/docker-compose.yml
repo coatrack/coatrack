@@ -18,7 +18,7 @@ services:
     ports:
       - 8998:8998
     entrypoint: ["sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
-      -jar /opt/coatrack/lib/coatrack-config-server.jar \
+      -jar ${JAR_DIR}/coatrack-config-server.jar \
       --ygg.admin.config.access.user.name=${CONFIG_SERVER_USERNAME} \
       --ygg.admin.config.access.user.password=${CONFIG_SERVER_PASSWORD} \
       --spring.profiles.active=native \
@@ -40,7 +40,7 @@ services:
     ports:
       - 8080:8080
     entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
-      -jar /opt/coatrack/lib/coatrack-admin.jar \
+      -jar ${JAR_DIR}/coatrack-admin.jar \
       --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/coatrack \
       --spring.datasource.username=postgres \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
@@ -52,7 +52,7 @@ services:
       --spring.cloud.config.uri=http://coatrack-config-server:8998 \
       --spring.cloud.config.username=${CONFIG_SERVER_USERNAME} \
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
-      --ygg.proxy.executable-jar.template.url=file:///opt/coatrack/lib/coatrack-proxy- \
+      --ygg.proxy.executable-jar.template.url=file://${JAR_DIR}/coatrack-proxy- \
       --proxy.config.files.folder=${PROXY_CONFIG_FILES_FOLDER}"]
 
 volumes:
