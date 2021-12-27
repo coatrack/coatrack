@@ -5,77 +5,83 @@ mvn.pom.project.version: @@project.version@@
 
 logging:
   level:
-    org.springframework.security: INFO
-    nl.corizon.ygg: DEBUG
+    root: INFO
+    eu.coatrack: DEBUG
 
 # Necessary in order to run offline     
 ygg:
-   mail:
-      server:
-         url: "smtp.serviciodecorreo.es"
-         port: 465
-      sender:
-         from: "coatrack@kyoe.es"
-         user: ""
-         password: ""
-      verification.server.url: http://localhost:8080
+  mail:
+    # Settings for the validation email to be sent to new users
+    server:
+      url: smtp-server-url
+      port: 465
+    sender:
+      from: verification-email-sender@example.org
+      user: email-sender-username
+      password: email-sender-password
+    # base URL of CoatRack (basis to generate the verification link)
+    verification.server.url: http://localhost:8080
 
-   admin:
-      database.insertSampleDataOnStartup: true
-      server:
-         url: http://localhost:8080
-      servicecovers:
-         path: /tmp
-         url: http://localhost/coatrack-servicecovers/
-      payment.commision:
-         variable: 50
-         fix: 1
-         bookKeeping.contact: fperezduran@bebr.nl
-      call-request-fee: 0
-    
-      gitService:
-          url: http://localhost
-          user: user
-          password: password
-      api-base-url-for-gateway: http://localhost:8080/api
+  admin:
+    database.insertSampleDataOnStartup: true
+    server:
+      url: http://localhost:8080
+    servicecovers:
+      path: /tmp
+      url: http://localhost/coatrack-servicecovers/
+    payment.commision:
+      variable: 50
+      fix: 1
+      bookKeeping.contact: your-email-address@example.org
+    call-request-fee: 0
 
-      gettingStarted:
-         consumer:
-           testService:
-# the following two elements are required to load the test service for getting started wizard
-                provider.username: BrunoSilvaATB
-                uriIdentifier: getting-started-service-consumer
-   proxy:
-      executable-jar:
-         generated.path: /tmp
-         template.url: https://www.kyoe.es/proxies/coatrack-proxy-2.0.0-SNAPSHOT.jar
-         filename-original-prefix: prefix
-         filename-custom:
-            prefix: coatrack-gateway-
-            suffix: .jar
-      generate-bootstrap-properties:
-         spring.application.name.prefix: ygg-proxy-
-         spring.cloud.config.uri: http://localhost
-      server.port.defaultValue: 8088
+    gitService:
+      # URL and credentials for the Git repository where CoatRack stores gateway config files
+      url: http://localhost
+      user: user
+      password: password
+
+    # URL of the CoatRack web application's API that will be called by CoatRack gateways
+    api-base-url-for-gateway: http://localhost:8080/api/
+
+    gettingStarted:
+      consumer:
+        testService:
+          # Provider and identifier to define the test service to be used in the getting started tutorial
+          provider.username: exampleCompanyInc
+          uriIdentifier: humidity-by-location
+  proxy:
+    executable-jar:
+      generated.path: /tmp
+      # URL of the "template jar" that CoatRack uses as basis to generate proxies (without the trailing version number and .jar filename extension)
+      template.url: https://www.kyoe.es/proxies/coatrack-proxy-
+      path: path
+      filename-custom:
+        prefix: coatrack-gateway-
+        suffix: .jar
+    generate-bootstrap-properties:
+      spring.application.name.prefix: ygg-proxy-
+      spring.cloud.config.uri: http://localhost:8998
+    server.port.defaultValue: 8088
 
 # Necessary to define the threshold times to display different
 # status (warning and critical) on the Gateway Health Monitor
 ygg.gateway-health-monitor:
-   warning.threshold.minutes: 5
-   critical.threshold.minutes: 60
-   
+  warning.threshold.minutes: 5
+  critical.threshold.minutes: 60
+
 spring:
   data:
     rest:
-      base-path: /api   
-      
+      base-path: /api
 
-# Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
+spring.application.name: ygg-admin
+
+# TODO Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
 spring.cloud.config:
-        username: admin
-        password: password
-        uri: https://config.coatrack.eu
-
+  username: admin
+  password: password
+  uri: http://localhost:8998
 
 security:
   oauth2:

@@ -44,14 +44,15 @@ ygg:
    proxy:
       executable-jar:
          generated.path: /tmp
-         template.url: https://www.kyoe.es/proxies/coatrack-proxy-
+         #template.url: https://www.kyoe.es/proxies/coatrack-proxy-
+         template.url: https://s01.oss.sonatype.org/content/repositories/snapshots/eu/coatrack/coatrack-proxy/2.0.0-SNAPSHOT/coatrack-proxy-
          filename-original-prefix: prefix
          filename-custom:
             prefix: coatrack-gateway-
             suffix: .jar
       generate-bootstrap-properties:
          spring.application.name.prefix: ygg-proxy-
-         spring.cloud.config.uri: http://localhost
+         spring.cloud.config.uri: https://config.coatrack.eu
       server.port.defaultValue: 8088
 
 # Necessary to define the threshold times to display different
@@ -78,7 +79,6 @@ spring.cloud.config:
 security:
   oauth2:
     client:
-      # the following oauth client configuration is just for development testing purposes, do NOT use in a production setting
       clientId: e188a243cc57ef90f2b5
       clientSecret: a5630e2f873890bdc8366aac0155e8113ece0997
       accessTokenUri: https://github.com/login/oauth/access_token

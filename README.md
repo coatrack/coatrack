@@ -71,7 +71,10 @@ After starting up, the CoatRack web application will be accessible at `http://lo
 ```console
 ./run-admin-application.sh [optional-spring-profile-name]
 ```
-
+To create your personal custom Spring profile for CoatRack, please follow the instructions in the following template file:
+```
+spring-boot/admin/src/main/resources/application-private-TEMPLATE.yml
+```
 ## Usage
 
 To start using CoatRack: 
