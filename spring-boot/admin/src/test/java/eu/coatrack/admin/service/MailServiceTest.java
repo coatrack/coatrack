@@ -54,7 +54,7 @@ public class MailServiceTest {
         Content content = new Content("text/plain", "and easy to do anywhere, even with Java");
         Mail mail = new Mail(from, subject, to, content);
 
-        SendGrid sg = new SendGrid("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");
+        SendGrid sg = new SendGrid("SENDGRID API KEY");
         Request request = new Request();
         try {
             request.setMethod(Method.POST);
