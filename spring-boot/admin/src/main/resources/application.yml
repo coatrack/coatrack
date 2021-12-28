@@ -11,6 +11,7 @@ logging:
 # Necessary in order to run offline     
 ygg:
   mail:
+    api-key: "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"    
     # Settings for the validation email to be sent to new users
     server:
       url: smtp-server-url
