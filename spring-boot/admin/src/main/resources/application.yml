@@ -23,6 +23,7 @@ ygg:
     verification.server.url: http://localhost:8080
 
   admin:
+    payable.enable: false
     database.insertSampleDataOnStartup: true
     server:
       url: http://localhost:8080
