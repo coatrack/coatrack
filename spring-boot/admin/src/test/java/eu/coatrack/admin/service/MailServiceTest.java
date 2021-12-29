@@ -45,7 +45,7 @@ public class MailServiceTest {
 
     private static final Logger log = LoggerFactory.getLogger(MailServiceTest.class);
 
-    @Test
+    //Test
     public void test() throws IOException {
 
         Email from = new Email("fperezduran@bebr.nl");
