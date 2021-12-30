@@ -27,6 +27,9 @@ import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.admin.validator.UserValidator;
 import eu.coatrack.api.CreditAccount;
 import eu.coatrack.api.User;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,18 +70,6 @@ public class UserController {
         return new User();
     }
 
-    @RequestMapping("/register")
-    public String registerForm(User user, BindingResult bindingResult, Model model) {
-
-        if (user == null) {
-            user = getUserObject();
-        }
-
-        model.addAttribute("user", user);
-
-        return "register";
-    }
-
     @Value("${ygg.mail.sender.user}")
     private String mail_sender_user;
 
@@ -99,6 +90,34 @@ public class UserController {
 
     @Autowired
     private TransactionRepository transactionRepository;
+
+    @GetMapping("/remove")
+    public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = userRepository.findByUsername(auth.getName());
+        user.setRemoved(true);
+        userRepository.save(user);
+
+        
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("logout");
+        return mav;
+        
+       
+    }
+
+    @RequestMapping("/register")
+    public String registerForm(User user, BindingResult bindingResult, Model model) {
+
+        if (user == null) {
+            user = getUserObject();
+        }
+
+        model.addAttribute("user", user);
+
+        return "register";
+    }
 
     @PostMapping(value = "/register")
     public String registerUser(User user, BindingResult bindingResult, Model model) throws MessagingException {

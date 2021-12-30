@@ -45,6 +45,9 @@ public class YggUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException(username);
+        }else if(user.getRemoved())
+        {
+          throw new UsernameNotFoundException(username);  
         }
         return new YggUserPrincipal(user);
     }

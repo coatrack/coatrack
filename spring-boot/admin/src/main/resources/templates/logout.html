@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <head>
+        <title>CoatRack</title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="shortcut icon" th:href="@{/images/favicon.ico}"/>
+        <!--<link rel="stylesheet" href="assets/css/main.css" />-->
+        <link rel="stylesheet" type="text/css" th:href="@{/assets/css/main.css}"/>
+        <!--[if lte IE 9]><link rel="stylesheet" href="assets/css/ie9.css" /><![endif]-->
+        <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+        <script th:src="@{/webjars/jquery/2.1.4/jquery.min.js}"></script>
+
+
+
+
+    </head>
+    <body onload="document.getElementById('call_logout').submit();">
+        <!-- Wrapper -->
+        <div id="wrapper">
+
+
+            <form id="call_logout" action="/logout" method="post">
+                <input name="_csrf" type="hidden" th:value="${_csrf.token}" />
+            </form>
+
+            <!-- Footer -->
+            <footer id="footer">
+                <p class="copyright">&copy; . Design: <a href="https://html5up.net">HTML5 UP</a>.</p>
+            </footer>
+
+        </div>
+
+        <!-- BG -->
+        <div id="bg"></div>
+
+        <!-- Scripts -->
+        <script src="assets/js/jquery.min.js"></script>
+        <script src="assets/js/skel.min.js"></script>
+        <script src="assets/js/util.js"></script>
+        <script src="assets/js/main.js"></script>
+
+    </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+<!--</div>
+<div th:include="fragments/scripts :: [id='scripts']" th:remove="tag">Scripts</div>
+</body>
+</html>-->

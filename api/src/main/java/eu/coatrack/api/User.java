@@ -19,7 +19,6 @@ package eu.coatrack.api;
  * limitations under the License.
  * #L%
  */
-
 import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -67,6 +66,9 @@ public class User {
     @Column(nullable = true)
     protected String lastname;
 
+    @Column(nullable = false)
+    protected Boolean removed = false;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private CreditAccount account;
@@ -78,8 +80,6 @@ public class User {
     public void setAccount(CreditAccount account) {
         this.account = account;
     }
-    
-    
 
     public Boolean getEmailVerified() {
         return emailVerified;
@@ -152,6 +152,14 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public Boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(Boolean removed) {
+        this.removed = removed;
     }
 
     @Override
