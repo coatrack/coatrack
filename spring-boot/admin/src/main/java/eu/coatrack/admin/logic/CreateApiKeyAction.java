@@ -78,7 +78,7 @@ public class CreateApiKeyAction implements Action {
         apiKey = apiKeyRepository.save(apiKey);
 
         // also set the relationship on the service API side
-        serviceApiRepository.findOne(serviceApi.getId());
+        serviceApiRepository.findById(serviceApi.getId()).orElse(null);
         serviceApi.getApiKeys().add(apiKey);
         serviceApiRepository.save(serviceApi);
 

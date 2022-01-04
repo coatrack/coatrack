@@ -3,16 +3,6 @@
       xmlns="http://www.w3.org/1999/xhtml">
     <body>
         <div th:fragment="body">
-
-            <div id="infoDialog" title="Info" style="display: none">
-                <div class="x_panel">
-                    <div class="x_content">
-                        <i class="fa fa-lg fa-info-circle"/>
-                        <span id='message'>message</span>
-                    </div>
-                </div>
-            </div>
-            
             <div class="page-title">
                 <div class="title_left">
                     <h3>
@@ -30,8 +20,8 @@
                 <div class="col-md-12 col-sm-12 col-xs-12">
                     <div class="x_panel">
                         <div class="x_content">
-                            <i class="fa fa-lg fa-info-circle"/>
-                            <span th:text="#{admin.services.page.explanation}"/>
+                            <i class="fa fa-lg fa-info-circle"></i>
+                            <span th:text="#{admin.services.page.explanation}"></span>
                         </div>
                     </div>
                     <div class="x_panel">
@@ -73,10 +63,18 @@
                                         <td th:text="${service.serviceAccessPaymentPolicy} == null ? '' : ${service.serviceAccessPaymentPolicy.displayStringShort}"></td>
                                         <td th:text="${service.description}">service description</td>
                                         <td class="right">
-                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/servicecover'}|" ><i class="fa fa-image"/></button>
-                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{'}|" ><i class="fa fa-search-plus"/></button>
-                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/formUpdate'}|"><i class="fa  fa-pencil-square-o"/></button>
-                                            <button th:onclick="'javascript:deleteItem(\'' + ${service.id} + '\',\'' + ${service.name} +'\' )'"><i class="fa  fa-trash"/></button>
+                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/servicecover'}|" >
+                                                <i class="fa fa-image"></i>
+                                            </button>
+                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{'}|" >
+                                                <i class="fa fa-search-plus"></i>
+                                            </button>
+                                            <button th:onclick="|@{location.href='/admin/services/}${service.id}@{/formUpdate'}|">
+                                                <i class="fa  fa-pencil-square-o"></i>
+                                            </button>
+                                            <button th:attr="onclick='javascript:deleteService(\'' + ${service.id} + '\',\'' + ${service.name} + '\' )'">
+                                                <i class="fa  fa-trash"></i>
+                                            </button>
                                         </td>
 
 
@@ -93,104 +91,7 @@
         </div>
         <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
         <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
-        <script>
-            $(function () {
-
-                $("#infoDialog").dialog({
-                    width: 'auto',
-                    height: "auto",
-                    autoOpen: false,
-                    modal: true,
-                    show: {
-                        effect: "blind",
-                        duration: 1500
-                    },
-                    hide: {
-                        effect: "blind",
-                        duration: 1000
-                    },
-                    buttons: {
-                        "Yes": function () {
-
-                            var id = $(this).data('deleteItem');
-
-                            var token = $("meta[name='_csrf']").attr("content");
-                            var header = $("meta[name='_csrf_header']").attr("content");
-
-
-                            $.ajax({
-                                url: '/admin/services/' + id + '.json',
-
-                                headers: {header: token},
-                                type: 'DELETE',
-                                success: function (result) {
-                                    console.log('success:' + JSON.stringify(result));
-
-                                    console.log('remove :' + id);
-
-                                    $("#item" + id).remove();
-                                },
-                                error: function (result) {
-                                    console.log('error:' + JSON.stringify(result));
-                                }
-                            });
-
-                            $(this).dialog("close");
-                        },
-                        "No": function () {
-                            $(this).dialog("close");
-                        }
-                    }
-                });
-
-
-
-            });
-
-            function deleteItem(item, name) {
-
-
-                $.ajax({url: '/admin/services/' + item + '/proxies',
-
-                    type: 'GET',
-                    success: function (result) {
-
-                        console.log('success:' + JSON.stringify(result));
-
-                        var message = "";
-
-                        if (result.length > 0)
-                        {
-
-                            message = "Service Offering <strong>" + name + "</strong> has " + result.length + " gateways assigned.";
-
-                            message += "<ul>";
-                            for (var i = 0; result.length > i; i++) {
-                                message += "<li>" + result[i].name + "</li>";
-                            }
-
-                            message += "</ul>";
-                        }
-
-                        message += "Are you sure you want to delete Service Offering <strong>" + name + "</strong>?";
-
-                        $("#message").html(message);
-                        $("#infoDialog")
-                                .data('deleteItem', item)
-                                .dialog("open");
-
-
-                    },
-                    error: function (result) {
-                        console.log('error:' + JSON.stringify(result));
-                    }
-                });
-
-            }
-
-
-
-        </script>
+        <div th:replace="admin/fragments/itemDeleter :: serviceDeleter"></div>
     </body>
 </html>
 

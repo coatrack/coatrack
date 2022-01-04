@@ -65,7 +65,7 @@ public class MetricsController {
         log.debug("metric {} received from proxy {} with api key {}", metricSubmitted, proxyId, apiKeyValue);
 
         // the proxy and apiKey entities are NOT included in metricSubmitted, therefore IDs sent separately
-        Proxy proxy = proxyRepository.findOne(proxyId);
+        Proxy proxy = proxyRepository.findById(proxyId).orElse(null);
 
         // Set the current time in order to be processed on the Gateway Health Monitor
         proxy.updateTimeOfLastSuccessfulCallToAdmin_setToNow();

@@ -9,9 +9,9 @@
                 </div>
                 <div class="form-actions col-md-offset-3 col-sm-offset-2 pull-right">
                     <a th:href="|@{/admin/services/}${service.id}|"
-                       class="btn btn-primary glyphicon glyphicon-refresh"/>
+                       class="btn btn-primary glyphicon glyphicon-refresh"></a>
                     <a th:href="@{'/admin/services/'}" th:text="#{admin.services.button.back}"
-                       class="btn btn-primary"/>
+                       class="btn btn-primary"></a>
                 </div>
             </div>
             <div class="row">
@@ -23,7 +23,7 @@
                         </div>
                         <div class="x_content">
                             
-                                <a th:href="|@{/admin/services/}${service.id}@{/formUpdate}|"><i class="fa  fa-pencil-square-o"/></a>
+                                <a th:href="|@{/admin/services/}${service.id}@{/formUpdate}|"><i class="fa  fa-pencil-square-o"></i></a>
                                 
                             <table class="table">
                                 <tr>
@@ -118,8 +118,10 @@
                                                             <table class="table collapse"
                                                                    th:id="|collapseRow${statsPerConsumer.key}-${statsPerConsumerAndMethod.key}-${statsPerResponseCode.key}|">
                                                                 <thead>
-                                                                    <th>Path</th>
-                                                                    <th>Count</th>
+                                                                    <tr>
+                                                                        <th>Path</th>
+                                                                        <th>Count</th>
+                                                                    </tr>
                                                                 </thead>
                                                                 <tbody>
                                                                     <tr th:each="statsPerPath: ${statsPerResponseCode.value}">
@@ -234,25 +236,25 @@
                                 <tbody>
                                     <tr th:each="metric : ${metrics}">
                                         <td>
-                                            <div th:text="${metric.serviceApiName}"/>
+                                            <div th:text="${metric.serviceApiName}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.apiUser}"/>
+                                            <div th:text="${metric.apiUser}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.requestMethod}"/>
+                                            <div th:text="${metric.requestMethod}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.path}"/>
+                                            <div th:text="${metric.path}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.type.displayString}"/>
+                                            <div th:text="${metric.type.displayString}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.httpResponseCode}"/>
+                                            <div th:text="${metric.httpResponseCode}"></div>
                                         </td>
                                         <td>
-                                            <div th:text="${metric.count}"/>
+                                            <div th:text="${metric.count}"></div>
                                         </td>
                                     </tr>
                                 </tbody>

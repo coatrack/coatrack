@@ -52,15 +52,17 @@ public class YggUserDetailsService implements UserDetailsService {
         UserDetails userDetails = null;
 
         if (username.equals(name)) {
-
-            userDetails = new AdminPrincipal(name, password);
+            // The new password format requires to specify a password encoder. {noop} means, that no password
+            // encoder shall be used. Therefore, the password is stored in clear text. See the docs:
+            // https://spring.io/blog/2017/11/01/spring-security-5-0-0-rc1-released#password-storage-format
+            userDetails = new AdminPrincipal(name, "{noop}" + password);
         } else {
 
             ConfigServerCredential credential = configServerCredentialRepository.findOneByName(username);
 
             if (credential != null) {
 
-                userDetails = new UserPrincipal(credential.getName(), credential.getPassword());
+                userDetails = new UserPrincipal(credential.getName(), "{noop}" + credential.getPassword());
             }
         }
         return userDetails;

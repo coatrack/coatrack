@@ -27,24 +27,24 @@ import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Metric;
 import eu.coatrack.api.MetricType;
 import eu.coatrack.api.Proxy;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(SpringRunner.class)
 @DataJpaTest(showSql = true)
 @ContextConfiguration(classes = SpringSecurityTestConfig.class)
+@WithUserDetails("aa11aa22-aa33-aa44-aa55-aa66aa77aa88")
 public class MetricsControllerTest {
 
     @Autowired
@@ -64,7 +64,7 @@ public class MetricsControllerTest {
     private Proxy someProxyFromDB;
     private ApiKey someApiKeyFromDB;
 
-    @Before
+    @BeforeEach
     public void prepareTestData() {
 
         someProxyFromDB = proxyRepository.findAll().iterator().next();
@@ -80,7 +80,6 @@ public class MetricsControllerTest {
         testMetric.setType(MetricType.RESPONSE);
 
         copyOfTestMetric = createCopyOfMetricObject(testMetric);
-
     }
 
     private Metric createCopyOfMetricObject(Metric objectToCopy) {
@@ -99,7 +98,6 @@ public class MetricsControllerTest {
     }
 
     @Test
-    @WithUserDetails("edeka")
     public void storeNewMetricInDatabaseTest() {
 
         long noOfRowsBefore = metricRepository.count();
@@ -114,7 +112,7 @@ public class MetricsControllerTest {
 
         assertEquals(noOfRowsBefore + 1, noOfRowsAfterwards);
 
-        Metric metricFromDatabase = metricRepository.findOne(newRowDbId);
+        Metric metricFromDatabase = metricRepository.findById(newRowDbId).orElse(null);
 
         assertNotNull(metricFromDatabase);
         assertEquals(someProxyFromDB, metricFromDatabase.getProxy());
@@ -152,7 +150,7 @@ public class MetricsControllerTest {
         // database entry should have been updated, therefore IDs should be identical
         assertEquals(rowIdFirstMetric, rowIdUpdatedMetric);
 
-        Metric metricFromDatabase = metricRepository.findOne(rowIdFirstMetric);
+        Metric metricFromDatabase = metricRepository.findById(rowIdFirstMetric).orElse(null);
 
         assertNotNull(metricFromDatabase);
 
@@ -177,8 +175,8 @@ public class MetricsControllerTest {
         // there should be a new database entry, so IDs should be different
         assertNotEquals(dbIdOfFirstMetric, dbIdOfSecondMetric);
 
-        Metric firstMetricFromDb = metricRepository.findOne(dbIdOfFirstMetric);
-        Metric secondMetricFromDb = metricRepository.findOne(dbIdOfSecondMetric);
+        Metric firstMetricFromDb = metricRepository.findById(dbIdOfFirstMetric).orElse(null);
+        Metric secondMetricFromDb = metricRepository.findById(dbIdOfSecondMetric).orElse(null);
 
         // value should have been updated
         assertEquals(firstMetric.getCount(), firstMetricFromDb.getCount());
@@ -271,8 +269,8 @@ public class MetricsControllerTest {
         // assure that the current was updated and that the counts are correctly set
         assertEquals(currentDatabaseEntry.getId(), updatedRowDbId);
 
-        Metric outdatedReloaded = metricRepository.findOne(outdatedDatabaseEntry.getId());
-        Metric currentReloaded = metricRepository.findOne(currentDatabaseEntry.getId());
+        Metric outdatedReloaded = metricRepository.findById(outdatedDatabaseEntry.getId()).orElse(null);
+        Metric currentReloaded = metricRepository.findById(currentDatabaseEntry.getId()).orElse(null);
 
         assertEquals(1, outdatedReloaded.getCount());
         assertEquals(3, currentReloaded.getCount());

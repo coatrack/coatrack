@@ -3,9 +3,9 @@ logging:
     org.springframework.security: DEBUG
     org: DEBUG
     nl.corizon.ygg: DEBUG
-    
+
 server:
-    port: 8998
+  port: 8998
 security:
     basic:
         enabled: true
@@ -22,7 +22,7 @@ spring:
             hibernate:
                 format_sql: true
         hibernate:
-            show-sql: true 
+            show-sql: true
             generate-ddl: true
             ddl-auto: create-drop
             #ddl-auto: update
@@ -30,9 +30,9 @@ spring:
     cloud.config.server.native.searchLocations: file:///${user.home}/AppData/Local/Temp/coatrack
                     
 ygg:
-    admin:
-        config:
-            access:
-                user:
-                    name: admin
-                    password: password
+  admin:
+    config:
+      access:
+        user:
+          name: admin
+          password: password

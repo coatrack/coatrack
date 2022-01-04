@@ -20,7 +20,7 @@
                 window.charts = new Object();
 
                 function loadGeneralStatistics(dateRangeUrlSuffix) {
-                    var url = "/admin/dashboard/generalStatistics.json";
+                    var url = "/admin/dashboard/generalStatistics";
                     url += dateRangeUrlSuffix;
 
                     $.getJSON(url, function (json) {
@@ -35,7 +35,7 @@
                     });
                 }
                 function loadStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(dateRangeUrlSuffix) {
-                    var url = "/admin/dashboard/statisticsPerApiConsumerInDescendingOrderByNoOfCalls.json" + dateRangeUrlSuffix;
+                    var url = "/admin/dashboard/statisticsPerApiConsumerInDescendingOrderByNoOfCalls" + dateRangeUrlSuffix;
                     $.getJSON(url, function (json) {
 
                         console.log("success");

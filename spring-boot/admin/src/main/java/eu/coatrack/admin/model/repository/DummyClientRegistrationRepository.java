@@ -1,10 +1,10 @@
-package eu.coatrack.admin;
+package eu.coatrack.admin.model.repository;
 
 /*-
  * #%L
  * coatrack-admin
  * %%
- * Copyright (C) 2013 - 2020 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
+ * Copyright (C) 2013 - 2021 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,15 @@ package eu.coatrack.admin;
  * #L%
  */
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.stereotype.Repository;
 
-@SpringBootTest
-@EnableAutoConfiguration(exclude = OAuth2AutoConfiguration.class)
-public class YggAdminApplicationTests {
+@Repository
+public class DummyClientRegistrationRepository implements ClientRegistrationRepository {
 
-	@Test
-	public void contextLoads() {
-	}
-
+    @Override
+    public ClientRegistration findByRegistrationId(String s) {
+        return null;
+    }
 }
