@@ -138,7 +138,9 @@
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
                                         <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
-                                           class="glyphicon glyphicon-download-alt"/>
+                                           class="glyphicon glyphicon-download-alt"></a>
+                                        <a th:href="|@{/admin/proxies-docker-config/}${proxy.id}/download|"
+                                           class="glyphicon glyphicon-download-alt"></a>
                                     </td>
                                     <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
                                                                 class="fa fa-bar-chart"/>
