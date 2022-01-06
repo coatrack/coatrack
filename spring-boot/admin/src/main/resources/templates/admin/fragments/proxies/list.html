@@ -137,10 +137,16 @@
                                     </td>
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
-                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
-                                           class="glyphicon glyphicon-download-alt"></a>
-                                        <a th:href="|@{/admin/proxy-docker-config/}${proxy.id}/download|"
-                                           class="glyphicon glyphicon-download-alt"></a>
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|">
+                                           <button>
+                                               <i class="glyphicon glyphicon-download-alt"></i>
+                                           </button>
+                                        </a>
+                                        <a th:href="|@{/admin/proxy-docker-config/}${proxy.id}/download|">
+                                            <button>
+                                                <i class="fa fa-save"></i>
+                                            </button>
+                                        </a>
                                     </td>
                                     <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
                                                                 class="fa fa-bar-chart"/>
