@@ -178,4 +178,8 @@ public class Proxy {
                 + ", port='" + port + '\''
                 + '}';
     }
+
+    public String getConfigServerName() {
+        return configServerName;
+    }
 }
