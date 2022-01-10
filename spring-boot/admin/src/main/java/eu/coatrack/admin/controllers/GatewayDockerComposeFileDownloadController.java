@@ -38,6 +38,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Controller
 public class GatewayDockerComposeFileDownloadController {
@@ -61,9 +63,8 @@ public class GatewayDockerComposeFileDownloadController {
     private String loadContentFromTemplateFile() throws URISyntaxException, IOException {
         URL resource = YggAdminApplication.class.getClassLoader().getResource("proxy-docker-compose-template.yml");
         assert resource != null;
-        File file = new File(resource.toURI());
-
-        byte[] encoded = Files.readAllBytes(file.toPath());
+        Path pathToTemplate = Paths.get(resource.toURI());
+        byte[] encoded = Files.readAllBytes(pathToTemplate);
         return new String(encoded, StandardCharsets.UTF_8);
     }
 
