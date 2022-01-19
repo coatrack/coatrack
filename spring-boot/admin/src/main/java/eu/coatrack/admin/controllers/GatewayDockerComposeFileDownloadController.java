@@ -23,7 +23,6 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.YggAdminApplication;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.api.Proxy;
-import groovy.util.logging.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +74,7 @@ public class GatewayDockerComposeFileDownloadController {
         return templateContent
                 .replace("<proxy-id>", "ygg-proxy-" + proxyId)
                 .replace("<config-server-uri>", springCloudConfigUri)
-                .replace("<username>", proxy.getConfigServerName())
+                .replace("<username>", proxy.getConfigServerUsername())
                 .replace("<password>", proxy.getConfigServerPassword());
     }
 

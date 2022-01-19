@@ -413,7 +413,7 @@ public class DatabaseInitializer {
 
         Proxy proxy = new Proxy();
         proxy.setId(uuid);
-        proxy.setConfigServerName(configServerName);
+        proxy.setConfigServerUsername(configServerName);
         proxy.setConfigServerPassword(configServerPassword);
         proxy.setName(name);
         proxy.setServiceApis(serviceApis);

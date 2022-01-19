@@ -48,7 +48,7 @@ public class Proxy {
     private String description;
     private String publicUrl;
     private Integer port;
-    private String configServerName;
+    private String configServerUsername;
     private String configServerPassword;
     private LocalDateTime timeOfLastSuccessfulCallToAdmin;
     private boolean isHealthMonitoringEnabled = true;
@@ -65,12 +65,12 @@ public class Proxy {
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date deletedWhen;
 
-    public String getCredentialName() {
-        return configServerName;
+    public String getConfigServerUsername() {
+        return configServerUsername;
     }
 
-    public void setConfigServerName(String credential_id) {
-        this.configServerName = credential_id;
+    public void setConfigServerUsername(String credential_id) {
+        this.configServerUsername = credential_id;
     }
 
     public String getConfigServerPassword() {
@@ -179,7 +179,4 @@ public class Proxy {
                 + '}';
     }
 
-    public String getConfigServerName() {
-        return configServerName;
-    }
 }
