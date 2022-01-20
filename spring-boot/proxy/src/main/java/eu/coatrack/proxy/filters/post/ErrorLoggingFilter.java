@@ -27,6 +27,7 @@ import eu.coatrack.api.MetricType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,7 +49,7 @@ public class ErrorLoggingFilter extends ZuulFilter {
     public static final String CONTEXT_KEY_ALREADY_LOGGED_AS_ERROR = "YGG-LOGGED-AS-ERROR";
     public static final String CONTEXT_VALUE_TRUE = "TRUE";
 
-    private static Logger log = LoggerFactory.getLogger(ErrorLoggingFilter.class);
+    private static final Logger log = LoggerFactory.getLogger(ErrorLoggingFilter.class);
 
     @Autowired
     private MetricsCounterService metricsCounterService;
@@ -80,7 +81,9 @@ public class ErrorLoggingFilter extends ZuulFilter {
         log.debug(String.format("Erroneous response status is: %s", servletResponse.getStatus()));
 
         if (ctx.getResponseBody() == null && ctx.getResponseDataStream() == null) {
-            log.warn("Response body and data stream are null - assuming that service is unavailable (logging status 503)");
+            log.error("An unexpected error occurred the Gateway contacted the CoatRack Web Application in order to " +
+                    "verify an API key that was sent by a client. Please check if the service is accessible and check " +
+                    "the Gateway config in the CoatRack Web Application.");
 
             String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
             metricsCounterService.increment(

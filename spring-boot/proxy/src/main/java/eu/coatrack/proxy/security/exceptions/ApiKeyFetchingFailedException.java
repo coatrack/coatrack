@@ -21,7 +21,7 @@ package eu.coatrack.proxy.security.exceptions;
  */
 
 /**
- * Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack admin application.
+ * Thrown by the ApiKeyFetcher to indicate that it was not able to fetch API keys from the CoatRack Web Application.
  */
 public class ApiKeyFetchingFailedException extends RuntimeException {
     public ApiKeyFetchingFailedException(String message) {

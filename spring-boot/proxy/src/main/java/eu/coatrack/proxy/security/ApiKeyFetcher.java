@@ -33,7 +33,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.*;
 
 /**
- * Sends requests to the Coatrack admin server to receive single
+ * Sends requests to the CoatRack Web Application to receive single
  * API keys or a list of API keys for all services offered by this gateway.
  *
  * @author Christoph Baier
@@ -61,8 +61,8 @@ public class ApiKeyFetcher {
             ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
             return new ArrayList<>(Arrays.asList(apiKeys));
         } catch (RestClientException e) {
-            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
-                    "connection failed.", e);
+            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from the CoatRack " +
+                    "Web Application, the connection failed.", e);
         }
     }
 
@@ -72,8 +72,8 @@ public class ApiKeyFetcher {
         Optional<String> errorMessage = validateResponseEntityAndCreateErrorMessageInCaseOfProblems(responseEntity);
 
         if (errorMessage.isPresent())
-            throw new ApiKeyFetchingFailedException("A problem occurred referring to the ResponseEntity. "
-                    + errorMessage.get());
+            throw new ApiKeyFetchingFailedException("A problem occurred regarding the ResponseEntity received from " +
+                    "CoatRack Web Application. " + errorMessage.get());
         else
             return responseEntity.getBody();
     }
@@ -84,7 +84,7 @@ public class ApiKeyFetcher {
         if (responseEntity == null) {
             errorMessage = Optional.of("The ResponseEntity was null.");
         } else if (responseEntity.getBody() == null) {
-            errorMessage = Optional.of("The body was null");
+            errorMessage = Optional.of("The API key could not be found in the response body, which was 'null'.");
         } else if (responseEntity.getStatusCode() != HttpStatus.OK) {
             errorMessage = Optional.of("The HTTP status was not OK.");
         }
@@ -93,7 +93,7 @@ public class ApiKeyFetcher {
     }
 
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
-        log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
+        log.debug("Requesting API key with the value {} from CoatRack Web Application.", apiKeyValue);
 
         try {
             ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
@@ -101,7 +101,7 @@ public class ApiKeyFetcher {
             return (ApiKey) extractBodyFromResponseEntity(responseEntity);
         } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the API key with the value " + apiKeyValue +
-                    " from CoatRack admin, the connection failed.", e);
+                    " from CoatRack Web Application, the connection failed.", e);
         }
     }
 }
