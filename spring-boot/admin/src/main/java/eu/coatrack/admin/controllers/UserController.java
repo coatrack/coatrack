@@ -19,20 +19,18 @@ package eu.coatrack.admin.controllers;
  * limitations under the License.
  * #L%
  */
-import java.util.Properties;
 import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import eu.coatrack.admin.model.repository.TransactionRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
+import eu.coatrack.admin.service.mail.MailService;
 import eu.coatrack.admin.validator.UserValidator;
 import eu.coatrack.api.CreditAccount;
 import eu.coatrack.api.User;
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -79,18 +77,6 @@ public class UserController {
         return "register";
     }
 
-    @Value("${ygg.mail.sender.user}")
-    private String mail_sender_user;
-
-    @Value("${ygg.mail.sender.password}")
-    private String mail_sender_password;
-
-    @Value("${ygg.mail.server.url}")
-    private String mail_server_url;
-
-    @Value("${ygg.mail.server.port}")
-    private int mail_server_port;
-
     @Value("${ygg.mail.verification.server.url}")
     private String mail_verification_server_url;
 
@@ -100,8 +86,11 @@ public class UserController {
     @Autowired
     private TransactionRepository transactionRepository;
 
+    @Autowired
+    private MailService mailservice;
+
     @PostMapping(value = "/register")
-    public String registerUser(User user, BindingResult bindingResult, Model model) throws MessagingException {
+    public String registerUser(User user, BindingResult bindingResult, Model model) throws MessagingException, IOException {
 
         userValidator.validate(user, bindingResult);
 
@@ -118,33 +107,16 @@ public class UserController {
 
         userRepository.save(user);
 
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(mail_server_url);
-        mailSender.setPort(mail_server_port);
-        mailSender.setProtocol("smtp");
-
-        mailSender.setUsername(mail_sender_user);
-        mailSender.setPassword(mail_sender_password);
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(user.getEmail());
-        helper.setFrom(mail_sender_from);
-        helper.setSubject("Verification of your email address");
-        helper.setText("Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
+        String user_to = user.getEmail();
+        String user_from = mail_sender_from;
+        String subject = "Verification of your email address";
+        String body = "Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
                 + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/" + user.getEmailVerifiedUrl() + "\">Click</a></p>\n"
                 + "\n"
                 + "<p>Best regards</p>\n"
                 + "\n"
-                + "<p>Coatrack Team</p>", true);
-        mailSender.send(message);
+                + "<p>Coatrack Team</p>";
+        mailservice.send(user_from, user_to, subject, body, true);
 
         return "redirect:/admin";
     }

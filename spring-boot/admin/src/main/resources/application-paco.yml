@@ -27,5 +27,9 @@ security:
 
 
 
+ygg:
+  mail:
+    sender:
+      from: fperezduran@bebr.nl
 
 
