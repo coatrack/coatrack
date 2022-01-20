@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-config-coatrack
+  name: ingress-coatrack-prod
   annotations:
     # use the shared ingress-nginx
     kubernetes.io/ingress.class: "nginx"
@@ -18,10 +18,22 @@ metadata:
 spec:
   tls:
   - hosts:
-    - config.prod.coatrack.eu
-    secretName: coatrack-config-server-tls
+    - coatrack.eu
+    - config.coatrack.eu
+    - raincoat.coatrack.eu
+    secretName: coatrack-prod-tls
   rules:
-  - host: config.prod.coatrack.eu
+  - host: coatrack.eu
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: coatrack-admin
+            port:
+              number: 80
+  - host: config.coatrack.eu
     http:
       paths:
       - path: /
@@ -29,5 +41,15 @@ spec:
         backend:
           service:
             name: coatrack-config-server
+            port:
+              number: 80
+  - host: raincoat.coatrack.eu
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: coatrack-raincoat
             port:
               number: 80
