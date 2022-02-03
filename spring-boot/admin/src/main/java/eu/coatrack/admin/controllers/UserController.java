@@ -110,7 +110,7 @@ public class UserController {
         String user_to = user.getEmail();
         String user_from = mail_sender_from;
         String subject = "Welcome to CoatRack - Please verify your email address";
-        String body = "Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
+        String body = "<p>Dear Sir or Madam,</p><p>Welcome to CoatRack, thank you for registering!</p><p>In order to verify your email address, please open the following link:</p><p><a \n"
                 + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/" + user.getEmailVerifiedUrl() + "\">Click</a></p>\n"
                 + "\n"
                 + "<p>Best regards</p>\n"
