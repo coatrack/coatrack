@@ -19,6 +19,7 @@ package eu.coatrack.admin.controllers;
  * limitations under the License.
  * #L%
  */
+
 import be.ceau.chart.DoughnutChart;
 import be.ceau.chart.LineChart;
 import be.ceau.chart.color.Color;
@@ -31,9 +32,6 @@ import be.ceau.chart.options.LineOptions;
 import be.ceau.chart.options.scales.LinearScale;
 import be.ceau.chart.options.scales.LinearScales;
 import be.ceau.chart.options.ticks.LinearTicks;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.coatrack.admin.UserSessionSettings;
 import eu.coatrack.admin.components.WebUI;
 import eu.coatrack.admin.logic.CreateApiKeyAction;
@@ -44,7 +42,6 @@ import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
 import eu.coatrack.admin.service.OauthUserAccountManagement;
 import eu.coatrack.api.*;
-import eu.coatrack.config.github.GithubEmail;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,18 +50,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -106,8 +97,6 @@ public class AdminController {
     private static final String ADMIN_STARTPAGE = "admin/startpage";
     private static final String ADMIN_CONSUMER_WIZARD = "admin/consumer_wizard/wizard";
     private static final String ADMIN_PROFILE = "admin/profile/profile";
-    private static final String GITHUB_API_USER = "https://api.github.com/user";
-    private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
     private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
@@ -222,14 +211,12 @@ public class AdminController {
 
                 // The user is new for our database therefore we try to retrieve as much user
                 // info is possible from Github
-
-                String email = oauthUserAccountManagement.getEmailFromLoggedInUser();
-
                 user = new User();
                 user.setUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
                 user.setFirstname(oauthUserAccountManagement.getNameFromLoggedInUser());
                 user.setCompany((oauthUserAccountManagement.getCompanyFromLoggedInUser()));
 
+                String email = oauthUserAccountManagement.getEmailFromLoggedInUser();
                 if (email != null) {
                     user.setEmail(email);
                 }
