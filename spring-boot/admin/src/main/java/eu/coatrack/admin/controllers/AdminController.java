@@ -42,6 +42,7 @@ import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
+import eu.coatrack.admin.service.OauthUserAccountManagement;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -166,6 +167,9 @@ public class AdminController {
     @Autowired
     GatewayHealthMonitorService gatewayHealthMonitorService;
 
+    @Autowired
+    OauthUserAccountManagement oauthUserAccountManagement;
+
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
 
@@ -185,14 +189,14 @@ public class AdminController {
         ModelAndView mav = new ModelAndView();
 
         if (auth.isAuthenticated()) {
-            User user = userRepository.findByUsername(auth.getName());
+            User user = userRepository.findByUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
 
             if (user != null) {
 
                 boolean end = false;
                 boolean found = false;
 
-                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(auth.getName());
+                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
@@ -218,53 +222,13 @@ public class AdminController {
 
                 // The user is new for our database therefore we try to retrieve as much user
                 // info is possible from Github
-                OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
-                RestTemplate restTemplate = new RestTemplate();
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", "token " + details.getTokenValue());
-                HttpEntity<String> githubRequest = new HttpEntity<String>(headers);
-
-                ResponseEntity<String> userInfoResponse = restTemplate.exchange(GITHUB_API_USER, HttpMethod.GET,
-                        githubRequest, String.class);
-                String userInfo = userInfoResponse.getBody();
-
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-                Map<String, Object> userMap = objectMapper.readValue(userInfo,
-                        new TypeReference<Map<String, Object>>() {
-                });
-                String email = (String) userMap.get("email");
-                if (email == null || email.isEmpty()) {
-
-                    ResponseEntity<String> userEmailsResponse = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
-                            githubRequest, String.class);
-                    String userEmails = userEmailsResponse.getBody();
-                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails,
-                            objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
-
-                    Iterator<GithubEmail> it = emailsList.iterator();
-                    boolean found = false;
-                    if (emailsList.size() > 0) {
-                        while (!found && it.hasNext()) {
-                            GithubEmail githubEmail = it.next();
-                            if (githubEmail.getVerified()) {
-                                email = githubEmail.getEmail();
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            email = emailsList.get(0).getEmail();
-                        }
-                    }
-                }
+                String email = oauthUserAccountManagement.getEmailFromLoggedInUser();
 
                 user = new User();
-                user.setUsername((String) userMap.get("login"));
-                user.setFirstname((String) userMap.get("name"));
-                user.setCompany((String) userMap.get("company"));
+                user.setUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
+                user.setFirstname(oauthUserAccountManagement.getNameFromLoggedInUser());
+                user.setCompany((oauthUserAccountManagement.getCompanyFromLoggedInUser()));
 
                 if (email != null) {
                     user.setEmail(email);
