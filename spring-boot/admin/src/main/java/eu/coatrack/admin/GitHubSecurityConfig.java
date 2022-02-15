@@ -20,25 +20,18 @@ package eu.coatrack.admin;
  * #L%
  */
 
-import eu.coatrack.admin.security.PublicApiTokenAccessFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@EnableOAuth2Sso
 public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String[] PERMITALL_RESOURCE_LIST = new String[]{"/bower_components/**", "/catchPaymentResponse", "/json/**", "/login", "/", "/403", "/registerUser", "/callback", "/fonts/**", "/webjars/**", "/robots.txt", "/assets/**", "/images/**"};
 
-    @Qualifier("userInfoTokenServices")
+/*    @Qualifier("userInfoTokenServices")
     @Autowired
-    private ResourceServerTokenServices tokenServices;
+    private ResourceServerTokenServices tokenServices;*/
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -48,7 +41,7 @@ public class GitHubSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(PERMITALL_RESOURCE_LIST).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(new PublicApiTokenAccessFilter(tokenServices), AbstractPreAuthenticatedProcessingFilter.class)
+             //   .addFilterBefore(new PublicApiTokenAccessFilter(tokenServices), AbstractPreAuthenticatedProcessingFilter.class)
                 .logout().logoutUrl("/logout").logoutSuccessUrl("/").deleteCookies("XSRF-TOKEN", "auth_code", "JSESSIONID").invalidateHttpSession(true).clearAuthentication(true).permitAll()
                 .and()
                 .oauth2Login()
