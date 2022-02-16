@@ -1,5 +1,25 @@
 package eu.coatrack.admin.service;
 
+/*-
+ * #%L
+ * coatrack-admin
+ * %%
+ * Copyright (C) 2013 - 2022 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,7 +46,7 @@ public class OauthUserAccountManagement {
     private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
 
     @Autowired
-    OAuth2AuthorizedClientService clientService;
+    private OAuth2AuthorizedClientService clientService;
 
     private OAuth2User getAttributesFromAuthentication() {
         OAuth2User loggedInUser = (OAuth2User) SecurityContextHolder
