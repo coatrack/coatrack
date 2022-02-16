@@ -83,8 +83,8 @@ spring:
          # resource:
           #  userInfoUri: https://api.github.com/user
           github:
-            clientId: e188a243cc57ef90f2b5
-            clientSecret: a5630e2f873890bdc8366aac0155e8113ece0997
+            client-id: e188a243cc57ef90f2b5
+            client-secret: a5630e2f873890bdc8366aac0155e8113ece0997
             scope[0]: user:email
             scope[1]: read:user
         #    accessTokenUri: https://github.com/login/oauth/access_token
