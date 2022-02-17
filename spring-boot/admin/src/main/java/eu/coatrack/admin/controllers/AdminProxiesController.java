@@ -304,7 +304,7 @@ public class AdminProxiesController {
 
     @GetMapping("{gateway-id}/downloadGatewayDockerComposeFile")
     public void downloadGatewayDockerComposeFile(HttpServletResponse response, @PathVariable("gateway-id") String gatewayId) throws Exception {
-        log.error("Starting to create custom docker compose file.");
+        log.info("Starting to create custom docker compose file.");
         String customizedContent = gatewayDockerComposeFileContentProviderService.provideDockerComposeFileContentOfGateway(gatewayId);
         InputStream inputStream = new ByteArrayInputStream(customizedContent.getBytes(StandardCharsets.UTF_8));
 
