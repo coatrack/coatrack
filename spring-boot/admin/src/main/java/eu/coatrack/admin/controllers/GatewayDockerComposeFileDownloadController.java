@@ -44,6 +44,7 @@ import java.nio.file.Paths;
 public class GatewayDockerComposeFileDownloadController {
 
     private static final Logger log = LoggerFactory.getLogger(GatewayDockerComposeFileDownloadController.class);
+    private static final String templateContent = loadContentFromTemplateFile();
 
     @Autowired
     private ProxyRepository proxyRepository;
@@ -51,22 +52,25 @@ public class GatewayDockerComposeFileDownloadController {
     @Value("${ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri}")
     private String springCloudConfigUri;
 
+    private static String loadContentFromTemplateFile() {
+        try {
+            URL resource = YggAdminApplication.class.getClassLoader().getResource("proxy-docker-compose-template.yml");
+            if (resource == null)
+                throw new ProxyDockerComposeTemplateFileNotFoundException();
+
+            Path pathToTemplate = Paths.get(resource.toURI());
+            byte[] encoded = Files.readAllBytes(pathToTemplate);
+            return new String(encoded, StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            throw new ProxyDockerComposeTemplateInitializationFailedException();
+        }
+    }
+
     @GetMapping("/admin/proxy-docker-config/{proxy-id}/download")
     public void downloadFile(HttpServletResponse response, @PathVariable("proxy-id") String proxyId) throws Exception {
         log.error("Starting to create custom docker compose file.");
-        String templateContent = loadContentFromTemplateFile();
         String customizedContent = replacePlaceholdersWithCustomConfigValues(templateContent, proxyId);
         addContentToResponseAsDownloadableFile(response, customizedContent);
-    }
-
-    private String loadContentFromTemplateFile() throws URISyntaxException, IOException {
-        URL resource = YggAdminApplication.class.getClassLoader().getResource("proxy-docker-compose-template.yml");
-        if (resource == null)
-            throw new ProxyDockerComposeTemplateFileNotFoundException();
-
-        Path pathToTemplate = Paths.get(resource.toURI());
-        byte[] encoded = Files.readAllBytes(pathToTemplate);
-        return new String(encoded, StandardCharsets.UTF_8);
     }
 
     private String replacePlaceholdersWithCustomConfigValues(String templateContent, String proxyId) {
