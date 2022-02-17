@@ -1,8 +1,6 @@
 package eu.coatrack.admin.service;
 
 import eu.coatrack.admin.YggAdminApplication;
-import eu.coatrack.admin.controllers.ProxyDockerComposeTemplateFileNotFoundException;
-import eu.coatrack.admin.controllers.ProxyDockerComposeTemplateInitializationFailedException;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.api.Proxy;
 import org.slf4j.Logger;

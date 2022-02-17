@@ -1,4 +1,4 @@
-package eu.coatrack.admin.controllers;
+package eu.coatrack.admin.service;
 
 public class ProxyDockerComposeTemplateInitializationFailedException extends RuntimeException {
     public ProxyDockerComposeTemplateInitializationFailedException(Exception cause) {
