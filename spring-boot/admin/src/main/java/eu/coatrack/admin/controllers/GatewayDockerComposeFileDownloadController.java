@@ -61,7 +61,9 @@ public class GatewayDockerComposeFileDownloadController {
 
     private String loadContentFromTemplateFile() throws URISyntaxException, IOException {
         URL resource = YggAdminApplication.class.getClassLoader().getResource("proxy-docker-compose-template.yml");
-        assert resource != null;
+        if (resource == null)
+            throw new ProxyDockerComposeTemplateFileNotFoundException();
+
         Path pathToTemplate = Paths.get(resource.toURI());
         byte[] encoded = Files.readAllBytes(pathToTemplate);
         return new String(encoded, StandardCharsets.UTF_8);
