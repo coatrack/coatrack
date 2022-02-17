@@ -1,7 +1,7 @@
 services:
 
   coatrack-proxy:
-    image: coatrack/coatrack-proxy:2.0.0-SNAPSHOT
+    image: coatrack/coatrack-proxy:<project-version>
     container_name: coatrack-proxy
     ports:
       - 8088:8088

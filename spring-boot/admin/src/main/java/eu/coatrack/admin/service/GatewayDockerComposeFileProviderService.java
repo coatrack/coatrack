@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -21,7 +22,6 @@ import java.nio.file.Paths;
 public class GatewayDockerComposeFileProviderService {
 
     private static final Logger log = LoggerFactory.getLogger(GatewayDockerComposeFileProviderService.class);
-    private static final String gatewayDockerComposeTemplateContent = loadContentFromGatewayDockerComposeTemplateFile();
 
     @Autowired
     private ProxyRepository proxyRepository;
@@ -29,7 +29,13 @@ public class GatewayDockerComposeFileProviderService {
     @Value("${ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri}")
     private String springCloudConfigUri;
 
-    private static String loadContentFromGatewayDockerComposeTemplateFile() {
+    @Value("${mvn.pom.project.version}")
+    public String projectVersion;
+
+    private String gatewayDockerComposeTemplateContent;
+
+    @PostConstruct
+    private void loadContentFromGatewayDockerComposeTemplateFile() {
         try {
             URL resource = YggAdminApplication.class.getClassLoader().getResource("proxy-docker-compose-template.yml");
             if (resource == null)
@@ -37,7 +43,8 @@ public class GatewayDockerComposeFileProviderService {
 
             Path pathToTemplate = Paths.get(resource.toURI());
             byte[] encoded = Files.readAllBytes(pathToTemplate);
-            return new String(encoded, StandardCharsets.UTF_8);
+            gatewayDockerComposeTemplateContent = new String(encoded, StandardCharsets.UTF_8)
+                    .replace("<project-version>", projectVersion);
         } catch (Exception e) {
             throw new ProxyDockerComposeTemplateInitializationFailedException();
         }
