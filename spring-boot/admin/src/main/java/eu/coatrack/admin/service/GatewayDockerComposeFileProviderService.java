@@ -46,7 +46,7 @@ public class GatewayDockerComposeFileProviderService {
             gatewayDockerComposeTemplateContent = new String(encoded, StandardCharsets.UTF_8)
                     .replace("<project-version>", projectVersion);
         } catch (Exception e) {
-            throw new ProxyDockerComposeTemplateInitializationFailedException();
+            throw new ProxyDockerComposeTemplateInitializationFailedException(e);
         }
     }
 
