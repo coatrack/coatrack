@@ -20,7 +20,7 @@ package eu.coatrack.admin.controllers;
  * #L%
  */
 
-import eu.coatrack.admin.service.ProxyDockerComposeFileProviderService;
+import eu.coatrack.admin.service.GatewayDockerComposeFileProviderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,12 +38,12 @@ public class GatewayDockerComposeFileDownloadController {
     private static final Logger log = LoggerFactory.getLogger(GatewayDockerComposeFileDownloadController.class);
 
     @Autowired
-    private ProxyDockerComposeFileProviderService proxyDockerComposeFileProviderService;
+    private GatewayDockerComposeFileProviderService gatewayDockerComposeFileProviderService;
 
-    @GetMapping("/admin/proxy-docker-config/{proxy-id}/download")
-    public void downloadFile(HttpServletResponse response, @PathVariable("proxy-id") String proxyId) throws Exception {
+    @GetMapping("/admin/proxy-docker-config/{gateway-id}/download")
+    public void downloadFile(HttpServletResponse response, @PathVariable("gateway-id") String gatewayId) throws Exception {
         log.error("Starting to create custom docker compose file.");
-        String customizedContent = proxyDockerComposeFileProviderService.provideDockerComposeFileContentOfProxy(proxyId);
+        String customizedContent = gatewayDockerComposeFileProviderService.provideDockerComposeFileContentOfGateway(gatewayId);
         InputStream inputStream = new ByteArrayInputStream(customizedContent.getBytes(StandardCharsets.UTF_8));
 
         response.setContentType("application/octet-stream");

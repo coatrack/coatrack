@@ -18,10 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class ProxyDockerComposeFileProviderService {
+public class GatewayDockerComposeFileProviderService {
 
-    private static final Logger log = LoggerFactory.getLogger(ProxyDockerComposeFileProviderService.class);
-    private static final String proxyDockerComposeTemplateContent = loadContentFromProxyDockerComposeTemplateFile();
+    private static final Logger log = LoggerFactory.getLogger(GatewayDockerComposeFileProviderService.class);
+    private static final String gatewayDockerComposeTemplateContent = loadContentFromGatewayDockerComposeTemplateFile();
 
     @Autowired
     private ProxyRepository proxyRepository;
@@ -29,7 +29,7 @@ public class ProxyDockerComposeFileProviderService {
     @Value("${ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri}")
     private String springCloudConfigUri;
 
-    private static String loadContentFromProxyDockerComposeTemplateFile() {
+    private static String loadContentFromGatewayDockerComposeTemplateFile() {
         try {
             URL resource = YggAdminApplication.class.getClassLoader().getResource("proxy-docker-compose-template.yml");
             if (resource == null)
@@ -43,15 +43,15 @@ public class ProxyDockerComposeFileProviderService {
         }
     }
 
-    public String provideDockerComposeFileContentOfProxy(String proxyId) {
-        log.info("About to search for proxy: " + proxyId);
-        Proxy proxy = proxyRepository.findById(proxyId);
-        log.info("Found proxy: " + proxy.getId());
-        return proxyDockerComposeTemplateContent
-                .replace("<proxy-id>", "ygg-proxy-" + proxyId)
+    public String provideDockerComposeFileContentOfGateway(String gatewayId) {
+        log.info("About to search for proxy: " + gatewayId);
+        Proxy gateway = proxyRepository.findById(gatewayId);
+        log.info("Found gateway: " + gateway.getId());
+        return gatewayDockerComposeTemplateContent
+                .replace("<gateway-id>", "ygg-proxy-" + gatewayId)
                 .replace("<config-server-uri>", springCloudConfigUri)
-                .replace("<username>", proxy.getConfigServerUsername())
-                .replace("<password>", proxy.getConfigServerPassword());
+                .replace("<username>", gateway.getConfigServerUsername())
+                .replace("<password>", gateway.getConfigServerPassword());
     }
 
 }

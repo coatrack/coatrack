@@ -7,7 +7,7 @@ services:
       - 8088:8088
     entrypoint: ["sh", "-c", "java -Djava.security.egd=file:/dev/./urandom \
       -jar /opt/coatrack/lib/coatrack-proxy.jar \
-      --spring.application.name=<proxy-id> \
+      --spring.application.name=<gateway-id> \
       --spring.cloud.config.uri=<config-server-uri> \
       --spring.cloud.config.username=<username> \
       --spring.cloud.config.password=<password> \
