@@ -48,7 +48,7 @@ public class GatewayDockerComposeFileProviderService {
         Proxy gateway = proxyRepository.findById(gatewayId);
         log.info("Found gateway: " + gateway.getId());
         return gatewayDockerComposeTemplateContent
-                .replace("<gateway-id>", "ygg-proxy-" + gatewayId)
+                .replace("<gateway-id>", gatewayId)
                 .replace("<config-server-uri>", springCloudConfigUri)
                 .replace("<username>", gateway.getConfigServerUsername())
                 .replace("<password>", gateway.getConfigServerPassword());
