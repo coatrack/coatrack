@@ -1,7 +1,7 @@
 package eu.coatrack.admin.controllers;
 
 public class ProxyDockerComposeTemplateFileNotFoundException extends RuntimeException {
-    ProxyDockerComposeTemplateFileNotFoundException(){
+    public ProxyDockerComposeTemplateFileNotFoundException(){
         super();
     }
 
