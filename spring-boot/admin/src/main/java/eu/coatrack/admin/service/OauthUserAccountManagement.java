@@ -71,23 +71,28 @@ public class OauthUserAccountManagement {
     public String getEmailFromLoggedInUser() throws JsonProcessingException {
         String email = getAttributesFromAuthentication().getAttribute("email");
 
-        // If the email is defined as private on GitHub (The Oauth2 will retrieve null),
+        // If the email is defined as private on GitHub (The Oauth2 will retrieve the
+        // attribute email as null),
         // so the only way to retrieve is to make request with the Oauth Token
         if (email == null || email.isEmpty()) {
 
-            // Initialize RestTemplate and HTTP Headers
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.add("Authorization", "token " + getTokenFromLoggedInUser());
-            HttpEntity<String> githubRequest = new HttpEntity(headers);
-
-            // Make the request to GitHub for the emails
-            ResponseEntity<String> userEmailsRequest = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
-                    githubRequest, String.class);
-
-            email = GetPrimaryEmailFromLoggedInUser(userEmailsRequest);
+            ResponseEntity<String> emailListFromGithub = getEmailsListFromGithub();
+            email = GetPrimaryEmailFromLoggedInUser(emailListFromGithub);
         }
         return email;
+    }
+
+    private ResponseEntity<String> getEmailsListFromGithub () {
+        // Initialize RestTemplate and HTTP Headers
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "token " + getTokenFromLoggedInUser());
+        HttpEntity<String> githubRequest = new HttpEntity(headers);
+
+        // Make the request to GitHub for the emails
+        ResponseEntity<String> userEmailsRequest = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+                githubRequest, String.class);
+        return userEmailsRequest;
     }
 
     private String GetPrimaryEmailFromLoggedInUser(ResponseEntity<String> userEmailsRequest) throws JsonProcessingException {
