@@ -104,7 +104,7 @@ public class OauthUserAccountManagement {
                                 .constructCollectionType(List.class, GithubEmail.class));
 
         for (GithubEmail userEmail : emailsList) {
-            if (userEmail.getVerified() == true && userEmail.getPrimary()) {
+            if (userEmail.isMailAddressVerified() && userEmail.isUsersPrimaryMailAddress()) {
                 return userEmail.getEmail();
             }
         }
