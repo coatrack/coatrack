@@ -88,7 +88,6 @@ public class OauthUserAccountManagement {
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
         HttpEntity<String> githubRequest = new HttpEntity(headers);
 
-        // Make the request to GitHub for the emails
         ResponseEntity<String> userEmailsRequest = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
                 githubRequest, String.class);
         return userEmailsRequest;
