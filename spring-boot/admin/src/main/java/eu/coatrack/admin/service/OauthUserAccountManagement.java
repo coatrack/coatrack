@@ -57,19 +57,19 @@ public class OauthUserAccountManagement {
     }
 
     public String getLoginNameFromLoggedInUser() {
-        return getAttributesFromAuthentication().getAttribute("login");
+        return getLoggedInUser().getAttribute("login");
     }
 
     public String getNameFromLoggedInUser() {
-        return getAttributesFromAuthentication().getAttribute("name");
+        return getLoggedInUser().getAttribute("name");
     }
 
     public String getCompanyFromLoggedInUser() {
-        return getAttributesFromAuthentication().getAttribute("company");
+        return getLoggedInUser().getAttribute("company");
     }
 
     public String getEmailFromLoggedInUser() throws JsonProcessingException {
-        String email = getAttributesFromAuthentication().getAttribute("email");
+        String email = getLoggedInUser().getAttribute("email");
 
         // If the email is defined as private on GitHub (The Oauth2 will retrieve the
         // attribute email as null),
