@@ -77,7 +77,7 @@ public class OauthUserAccountManagement {
         if (email == null || email.isEmpty()) {
 
             ResponseEntity<String> emailListFromGithub = getEmailsListFromGithub();
-            email = GetPrimaryEmailFromLoggedInUser(emailListFromGithub);
+            email = getPrimaryEmailFromLoggedInUser(emailListFromGithub);
         }
         return email;
     }
