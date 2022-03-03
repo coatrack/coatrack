@@ -83,7 +83,6 @@ public class OauthUserAccountManagement {
     }
 
     private ResponseEntity<String> getEmailsListFromGithub () {
-        // Initialize RestTemplate and HTTP Headers
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
