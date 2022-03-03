@@ -48,7 +48,7 @@ public class OauthUserAccountManagement {
     @Autowired
     private OAuth2AuthorizedClientService clientService;
 
-    private OAuth2User getAttributesFromAuthentication() {
+    private OAuth2User getLoggedInUser() {
         OAuth2User loggedInUser = (OAuth2User) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
