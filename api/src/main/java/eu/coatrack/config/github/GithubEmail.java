@@ -45,7 +45,7 @@ public class GithubEmail implements Serializable {
         this.email = email;
     }
 
-    public boolean getPrimary() {
+    public boolean isUsersPrimaryMailAddress() {
         return primary;
     }
 
@@ -53,7 +53,7 @@ public class GithubEmail implements Serializable {
         this.primary = primary;
     }
 
-    public boolean getVerified() {
+    public boolean isMailAddressVerified() {
         return verified;
     }
 
