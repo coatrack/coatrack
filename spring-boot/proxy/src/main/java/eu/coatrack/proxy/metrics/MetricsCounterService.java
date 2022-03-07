@@ -52,24 +52,24 @@ public class MetricsCounterService {
         this.metricsTransmitter = metricsTransmitter;
     }
 
-    public void increment(MetricsHolder mh) {
-        logBeginningOfIncrementation(mh);
-        int currentCount = incrementAndReturnCurrentValue(mh);
-        Metric metricToTransmit = createMetricToTransmit(mh);
+    public void increment(TemporaryMetricsAggregation tma) {
+        logBeginningOfIncrementation(tma);
+        int currentCount = incrementAndReturnCurrentValue(tma);
+        Metric metricToTransmit = createMetricToTransmit(tma);
         metricToTransmit.setCount(currentCount);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
     }
 
-    private void logBeginningOfIncrementation(MetricsHolder mh) {
+    private void logBeginningOfIncrementation(TemporaryMetricsAggregation tma) {
         log.debug(String.format("incrementing metric '%s' for URI '%s' and api key %s",
-                mh.getMetricType(),
-                mh.getRequestURI(),
-                mh.getApiKeyValue()
+                tma.getMetricType(),
+                tma.getRequestURI(),
+                tma.getApiKeyValue()
         ));
     }
 
-    private int incrementAndReturnCurrentValue(MetricsHolder mh) {
-        String counterId = createCounterIdFromMetric(mh);
+    private int incrementAndReturnCurrentValue(TemporaryMetricsAggregation tma) {
+        String counterId = createCounterIdFromMetric(tma);
         log.debug("Incrementing counter with ID {}.", counterId);
 
         Counter counter = meterRegistry.find(counterId).counter();
@@ -80,31 +80,31 @@ public class MetricsCounterService {
         return (int) counter.count();
     }
 
-    private String createCounterIdFromMetric(MetricsHolder mh) {
+    private String createCounterIdFromMetric(TemporaryMetricsAggregation tma) {
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
-                .add(mh.getServiceApiName())
-                .add(mh.getRequestMethod())
-                .add(mh.getApiKeyValue())
-                .add(mh.getMetricType().toString())
-                .add(String.valueOf(mh.getHttpResponseCode()))
+                .add(tma.getServiceApiName())
+                .add(tma.getRequestMethod())
+                .add(tma.getApiKeyValue())
+                .add(tma.getMetricType().toString())
+                .add(String.valueOf(tma.getHttpResponseCode()))
                 .add(LocalDate.now().toString())
-                .add(mh.getPath());
+                .add(tma.getPath());
         return stringJoiner.toString();
     }
 
-    private Metric createMetricToTransmit(MetricsHolder mh) {
+    private Metric createMetricToTransmit(TemporaryMetricsAggregation tma) {
         Metric metricToTransmit = new Metric();
 
         ApiKey apiKey = new ApiKey();
-        apiKey.setKeyValue(mh.getApiKeyValue());
+        apiKey.setKeyValue(tma.getApiKeyValue());
         metricToTransmit.setApiKey(apiKey);
 
-        metricToTransmit.setRequestMethod(mh.getRequestMethod());
-        metricToTransmit.setType(mh.getMetricType());
-        metricToTransmit.setHttpResponseCode(mh.getHttpResponseCode());
+        metricToTransmit.setRequestMethod(tma.getRequestMethod());
+        metricToTransmit.setType(tma.getMetricType());
+        metricToTransmit.setHttpResponseCode(tma.getHttpResponseCode());
         metricToTransmit.setDateOfApiCall(Date.valueOf(LocalDate.now()));
-        metricToTransmit.setPath(mh.getPath());
+        metricToTransmit.setPath(tma.getPath());
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
 
         return metricToTransmit;

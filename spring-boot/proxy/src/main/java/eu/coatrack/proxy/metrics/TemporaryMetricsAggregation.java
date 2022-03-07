@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MetricsHolder {
+public class TemporaryMetricsAggregation {
 
-    private static final Logger log = LoggerFactory.getLogger(MetricsHolder.class);
+    private static final Logger log = LoggerFactory.getLogger(TemporaryMetricsAggregation.class);
 
     private static final Pattern PATTERN_TO_SPLIT_SERVLET_PATH = Pattern.compile("^/?([^/]+)(/.*)?");
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
@@ -45,7 +45,7 @@ public class MetricsHolder {
     private String serviceApiName;
     private String path;
 
-    public MetricsHolder(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
+    public TemporaryMetricsAggregation(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
         this.apiKeyValue = apiKeyValue;
         this.metricType = metricType;
         this.httpResponseCode = httpResponseCode;

@@ -24,7 +24,7 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import eu.coatrack.proxy.metrics.MetricsCounterService;
 import eu.coatrack.api.MetricType;
-import eu.coatrack.proxy.metrics.MetricsHolder;
+import eu.coatrack.proxy.metrics.TemporaryMetricsAggregation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +85,7 @@ public class ResponseLoggingFilter extends ZuulFilter {
                 metricType = MetricType.EMPTY_RESPONSE;
             }
             String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
-            metricsCounterService.increment(new MetricsHolder(
+            metricsCounterService.increment(new TemporaryMetricsAggregation(
                     request,
                     apiKeyValue,
                     metricType,
