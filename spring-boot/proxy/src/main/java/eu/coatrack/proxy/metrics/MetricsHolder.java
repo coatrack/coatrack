@@ -36,27 +36,26 @@ public class MetricsHolder {
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
     private static final int MATCHER_GROUP_INDEX_OF_PATH = 2;
 
-    private final HttpServletRequest request;
     private final String apiKeyValue;
     private final MetricType metricType;
     private final Integer httpResponseCode;
+    private final String requestURI;
+    private final String requestMethod;
 
-    private String requestMethod;
     private String serviceApiName;
     private String path;
 
     public MetricsHolder(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
-        this.request = request;
         this.apiKeyValue = apiKeyValue;
         this.metricType = metricType;
         this.httpResponseCode = httpResponseCode;
-        initializeResidualFields();
+        this.requestMethod = request.getMethod();
+        this.requestURI = request.getRequestURI();
+        initFieldsBasedOnRequestObject(request);
     }
 
-    private void initializeResidualFields() {
-        requestMethod = request.getMethod();
+    private void initFieldsBasedOnRequestObject(HttpServletRequest request) {
         Matcher matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
-
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
             serviceApiName = matcher.group(MATCHER_GROUP_INDEX_OF_SERVICE_API_ID);
@@ -105,6 +104,6 @@ public class MetricsHolder {
     }
 
     public String getRequestURI() {
-        return request.getRequestURI();
+        return requestURI;
     }
 }
