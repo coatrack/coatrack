@@ -54,9 +54,9 @@ public class MetricsCounterService {
 
     public void increment(MetricsHolder mh) {
         logBeginningOfIncrementation(mh);
-        int currentCounter = incrementAndReturnCurrentCounter(mh);
+        int currentCount = incrementAndReturnCurrentValue(mh);
         Metric metricToTransmit = createMetricToTransmit(mh);
-        metricToTransmit.setCount(currentCounter);
+        metricToTransmit.setCount(currentCount);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
     }
 
@@ -68,8 +68,9 @@ public class MetricsCounterService {
         ));
     }
 
-    private int incrementAndReturnCurrentCounter(MetricsHolder mh) {
+    private int incrementAndReturnCurrentValue(MetricsHolder mh) {
         String counterId = createCounterIdFromMetric(mh);
+        log.debug("Incrementing counter with ID {}.", counterId);
 
         Counter counter = meterRegistry.find(counterId).counter();
         if (counter == null){

@@ -44,7 +44,6 @@ public class MetricsHolder {
     private String requestMethod;
     private String serviceApiName;
     private String path;
-    private Matcher matcher;
 
     public MetricsHolder(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
         this.request = request;
@@ -56,18 +55,18 @@ public class MetricsHolder {
 
     private void initializeResidualFields() {
         requestMethod = request.getMethod();
-        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
+        Matcher matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
 
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
             serviceApiName = matcher.group(MATCHER_GROUP_INDEX_OF_SERVICE_API_ID);
-            initializePath();
+            initializePath(matcher);
         } else {
             log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
         }
     }
 
-    private void initializePath() {
+    private void initializePath(Matcher matcher) {
         // rest of the servlet path is the actual path that is called on the proxied service
         path = matcher.group(MATCHER_GROUP_INDEX_OF_PATH);
         log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'",
