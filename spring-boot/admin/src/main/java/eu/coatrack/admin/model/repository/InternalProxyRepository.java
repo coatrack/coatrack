@@ -21,15 +21,9 @@ package eu.coatrack.admin.model.repository;
  */
 
 import eu.coatrack.api.Proxy;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,7 +32,7 @@ import java.util.Optional;
  * @author Christoph Baier
  */
 
-public interface UnsecuredProxyRepository extends PagingAndSortingRepository<Proxy, String> {
+public interface InternalProxyRepository extends PagingAndSortingRepository<Proxy, String> {
 
     Optional<Proxy> findById(@Param("id") String id);
 
