@@ -37,7 +37,7 @@ import java.util.Optional;
  * method security prevents StackOverflow exceptions when these methods are called within authenticate().
  * @author Christoph Baier
  */
-@RepositoryRestResource(collectionResourceRel = "proxies", path = "proxies")
+
 public interface UnsecuredProxyRepository extends PagingAndSortingRepository<Proxy, String> {
 
     Optional<Proxy> findById(@Param("id") String id);
