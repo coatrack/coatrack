@@ -27,8 +27,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 /**
- * These unsecured methods are only to be used within an authenticate() method. The lack of
- * method security prevents StackOverflow exceptions when these methods are called within authenticate().
+ * This is an additional repository for internal use, without using filter method security like other repositories
+ * would do for external access.
+ * This method can be used within the Spring Security method "authenticate()" without causing a recursive
+ * authentication call which could lead to a StackOverflowException.
  * @author Christoph Baier
  */
 

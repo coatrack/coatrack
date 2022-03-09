@@ -54,7 +54,7 @@ public class MetricsCounterService {
 
     public void increment(TemporaryMetricsAggregation tma) {
         logBeginningOfIncrementation(tma);
-        int currentCount = incrementAndReturnCurrentValue(tma);
+        int currentCount = incrementCounterAndReturnCurrentValue(tma);
         Metric metricToTransmit = createMetricToTransmit(tma);
         metricToTransmit.setCount(currentCount);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
@@ -68,7 +68,7 @@ public class MetricsCounterService {
         ));
     }
 
-    private int incrementAndReturnCurrentValue(TemporaryMetricsAggregation tma) {
+    private int incrementCounterAndReturnCurrentValue(TemporaryMetricsAggregation tma) {
         String counterId = createCounterIdFromMetric(tma);
         log.debug("Incrementing counter with ID {}.", counterId);
 
