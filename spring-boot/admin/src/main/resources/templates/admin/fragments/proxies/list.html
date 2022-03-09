@@ -3,70 +3,6 @@
       xmlns="http://www.w3.org/1999/xhtml">
     <body>
         <div th:fragment="body">
-
-            <div id="infoDialog" title="Info">
-                <div class="x_panel">
-                    <div class="x_content">
-                        <i class="fa fa-lg fa-info-circle"/>
-                        <span id='message'>message</span>
-                    </div>
-                </div>
-            </div>
-            <script>
-                $(function () {
-
-                    $("#infoDialog").dialog({
-                        width: 'auto',
-                        height: "auto",
-                        autoOpen: false,
-                        modal: true,
-                        show: {
-                            effect: "blind",
-                            duration: 1500
-                        },
-                        hide: {
-                            effect: "blind",
-                            duration: 1000
-                        },
-                        buttons: {
-                            "Yes": function () {
-
-                                var id = $(this).data('deleteItem');
-
-                                var token = $("meta[name='_csrf']").attr("content");
-                                var header = $("meta[name='_csrf_header']").attr("content");
-
-                                $.ajax({
-                                    url: '/admin/proxies/' + id + '.json',
-                                    headers: {header: token},
-                                    type: 'DELETE',
-                                    success: function (result) {
-                                        console.log('success:' + JSON.stringify(result));
-
-                                        console.log('remove :' + id);
-
-                                        $("#item" + id).remove();
-                                    },
-                                    error: function (result) {
-                                        console.log('error:' + JSON.stringify(result));
-                                    }
-                                });
-
-                                $(this).dialog("close");
-                            },
-                            "No": function () {
-                                $(this).dialog("close");
-                            }
-                        }
-                    });
-                });
-
-                function deleteItem(item, name) {
-                    $("#message").html("Are you sure you want to delete the <strong> Service Gateway " + name + " </strong>?")
-                    $("#infoDialog").data('deleteItem', item).dialog("open");
-                }
-            </script>
-
             <div class="page-title">
                 <div class="title_left">
                     <h3>
@@ -85,8 +21,8 @@
 
                     <div class="x_panel">
                         <div class="x_content">
-                            <i class="fa fa-lg fa-info-circle"/>
-                            <span th:text="#{admin.proxies.page.explanation}"/>
+                            <i class="fa fa-lg fa-info-circle"></i>
+                            <span th:text="#{admin.proxies.page.explanation}"></span>
                         </div>
                     </div>
 
@@ -129,29 +65,40 @@
                                     <td th:text=" ${proxy.port}">proxy port</td>
                                     <td>
                                         <span th:each="service : ${proxy.serviceApis}">
-                                            <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"/>
+                                            <span th:text="${service.name + ' (' + service.uriIdentifier + ' '}"></span>
                                             <i class="fa fa-long-arrow-right"></i>
-                                            <span th:text="${' ' + service.localUrl + ')'}"/>
+                                            <span th:text="${' ' + service.localUrl + ')'}"></span>
                                             <br/>
                                         </span>
                                     </td>
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
-                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|"
-                                           class="glyphicon glyphicon-download-alt"/>
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}/download|">
+                                            <button>
+                                                <i class="glyphicon glyphicon-download-alt"></i>
+                                            </button>
+                                        </a>
                                     </td>
-                                    <td class="text-center "><a th:href="|@{/admin/proxies/}${proxy.id}|"
-                                                                class="fa fa-bar-chart"/>
+                                    <td class="text-center ">
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}|">
+                                            <button>
+                                                <i class="fa fa-bar-chart"></i>
+                                            </button>
+                                        </a>
                                     </td>
                                     <td th:text="${proxy.timeOfLastSuccessfulCallToAdmin != null ?
-                                    #dates.format(new java.util.Date(proxy.timeOfLastSuccessfulCallToAdmin)) :
-                                    #messages.msg('admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text')}">
+                                        #dates.format(new java.util.Date(proxy.timeOfLastSuccessfulCallToAdmin)) :
+                                        #messages.msg('admin.dashboard.gatewayhealthmonitor.notconnectedgateway.text')}">
                                     </td>
                                     <td class="right">
-                                        <button th:onclick="|@{location.href='/admin/proxies/}${proxy.id}@{/formUpdate'}|">
-                                            <i class="fa  fa-pencil-square-o"/></button>
-                                        <button th:onclick="'javascript:deleteItem(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
-                                            <i class="fa  fa-trash"/></button>
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}| + '/formUpdate'">
+                                            <button>
+                                                <i class="fa fa-pencil-square-o"></i>
+                                            </button>
+                                        </a>
+                                        <button th:attr="onclick='javascript:deleteProxy(\'' + ${proxy.id} + '\',\'' + ${proxy.name} + '\' )'">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(proxies)}">
@@ -166,5 +113,6 @@
         </div>
         <div th:include="admin/fragments/scripts :: scripts" th:remove="tag">Javascript Libraries</div>
         <div th:include="admin/fragments/scripts :: initializeDataTables" th:remove="tag">Javascript Libraries</div>
+        <div th:replace="admin/fragments/itemDeletionAndDialogFragments :: proxyDeleter"></div>
     </body>
 </html>

@@ -134,7 +134,7 @@ public class AdminProxiesController {
 
         ModelAndView mav = new ModelAndView();
 
-        Proxy proxy = proxyRepository.findOne(id);
+        Proxy proxy = proxyRepository.findById(id).orElse(null);
 
         mav.addObject("proxy", proxy);
 
@@ -172,7 +172,7 @@ public class AdminProxiesController {
             @RequestParam(required = false) List<String> selectedServices) throws IOException, GitAPIException, URISyntaxException, Exception {
         log.debug("Update proxy: " + proxy.toString());
 
-        Proxy proxyStored = proxyRepository.findOne(proxy.getId());
+        Proxy proxyStored = proxyRepository.findById(proxy.getId()).orElse(null);
         proxyStored.setDescription(proxy.getDescription());
         proxyStored.setName(proxy.getName());
         proxyStored.setPublicUrl(proxy.getPublicUrl());
@@ -184,7 +184,7 @@ public class AdminProxiesController {
             selectedServices.forEach(s -> log.debug("service-id:" + s));
             selectedServices.stream()
                     .map(idString -> new Long(idString))
-                    .map(id -> serviceApiRepository.findOne(id))
+                    .map(id -> serviceApiRepository.findById(id).orElse(null))
                     .forEach(service -> proxyStored.getServiceApis().add(service));
         }
         proxyRepository.save(proxyStored);
@@ -227,7 +227,7 @@ public class AdminProxiesController {
 
     @RequestMapping(value = "{id}", method = GET)
     public String get(@PathVariable("id") String id, Model model) throws MalformedURLException, IOException {
-        Proxy proxy = proxyRepository.findOne(id);
+        Proxy proxy = proxyRepository.findById(id).orElse(null);
         model.addAttribute("proxy", proxy);
         model.addAttribute("metrics", metricsAggregationRepository.getSummarizedMetricsByProxyId(proxy.getId()));
         return ADMIN_PROXY_VIEW;
@@ -236,7 +236,7 @@ public class AdminProxiesController {
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Proxy getByIdRest(@PathVariable("id") String id) throws IOException {
-        Proxy proxy = proxyRepository.findOne(id);
+        Proxy proxy = proxyRepository.findById(id).orElse(null);
         log.info("getById " + id + " proxy:" + proxy);
         return proxy;
     }
@@ -245,7 +245,7 @@ public class AdminProxiesController {
     public void downloadFile(HttpServletResponse response, @PathVariable("id") String id) throws IOException {
         log.debug("received request to download proxy with id " + id);
 
-        Proxy proxy = proxyRepository.findOne(id);
+        Proxy proxy = proxyRepository.findById(id).orElse(null);
         File proxyDownloadFile = customProxyFileGenerator.getCustomJarForDownload(proxy);
 
         log.debug("providing file as download: " + proxyDownloadFile);
@@ -266,7 +266,7 @@ public class AdminProxiesController {
     @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = "application/json")
     @ResponseBody
     public Iterable<Proxy> deleteRest(@PathVariable("id") String id) throws IOException {
-        Proxy proxy = proxyRepository.findOne(id);
+        Proxy proxy = proxyRepository.findById(id).orElse(null);
         proxy.getServiceApis().clear();
         proxy.setDeletedWhen(new Date());
         proxyRepository.save(proxy);

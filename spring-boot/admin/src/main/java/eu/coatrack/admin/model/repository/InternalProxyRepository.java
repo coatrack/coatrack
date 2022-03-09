@@ -2,7 +2,7 @@ package eu.coatrack.admin.model.repository;
 
 /*-
  * #%L
- * coatrack-admin
+ * coatrack-api
  * %%
  * Copyright (C) 2013 - 2020 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
  * %%
@@ -20,11 +20,22 @@ package eu.coatrack.admin.model.repository;
  * #L%
  */
 
-import eu.coatrack.api.ServiceCover;
+import eu.coatrack.api.Proxy;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.data.repository.query.Param;
 
-@RepositoryRestResource(collectionResourceRel = "/api/covers")
-public interface CoverRepository extends PagingAndSortingRepository<ServiceCover, Long> {
+import java.util.Optional;
+
+/**
+ * This is an additional repository for internal use, without using filter method security like other repositories
+ * would do for external access.
+ * This method can be used within the Spring Security method "authenticate()" without causing a recursive
+ * authentication call which could lead to a StackOverflowException.
+ * @author Christoph Baier
+ */
+
+public interface InternalProxyRepository extends PagingAndSortingRepository<Proxy, String> {
+
+    Optional<Proxy> findById(@Param("id") String id);
 
 }

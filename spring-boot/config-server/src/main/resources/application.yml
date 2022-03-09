@@ -3,49 +3,39 @@ logging:
     org.springframework.security: DEBUG
     org: DEBUG
     nl.corizon.ygg: DEBUG
-    
+
 server:
-    port: 8998
+  port: 8998
 security:
-    basic:
-        enabled: true
-        path: /ygg-admin/**
-        ignored: /health**,/info**,/metrics**,/trace**
-   
-        
+  basic:
+    enabled: true
+    path: /ygg-admin/**
+    ignored: /health**,/info**,/metrics**,/trace**
+
 spring:
-    http:
-      multipart:
-          max-file-size: 100MB
-          max-request-size: 100MB
-    datasource:
-      username: postgres
-      password: postgres1234
-      url: jdbc:postgresql://localhost/ygg_config_server
-      driver: org.postgresql.Driver
-    jpa:
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.PostgreSQLDialect
-                format_sql: true
-        hibernate:
-            show-sql: true 
-            generate-ddl: true
-            ddl-auto: create-drop
-            #ddl-auto: update
-    cloud:
-        config:
-            server:
-                git:
-                    uri: https://bitbucket.org/perezdf/anthill-settings.git
-                    username: fpd.judo@gmail.com
-                    password: fpdvip1234
-                    timeout: 100
-                    
+  http:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+  jpa:
+    hibernate:
+      show-sql: true
+      generate-ddl: true
+      ddl-auto: create-drop
+      #ddl-auto: update
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://bitbucket.org/perezdf/anthill-settings.git
+          username: fpd.judo@gmail.com
+          password: fpdvip1234
+          timeout: 100
+
 ygg:
-    admin:
-        config:
-            access:
-                user:
-                    name: admin
-                    password: password
+  admin:
+    config:
+      access:
+        user:
+          name: admin
+          password: password

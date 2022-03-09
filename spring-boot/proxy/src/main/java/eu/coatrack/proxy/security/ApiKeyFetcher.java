@@ -55,14 +55,15 @@ public class ApiKeyFetcher {
     public List<ApiKey> requestLatestApiKeyListFromAdmin() {
         log.debug("Requesting latest API key list from " + urlResourcesProvider.getApiKeyListRequestUrl());
 
+        String fetchUrl = urlResourcesProvider.getApiKeyListRequestUrl();
         try {
             ResponseEntity<ApiKey[]> responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyListRequestUrl(), ApiKey[].class);
+                    fetchUrl, ApiKey[].class);
             ApiKey[] apiKeys = (ApiKey[]) extractBodyFromResponseEntity(responseEntity);
             return new ArrayList<>(Arrays.asList(apiKeys));
         } catch (RestClientException e) {
-            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from Admin, the " +
-                    "connection failed.", e);
+            throw new ApiKeyFetchingFailedException("Trying to request the latest API key list from " + fetchUrl +
+                    ", the connection failed.", e);
         }
     }
 
@@ -95,13 +96,14 @@ public class ApiKeyFetcher {
     public ApiKey requestApiKeyFromAdmin(String apiKeyValue) {
         log.debug("Requesting API key with the value {} from CoatRack admin.", apiKeyValue);
 
+        String fetchUrl = urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue);
         try {
             ResponseEntity<ApiKey> responseEntity = restTemplate.getForEntity(
-                    urlResourcesProvider.getApiKeyRequestUrl(apiKeyValue), ApiKey.class);
+                    fetchUrl, ApiKey.class);
             return (ApiKey) extractBodyFromResponseEntity(responseEntity);
         } catch (RestClientException e) {
             throw new ApiKeyFetchingFailedException("Trying to request the API key with the value " + apiKeyValue +
-                    " from CoatRack admin, the connection failed.", e);
+                    " from " + fetchUrl + ", the connection failed.", e);
         }
     }
 }

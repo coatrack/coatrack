@@ -118,6 +118,7 @@ public class UserController {
         CreditAccount creditAccount = new CreditAccount();
 
         user.setAccount(creditAccount);
+        creditAccount.setUser(user);
 
         userRepository.save(user);
 
@@ -160,7 +161,7 @@ public class UserController {
     @GetMapping(value = "users/{id}/verify/{emailVerificationCode}")
     public ModelAndView userEmailVeritification(@PathVariable("id") Long id, @PathVariable("emailVerificationCode") String emailVerificationCode) {
 
-        User user = userRepository.findOne(id);
+        User user = userRepository.findById(id).orElse(null);
 
         if (user.getEmailVerifiedUrl().equals(emailVerificationCode)) {
             user.setEmailVerified(Boolean.TRUE);

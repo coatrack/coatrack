@@ -106,7 +106,7 @@ public class CreateProxyAction implements Action {
                 selectedServices.forEach(s -> log.debug("service-id:" + s));
                 selectedServices.stream()
                         .map(idString -> idString)
-                        .map(id -> serviceApiRepository.findOne(id))
+                        .map(id -> serviceApiRepository.findById(id).orElse(null))
                         .forEach(service -> proxy.getServiceApis().add(service));
             }
             proxy.setId(UUID.randomUUID().toString());

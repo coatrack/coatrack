@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -46,8 +47,9 @@ import java.util.Optional;
  * @author Christoph Baier
  */
 
-@EnableAsync
 @Service
+@EnableAsync
+@EnableScheduling
 public class LocalApiKeyManager {
 
     private final static Logger log = LoggerFactory.getLogger(LocalApiKeyManager.class);

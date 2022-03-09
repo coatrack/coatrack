@@ -70,7 +70,7 @@ public class CoverController {
     @RequestMapping(value = "/{id}/upload")
     public ModelAndView fileUpload(Authentication auth, @PathVariable("id") Long serviceId, @RequestParam("file") MultipartFile file) throws IOException, ParseException, java.text.ParseException {
 
-        ServiceApi service = serviceRepository.findOne(serviceId);
+        ServiceApi service = serviceRepository.findById(serviceId).orElse(null);
 
         String coverFilename = UUID.randomUUID().toString();
 

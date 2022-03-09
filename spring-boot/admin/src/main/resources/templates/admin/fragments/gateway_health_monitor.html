@@ -69,7 +69,7 @@
                             <label class="switch">
                                 <input th:id="${gateway?.gatewayId} + '_monitorSwitch'" type="checkbox"
                                        th:checked="${gateway.isMonitoringEnabled}"
-                                       th:onchange="'javascript:informAdminAboutMonitoringEnabledSwitchUpdate(\'' + ${gateway?.gatewayId} + '\')'"/>
+                                       th:attr="onclick='javascript:informAdminAboutMonitoringEnabledSwitchUpdate(\'' + ${gateway?.gatewayId} + '\')'"/>
                                 <span class="slider round"></span>
                             </label>
                         </td>
