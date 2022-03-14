@@ -51,12 +51,4 @@ public class SpringSecurityTestConfig {
         return new InMemoryUserDetailsManager(Arrays.asList(
                 basicUser));
     }
-
-/*
-    @Bean
-    public ResourceServerProperties resourceServerProperties(){
-        return new ResourceServerProperties();
-    }
-*/
-
 }
