@@ -71,14 +71,15 @@ public class OauthUserAccountManagement {
     public String getEmailFromLoggedInUser() throws JsonProcessingException {
         String email = getLoggedInUser().getAttribute("email");
 
-        // If the email is defined as private on GitHub (The Oauth2 will retrieve the
-        // attribute email as null),
-        // so the only way to retrieve is to make request with the Oauth Token
-        if (email == null || email.isEmpty()) {
+        if (wasGitHubMailAddressSetToPrivateAndThereforeNotDirectlyReadable(email)) {
             ResponseEntity<String> emailListFromGithub = getEmailsListFromGithub();
             email = getPrimaryEmailFromLoggedInUser(emailListFromGithub);
         }
         return email;
+    }
+
+    private boolean wasGitHubMailAddressSetToPrivateAndThereforeNotDirectlyReadable(String email) {
+        return (email == null || email.isEmpty());
     }
 
     private ResponseEntity<String> getEmailsListFromGithub () {
