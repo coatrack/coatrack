@@ -23,6 +23,7 @@ package eu.coatrack.admin.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import eu.coatrack.config.github.GithubEmail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -97,11 +98,8 @@ public class OauthUserAccountManagement {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        List<GithubEmail> emailsList = objectMapper.
-                readValue(userEmailsRequest.getBody(),
-                        objectMapper
-                                .getTypeFactory()
-                                .constructCollectionType(List.class, GithubEmail.class));
+        CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
+        List<GithubEmail> emailsList = objectMapper.readValue(userEmailsRequest.getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
 
         for (GithubEmail userEmail : emailsList) {
             if (userEmail.isMailAddressVerified() && userEmail.isUsersPrimaryMailAddress()) {
