@@ -101,12 +101,11 @@ public class OauthUserAccountManagement {
         CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
         List<GithubEmail> emailsList = objectMapper.readValue(userEmailsRequest.getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
 
-        for (GithubEmail userEmail : emailsList) {
-            if (userEmail.isMailAddressVerified() && userEmail.isUsersPrimaryMailAddress()) {
-                return userEmail.getEmail();
-            }
-        }
-        return null;
+        return emailsList.stream()
+                .filter(email -> (email.isMailAddressVerified() && email.isUsersPrimaryMailAddress()) == true)
+                .map(GithubEmail::getEmail)
+                .findFirst()
+                .orElse(null);
     }
 
     public String getTokenFromLoggedInUser() {
