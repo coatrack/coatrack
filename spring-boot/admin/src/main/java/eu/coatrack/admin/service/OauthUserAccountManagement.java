@@ -75,7 +75,6 @@ public class OauthUserAccountManagement {
         // attribute email as null),
         // so the only way to retrieve is to make request with the Oauth Token
         if (email == null || email.isEmpty()) {
-
             ResponseEntity<String> emailListFromGithub = getEmailsListFromGithub();
             email = getPrimaryEmailFromLoggedInUser(emailListFromGithub);
         }
