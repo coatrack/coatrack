@@ -58,7 +58,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Date;
@@ -160,7 +159,7 @@ public class AdminController {
     OauthUserAccountManagement oauthUserAccountManagement;
 
     @RequestMapping(value = "/profiles", method = GET)
-    public ModelAndView goProfiles(Model model) throws IOException {
+    public ModelAndView goProfiles() throws IOException {
 
         ModelAndView mav = new ModelAndView();
 
@@ -169,7 +168,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "", method = GET)
-    public ModelAndView home(Model model, HttpServletRequest request) throws IOException {
+    public ModelAndView home(Model model) throws IOException {
 
         Authentication auth = SecurityContextHolder
                 .getContext()
@@ -181,9 +180,6 @@ public class AdminController {
             User user = userRepository.findByUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
 
             if (user != null) {
-
-                boolean end = false;
-                boolean found = false;
 
                 List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
                 if (services != null && !services.isEmpty()) {
