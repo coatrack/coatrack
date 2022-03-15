@@ -50,11 +50,10 @@ public class OauthUserAccountManagement {
     private OAuth2AuthorizedClientService clientService;
 
     private OAuth2User getLoggedInUser() {
-        OAuth2User loggedInUser = (OAuth2User) SecurityContextHolder
+        return (OAuth2User) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
-        return loggedInUser;
     }
 
     public String getLoginNameFromLoggedInUser() {
@@ -89,9 +88,8 @@ public class OauthUserAccountManagement {
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
         HttpEntity<String> githubRequest = new HttpEntity(headers);
 
-        ResponseEntity<String> userEmailsRequest = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+        return restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
                 githubRequest, String.class);
-        return userEmailsRequest;
     }
 
     private String getPrimaryEmailFromLoggedInUser(ResponseEntity<String> userEmailsRequest) throws JsonProcessingException {
@@ -102,7 +100,7 @@ public class OauthUserAccountManagement {
         List<GithubEmail> emailsList = objectMapper.readValue(userEmailsRequest.getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
 
         return emailsList.stream()
-                .filter(email -> (email.isMailAddressVerified() && email.isUsersPrimaryMailAddress()) == true)
+                .filter(email -> (email.isMailAddressVerified() && email.isUsersPrimaryMailAddress()))
                 .map(GithubEmail::getEmail)
                 .findFirst()
                 .orElse(null);
