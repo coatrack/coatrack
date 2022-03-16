@@ -39,6 +39,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -48,6 +49,16 @@ public class OAuthUserDetailsService {
 
     @Autowired
     private OAuth2AuthorizedClientService clientService;
+
+    private ObjectMapper objectMapper;
+    private CollectionType mapResponseWithEmailsListToAListOfGithubEmails;
+    private RestTemplate restTemplate;
+
+    @PostConstruct
+    private void initialize() {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
+    }
 
     private OAuth2User getLoggedInUser() {
         return (OAuth2User) SecurityContextHolder
@@ -78,7 +89,6 @@ public class OAuthUserDetailsService {
     }
 
     private ResponseEntity<String> getEmailsListFromGithub() {
-        RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
         HttpEntity<String> githubRequest = new HttpEntity(headers);
@@ -88,10 +98,7 @@ public class OAuthUserDetailsService {
     }
 
     private String getPrimaryEmailFromLoggedInUser() throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
         List<GithubEmail> emailsList = objectMapper.readValue(getEmailsListFromGithub().getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
 
         return emailsList.stream()
