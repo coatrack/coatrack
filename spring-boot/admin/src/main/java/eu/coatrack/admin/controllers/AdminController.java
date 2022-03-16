@@ -40,7 +40,7 @@ import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
-import eu.coatrack.admin.service.OauthUserAccountManagement;
+import eu.coatrack.admin.service.OAuthUserDetailsService;
 import eu.coatrack.api.*;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
@@ -156,7 +156,7 @@ public class AdminController {
     GatewayHealthMonitorService gatewayHealthMonitorService;
 
     @Autowired
-    OauthUserAccountManagement oauthUserAccountManagement;
+    OAuthUserDetailsService oAuthUserDetailsService;
 
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles() throws IOException {
@@ -177,11 +177,11 @@ public class AdminController {
         ModelAndView mav = new ModelAndView();
 
         if (auth.isAuthenticated()) {
-            User user = userRepository.findByUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
+            User user = userRepository.findByUsername(oAuthUserDetailsService.getLoginNameFromLoggedInUser());
 
             if (user != null) {
 
-                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
+                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(oAuthUserDetailsService.getLoginNameFromLoggedInUser());
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
@@ -208,11 +208,11 @@ public class AdminController {
                 // The user is new for our database therefore we try to retrieve as much user
                 // info is possible from Github
                 user = new User();
-                user.setUsername(oauthUserAccountManagement.getLoginNameFromLoggedInUser());
-                user.setFirstname(oauthUserAccountManagement.getNameFromLoggedInUser());
-                user.setCompany((oauthUserAccountManagement.getCompanyFromLoggedInUser()));
+                user.setUsername(oAuthUserDetailsService.getLoginNameFromLoggedInUser());
+                user.setFirstname(oAuthUserDetailsService.getNameFromLoggedInUser());
+                user.setCompany((oAuthUserDetailsService.getCompanyFromLoggedInUser()));
 
-                String email = oauthUserAccountManagement.getEmailFromLoggedInUser();
+                String email = oAuthUserDetailsService.getEmailFromLoggedInUser();
                 if (email != null) {
                     user.setEmail(email);
                 }
