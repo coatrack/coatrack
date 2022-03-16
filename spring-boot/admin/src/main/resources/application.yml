@@ -93,9 +93,9 @@ spring:
             clientAuthenticationScheme: header
             authenticationScheme: header
             redirect-uri: http://localhost:8080/login/oauth2/code/github
-        # tell github that has a authentication name, the login attribute should be retrieved
         provider:
           github:
+            # Define the authentication name as the login attribute retrieved from the User
             user-name-attribute: login
           resource:
             userInfoUri: https://api.github.com/user
