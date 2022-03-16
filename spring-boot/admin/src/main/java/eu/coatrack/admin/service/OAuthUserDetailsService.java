@@ -72,8 +72,7 @@ public class OAuthUserDetailsService {
         String email = getLoggedInUser().getAttribute("email");
 
         if (email == null || email.isEmpty()) {
-            ResponseEntity<String> emailListFromGithub = getEmailsListFromGithub();
-            email = getPrimaryEmailFromLoggedInUser(emailListFromGithub);
+            email = getPrimaryEmailFromLoggedInUser();
         }
         return email;
     }
@@ -88,12 +87,12 @@ public class OAuthUserDetailsService {
                 githubRequest, String.class);
     }
 
-    private String getPrimaryEmailFromLoggedInUser(ResponseEntity<String> userEmailsRequest) throws JsonProcessingException {
+    private String getPrimaryEmailFromLoggedInUser() throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
         CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
-        List<GithubEmail> emailsList = objectMapper.readValue(userEmailsRequest.getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
+        List<GithubEmail> emailsList = objectMapper.readValue(getEmailsListFromGithub().getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
 
         return emailsList.stream()
                 .filter(email -> (email.isMailAddressVerified() && email.isUsersPrimaryMailAddress()))
