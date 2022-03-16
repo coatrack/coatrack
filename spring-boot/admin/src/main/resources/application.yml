@@ -82,6 +82,7 @@ spring:
          #TODO: Work on these comments in issue #183
          # resource:
           #  userInfoUri: https://api.github.com/user
+          # the following oauth client configuration is just for development testing purposes, do NOT use in a production setting
           github:
             client-id: e188a243cc57ef90f2b5
             client-secret: a5630e2f873890bdc8366aac0155e8113ece0997
