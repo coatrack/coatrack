@@ -42,7 +42,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
-public class OauthUserAccountManagement {
+public class OAuthUserDetailsService {
 
     private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
 
