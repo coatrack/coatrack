@@ -71,15 +71,11 @@ public class OauthUserAccountManagement {
     public String getEmailFromLoggedInUser() throws JsonProcessingException {
         String email = getLoggedInUser().getAttribute("email");
 
-        if (wasGitHubMailAddressSetToPrivateAndThereforeNotDirectlyReadable(email)) {
+        if (email == null || email.isEmpty()) {
             ResponseEntity<String> emailListFromGithub = getEmailsListFromGithub();
             email = getPrimaryEmailFromLoggedInUser(emailListFromGithub);
         }
         return email;
-    }
-
-    private boolean wasGitHubMailAddressSetToPrivateAndThereforeNotDirectlyReadable(String email) {
-        return (email == null || email.isEmpty());
     }
 
     private ResponseEntity<String> getEmailsListFromGithub() {
