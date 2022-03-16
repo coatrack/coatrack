@@ -62,7 +62,7 @@ public class GithubService {
     private final ObjectMapper objectMapper;
 
     @Autowired
-    OauthUserAccountManagement oauthUserAccountManagement;
+    OAuthUserDetailsService oauthUserDetailsService;
 
     public GithubService() {
         objectMapper = new ObjectMapper();
@@ -149,7 +149,7 @@ public class GithubService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("Authorization", "Bearer " + oauthUserAccountManagement.getTokenFromLoggedInUser());
+                headers.set("Authorization", "Bearer " + oauthUserDetailsService.getTokenFromLoggedInUser());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 ResponseEntity<String> response = restTemplate.exchange(URI.create(githubUser.getUrl()), HttpMethod.GET, request, String.class);
@@ -183,7 +183,7 @@ public class GithubService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("Authorization", "Bearer " + oauthUserAccountManagement.getTokenFromLoggedInUser());
+                headers.set("Authorization", "Bearer " + oauthUserDetailsService.getTokenFromLoggedInUser());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
@@ -224,7 +224,7 @@ public class GithubService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("Authorization", "Bearer " + oauthUserAccountManagement.getTokenFromLoggedInUser());
+                headers.set("Authorization", "Bearer " + oauthUserDetailsService.getTokenFromLoggedInUser());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
