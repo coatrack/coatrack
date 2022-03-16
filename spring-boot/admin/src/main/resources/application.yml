@@ -75,11 +75,11 @@ spring:
     rest:
       base-path: /api
 
-
   security:
     oauth2:
       client:
         registration:
+         #TODO: Work on these comments in issue #183
          # resource:
           #  userInfoUri: https://api.github.com/user
           github:
@@ -87,6 +87,7 @@ spring:
             client-secret: a5630e2f873890bdc8366aac0155e8113ece0997
             scope[0]: user:email
             scope[1]: read:user
+         #TODO: Work on these comments in issue #183
         #    accessTokenUri: https://github.com/login/oauth/access_token
         #    userAuthorizationUri: https://github.com/login/oauth/authorize
         #    tokenName: oauth_token
