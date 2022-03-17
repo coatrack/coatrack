@@ -47,17 +47,23 @@ public class OAuthUserDetailsService {
 
     private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
 
-    @Autowired
     private OAuth2AuthorizedClientService clientService;
-
     private ObjectMapper objectMapper;
-    private CollectionType mapResponseWithEmailsListToAListOfGithubEmails;
     private RestTemplate restTemplate;
+    private HttpHeaders headers;
+
+    @Autowired
+    public OAuthUserDetailsService(OAuth2AuthorizedClientService clientService,
+                                   ObjectMapper objectMapper,
+                                   RestTemplate restTemplate) {
+        this.clientService = clientService;
+        this.objectMapper = objectMapper;
+        this.restTemplate = restTemplate;
+    }
 
     @PostConstruct
     private void initialize() {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
     }
 
     private OAuth2User getLoggedInUser() {
@@ -89,7 +95,6 @@ public class OAuthUserDetailsService {
     }
 
     private ResponseEntity<String> getEmailsListFromGithub() {
-        HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
         HttpEntity<String> githubRequest = new HttpEntity(headers);
 
@@ -99,6 +104,7 @@ public class OAuthUserDetailsService {
 
     private String getPrimaryEmailFromLoggedInUser() throws JsonProcessingException {
 
+        CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
         List<GithubEmail> emailsList = objectMapper.readValue(getEmailsListFromGithub().getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
 
         return emailsList.stream()
