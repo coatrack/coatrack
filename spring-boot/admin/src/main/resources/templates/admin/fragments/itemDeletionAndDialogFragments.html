@@ -16,7 +16,7 @@
 </div>
 
 <div th:fragment="proxyDeleter">
-    <div th:replace="admin/fragments/itemDeleter :: infoDialog"></div>
+    <div th:replace="admin/fragments/itemDeletionAndDialogFragments :: infoDialog"></div>
     <script>
         $(function () {
             $("#infoDialog").dialog({
@@ -73,7 +73,7 @@
 </div>
 
 <div th:fragment="serviceDeleter">
-    <div th:replace="admin/fragments/itemDeleter :: infoDialog"></div>
+    <div th:replace="admin/fragments/itemDeletionAndDialogFragments :: infoDialog"></div>
     <script>
         $(function () {
 
@@ -161,7 +161,7 @@
 </div>
 
 <div th:fragment="apiKeyDeleter">
-    <div th:replace="admin/fragments/itemDeleter :: infoDialog"></div>
+    <div th:replace="admin/fragments/itemDeletionAndDialogFragments :: infoDialog"></div>
     <div id="extendValidity" title="Change validity end date">
         <div class="x_panel">
             <div class="x_content">

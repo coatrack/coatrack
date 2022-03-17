@@ -1,19 +1,24 @@
 #
-# This is a template for a private local development config file for the CoatRack web application (ygg-admin).
+# This is a template for a private config file for the CoatRack web application (ygg-admin).
 # Personal/private config files override the default values that are defined in "application.yml".
 #
 # Steps to create your own customized config file:
 #  1. Create a copy of this file in the same directory
 #  2. Rename the copy as "application-private-[your-profile-name].yml"
 #     (follow this naming scheme, so that the file will be ignored by Git and not added to the public repository)
-#  3. Adjust the placeholder values in this file to be in line with your local development setup
-#  4. Run the CoatRack admin application using the Spring profile "private-[your-profile-name]"
+#  3. Adjust the placeholder values in this file to be in line with your personal CoatRack setup
+#  4. Run the CoatRack admin web application using the Spring profile "private-[your-profile-name]"
 #     (e.g. using your IDE or via the command "sh run-admin-web-application private-[your-profile-name]")
 #
 # This template includes the most common settings that are usually customized, but you can also add more settings
 # if you want to override the default values (see "application.yml" for all configuration options).
 #
 ygg:
+  mail:
+    # Define if CoatRack should send user verification emails (usually not required for local development tests)
+    verify-new-users-via-mail: false
+    # (Please note: if you specifically want to test/use the verification mail feature, you should add the other
+    #  "ygg.mail.*" parameters from "application.yml" here and adjust them to your own mail server).
   admin:
     gettingStarted:
       consumer:
