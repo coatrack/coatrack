@@ -6,6 +6,7 @@
 # TODO: Make everything deployable locally via IntelliJ as well.
 # TODO: Adapt documentation.
 # TODO: Aggregate build scripts into one big script. The scripts themself are quite small. Maybe translate them to function.
+# TODO: Get rid of "cd" commands.
 
 export PROJECT_DIR="${PWD}/.."
 export SPRING_COMPONENTS_DIR="${PROJECT_DIR}/spring-boot"
@@ -16,8 +17,16 @@ export DOCKER_COMPOSE_DEPLOYMENT_DIR="${DOCKER_DIR}/docker-compose-deployment"
 
 cd "${PROJECT_DIR}" || exit 1
 # TODO to be uncommented: mvn package -DskipTests
-
 . "${DOCKER_DIR}/build-and-push-all-docker-images.sh"
+
+echo "Initializing databases"
+cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}" || exit 1
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/initialize-databases-if-necessary.sh"
 
-docker-compose up -d
+echo "compose up"
+
+echo "volume: ${PROXY_CONFIG_FILES_VOLUME}"
+echo "folder: ${PROXY_CONFIG_FILES_FOLDER}"
+
+cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}" || exit 1
+docker-compose up
