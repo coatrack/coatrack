@@ -1,8 +1,7 @@
 #!/bin/sh
 
-cd "$(dirname "$0")" || exit
-export $(cat .env | grep -v '#' | awk '/=/ {print $1}')
-cd ..
+cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}" || exit 1
+export "$(cat .env | grep -v '#' | awk '/=/ {print $1}')"
 
 docker run --rm -d -p 5432:5432 \
   --name "${DATABASE_CONTAINER_NAME}" \
