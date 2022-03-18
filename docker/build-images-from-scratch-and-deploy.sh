@@ -5,15 +5,13 @@
 # TODO Replace sh scripts with bash scripts.
 # TODO: Make everything deployable locally via IntelliJ as well.
 # TODO: Adapt documentation.
-# TODO: Aggregate build scripts into one big script. The scripts themself are quite small. Maybe translate them to function.
-# TODO: Get rid of "cd" commands.
 
 export PROJECT_DIR="${PWD}/.."
 export SPRING_COMPONENTS_DIR="${PROJECT_DIR}/spring-boot"
 export DOCKER_DIR="${PROJECT_DIR}/docker"
 export DOCKER_COMPOSE_DEPLOYMENT_DIR="${DOCKER_DIR}/docker-compose-deployment"
 
-. "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-and-remove-all-containers.sh" # TODO Maybe add "-if-existent"?
+. "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-and-remove-all-containers-if-existent.sh"
 
 printf "\nBuilding CoatRack components from source.\n"
 cd "${PROJECT_DIR}" || exit 1

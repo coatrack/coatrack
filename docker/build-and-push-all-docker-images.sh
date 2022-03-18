@@ -10,6 +10,8 @@ build-and-push-single-docker-image () {
   docker push "coatrack/${MODULE_NAME}:${MODULE_VERSION}"
 }
 
+# TODO It would make much more sense to apply the maven build command here.
+
 printf "\nBuilding CoatRack component docker images and pushing them into Dockerhub.\n"
 
 cd "${PROJECT_DIR}" || exit 1
