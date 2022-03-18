@@ -12,7 +12,7 @@ docker run --rm -d \
   -e POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
   postgres:"${POSTGRES_VERSION}"
 
-echo "  Wait a fw seconds until database is ready."
+echo "  Waiting a few seconds until database is ready."
 sleep 5
 
 echo "  Create databases 'coatrack' and 'ygg_config_server' in PostgreSQL."

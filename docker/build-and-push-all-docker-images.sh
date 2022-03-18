@@ -14,8 +14,9 @@ build-and-push-single-docker-image () {
   fi
 }
 
-printf "\nBuilding CoatRack module docker images and pushing them into Dockerhub.\n"
+source "${PWD}/environment-variables.sh"
 
+printf "\nBuilding CoatRack module docker images and pushing them into Dockerhub.\n"
 echo "  Building jar files of CoatRack modules from source."
 cd "${PROJECT_DIR}" || exit 1
 # TODO to be uncommented: mvn package -DskipTests
