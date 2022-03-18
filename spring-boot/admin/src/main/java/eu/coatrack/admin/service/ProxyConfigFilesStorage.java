@@ -21,12 +21,18 @@ package eu.coatrack.admin.service;
  */
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 
 /**
  *
@@ -38,18 +44,27 @@ import org.springframework.stereotype.Component;
 public class ProxyConfigFilesStorage {
 
     @Value("${proxy.config.files.folder}")
-    private String proxyConfigFilesFolderPath;
+    private String proxyConfigFilesFolderLocation;
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
+    @PostConstruct
+    private void emptyProxyConfigFilesFolderIfExists() throws IOException {
+        Path proxyConfigFilesFolderPath = Paths.get(proxyConfigFilesFolderLocation);
+        if (Files.exists(proxyConfigFilesFolderPath)){
+            FileUtils.deleteDirectory(proxyConfigFilesFolderPath.toFile());
+        }
+        Files.createDirectory(proxyConfigFilesFolderPath);
+    }
+
     public void addProxy(Proxy proxy) throws IOException {
-        File proxyConfigFilesFolder = new File(proxyConfigFilesFolderPath);
+        File proxyConfigFilesFolder = new File(proxyConfigFilesFolderLocation);
         if (!proxyConfigFilesFolder.exists())
             if (!proxyConfigFilesFolder.mkdirs())
-                throw new IOException("Could not create directory " + proxyConfigFilesFolderPath);
+                throw new IOException("Could not create directory " + proxyConfigFilesFolderLocation);
 
-        PrintWriter writer = new PrintWriter(proxyConfigFilesFolderPath + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
+        PrintWriter writer = new PrintWriter(proxyConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);
         if (proxy.getPort() != null) {
@@ -64,7 +79,7 @@ public class ProxyConfigFilesStorage {
     }
 
     public void deleteProxy(Proxy proxy) throws FileNotFoundException, FileCouldNotBeDeletedException {
-        File proxyConfigToBeDeleted = new File(proxyConfigFilesFolderPath + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
+        File proxyConfigToBeDeleted = new File(proxyConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         if (!proxyConfigToBeDeleted.exists())
             throw new FileNotFoundException("Tried to delete the configuration for proxy " + proxy.getId()
                     + ", but there is no according file.");

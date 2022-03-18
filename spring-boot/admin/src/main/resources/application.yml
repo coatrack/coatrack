@@ -110,4 +110,4 @@ management.security.enabled: false
 
 # Proxy configuration files are stored in this directory. The value of this parameter needs to direct to the same
 # folder as spring.cloud.config.server.native.searchLocations from the Config Servers application.yml.
-proxy.config.files.folder: ${user.home}/AppData/Local/Temp/coatrack
+proxy.config.files.folder: ${user.dir}/.temp-gateway-config-file-storage

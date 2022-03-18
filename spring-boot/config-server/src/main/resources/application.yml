@@ -27,7 +27,7 @@ spring:
             ddl-auto: create-drop
             #ddl-auto: update
     profiles.active: native
-    cloud.config.server.native.searchLocations: file:///${user.home}/AppData/Local/Temp/coatrack
+    cloud.config.server.native.searchLocations: file:///${user.dir}/.temp-gateway-config-file-storage
                     
 ygg:
   admin:
