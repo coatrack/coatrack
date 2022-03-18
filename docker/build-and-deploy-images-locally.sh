@@ -1,13 +1,10 @@
 #!/bin/bash
 
-THIS_SCRIPTS_DIR=$(dirname "$(readlink -f "$0")")
-cd "${THIS_SCRIPTS_DIR}" || exit 1
-
 export IMAGE_PUSH_POLICY="suppress-image-pushes"
 source "environment-variables.sh"
 
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-containers-and-clean-up-traces-if-existent.sh"
-
+cd "${DOCKER_DIR}" || exit 1
 . "${DOCKER_DIR}/build-and-push-images.sh"
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/initialize-databases-if-necessary.sh"
 
