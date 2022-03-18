@@ -47,14 +47,7 @@ public class MetricsAggregationCustomRepositoryTest {
     @Autowired
     MetricRepository metricRepository;
 
-    /**
-     * api provider username, needs to be in sync with sample data
-     *
-     * @see eu.coatrack.admin.DatabaseInitializer
-     */
-    @Value("${ygg.admin.database.sampleDataUsername:exampleCompanyInc}")
-    private String sampleDataApiProviderUsername;
-
+    private String sampleDataApiProviderUsername = "exampleCompanyInc";
     private LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
     private LocalDate today = LocalDate.now();
 
