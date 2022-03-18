@@ -2,7 +2,7 @@
 
 
 
-## For  CoatRack Users
+## For CoatRack Users
 
 ### Deployment For Newcomers
 
@@ -12,7 +12,7 @@ This approach is suggested if you are completely new to CoatRack and want to jus
 2. Go to the directory `docker-compose-deployment` and execute:
 
 ```sh
-docker-compose --profile example-gateway up
+docker-compose --profile example-gateway up -d
 ```
 
 * The last step is to check out the service provided by the example Gateway. Search for this URL in your browser:
@@ -21,15 +21,19 @@ docker-compose --profile example-gateway up
 http://localhost:8088/humidity-by-location?api-key=ee11ee22-ee33-ee44-ee55-ee66ee77ee88
 ```
 
+* The Example-Gateway should accept the provided API key and redirect you to the website of the `humidity-by-location` service.
 
 
-### Deployment for Development and Production
 
-This approach is meant for developers and people who would like to deploy a production-ready CoatRack instance with a clean, empty database and without an example Gateway. Just go to the directory `docker-compose-deployment` and execute:
+### Deployment for Production
+
+This approach is meant for developers and people who would like to deploy a production-ready CoatRack instance with a clean, empty database and without an Example-Gateway. Just go to the directory `docker-compose-deployment` and execute:
 
 ```sh
-docker-compose up
+docker-compose up -d
 ```
+
+CoatRack will be accessible at `localhost:8080`.
 
 
 
@@ -37,5 +41,5 @@ docker-compose up
 
 There are two scripts in the `docker` directory: 
 
-* `build-and-push-images` builds the docker images of CoatRack modules from source and pushes the image to Dockerhub. This only works, when the docker daemon is already logged in to the repository. This script is especially useful within a CI pipeline to update the latest Dockerhub images of CoatRack.
-* `build-and-deploy-images-locally` also build the above mentioned docker images from scratch but additionally deploys a production-ready instance locally. This is especially useful for developers who change the source code locally and want to test the impact of that change in a realistic setup.
+* `build-and-push-images` builds the docker image of each CoatRack modul from source and pushes the images to Dockerhub. This only works, when the docker daemon is already logged in to the CoatRack repository. This script is especially useful within a CI pipeline to update the latest Dockerhub images.
+* `build-and-deploy-images-locally` also builds the above mentioned docker images from scratch but additionally deploys a production-ready instance locally. This is especially useful for developers who apply changes to the source code locally and want to test the impact of that changes in a realistic setup.
