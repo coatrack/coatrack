@@ -7,7 +7,11 @@ build-and-push-single-docker-image () {
 
   echo "  Building version $MODULE_VERSION of module $MODULE_NAME in $MODULE_DIR"
   docker build -f "${DOCKER_DIR}/Dockerfile" -t "coatrack/${MODULE_NAME}:${MODULE_VERSION}" --build-arg MODULE_VERSION="${MODULE_VERSION}" --build-arg MODULE_NAME="${MODULE_NAME}" --build-arg MODULE_DIR="${MODULE_DIR}" .
-  docker push "coatrack/${MODULE_NAME}:${MODULE_VERSION}"
+
+  if [ "${IMAGE_PUSH_POLICY}" != "suppress-image-pushes" ]; then
+    echo "  Pushing coatrack/${MODULE_NAME}:${MODULE_VERSION} to Dockerhub."
+    docker push "coatrack/${MODULE_NAME}:${MODULE_VERSION}"
+  fi
 }
 
 printf "\nBuilding CoatRack module docker images and pushing them into Dockerhub.\n"
