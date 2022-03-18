@@ -6,7 +6,7 @@ cd "${THIS_SCRIPTS_DIR}" || exit 1
 export IMAGE_PUSH_POLICY="suppress-image-pushes"
 source "environment-variables.sh"
 
-. "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-and-remove-all-containers-if-existent.sh"
+. "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-containers-and-clean-up-traces-if-existent.sh"
 
 . "${DOCKER_DIR}/build-and-push-images.sh"
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/initialize-databases-if-necessary.sh"

@@ -58,48 +58,79 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 
 
-## Deployment with Docker 
+## Installation using production-ready Docker Images
 
-The easiest way is to use the already prefabricated Docker images from Dockerhub. The following prerequisites are required:
+ The following prerequisites are required:
 
 *  a Linux shell - Windows users can use WSL of the Git Bash shell instead
 *  docker
 *  docker-compose
 
-Go to the docker-compose-setup folder and execute:
 
- ```sh
- ./install.sh
- ```
 
-The script only needs to be executed once at the very first time to initialize the docker volumes by creating the Postgres databases. After that, it would be sufficient to run CoatRack via execution of:
+### Deployment For Newcomers
 
-``````sh
-docker-compose up
-``````
+This approach is suggested if you are completely new to CoatRack and want to just want to experience what it actually does. Follow these instructions:
 
-After starting up, the CoatRack web application will be accessible at `http://localhost:8080`.
-
-If you want to remove CoatRack and all associated traces, execute:
+1. Change the `INSERT_SAMPLE_DATA_ON_STARTUP` parameter in `.env` to `true` to initialize the example Gateway in the database.
+2. Go to the directory `docker/docker-compose-deployment` and execute:
 
 ```sh
-./uninstall.sh
+bash initialize-databases-if-necessary.sh
+```
+
+* The previous step is required to create the databases within PostgreSQL. Now you can set up CoatRack via:
+
+```sh
+docker-compose --profile example-gateway up -d
+```
+
+* The last step is to check out the service provided by the example Gateway. Search for this URL in your browser:
+
+```http
+http://localhost:8088/humidity-by-location?api-key=ee11ee22-ee33-ee44-ee55-ee66ee77ee88
+```
+
+* The Example-Gateway should accept the provided API key and redirect you to the website of the `humidity-by-location` service.
+* CoatRack can be shutdown by just executing:
+
+```sh
+docker-compose --profile example-gateway down
+```
+
+* If you want to remove CoatRack and all associated traces, execute:
+
+```sh
+bash stop-containers-and-clean-up-traces-if-existent.sh
 ```
 
 
 
-## Installation from scratch
+### Deployment for Production
 
-Another approach is to build CoatRack from the source code which is meant for developers. The following prerequisites are required in addition to the dependencies mentioned in the previous section:
+This approach is meant for developers and people who would like to deploy a production-ready CoatRack instance with a clean, empty database and without an Example-Gateway. Just go to the directory `docker-compose-deployment` and execute:
+
+```sh
+docker-compose up -d
+```
+
+CoatRack will be accessible at `localhost:8080`.
+
+
+
+## Operations from Scratch
+
+To build CoatRack from scratch the following prerequisites are required in addition to the dependencies mentioned in the previous section:
 
 * OpenJDK 11
 * Maven 3.6.3 or higher
 
-To do so, go to the `docker-compose-setup` directory and execute:
 
-``````
-./build-from-scratch.sh
-``````
+
+There are two scripts in the `docker` directory helping you with that:
+
+* `build-and-push-images` builds the docker image of each CoatRack modul from source and pushes the images to Dockerhub. This only works, when the docker daemon is already logged in to the CoatRack repository. This script is especially useful within a CI pipeline to update the latest Dockerhub images.
+* `build-and-deploy-images-locally` also builds the above mentioned docker images from scratch for local use and deploys a production-ready instance locally using these images. This is especially useful for developers who apply changes to the source code locally and want to test the impact of these changes in a realistic setup.
 
 
 
