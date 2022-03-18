@@ -40,9 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author perezdf
  */
-public class ProxyConfigFilesStorageTest {
+public class GatewayConfigFilesStorageTest {
 
-    public ProxyConfigFilesStorageTest() {
+    public GatewayConfigFilesStorageTest() {
     }
 
     @BeforeAll
@@ -62,7 +62,7 @@ public class ProxyConfigFilesStorageTest {
     }
 
     @Autowired
-    ProxyConfigFilesStorage proxyConfigFilesStorage;
+    GatewayConfigFilesStorage gatewayConfigFilesStorage;
     
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
@@ -84,6 +84,6 @@ public class ProxyConfigFilesStorageTest {
         services.add(service);
         proxy.setServiceApis(services);
 
-        proxyConfigFilesStorage.addProxy(proxy);
+        gatewayConfigFilesStorage.addGatewayConfigFile(proxy);
     }
 }

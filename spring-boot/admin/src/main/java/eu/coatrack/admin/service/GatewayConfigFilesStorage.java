@@ -41,30 +41,25 @@ import javax.annotation.PostConstruct;
 
 @Slf4j
 @Component
-public class ProxyConfigFilesStorage {
+public class GatewayConfigFilesStorage {
 
     @Value("${proxy.config.files.folder}")
-    private String proxyConfigFilesFolderLocation;
+    private String gatewayConfigFilesFolderLocation;
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
     @PostConstruct
     private void emptyProxyConfigFilesFolderIfExists() throws IOException {
-        Path proxyConfigFilesFolderPath = Paths.get(proxyConfigFilesFolderLocation);
-        if (Files.exists(proxyConfigFilesFolderPath)){
-            FileUtils.deleteDirectory(proxyConfigFilesFolderPath.toFile());
+        Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
+        if (Files.exists(gatewayConfigFilesFolderPath)){
+            FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
         }
-        Files.createDirectory(proxyConfigFilesFolderPath);
+        Files.createDirectory(gatewayConfigFilesFolderPath);
     }
 
-    public void addProxy(Proxy proxy) throws IOException {
-        File proxyConfigFilesFolder = new File(proxyConfigFilesFolderLocation);
-        if (!proxyConfigFilesFolder.exists())
-            if (!proxyConfigFilesFolder.mkdirs())
-                throw new IOException("Could not create directory " + proxyConfigFilesFolderLocation);
-
-        PrintWriter writer = new PrintWriter(proxyConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
+    public void addGatewayConfigFile(Proxy proxy) throws IOException {
+        PrintWriter writer = new PrintWriter(gatewayConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
         writer.println("proxy-id: " + proxy.getId());
         writer.println("ygg.admin.api-base-url: " + adminApiBaseUrlForGateway);
         if (proxy.getPort() != null) {
@@ -78,16 +73,22 @@ public class ProxyConfigFilesStorage {
         writer.close();
     }
 
-    public void deleteProxy(Proxy proxy) throws FileNotFoundException, FileCouldNotBeDeletedException {
-        File proxyConfigToBeDeleted = new File(proxyConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml", "UTF-8");
-        if (!proxyConfigToBeDeleted.exists())
-            throw new FileNotFoundException("Tried to delete the configuration for proxy " + proxy.getId()
-                    + ", but there is no according file.");
-        else {
-            if (proxyConfigToBeDeleted.delete())
-                log.debug("Proxy {} was successfully deleted.", proxy.getId());
-            else
-                throw new FileCouldNotBeDeletedException("Configuration file of proxy " + proxy.getId() + " could not be deleted.");
+    public void deleteGatewayConfigFile(Proxy proxy) throws IOException {
+        Path gatewayConfigFileToBeDeletedPath = Paths.get(gatewayConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml");
+        if (Files.exists(gatewayConfigFileToBeDeletedPath)) {
+            tryToDeleteGatewayConfigFile(proxy, gatewayConfigFileToBeDeletedPath);
+        } else {
+            throw new FileNotFoundException("Tried to delete the configuration file for proxy " + proxy.getId()
+                    + ", but there is no according file + " + gatewayConfigFileToBeDeletedPath);
+        }
+    }
+
+    private void tryToDeleteGatewayConfigFile(Proxy proxy, Path gatewayConfigFileToBeDeletedPath) throws IOException {
+        try {
+            Files.delete(gatewayConfigFileToBeDeletedPath);
+            log.debug("Gateway {} was successfully deleted.", proxy.getId());
+        } catch (Exception e) {
+            throw new FileCouldNotBeDeletedException("Configuration file of proxy " + proxy.getId() + " could not be deleted.", e);
         }
     }
 

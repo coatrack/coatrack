@@ -23,7 +23,7 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.admin.service.ProxyConfigFilesStorage;
+import eu.coatrack.admin.service.GatewayConfigFilesStorage;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -88,7 +88,7 @@ public class AdminProxiesController {
     private CustomProxyFileGeneratorService customProxyFileGenerator;
 
     @Autowired
-    private ProxyConfigFilesStorage proxyConfigFilesStorage;
+    private GatewayConfigFilesStorage gatewayConfigFilesStorage;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -160,7 +160,7 @@ public class AdminProxiesController {
         createProxyAction.setSelectedServices(selectedServices);
         createProxyAction.execute();
 
-        proxyConfigFilesStorage.addProxy(proxy);
+        gatewayConfigFilesStorage.addGatewayConfigFile(proxy);
 
         return proxyListPage();
     }
@@ -268,14 +268,15 @@ public class AdminProxiesController {
         proxy.getServiceApis().clear();
         proxy.setDeletedWhen(new Date());
         proxyRepository.save(proxy);
+        gatewayConfigFilesStorage.deleteGatewayConfigFile(proxy);
         return proxyListPageRest();
     }
 
     public void transmitConfigChangesToGitConfigRepository(Proxy updatedProxy) throws IOException, GitAPIException, URISyntaxException {
         log.debug("deleting old proxy config from git repository for proxy {}", updatedProxy.getId());
-        proxyConfigFilesStorage.deleteProxy(updatedProxy);
+        gatewayConfigFilesStorage.deleteGatewayConfigFile(updatedProxy);
         log.debug("writing new proxy config into git repository {}", updatedProxy);
-        proxyConfigFilesStorage.addProxy(updatedProxy);
+        gatewayConfigFilesStorage.addGatewayConfigFile(updatedProxy);
     }
 
     public void informProxyAboutUpdatedConfiguration(Proxy updatedProxy) throws URISyntaxException {

@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.UUID;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.admin.service.ProxyConfigFilesStorage;
+import eu.coatrack.admin.service.GatewayConfigFilesStorage;
 import eu.coatrack.config.ConfigServerCredential;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.User;
@@ -52,7 +52,7 @@ public class CreateProxyAction implements Action {
     //
     ///////////////////////////
     @Autowired
-    private ProxyConfigFilesStorage proxyConfigFilesStorage;
+    private GatewayConfigFilesStorage gatewayConfigFilesStorage;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -123,7 +123,7 @@ public class CreateProxyAction implements Action {
             proxy.setOwner(user);
             proxy = proxyRepository.save(proxy);
 
-            proxyConfigFilesStorage.addProxy(proxy);
+            gatewayConfigFilesStorage.addGatewayConfigFile(proxy);
 
         } catch (IOException exception) {
             this.ex = exception;
