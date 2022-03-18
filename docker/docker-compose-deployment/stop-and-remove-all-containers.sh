@@ -3,10 +3,12 @@
 cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}" || exit 1
 . .env
 
+printf "\nCleaning up by removing current containers and volumes.\n"
+
 docker-compose down
 docker volume rm "${DATABASE_VOLUME}" "${PROXY_CONFIG_FILES_VOLUME}"
 
-# TODO Use a loop instead.
-docker rmi $(docker images -q coatrack/coatrack-admin)
-docker rmi $(docker images -q coatrack/coatrack-config-server)
-docker rmi $(docker images -q coatrack/coatrack-proxy)
+for MODULE in "admin" "proxy" "config-server"; do
+  echo "Deleting module coatrack-${MODULE}"
+  docker rmi "$(docker images -q coatrack/coatrack-admin)" > /dev/null
+done

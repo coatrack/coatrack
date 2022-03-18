@@ -15,14 +15,11 @@ export DOCKER_COMPOSE_DEPLOYMENT_DIR="${DOCKER_DIR}/docker-compose-deployment"
 
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-and-remove-all-containers.sh" # TODO Maybe add "-if-existent"?
 
-echo "Crating"
+printf "\nBuilding CoatRack components from source.\n"
 cd "${PROJECT_DIR}" || exit 1
-
 # TODO to be uncommented: mvn package -DskipTests
 
 . "${DOCKER_DIR}/build-and-push-all-docker-images.sh"
-
-echo "Initializing databases"
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/initialize-databases-if-necessary.sh"
 
 echo "Starting all services."
