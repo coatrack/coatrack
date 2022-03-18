@@ -10,7 +10,7 @@ source "${PWD}/environment-variables.sh"
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/stop-and-remove-all-containers-if-existent.sh"
 
 cd "${DOCKER_DIR}" || exit 1
-. "${DOCKER_DIR}/build-and-push-all-docker-images.sh"
+. "${DOCKER_DIR}/build-and-push-images.sh"
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/initialize-databases-if-necessary.sh"
 
 printf "\nStarting all services.\n"
