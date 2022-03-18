@@ -12,7 +12,8 @@ logging:
 ygg:
   mail:
     # Define if CoatRack should send verification emails to newly registered users
-    verify-new-users-via-mail: true
+    # TODO Feature is not working, yet. After #53 is fixed, the parameter can be set to true.
+    verify-new-users-via-mail: false
     # Settings for the verification email to be sent to new users
     server:
       url: smtp-server-url
