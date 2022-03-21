@@ -97,7 +97,7 @@ spring:
             redirect-uri: http://localhost:8080/login/oauth2/code/github
         provider:
           github:
-            # Define the authentication name as the login attribute retrieved from the User
+            # Use the "login" attribute of the Github user info as authentication name in Spring Security
             user-name-attribute: login
           resource:
             userInfoUri: https://api.github.com/user
