@@ -21,11 +21,9 @@ package eu.coatrack.admin.service;
  */
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
 import eu.coatrack.config.github.GithubEmail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,7 +37,6 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
@@ -48,22 +45,13 @@ public class OAuthUserDetailsService {
     private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
 
     private OAuth2AuthorizedClientService clientService;
-    private ObjectMapper objectMapper;
     private RestTemplate restTemplate;
-    private HttpHeaders headers;
 
     @Autowired
     public OAuthUserDetailsService(OAuth2AuthorizedClientService clientService,
-                                   ObjectMapper objectMapper,
                                    RestTemplate restTemplate) {
         this.clientService = clientService;
-        this.objectMapper = objectMapper;
         this.restTemplate = restTemplate;
-    }
-
-    @PostConstruct
-    private void initialize() {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     private OAuth2User getLoggedInUser() {
@@ -94,20 +82,20 @@ public class OAuthUserDetailsService {
         return email;
     }
 
-    private ResponseEntity<String> getEmailsListFromGithub() {
+    private List<GithubEmail> getEmailsListFromGithub() {
+        HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
         HttpEntity<String> githubRequest = new HttpEntity(headers);
 
-        return restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
-                githubRequest, String.class);
+        ResponseEntity<List<GithubEmail>> emailsListFromGithub = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+                githubRequest, new ParameterizedTypeReference<List<GithubEmail>>() {});
+        return emailsListFromGithub.getBody();
     }
 
-    private String getPrimaryEmailFromLoggedInUser() throws JsonProcessingException {
+    private String getPrimaryEmailFromLoggedInUser() {
 
-        CollectionType mapResponseWithEmailsListToAListOfGithubEmails = objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class);
-        List<GithubEmail> emailsList = objectMapper.readValue(getEmailsListFromGithub().getBody(), mapResponseWithEmailsListToAListOfGithubEmails);
-
-        return emailsList.stream()
+        return getEmailsListFromGithub()
+                .stream()
                 .filter(email -> (email.isMailAddressVerified() && email.isUsersPrimaryMailAddress()))
                 .map(GithubEmail::getEmail)
                 .findFirst()
