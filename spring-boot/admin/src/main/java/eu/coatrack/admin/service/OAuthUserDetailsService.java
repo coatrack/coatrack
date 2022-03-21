@@ -44,8 +44,8 @@ public class OAuthUserDetailsService {
 
     private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
 
-    private OAuth2AuthorizedClientService clientService;
-    private RestTemplate restTemplate;
+    private final OAuth2AuthorizedClientService clientService;
+    private final RestTemplate restTemplate;
 
     @Autowired
     public OAuthUserDetailsService(OAuth2AuthorizedClientService clientService,
