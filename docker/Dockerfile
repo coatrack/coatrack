@@ -2,11 +2,11 @@ FROM adoptopenjdk/openjdk11:jre-11.0.14_9-alpine
 LABEL maintainer=coatrack.eu
 
 ARG MODULE
-ARG MODULE_VERSION
+ARG PROJECT_VERSION
 
 # File names.
-ENV COATRACK_MODULE_JAR="coatrack-${MODULE}-${MODULE_VERSION}.jar"
-ENV COATRACK_GATEWAY_JAR="coatrack-proxy-${MODULE_VERSION}.jar"
+ENV COATRACK_MODULE_JAR="coatrack-${MODULE}-${PROJECT_VERSION}.jar"
+ENV COATRACK_GATEWAY_JAR="coatrack-proxy-${PROJECT_VERSION}.jar"
 
 # Project folder directories.
 ENV PROJECT_FOLDER_GATEWAY_TARGET_DIR="spring-boot/proxy/target"
