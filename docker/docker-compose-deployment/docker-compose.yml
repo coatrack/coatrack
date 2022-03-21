@@ -52,7 +52,8 @@ services:
       --spring.cloud.config.username=${CONFIG_SERVER_USERNAME} \
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
       --ygg.proxy.executable-jar.template.url=file://${JAR_DIR}/coatrack-proxy- \
-      --proxy.config.files.folder=${PROXY_CONFIG_FILES_FOLDER}"]
+      --proxy.config.files.folder=${PROXY_CONFIG_FILES_FOLDER} \
+      --is-run-via-docker-compose-setup=true"]
 
   coatrack-example-gateway:
     profiles:

@@ -5,18 +5,23 @@ ARG MODULE_VERSION
 ARG MODULE_NAME
 ARG MODULE_DIR
 
-ENV HOME_DIR="/home/coatrack"
-ENV JAR_DIR="/home/coatrack/jars"
-ENV CONFIGS_DIR="/home/coatrack/proxy-config-files"
-ENV JAVA_OPTS=""
+ENV CONTAINER_HOME_DIR="/home/coatrack"
+ENV CONTAINER_JAR_FILES_DIR="/home/coatrack/jars"
+ENV CONTAINER_GATEWAY_CONFIG_FILES_DIR="/home/coatrack/proxy-config-files"
+
+ENV PROJECT_FOLDER_GATEWAY_TARGET_DIR="spring-boot/proxy/target"
+ENV GATEWAY_NAME="coatrack-proxy-${MODULE_VERSION}.jar"
 ENV MODULE_NAME=${MODULE_NAME}
 
+# TODO Do I accidentally delete the proxy jar in the proxy image? If so, the rm-if-statement is to be adapted.
+# TODO Maybe use the jib maven plugin instead of a dockerfile.
+# TODO I think openjdk is downloaded three times which is unnecessary. Maybe create a template container image?
 RUN apk add --no-cache openjdk11
-COPY ${MODULE_DIR}/target/${MODULE_NAME}-${MODULE_VERSION}.jar ${JAR_DIR}/${MODULE_NAME}.jar
-COPY spring-boot/proxy/target/coatrack-proxy-${MODULE_VERSION}.jar ${JAR_DIR}/coatrack-proxy-${MODULE_VERSION}.jar
-RUN if [ ${MODULE_NAME} != "coatrack-admin" ]; then rm ${JAR_DIR}/coatrack-proxy-${MODULE_VERSION}.jar; fi
+COPY ${MODULE_DIR}/target/${MODULE_NAME}-${MODULE_VERSION}.jar ${CONTAINER_JAR_FILES_DIR}/${MODULE_NAME}.jar
+COPY ${PROJECT_FOLDER_GATEWAY_TARGET_DIR}/${GATEWAY_NAME} ${CONTAINER_JAR_FILES_DIR}/${GATEWAY_NAME}
+RUN if [ ${MODULE_NAME} != "coatrack-admin" ]; then rm ${CONTAINER_JAR_FILES_DIR}/${GATEWAY_NAME}; fi
 RUN adduser -D -s /bin/false -g coatrack coatrack coatrack
-RUN mkdir -p ${CONFIGS_DIR} && chown -R coatrack:coatrack ${HOME_DIR}
+RUN mkdir -p ${CONTAINER_GATEWAY_CONFIG_FILES_DIR} && chown -R coatrack:coatrack ${CONTAINER_HOME_DIR}
 USER coatrack
-WORKDIR ${HOME_DIR}
-ENTRYPOINT [ "sh", "-c", "java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar ${JAR_DIR}/$MODULE_NAME.jar" ]
+WORKDIR ${CONTAINER_HOME_DIR}
+ENTRYPOINT [ "sh", "-c", "java -Djava.security.egd=file:/dev/./urandom -jar ${CONTAINER_JAR_FILES_DIR}/$MODULE_NAME.jar" ]
