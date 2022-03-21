@@ -111,10 +111,11 @@ bash stop-containers-and-clean-up-traces-if-existent.sh
 This approach is meant for developers and people who would like to deploy a production-ready CoatRack instance with a clean, empty database and without an Example-Gateway. Just go to the directory `docker-compose-deployment` and execute:
 
 ```sh
+bash initialize-databases-if-necessary.sh
 docker-compose up -d
 ```
 
-CoatRack will be accessible at `localhost:8080`.
+CoatRack will be accessible at `localhost:8080`. The 'database-initialization' has to be performed only once at the beginning. The initialization will persist on the docker volume used by the database.
 
 
 
@@ -127,10 +128,10 @@ To build CoatRack from scratch the following prerequisites are required in addit
 
 
 
-There are two scripts in the `docker` directory helping you with that:
+There are two scripts in the `docker` directory helping you:
 
-* `build-and-push-images` builds the docker image of each CoatRack modul from source and pushes the images to Dockerhub. This only works, when the docker daemon is already logged in to the CoatRack repository. This script is especially useful within a CI pipeline to update the latest Dockerhub images.
-* `build-and-deploy-images-locally` also builds the above mentioned docker images from scratch for local use and deploys a production-ready instance locally using these images. This is especially useful for developers who apply changes to the source code locally and want to test the impact of these changes in a realistic setup.
+* `build-and-push-images.sh` builds the docker image of each CoatRack modul from source and pushes the images to Dockerhub. This only works, when the docker daemon is already logged in to the CoatRack repository. This script is especially useful within a CI pipeline to update the latest Dockerhub images.
+* `build-and-deploy-images-locally.sh` also builds the above mentioned docker images from scratch for local use and deploys a production-ready instance locally using these images. This is especially useful for developers who apply changes to the source code locally and want to test the impact of these changes in a realistic setup.
 
 
 
