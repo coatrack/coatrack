@@ -9,8 +9,8 @@ ENV COATRACK_MODULE_JAR="coatrack-${MODULE}-${PROJECT_VERSION}.jar"
 ENV COATRACK_GATEWAY_JAR="coatrack-proxy-${PROJECT_VERSION}.jar"
 
 # Project folder directories.
-ENV PROJECT_FOLDER_GATEWAY_TARGET_DIR="spring-boot/proxy/target"
 ENV PROJECT_FOLDER_MODULE_TARGET_DIR="spring-boot/${MODULE}/target"
+ENV PROJECT_FOLDER_GATEWAY_TARGET_DIR="spring-boot/proxy/target"
 
 # Docker container directories.
 ENV CONTAINER_HOME_DIR="/home/coatrack"

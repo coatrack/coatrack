@@ -13,13 +13,14 @@ build-and-push-single-docker-image () {
   fi
 }
 
+export IMAGE_PUSH_POLICY="$1"
 source "environment-variables.sh"
+cd "${PROJECT_DIR}" || exit 1
+export PROJECT_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
 
 printf "\nBuilding CoatRack module docker images and pushing them into Dockerhub.\n"
 echo "  Building jar files of CoatRack modules from source."
-cd "${PROJECT_DIR}" || exit 1
 mvn clean package -DskipTests
-export PROJECT_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
 
 echo "  Building docker images for version ${PROJECT_VERSION}"
 for MODULE in "admin" "proxy" "config-server"; do
