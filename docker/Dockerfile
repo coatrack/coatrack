@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM adoptopenjdk/openjdk11:jre-11.0.14_9-alpine
 LABEL maintainer=coatrack.eu
 
 ARG MODULE_VERSION
@@ -13,10 +13,7 @@ ENV PROJECT_FOLDER_GATEWAY_TARGET_DIR="spring-boot/proxy/target"
 ENV GATEWAY_NAME="coatrack-proxy-${MODULE_VERSION}.jar"
 ENV MODULE_NAME=${MODULE_NAME}
 
-# TODO Do I accidentally delete the proxy jar in the proxy image? If so, the rm-if-statement is to be adapted.
 # TODO Maybe use the jib maven plugin instead of a dockerfile.
-# TODO I think openjdk is downloaded three times which is unnecessary. Maybe create a template container image?
-RUN apk add --no-cache openjdk11
 COPY ${MODULE_DIR}/target/${MODULE_NAME}-${MODULE_VERSION}.jar ${CONTAINER_JAR_FILES_DIR}/${MODULE_NAME}.jar
 COPY ${PROJECT_FOLDER_GATEWAY_TARGET_DIR}/${GATEWAY_NAME} ${CONTAINER_JAR_FILES_DIR}/${GATEWAY_NAME}
 RUN if [ ${MODULE_NAME} != "coatrack-admin" ]; then rm ${CONTAINER_JAR_FILES_DIR}/${GATEWAY_NAME}; fi
