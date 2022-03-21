@@ -22,10 +22,11 @@ echo "  Building jar files of CoatRack modules from source."
 cd "${PROJECT_DIR}" || exit 1
 mvn clean package -DskipTests
 
+# TODO That is the project version from the pom.xml and not the Maven version, isn't it? Maybe echo the value to gain more infos.
 CURRENT_MVN_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
-MODULE_VERSION=${1:-$CURRENT_MVN_VERSION}
+export MODULE_VERSION=${1:-$CURRENT_MVN_VERSION}
 echo "  Building docker images for version ${VERSION}"
 
 for MODULE in "admin" "proxy" "config-server"; do
-  build-and-push-single-docker-image "${MODULE}" "${MODULE_VERSION}"
+  build-and-push-single-docker-image "${MODULE}"
 done
