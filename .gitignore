@@ -59,6 +59,3 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/
-
-# Temporary storage for developers
-.temp-gateway-config-file-storage

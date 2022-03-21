@@ -51,6 +51,14 @@ public class GatewayConfigFilesStorage {
 
     @PostConstruct
     private void emptyProxyConfigFilesFolderIfExists() throws IOException {
+        //TODO Disable this feature for docker containers. Maybe use a variable like isDockerComposeSetup = false, which
+        //  is overridden by the docker-compose.yml.
+        //TODO Make it makes sense to make a docker-compose profile (application-docker-compose.yml) instead
+        //  of writing everything in the docker-compose.yml.
+        Path targetFolderPath = Paths.get(System.getProperty("user.dir") + "/target");
+        if (Files.notExists(targetFolderPath))
+            Files.createDirectory(targetFolderPath);
+
         Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
         if (Files.exists(gatewayConfigFilesFolderPath)){
             FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());

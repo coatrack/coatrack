@@ -27,7 +27,7 @@ spring:
             ddl-auto: create-drop
             #ddl-auto: update
     profiles.active: native
-    cloud.config.server.native.searchLocations: file:///${user.dir}/.temp-gateway-config-file-storage
+    cloud.config.server.native.searchLocations: file:///${user.dir}/target/temp-gateway-config-file-storage
                     
 ygg:
   admin:

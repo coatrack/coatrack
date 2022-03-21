@@ -12,7 +12,7 @@ logging:
 ygg:
   mail:
     # Define if CoatRack should send verification emails to newly registered users
-    # TODO Feature is not working, yet. After #53 is fixed, the parameter can be set to true.
+    # TODO Feature is not working, yet. After #53 is fixed, the parameter can be set to "true".
     verify-new-users-via-mail: false
     # Settings for the verification email to be sent to new users
     server:
@@ -128,4 +128,4 @@ management.security.enabled: false
 
 # Proxy configuration files are stored in this directory. The value of this parameter needs to direct to the same
 # folder as spring.cloud.config.server.native.searchLocations from the Config Servers application.yml.
-proxy.config.files.folder: ${user.dir}/.temp-gateway-config-file-storage
+proxy.config.files.folder: ${user.dir}/target/temp-gateway-config-file-storage
