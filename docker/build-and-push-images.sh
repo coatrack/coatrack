@@ -19,7 +19,7 @@ source "environment-variables.sh"
 printf "\nBuilding CoatRack module docker images and pushing them into Dockerhub.\n"
 echo "  Building jar files of CoatRack modules from source."
 cd "${PROJECT_DIR}" || exit 1
-mvn package -DskipTests
+mvn clean package -DskipTests
 
 CURRENT_MVN_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
 VERSION=${1:-$CURRENT_MVN_VERSION}

@@ -53,9 +53,7 @@ public class GatewayConfigFilesStorage {
     private boolean isDockerComposeSetup;
 
     @PostConstruct
-    private void emptyProxyConfigFilesFolderIfExists() throws IOException {
-        //TODO Make it makes sense to make a docker-compose profile (application-docker-compose.yml) instead
-        //  of writing everything in the docker-compose.yml.
+    private void emptyProxyConfigFilesFolderIfExistsForNonDockerComposeDeployments() throws IOException {
         if (!isDockerComposeSetup){
             Path targetFolderPath = Paths.get(System.getProperty("user.dir") + "/target");
             if (Files.notExists(targetFolderPath))
