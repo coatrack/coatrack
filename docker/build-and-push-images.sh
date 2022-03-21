@@ -1,7 +1,6 @@
 #!/bin/bash
 
 build-and-push-single-docker-image () {
-  # TODO Are the arguments still required?
   MODULE_NAME=${1}
   MODULE_VERSION=${2}
   MODULE_DIR=${3}
