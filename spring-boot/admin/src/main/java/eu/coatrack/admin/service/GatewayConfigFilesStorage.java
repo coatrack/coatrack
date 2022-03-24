@@ -55,10 +55,6 @@ public class GatewayConfigFilesStorage {
     @PostConstruct
     private void emptyProxyConfigFilesFolderIfExistsForNonDockerComposeDeployments() throws IOException {
         if (!isDockerComposeSetup){
-            Path targetFolderPath = Paths.get(System.getProperty("user.dir") + "/target");
-            if (Files.notExists(targetFolderPath))
-                Files.createDirectory(targetFolderPath);
-
             Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
             if (Files.exists(gatewayConfigFilesFolderPath)){
                 FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());

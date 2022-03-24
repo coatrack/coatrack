@@ -59,3 +59,6 @@ release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/
+
+# Config file storage folder for the gateway
+.temp-gateway-config-file-storage
