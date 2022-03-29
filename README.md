@@ -58,34 +58,34 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 
 
-## Installation using production-ready Docker Images
+## Installation using Docker Images
 
  The following prerequisites are required:
 
-*  a Linux shell - Windows users can use WSL of the Git Bash shell instead
+*  a Linux shell - Windows users can use WSL or the Git Bash shell instead
 *  docker
 *  docker-compose
 
 
 
-### Deployment For Newcomers
+### First Example Deployment
 
-This approach is suggested if you are completely new to CoatRack and want to just want to experience what it actually does. Follow these instructions:
+This approach is suggested if you are familiar with the basic CoatRack functionality provided by [coatrack.eu](https://coatrack.eu) and you want to deploy your own CoatRack instance. Go to the directory `docker/docker-compose-deployment` and follow these instructions:
 
-1. Change the `INSERT_SAMPLE_DATA_ON_STARTUP` parameter in `.env` to `true` to initialize the example Gateway in the database.
-2. Go to the directory `docker/docker-compose-deployment` and execute:
+1. Change the `INSERT_SAMPLE_DATA_ON_STARTUP` parameter in `.env` to `true` to initialize some example data. This step is optional.
+2. Go to the directory `docker/docker-compose-deployment` and execute this command to create the databases within PostgreSQL:
 
 ```sh
 bash initialize-databases-if-necessary.sh
 ```
 
-* The previous step is required to create the databases within PostgreSQL. Now you can set up CoatRack via:
+* Now you can start the application, including an example Gateway, via:
 
 ```sh
 docker-compose --profile example-gateway up -d
 ```
 
-* The last step is to check out the service provided by the example Gateway. Search for this URL in your browser:
+* Search for this URL in your browser:
 
 ```http
 http://localhost:8088/humidity-by-location?api-key=ee11ee22-ee33-ee44-ee55-ee66ee77ee88
@@ -106,23 +106,26 @@ bash stop-containers-and-clean-up-traces-if-existent.sh
 
 
 
-### Deployment for Production
+### Regular Deployment
 
-This approach is meant for developers and people who would like to deploy a production-ready CoatRack instance with a clean, empty database and without an Example-Gateway. Just go to the directory `docker-compose-deployment` and execute:
+This approach is meant for developers and people who would like to deploy a CoatRack instance with a clean, empty database and without an Example-Gateway. Just go to the directory `docker-compose-deployment` and execute:
 
 ```sh
 bash initialize-databases-if-necessary.sh
 docker-compose up -d
 ```
 
-CoatRack will be accessible at `localhost:8080`. The 'database-initialization' has to be performed only once at the beginning. The initialization will persist on the docker volume used by the database.
+CoatRack will be accessible at `localhost:8080`. The `initialize-databases-if-necessary.sh`has to be executed just once at the beginning because the initialization will persist on the docker volume used by the database.
 
 
 
-## Operations from Scratch
+## How to Build CoatRack Container Images from Source
 
-To build CoatRack from scratch the following prerequisites are required in addition to the dependencies mentioned in the previous section:
+ The following prerequisites are required:
 
+* a Linux shell - Windows users can use WSL or the Git Bash shell instead
+* docker
+* docker-compose
 * OpenJDK 11
 * Maven 3.6.3 or higher
 
@@ -130,8 +133,8 @@ To build CoatRack from scratch the following prerequisites are required in addit
 
 There are two scripts in the `docker` directory helping you:
 
-* `build-and-push-images.sh` builds the docker image of each CoatRack modul from source and pushes the images to Dockerhub. This only works, when the docker daemon is already logged in to the CoatRack repository. This script is especially useful within a CI pipeline to update the latest Dockerhub images.
-* `build-and-deploy-images-locally.sh` also builds the above mentioned docker images from scratch for local use and deploys a production-ready instance locally using these images. This is especially useful for developers who apply changes to the source code locally and want to test the impact of these changes in a realistic setup.
+* `build-and-push-images.sh` builds the docker image of each CoatRack modul from source and pushes the images to Dockerhub. This script shall only be used by the CI pipeline.
+* `build-and-deploy-images-locally.sh` builds CoatRack from source, creates container images on your local machine and runs CoatRack locally using these images. This is especially useful for developers who did changes to the source code and want to locally test the impact of these changes in a realistic setup.
 
 
 
