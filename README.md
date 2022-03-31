@@ -58,67 +58,6 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 
 
-## Installation using Docker Images
-
- The following prerequisites are required:
-
-*  a Linux shell - Windows users can use WSL or the Git Bash shell instead
-*  docker
-*  docker-compose
-
-
-
-### First Example Deployment
-
-This approach is suggested if you are familiar with the basic CoatRack functionality provided by [coatrack.eu](https://coatrack.eu) and you want to deploy your own CoatRack instance. Go to the directory `docker/docker-compose-deployment` and follow these instructions:
-
-1. Change the `INSERT_SAMPLE_DATA_ON_STARTUP` parameter in `.env` to `true` to initialize some example data. This step is optional.
-2. Go to the directory `docker/docker-compose-deployment` and execute this command to create the databases within PostgreSQL:
-
-```sh
-bash initialize-databases-if-necessary.sh
-```
-
-* Now you can start the application, including an example Gateway, via:
-
-```sh
-docker-compose --profile example-gateway up -d
-```
-
-* Search for this URL in your browser:
-
-```http
-http://localhost:8088/humidity-by-location?api-key=ee11ee22-ee33-ee44-ee55-ee66ee77ee88
-```
-
-* The Example-Gateway should accept the provided API key and redirect you to the website of the `humidity-by-location` service.
-* CoatRack can be shutdown by just executing:
-
-```sh
-docker-compose --profile example-gateway down
-```
-
-* If you want to remove CoatRack and all associated traces, execute:
-
-```sh
-bash stop-containers-and-clean-up-traces-if-existent.sh
-```
-
-
-
-### Regular Deployment
-
-This approach is meant for developers and people who would like to deploy a CoatRack instance with a clean, empty database and without an Example-Gateway. Just go to the directory `docker-compose-deployment` and execute:
-
-```sh
-bash initialize-databases-if-necessary.sh
-docker-compose up -d
-```
-
-CoatRack will be accessible at `localhost:8080`. The `initialize-databases-if-necessary.sh`has to be executed just once at the beginning because the initialization will persist on the docker volume used by the database.
-
-
-
 ## How to Build CoatRack Container Images from Source
 
  The following prerequisites are required:
