@@ -5,7 +5,7 @@ export SPRING_COMPONENTS_DIR="${PROJECT_DIR}/spring-boot"
 export DOCKER_DIR="${PROJECT_DIR}/docker"
 export DOCKER_COMPOSE_DEPLOYMENT_DIR="${DOCKER_DIR}/docker-compose-deployment"
 
-cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}"
+cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}" || exit 1
 . stop-containers-and-clean-up-traces-if-existent.sh
 
 cd "${PROJECT_DIR}" || exit 1
@@ -23,8 +23,6 @@ push-single-docker-image () {
   COATRACK_MODULE=${1}
   MODULE_DOCKER_IMAGE_NAME="coatrack/coatrack-${COATRACK_MODULE}:${COATRACK_VERSION}"
 
-  if [ "${IMAGE_PUSH_POLICY}" != "suppress-image-pushes" ]; then
-    echo "  Pushing ${MODULE_DOCKER_IMAGE_NAME} to Dockerhub."
-    docker push "${MODULE_DOCKER_IMAGE_NAME}"
-  fi
+  echo "  Pushing ${MODULE_DOCKER_IMAGE_NAME} to Dockerhub."
+  docker push "${MODULE_DOCKER_IMAGE_NAME}"
 }
