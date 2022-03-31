@@ -12,7 +12,7 @@ services:
     image: coatrack/coatrack-config-server:${TAG}
     container_name: ${CONFIG_SERVER_CONTAINER_NAME}
     volumes:
-      - ${PROXY_CONFIG_FILES_VOLUME}:${PROXY_CONFIG_FILES_FOLDER}:ro
+      - ${GATEWAY_CONFIG_FILES_VOLUME}:${GATEWAY_CONFIG_FILES_FOLDER}:ro
     depends_on:
       - ${DATABASE_CONTAINER_NAME}
     ports:
@@ -22,7 +22,7 @@ services:
       --ygg.admin.config.access.user.name=${CONFIG_SERVER_USERNAME} \
       --ygg.admin.config.access.user.password=${CONFIG_SERVER_PASSWORD} \
       --spring.profiles.active=native \
-      --spring.cloud.config.server.native.searchLocations=file://${PROXY_CONFIG_FILES_FOLDER} \
+      --spring.cloud.config.server.native.searchLocations=file://${GATEWAY_CONFIG_FILES_FOLDER} \
       --spring.datasource.username=postgres \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
       --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/ygg_config_server \
@@ -33,7 +33,7 @@ services:
     image: coatrack/coatrack-admin:${TAG}
     container_name: ${ADMIN_CONTAINER_NAME}
     volumes:
-      - ${PROXY_CONFIG_FILES_VOLUME}:${PROXY_CONFIG_FILES_FOLDER}
+      - ${GATEWAY_CONFIG_FILES_VOLUME}:${GATEWAY_CONFIG_FILES_FOLDER}
     depends_on:
       - ${DATABASE_CONTAINER_NAME}
     ports:
@@ -52,7 +52,7 @@ services:
       --spring.cloud.config.username=${CONFIG_SERVER_USERNAME} \
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
       --ygg.proxy.executable-jar.template.url=file://${JAR_DIR}/coatrack-proxy- \
-      --proxy.config.files.folder=${PROXY_CONFIG_FILES_FOLDER} \
+      --proxy.config.files.folder=${GATEWAY_CONFIG_FILES_FOLDER} \
       --is-run-via-docker-compose-setup=true"]
 
   coatrack-example-gateway:
@@ -73,5 +73,5 @@ services:
 volumes:
   coatrack-database-volume:
     name: ${DATABASE_VOLUME}
-  coatrack-proxy-config-files-volume:
-    name: ${PROXY_CONFIG_FILES_VOLUME}
+  coatrack-gateway-config-files-volume:
+    name: ${GATEWAY_CONFIG_FILES_VOLUME}

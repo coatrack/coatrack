@@ -15,7 +15,7 @@ ENV PROJECT_FOLDER_GATEWAY_TARGET_DIR="spring-boot/proxy/target"
 # Docker container directories.
 ENV CONTAINER_COATRACK_DIR="/home/coatrack"
 ENV CONTAINER_JAR_FILES_DIR="/home/coatrack/jars"
-ENV CONTAINER_GATEWAY_CONFIG_FILES_DIR="/home/coatrack/proxy-config-files"
+ENV CONTAINER_GATEWAY_CONFIG_FILES_DIR="/home/coatrack/gateway-config-files"
 
 # Copy the module jar to be executed into the docker container.
 COPY ${PROJECT_FOLDER_MODULE_TARGET_DIR}/${COATRACK_MODULE_JAR} ${CONTAINER_JAR_FILES_DIR}/${COATRACK_MODULE_JAR}
