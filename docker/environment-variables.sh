@@ -14,6 +14,9 @@ printf "\nBuilding CoatRack module docker images.\n"
 echo "  Building jar files of CoatRack modules from source."
 mvn clean package -DskipTests jib:dockerBuild
 
+MODULE_DOCKER_IMAGE_NAME="coatrack/coatrack-admin:${COATRACK_VERSION}"
+docker build -f "${DOCKER_DIR}/Dockerfile" -t "${MODULE_DOCKER_IMAGE_NAME}" --build-arg COATRACK_VERSION="${COATRACK_VERSION}" .
+
 build-single-docker-image () {
   COATRACK_MODULE=${1}
   MODULE_DOCKER_IMAGE_NAME="coatrack/coatrack-${COATRACK_MODULE}:${COATRACK_VERSION}"
