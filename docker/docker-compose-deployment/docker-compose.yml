@@ -17,8 +17,8 @@ services:
       - ${DATABASE_CONTAINER_NAME}
     ports:
       - 8998:8998
-    entrypoint: ["sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
-      -jar ${JAR_DIR}/coatrack-config-server-${TAG}.jar \
+    entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom -cp \
+      /app/resources:/app/classes:/app/libs/* eu.coatrack.admin.server.ConfigServiceApplication \
       --ygg.admin.config.access.user.name=${CONFIG_SERVER_USERNAME} \
       --ygg.admin.config.access.user.password=${CONFIG_SERVER_PASSWORD} \
       --spring.profiles.active=native \
@@ -38,8 +38,8 @@ services:
       - ${DATABASE_CONTAINER_NAME}
     ports:
       - 8080:8080
-    entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom \
-      -jar ${JAR_DIR}/coatrack-admin-${TAG}.jar \
+    entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom -cp \
+      /app/resources:/app/classes:/app/libs/* eu.coatrack.admin.YggAdminApplication \
       --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/coatrack \
       --spring.datasource.username=postgres \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
@@ -65,8 +65,8 @@ services:
       - ${ADMIN_CONTAINER_NAME}
     ports:
       - 8088:8088
-    entrypoint: [ "sh", "-c", "sleep 35 && java -Djava.security.egd=file:/dev/./urandom \
-          -jar ${JAR_DIR}/coatrack-proxy-${TAG}.jar \
+    entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom -cp \
+      /app/resources:/app/classes:/app/libs/* eu.coatrack.proxy.GatewayApplication \
           --ygg.admin.api-base-url=http://${ADMIN_CONTAINER_NAME}:8080/api/ \
           --spring.cloud.config.uri=http://${CONFIG_SERVER_CONTAINER_NAME}:8998"]
 

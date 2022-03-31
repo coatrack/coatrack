@@ -124,7 +124,7 @@
                 <version>3.2.0</version>
                 <configuration>
                     <from>
-                        <image>gcr.io/distroless/java:11</image>
+                        <image>adoptopenjdk/openjdk11:jre-11.0.14_9-alpine</image>
                     </from>
                     <to>
                         <image>coatrack/${project.artifactId}:${project.version}</image>

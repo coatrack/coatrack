@@ -11,6 +11,11 @@ cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}" || exit 1
 cd "${PROJECT_DIR}" || exit 1
 export COATRACK_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
 
+printf "\nBuilding CoatRack module docker images.\n"
+echo "  Building jar files of CoatRack modules from source."
+cd "${PROJECT_DIR}" || exit 1
+mvn clean package -DskipTests jib:dockerBuild
+
 build-single-docker-image () {
   COATRACK_MODULE=${1}
   MODULE_DOCKER_IMAGE_NAME="coatrack/coatrack-${COATRACK_MODULE}:${COATRACK_VERSION}"
