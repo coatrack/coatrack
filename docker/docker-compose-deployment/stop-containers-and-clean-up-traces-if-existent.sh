@@ -8,7 +8,7 @@ printf "\nCleaning up by removing currently running containers and volumes if ex
 docker-compose down
 docker volume rm "${DATABASE_VOLUME}" "${GATEWAY_CONFIG_FILES_VOLUME}"
 
-for MODULE in "admin" "proxy" "config-server"; do
-  echo "  Deleting module coatrack-${MODULE}"
-  docker rmi "$(docker images -q coatrack/coatrack-admin)" > /dev/null
+for COATRACK_MODULE in "admin" "proxy" "config-server"; do
+  echo "  Deleting module coatrack-${COATRACK_MODULE}"
+  docker rmi "coatrack/coatrack-${COATRACK_MODULE}:${TAG}" > /dev/null
 done
