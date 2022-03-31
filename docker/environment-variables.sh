@@ -4,6 +4,10 @@ export PROJECT_DIR="${PWD}/.."
 export SPRING_COMPONENTS_DIR="${PROJECT_DIR}/spring-boot"
 export DOCKER_DIR="${PROJECT_DIR}/docker"
 export DOCKER_COMPOSE_DEPLOYMENT_DIR="${DOCKER_DIR}/docker-compose-deployment"
+
+cd "${DOCKER_COMPOSE_DEPLOYMENT_DIR}"
+. stop-containers-and-clean-up-traces-if-existent.sh
+
 cd "${PROJECT_DIR}" || exit 1
 export COATRACK_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
 
