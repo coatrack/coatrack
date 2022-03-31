@@ -18,6 +18,9 @@ source "environment-variables.sh"
 cd "${PROJECT_DIR}" || exit 1
 export COATRACK_VERSION="$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)"
 
+# TODO This statement is wrong when this script is called by build-and-deploy-images-locally.sh.
+#   TODO The "IMAGE_PUSH_POLICY" is confusing anyhow. I refactor that. Maybe extract script like "build-images",
+#     "push-images" etc. or create helper-function.sh  (maybe merge it with environment-variables.sh).
 printf "\nBuilding CoatRack module docker images and pushing them into Dockerhub.\n"
 echo "  Building jar files of CoatRack modules from source."
 mvn clean package -DskipTests

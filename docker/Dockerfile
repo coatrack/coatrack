@@ -1,3 +1,5 @@
+# TODO Make that script redundant by using Maven Jib Plugin.
+
 FROM adoptopenjdk/openjdk11:jre-11.0.14_9-alpine
 LABEL maintainer=coatrack.eu
 
