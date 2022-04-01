@@ -10,5 +10,5 @@ docker volume rm "${DATABASE_VOLUME}" "${GATEWAY_CONFIG_FILES_VOLUME}"
 
 for COATRACK_MODULE in "admin" "proxy" "config-server"; do
   echo "  Deleting module coatrack-${COATRACK_MODULE}"
-  docker rmi "coatrack/coatrack-${COATRACK_MODULE}:${TAG}" > /dev/null
+  docker rmi "coatrack/coatrack-${COATRACK_MODULE}:${COATRACK_VERSION}" > /dev/null
 done

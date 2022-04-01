@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
   coatrack-config-server:
-    image: coatrack/coatrack-config-server:${TAG}
+    image: coatrack/coatrack-config-server:${COATRACK_VERSION}
     container_name: ${CONFIG_SERVER_CONTAINER_NAME}
     volumes:
       - ${GATEWAY_CONFIG_FILES_VOLUME}:${GATEWAY_CONFIG_FILES_FOLDER}:ro
@@ -30,7 +30,7 @@ services:
       --spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect"]
 
   coatrack-admin:
-    image: coatrack/coatrack-admin:${TAG}
+    image: coatrack/coatrack-admin:${COATRACK_VERSION}
     container_name: ${ADMIN_CONTAINER_NAME}
     volumes:
       - ${GATEWAY_CONFIG_FILES_VOLUME}:${GATEWAY_CONFIG_FILES_FOLDER}
@@ -58,7 +58,7 @@ services:
   coatrack-example-gateway:
     profiles:
       - example-gateway
-    image: coatrack/coatrack-proxy:${TAG}
+    image: coatrack/coatrack-proxy:${COATRACK_VERSION}
     container_name: $EXAMPLE_GATEWAY_CONTAINER_NAME
     depends_on:
       - ${CONFIG_SERVER_CONTAINER_NAME}
