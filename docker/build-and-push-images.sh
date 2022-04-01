@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "environment-variables.sh"
+. "helper-script-building-the-docker-images-and-exporting-environment-variables.sh"
 
 push-single-docker-image () {
   COATRACK_MODULE=${1}

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. "environment-variables.sh"
+. "helper-script-building-the-docker-images-and-exporting-environment-variables.sh"
 
 . "${DOCKER_COMPOSE_DEPLOYMENT_DIR}/initialize-databases-if-necessary.sh"
 
