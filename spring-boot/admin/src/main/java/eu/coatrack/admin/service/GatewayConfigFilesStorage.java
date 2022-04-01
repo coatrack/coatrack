@@ -55,6 +55,12 @@ public class GatewayConfigFilesStorage {
     @PostConstruct
     private void emptyProxyConfigFilesFolderIfExistsForNonDockerComposeDeployments() throws IOException {
         if (!isDockerComposeSetup){
+            String userHomeDir = System.getenv("USERPROFILE");
+            Path coatrackDir = Paths.get(userHomeDir + "/.coatrack");
+            if (Files.notExists(coatrackDir)) {
+                Files.createDirectory(coatrackDir);
+            }
+
             Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
             if (Files.exists(gatewayConfigFilesFolderPath)){
                 FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
