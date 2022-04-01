@@ -14,14 +14,9 @@ printf "\nBuilding CoatRack module docker images.\n"
 echo "  Building jar files of CoatRack modules from source."
 mvn clean package -DskipTests jib:dockerBuild
 
-MODULE_DOCKER_IMAGE_NAME="coatrack/coatrack-admin:${COATRACK_VERSION}"
-docker build -f "${DOCKER_DIR}/dockerfile-injecting-gateway-jar-to-admin-image" -t "${MODULE_DOCKER_IMAGE_NAME}" --build-arg COATRACK_VERSION="${COATRACK_VERSION}" .
-
-build-single-docker-image () {
-  COATRACK_MODULE=${1}
-  MODULE_DOCKER_IMAGE_NAME="coatrack/coatrack-${COATRACK_MODULE}:${COATRACK_VERSION}"
-
-  cd "${PROJECT_DIR}" || exit 1
-  echo "  Building version ${COATRACK_VERSION} of module ${COATRACK_MODULE} in the directory coatrack/${COATRACK_MODULE}."
-  docker build -f "${DOCKER_DIR}/Dockerfile" -t "${MODULE_DOCKER_IMAGE_NAME}" --build-arg COATRACK_MODULE="${COATRACK_MODULE}" --build-arg COATRACK_VERSION="${COATRACK_VERSION}" .
-}
+echo "  The CoatRack Admin Image, which does not contain the gateway jar, is being used as base image to create a"
+echo "    CoatRack Admin Image which contains this very file."
+ID_OF_COATRACK_ADMIN_IMAGE_WITHOUT_GATEWAY_JAR="$(docker images -q coatrack/coatrack-admin)"
+docker build -f "${DOCKER_DIR}/dockerfile-injecting-gateway-jar-to-admin-image" -t "coatrack/coatrack-admin:${COATRACK_VERSION}" --build-arg COATRACK_VERSION="${COATRACK_VERSION}" .
+# The old CoatRack Admin Image, which does not contain the gateway jar, became redundant and can therefore be deleted.
+docker rmi "${ID_OF_COATRACK_ADMIN_IMAGE_WITHOUT_GATEWAY_JAR}"
