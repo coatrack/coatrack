@@ -25,7 +25,7 @@ services:
       --spring.cloud.config.server.native.searchLocations=file://${GATEWAY_CONFIG_FILES_FOLDER} \
       --spring.datasource.username=postgres \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
-      --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/ygg_config_server \
+      --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/${POSTGRES_DATABASE_NAME_FOR_CONFIG_SERVER} \
       --spring.datasource.driver=org.postgresql.Driver \
       --spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.PostgreSQLDialect"]
 
@@ -40,7 +40,7 @@ services:
       - 8080:8080
     entrypoint: [ "sh", "-c", "sleep 5 && java -Djava.security.egd=file:/dev/./urandom -cp \
       /app/resources:/app/classes:/app/libs/* eu.coatrack.admin.YggAdminApplication \
-      --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/coatrack \
+      --spring.datasource.url=jdbc:postgresql://${DATABASE_CONTAINER_NAME}/${POSTGRES_DATABASE_NAME_FOR_WEB_APPLICATION} \
       --spring.datasource.username=postgres \
       --spring.datasource.password=${POSTGRES_PASSWORD} \
       --spring.jpa.hibernate.ddl-auto=update \
@@ -53,7 +53,7 @@ services:
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
       --ygg.proxy.executable-jar.template.url=file://${JAR_DIR}/coatrack-proxy- \
       --proxy.config.files.folder=${GATEWAY_CONFIG_FILES_FOLDER} \
-      --is-run-via-docker-compose-setup=true"]
+      --is-gateway-config-files-folder-in-users-home-directory=false"]
 
   coatrack-example-gateway:
     profiles:
