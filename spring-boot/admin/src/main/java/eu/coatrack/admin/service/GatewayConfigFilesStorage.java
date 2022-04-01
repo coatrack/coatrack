@@ -55,25 +55,12 @@ public class GatewayConfigFilesStorage {
     @PostConstruct
     private void prepareEmptyGatewayConfigFileFolder() throws IOException {
         if (isGatewayConfigFilesFolderInUsersHomeDirectory){
-            createCoatRackFolderInUsersHomeDirIfNotExistent();
-            emptyGatewayConfigFilesFolder();
+            Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
+            if (Files.exists(gatewayConfigFilesFolderPath)){
+                FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
+            }
+            Files.createDirectory(gatewayConfigFilesFolderPath);
         }
-    }
-
-    private void createCoatRackFolderInUsersHomeDirIfNotExistent() throws IOException {
-        String userHomeDir = System.getenv("USERPROFILE");
-        Path coatrackDir = Paths.get(userHomeDir + "/.coatrack");
-        if (Files.notExists(coatrackDir)) {
-            Files.createDirectory(coatrackDir);
-        }
-    }
-
-    private void emptyGatewayConfigFilesFolder() throws IOException {
-        Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
-        if (Files.exists(gatewayConfigFilesFolderPath)){
-            FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
-        }
-        Files.createDirectory(gatewayConfigFilesFolderPath);
     }
 
     public void addGatewayConfigFile(Proxy proxy) throws IOException {
