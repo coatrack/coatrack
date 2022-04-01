@@ -93,7 +93,7 @@ public class GatewayConfigFilesService {
             Files.delete(gatewayConfigFileToBeDeletedPath);
             log.debug("Gateway {} was successfully deleted.", proxyId);
         } catch (Exception e) {
-            throw new FileCouldNotBeDeletedException("Configuration file of proxy " + proxyId + " could not be deleted.", e);
+            throw new FileCouldNotBeDeletedException("Configuration file of gateway " + proxyId + " could not be deleted.", e);
         }
     }
 
