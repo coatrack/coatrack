@@ -30,7 +30,7 @@ import eu.coatrack.api.ServiceApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
@@ -40,8 +40,8 @@ import javax.annotation.PostConstruct;
  */
 
 @Slf4j
-@Component
-public class GatewayConfigFilesStorage {
+@Service
+public class GatewayConfigFilesService {
 
     @Value("${proxy.config.files.folder}")
     private String gatewayConfigFilesFolderLocation;
@@ -81,19 +81,19 @@ public class GatewayConfigFilesStorage {
     public void deleteGatewayConfigFile(Proxy proxy) throws IOException {
         Path gatewayConfigFileToBeDeletedPath = Paths.get(gatewayConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml");
         if (Files.exists(gatewayConfigFileToBeDeletedPath)) {
-            tryToDeleteGatewayConfigFile(proxy, gatewayConfigFileToBeDeletedPath);
+            tryToDeleteGatewayConfigFile(proxy.getId(), gatewayConfigFileToBeDeletedPath);
         } else {
             throw new FileNotFoundException("Tried to delete the configuration file for proxy " + proxy.getId()
                     + ", but there is no according file + " + gatewayConfigFileToBeDeletedPath);
         }
     }
 
-    private void tryToDeleteGatewayConfigFile(Proxy proxy, Path gatewayConfigFileToBeDeletedPath) throws IOException {
+    private void tryToDeleteGatewayConfigFile(String proxyId, Path gatewayConfigFileToBeDeletedPath) throws IOException {
         try {
             Files.delete(gatewayConfigFileToBeDeletedPath);
-            log.debug("Gateway {} was successfully deleted.", proxy.getId());
+            log.debug("Gateway {} was successfully deleted.", proxyId);
         } catch (Exception e) {
-            throw new FileCouldNotBeDeletedException("Configuration file of proxy " + proxy.getId() + " could not be deleted.", e);
+            throw new FileCouldNotBeDeletedException("Configuration file of proxy " + proxyId + " could not be deleted.", e);
         }
     }
 
