@@ -49,24 +49,31 @@ public class GatewayConfigFilesStorage {
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    @Value("${is-run-via-docker-compose-setup}")
-    private boolean isDockerComposeSetup;
+    @Value("${is-gateway-config-files-folder-in-users-home-directory}")
+    private boolean isGatewayConfigFilesFolderInUsersHomeDirectory;
 
     @PostConstruct
-    private void emptyProxyConfigFilesFolderIfExistsForNonDockerComposeDeployments() throws IOException {
-        if (!isDockerComposeSetup){
-            String userHomeDir = System.getenv("USERPROFILE");
-            Path coatrackDir = Paths.get(userHomeDir + "/.coatrack");
-            if (Files.notExists(coatrackDir)) {
-                Files.createDirectory(coatrackDir);
-            }
-
-            Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
-            if (Files.exists(gatewayConfigFilesFolderPath)){
-                FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
-            }
-            Files.createDirectory(gatewayConfigFilesFolderPath);
+    private void prepareEmptyGatewayConfigFileFolder() throws IOException {
+        if (isGatewayConfigFilesFolderInUsersHomeDirectory){
+            createCoatRackFolderInUsersHomeDirIfNotExistent();
+            emptyGatewayConfigFilesFolder();
         }
+    }
+
+    private void createCoatRackFolderInUsersHomeDirIfNotExistent() throws IOException {
+        String userHomeDir = System.getenv("USERPROFILE");
+        Path coatrackDir = Paths.get(userHomeDir + "/.coatrack");
+        if (Files.notExists(coatrackDir)) {
+            Files.createDirectory(coatrackDir);
+        }
+    }
+
+    private void emptyGatewayConfigFilesFolder() throws IOException {
+        Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
+        if (Files.exists(gatewayConfigFilesFolderPath)){
+            FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
+        }
+        Files.createDirectory(gatewayConfigFilesFolderPath);
     }
 
     public void addGatewayConfigFile(Proxy proxy) throws IOException {
