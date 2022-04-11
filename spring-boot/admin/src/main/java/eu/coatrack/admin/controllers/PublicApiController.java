@@ -24,8 +24,7 @@ import eu.coatrack.admin.logic.CreateApiKeyAction;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.api.*;
-
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -80,23 +79,23 @@ public class PublicApiController implements InitializingBean {
     }
 
     @GetMapping(value = "/services/{serviceOwnerUsername}/{uriIdentifier}", produces = "application/json")
-    @ApiOperation(value = "Get specific service by owner and URI Identifier",
-            notes = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
+    @Operation(summary = "Get specific service by owner and URI Identifier",
+            description = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
                     "<b> serviceOwnerUsername </b> - this is the Github username of the one who owns and offers the service via Coatrack\n")
     public ServiceApiDTO findByServiceOwnerAndUriIdentifier(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
         return toDTO(serviceApiRepository.findServiceApiByServiceOwnerAndUriIdentifier(serviceOwnerUsername, uriIdentifier));
     }
 
     @GetMapping(value = "/services", produces = "application/json")
-    @ApiOperation(value = "Get a list of all services offered by the currently logged in user")
+    @Operation(summary = "Get a list of all services offered by the currently logged in user")
     public List<ServiceApiDTO> findByServiceOwner() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return toListOfDTOs(serviceApiRepository.findByOwnerUsername(auth.getName()));
     }
 
     @PostMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/subscriptions", produces = "text/plain")
-    @ApiOperation(value = "Subscribe to a specific service",
-            notes = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
+    @Operation(summary = "Subscribe to a specific service",
+            description = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
                     "<b> serviceOwnerUsername </b> - this is the Github username of the one who owns and offers the service via Coatrack\n")
     public String subscribeToService(@PathVariable("uriIdentifier") String uriIdentifier, @PathVariable("serviceOwnerUsername") String serviceOwnerUsername) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -110,8 +109,8 @@ public class PublicApiController implements InitializingBean {
     }
 
     @GetMapping(value = "services/{serviceOwnerUsername}/{uriIdentifier}/usageStatistics")
-    @ApiOperation(value = "Get usage statistics for a specific service and a specific time interval",
-            notes = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
+    @Operation(summary = "Get usage statistics for a specific service and a specific time interval",
+            description = "<b> uriIdentifier </b> - the URI identifier that is used in CoatRack to identify the service\n" +
                     "<b> serviceOwnerUsername </b> - this is the Github username of the one who owns and offers the service via Coatrack\n" +
                     "<b> dateFrom and dateUntil </b> - these dates define the time interval to filter the usage statistics\n" +
                     "the dates should be written in the format YYYY-MM-DD\n")
