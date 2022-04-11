@@ -225,23 +225,6 @@
             <version>2.4.4</version>
         </dependency>
 
-        <!-- Swagger dependencies-->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>30.1.1-jre</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
-            <version>3.0.0</version>
-        </dependency>
-
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
@@ -265,8 +248,20 @@
             <version>3.0.3</version>
         </dependency>
 
-    </dependencies>
+        <!-- public api documentation -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.7</version>
+        </dependency>
 
+        <!-- Dependency especially created to keep the ResourceServer (used on Public API) of oauth2 of Spring 1.x compatibility with Spring 2.x -->
+        <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+        </dependency>
+
+    </dependencies>
 
     <build>
         <plugins>

@@ -79,19 +79,12 @@ spring:
     oauth2:
       client:
         registration:
-         #TODO: Work on these comments in issue #183
-         # resource:
-          #  userInfoUri: https://api.github.com/user
           # the following oauth client configuration is just for development testing purposes, do NOT use in a production setting
           github:
             client-id: e188a243cc57ef90f2b5
             client-secret: a5630e2f873890bdc8366aac0155e8113ece0997
             scope[0]: user:email
             scope[1]: read:user
-         #TODO: Work on these comments in issue #183
-        #    accessTokenUri: https://github.com/login/oauth/access_token
-        #    userAuthorizationUri: https://github.com/login/oauth/authorize
-        #    tokenName: oauth_token
             clientAuthenticationScheme: header
             authenticationScheme: header
             redirect-uri: http://localhost:8080/login/oauth2/code/github
@@ -99,8 +92,12 @@ spring:
           github:
             # Use the "login" attribute of the Github user info as authentication name in Spring Security
             user-name-attribute: login
-          resource:
             userInfoUri: https://api.github.com/user
+
+# Public API Documentation url
+springdoc:
+  swagger-ui:
+    path: /public-api/documentation
 
 spring.application.name: ygg-admin
 
