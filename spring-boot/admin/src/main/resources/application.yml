@@ -63,7 +63,7 @@ ygg:
           uriIdentifier: humidity-by-locations
   proxy:
     executable-jar:
-      generated.path: /tmp
+      generated.path: ${user.dir}/.temp-gateway-config-file-storage
       # URL of the "template jar" that CoatRack uses as basis to generate proxies.
       # During development testing, this should usually point to your locally built coatrack gateway jar
       # (but without the trailing version number and .jar filename extension, those will be added automatically).
