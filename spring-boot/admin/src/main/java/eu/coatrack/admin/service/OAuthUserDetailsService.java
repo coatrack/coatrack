@@ -100,8 +100,7 @@ public class OAuthUserDetailsService {
                 .getAuthentication();
         OAuth2AuthenticationToken oauthToken = (OAuth2AuthenticationToken) authentication;
         String clientRegistrationId = oauthToken.getAuthorizedClientRegistrationId();
-        OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(clientRegistrationId,
-                oauthToken.getName());
+        OAuth2AuthorizedClient client = clientService.loadAuthorizedClient(clientRegistrationId, oauthToken.getName());
         return client.getAccessToken().getTokenValue();
     }
 }
