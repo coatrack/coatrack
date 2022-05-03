@@ -96,7 +96,7 @@ public class OAuthUserDetailsService {
 
         return getEmailsListFromGithub()
                 .stream()
-                .filter(email -> (email.isMailAddressVerified() && email.isUsersPrimaryMailAddress()))
+                .filter(email -> (email.isVerified() && email.isPrimary()))
                 .map(GithubEmail::getEmail)
                 .findFirst()
                 .orElse(null);
