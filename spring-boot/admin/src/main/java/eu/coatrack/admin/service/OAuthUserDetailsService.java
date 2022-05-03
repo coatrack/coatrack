@@ -22,7 +22,7 @@ package eu.coatrack.admin.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.coatrack.config.github.GithubEmail;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -40,19 +40,13 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class OAuthUserDetailsService {
 
     private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
 
     private final OAuth2AuthorizedClientService clientService;
     private final RestTemplate restTemplate;
-
-    @Autowired
-    public OAuthUserDetailsService(OAuth2AuthorizedClientService clientService,
-                                   RestTemplate restTemplate) {
-        this.clientService = clientService;
-        this.restTemplate = restTemplate;
-    }
 
     private OAuth2User getLoggedInUser() {
         return (OAuth2User) SecurityContextHolder
@@ -75,7 +69,6 @@ public class OAuthUserDetailsService {
 
     public String getEmailFromLoggedInUser() throws JsonProcessingException {
         String email = getLoggedInUser().getAttribute("email");
-
         if (email == null || email.isEmpty()) {
             email = getPrimaryEmailFromLoggedInUser();
         }
@@ -93,7 +86,6 @@ public class OAuthUserDetailsService {
     }
 
     private String getPrimaryEmailFromLoggedInUser() {
-
         return getEmailsListFromGithub()
                 .stream()
                 .filter(email -> (email.isVerified() && email.isPrimary()))
