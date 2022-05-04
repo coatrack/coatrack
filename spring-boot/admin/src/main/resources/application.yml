@@ -134,4 +134,4 @@ proxy.config.files.folder: ${user.dir}/.temp-gateway-config-file-storage
 # If CoatRack is deployed via IDE/commandline the Gateway config files will be stored in the '~/.coatrack' folder.
 # If docker-compose is used for deployment, these files will be stored internally within a docker volume by overrding
 # this parameter with 'false'.
-is-gateway-config-files-folder-in-users-home-directory: true
+store-gateway-config-files-folder-in-project-directory: true
