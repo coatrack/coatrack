@@ -49,17 +49,16 @@ public class GatewayConfigFilesService {
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    @Value("${is-gateway-config-files-folder-in-users-home-directory}")
+    @Value("${store-gateway-config-files-folder-in-project-directory}")
     private boolean isGatewayConfigFilesFolderInUsersHomeDirectory;
 
     @PostConstruct
     private void prepareEmptyGatewayConfigFileFolder() throws IOException {
         if (isGatewayConfigFilesFolderInUsersHomeDirectory){
             Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
-            if (Files.exists(gatewayConfigFilesFolderPath)){
-                FileUtils.deleteDirectory(gatewayConfigFilesFolderPath.toFile());
+            if (Files.notExists(gatewayConfigFilesFolderPath)){
+                Files.createDirectory(gatewayConfigFilesFolderPath);
             }
-            Files.createDirectory(gatewayConfigFilesFolderPath);
         }
     }
 

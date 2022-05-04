@@ -53,7 +53,7 @@ services:
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
       --ygg.proxy.executable-jar.template.url=file://${JAR_DIR}/coatrack-proxy- \
       --proxy.config.files.folder=${GATEWAY_CONFIG_FILES_FOLDER} \
-      --is-gateway-config-files-folder-in-users-home-directory=false"]
+      --store-gateway-config-files-folder-in-project-directory=false"]
 
   coatrack-example-gateway:
     profiles:
