@@ -30,8 +30,9 @@ This project is part of [FIWARE](https://www.fiware.org/). For more information 
 ## Contents
 
 * [Background](#background)
-* [Install](#install)
 * [Usage](#usage)
+* [Build and Run CoatRack Locally via CLI](#Build and Run CoatRack Locally via CLI)
+* [Build and Run CoatRack Locally via Docker Compose](#Build and Run CoatRack Locally via Docker Compose)
 * [License](#license)
 
 
@@ -72,9 +73,9 @@ There are two tutorials inside the application:
 - Offering service APIs via CoatRack
 - Using service APIs offered via CoatRack
 
-## 
 
-## Install CoatRack Locally via CLI
+
+## Build and Run CoatRack Locally via CLI
 
 The following prerequisites are required:
 
@@ -104,9 +105,9 @@ java -jar spring-boot/config-server/target/coatrack-config-server-*.jar
 
 Now you a have a fully working instance of CoatRack using non-persistent databases. You can access it on `http://localhost:8080`.
 
-## 
 
-## Install CoatRack Locally via Docker Compose
+
+## Build and Run CoatRack Locally via Docker Compose
 
 The following prerequisites are required:
 
@@ -116,10 +117,7 @@ The following prerequisites are required:
 - docker 20.10.12 or higher
 - docker-compose 1.29.2 or higher
 
-With your terminal go into the `coatrack/docker` directory where you will find two scripts:
-
-- `build-and-push-images.sh` builds the docker image of  each CoatRack module from source and pushes the images to Dockerhub.  This script shall only be used by the CI pipeline.
-- `build-and-deploy-images-locally.sh` builds CoatRack from source, creates container images on your local machine and runs  CoatRack locally using these images. This is especially useful for  developers who did changes to the source code and want to locally test  the impact of these changes in a realistic setup.
+With your terminal go into the `coatrack/docker` directory where you will find the script `build-and-deploy-images-locally.sh` which builds CoatRack from source, creates container images on your local machine and runs CoatRack locally using these images. This is especially useful for developers who did changes to the source code and want to locally test the impact of these changes in a realistic setup.
 
 
 
