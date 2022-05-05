@@ -78,21 +78,22 @@ public class GatewayConfigFilesService {
     }
 
     public void deleteGatewayConfigFile(Proxy proxy) throws IOException {
+        log.debug("Config file of Gateway {} is being deleted.", proxy.getId());
         Path gatewayConfigFileToBeDeletedPath = Paths.get(gatewayConfigFilesFolderLocation + "/ygg-proxy-" + proxy.getId() + ".yml");
         if (Files.exists(gatewayConfigFileToBeDeletedPath)) {
-            tryToDeleteGatewayConfigFile(proxy.getId(), gatewayConfigFileToBeDeletedPath);
+            tryToDeleteGatewayConfigFile(gatewayConfigFileToBeDeletedPath);
         } else {
             throw new FileNotFoundException("Tried to delete the configuration file for proxy " + proxy.getId()
                     + ", but there is no according file + " + gatewayConfigFileToBeDeletedPath);
         }
     }
 
-    private void tryToDeleteGatewayConfigFile(String proxyId, Path gatewayConfigFileToBeDeletedPath) throws IOException {
+    private void tryToDeleteGatewayConfigFile(Path gatewayConfigFileToBeDeletedPath) throws IOException {
         try {
             Files.delete(gatewayConfigFileToBeDeletedPath);
-            log.debug("Gateway {} was successfully deleted.", proxyId);
+            log.debug("Gateway config file was successfully deleted.");
         } catch (Exception e) {
-            throw new FileCouldNotBeDeletedException("Configuration file of gateway " + proxyId + " could not be deleted.", e);
+            throw new FileCouldNotBeDeletedException("Configuration file of gateway could not be deleted.", e);
         }
     }
 
