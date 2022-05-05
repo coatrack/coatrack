@@ -87,14 +87,6 @@ spring:
   data:
     rest:
       base-path: /api
-  thymeleaf:
-    # Enables reloading of thymeleaf templates on runtime
-    templates_root: src/main/resources/templates/
-    cache: false
-    # Enables reloading of static resources on runtime
-    resources:
-      static-locations: src/main/resources/static/
-      cache-period: 0
 
 spring.application.name: ygg-admin
 
