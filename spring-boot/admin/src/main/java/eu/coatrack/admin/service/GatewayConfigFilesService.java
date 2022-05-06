@@ -43,13 +43,13 @@ import javax.annotation.PostConstruct;
 @Service
 public class GatewayConfigFilesService {
 
-    @Value("${proxy.config.files.folder}")
+    @Value("${ygg.admin.gateway.config.files.folder}")
     private String gatewayConfigFilesFolderLocation;
 
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    @Value("${store-gateway-config-files-folder-in-project-directory}")
+    @Value("${ygg.admin.store-gateway-config-files-folder-in-project-directory}")
     private boolean isGatewayConfigFilesFolderInUsersHomeDirectory;
 
     @PostConstruct

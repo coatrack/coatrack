@@ -46,6 +46,15 @@ ygg:
       bookKeeping.contact: your-email-address@example.org
     call-request-fee: 0
 
+    # Proxy configuration files are stored in this directory. The value of this parameter needs to direct to the same
+    # folder as spring.cloud.config.server.native.searchLocations from the Config Servers application.yml.
+    gateway.config.files.folder: ${user.dir}/.temp-gateway-config-file-storage
+
+    # If CoatRack is deployed via IDE/commandline the Gateway config files will be stored in the '~/.coatrack' folder.
+    # If docker-compose is used for deployment, these files will be stored internally within a docker volume by overrding
+    # this parameter with 'false'.
+    store-gateway-config-files-folder-in-project-directory: true
+
     gitService:
       # URL and credentials for the Git repository where CoatRack stores gateway config files
       url: http://localhost
@@ -118,12 +127,3 @@ security:
       userInfoUri: https://api.github.com/user
 
 management.security.enabled: false
-
-# Proxy configuration files are stored in this directory. The value of this parameter needs to direct to the same
-# folder as spring.cloud.config.server.native.searchLocations from the Config Servers application.yml.
-proxy.config.files.folder: ${user.dir}/.temp-gateway-config-file-storage
-
-# If CoatRack is deployed via IDE/commandline the Gateway config files will be stored in the '~/.coatrack' folder.
-# If docker-compose is used for deployment, these files will be stored internally within a docker volume by overrding
-# this parameter with 'false'.
-store-gateway-config-files-folder-in-project-directory: true
