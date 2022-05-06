@@ -28,7 +28,6 @@ import java.nio.file.Paths;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -49,16 +48,11 @@ public class GatewayConfigFilesService {
     @Value("${ygg.admin.api-base-url-for-gateway}")
     private String adminApiBaseUrlForGateway;
 
-    @Value("${ygg.admin.store-gateway-config-files-folder-in-project-directory}")
-    private boolean isGatewayConfigFilesFolderInUsersHomeDirectory;
-
     @PostConstruct
-    private void prepareEmptyGatewayConfigFileFolder() throws IOException {
-        if (isGatewayConfigFilesFolderInUsersHomeDirectory){
-            Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
-            if (Files.notExists(gatewayConfigFilesFolderPath)){
-                Files.createDirectory(gatewayConfigFilesFolderPath);
-            }
+    private void ensureExistenceOfGatewayConfigFileFolder() throws IOException {
+        Path gatewayConfigFilesFolderPath = Paths.get(gatewayConfigFilesFolderLocation);
+        if (Files.notExists(gatewayConfigFilesFolderPath)){
+            Files.createDirectory(gatewayConfigFilesFolderPath);
         }
     }
 
