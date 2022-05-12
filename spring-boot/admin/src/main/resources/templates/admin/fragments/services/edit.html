@@ -242,7 +242,7 @@
                                            th:text="#{admin.services.edit.form.label.description}">
                                     </label>
                                     <div class="col-md-9 col-sm-9 col-xs-12">
-                                        <textarea class="form-control" rows="4" th:maxlength="255" th:field="${service.description}"> </textarea>
+                                        <textarea id="service-description" class="form-control" rows="4" th:maxlength="1000" th:field="${service.description}"> </textarea>
                                     </div>
                                 </div>
                                 <div class="ln_solid"></div>
@@ -275,7 +275,7 @@
                 }).disableSelection();
 
                 $("#updateButton").on("click", function () {
-
+                    console.log("one worked at least")
                     if (!isValidURL($("#localUrl").val().trim()))
                     {
                         alert("Service URL must be valid and start with http:// or https://");
@@ -448,6 +448,11 @@
                     wellDefinePriceBodyTable.appendChild(newRow);
                 });
             });
+
+            $("#service-description").keypress((e) => {
+                if(e.target.value.length >= e.target.maxLength)
+                    alert("You reached the maximum length of the description, which is 1000.")
+            })
 
             /*]]>*/
         </script>
