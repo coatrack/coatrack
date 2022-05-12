@@ -65,7 +65,7 @@
                                     <div class="col-md-6 col-sm-6 col-xs-12">
                                         <input type="text" required="required"
                                                th:field="${service.uriIdentifier}"
-                                               th:placeholder="@{Identifier}"
+                                               th:placeholder="${Identifier}"
                                                class="form-control col-md-7 col-xs-12"/>
                                     </div>
                                 </div>
@@ -242,7 +242,7 @@
                                            th:text="#{admin.services.edit.form.label.description}">
                                     </label>
                                     <div class="col-md-9 col-sm-9 col-xs-12">
-                                        <textarea class="form-control" rows="4" th:field="${service.description}"> </textarea>
+                                        <textarea class="form-control" rows="4" th:maxlength="255" th:field="${service.description}"> </textarea>
                                     </div>
                                 </div>
                                 <div class="ln_solid"></div>
