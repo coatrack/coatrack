@@ -7,31 +7,28 @@ logging:
 server:
   port: 8998
 security:
-  basic:
-    enabled: true
-    path: /ygg-admin/**
-    ignored: /health**,/info**,/metrics**,/trace**
+    basic:
+        enabled: true
+        path: /ygg-admin/**
+        ignored: /health**,/info**,/metrics**,/trace**
 
 spring:
-  http:
-    multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
-  jpa:
-    hibernate:
-      show-sql: true
-      generate-ddl: true
-      ddl-auto: create-drop
-      #ddl-auto: update
-  cloud:
-    config:
-      server:
-        git:
-          uri: https://bitbucket.org/perezdf/anthill-settings.git
-          username: fpd.judo@gmail.com
-          password: fpdvip1234
-          timeout: 100
-
+    http:
+      multipart:
+          max-file-size: 100MB
+          max-request-size: 100MB
+    jpa:
+        properties:
+            hibernate:
+                format_sql: true
+        hibernate:
+            show-sql: true
+            generate-ddl: true
+            ddl-auto: create-drop
+            #ddl-auto: update
+    profiles.active: native
+    cloud.config.server.native.searchLocations: file:///${user.dir}/.temp-gateway-config-file-storage
+                    
 ygg:
   admin:
     config:

@@ -23,7 +23,7 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.admin.service.GitService;
+import eu.coatrack.admin.service.GatewayConfigFilesService;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -88,7 +88,7 @@ public class AdminProxiesController {
     private CustomProxyFileGeneratorService customProxyFileGenerator;
 
     @Autowired
-    private GitService gitService;
+    private GatewayConfigFilesService gatewayConfigFilesService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -160,9 +160,7 @@ public class AdminProxiesController {
         createProxyAction.setSelectedServices(selectedServices);
         createProxyAction.execute();
 
-        gitService.init();
-        gitService.addProxy(proxy);
-        gitService.commit("Add new proxy with id:" + proxy.getId());
+        gatewayConfigFilesService.addGatewayConfigFile(proxy);
 
         return proxyListPage();
     }
@@ -270,20 +268,15 @@ public class AdminProxiesController {
         proxy.getServiceApis().clear();
         proxy.setDeletedWhen(new Date());
         proxyRepository.save(proxy);
+        gatewayConfigFilesService.deleteGatewayConfigFile(proxy);
         return proxyListPageRest();
     }
 
     public void transmitConfigChangesToGitConfigRepository(Proxy updatedProxy) throws IOException, GitAPIException, URISyntaxException {
-
         log.debug("deleting old proxy config from git repository for proxy {}", updatedProxy.getId());
-        gitService.init();
-        gitService.deleteProxy(updatedProxy);
-        gitService.commit("Delete proxy with id:" + updatedProxy.getId());
-
+        gatewayConfigFilesService.deleteGatewayConfigFile(updatedProxy);
         log.debug("writing new proxy config into git repository {}", updatedProxy);
-        gitService.init();
-        gitService.addProxy(updatedProxy);
-        gitService.commit("Add new proxy with id:" + updatedProxy.getId());
+        gatewayConfigFilesService.addGatewayConfigFile(updatedProxy);
     }
 
     public void informProxyAboutUpdatedConfiguration(Proxy updatedProxy) throws URISyntaxException {
