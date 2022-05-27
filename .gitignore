@@ -60,9 +60,5 @@ dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/
 
-
-
-
-
-
-
+# Miscellaneous
+.temp-gateway-config-file-storage

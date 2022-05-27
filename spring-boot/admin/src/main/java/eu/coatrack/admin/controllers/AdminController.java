@@ -19,7 +19,6 @@ package eu.coatrack.admin.controllers;
  * limitations under the License.
  * #L%
  */
-
 import be.ceau.chart.DoughnutChart;
 import be.ceau.chart.LineChart;
 import be.ceau.chart.color.Color;
@@ -42,6 +41,8 @@ import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
 import eu.coatrack.admin.service.OAuthUserDetailsService;
 import eu.coatrack.api.*;
+import eu.coatrack.config.github.GithubEmail;
+import javassist.NotFoundException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -622,7 +623,7 @@ public class AdminController {
     @RequestMapping(value = "/dashboard/gateway-health-monitor/notification-status", method = POST)
     @ResponseBody
     public void updateNotificationStatusOnGatewayHealthMonitor(@RequestParam String proxyId, @RequestParam boolean isMonitoringEnabled) {
-        Proxy proxy = proxyRepository.findById(proxyId).get();
+        Proxy proxy = proxyRepository.findById(proxyId).orElse(null);
         proxy.setHealthMonitoringEnabled(isMonitoringEnabled);
         log.debug("Changing the monitoring status of proxy {} to {}", proxy.getName(), proxy.isHealthMonitoringEnabled());
         proxyRepository.save(proxy);

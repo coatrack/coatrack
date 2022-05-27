@@ -40,9 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author perezdf
  */
-public class GitServiceTest {
+public class GatewayConfigFilesServiceTest {
 
-    public GitServiceTest() {
+    public GatewayConfigFilesServiceTest() {
     }
 
     @BeforeAll
@@ -62,7 +62,7 @@ public class GitServiceTest {
     }
 
     @Autowired
-    GitService gitService;
+    GatewayConfigFilesService gatewayConfigFilesService;
     
     // TODO add test methods here.
     // The methods must be annotated with annotation @Test. For example:
@@ -84,10 +84,6 @@ public class GitServiceTest {
         services.add(service);
         proxy.setServiceApis(services);
 
-        gitService.init(); 
-
-        gitService.addProxy(proxy);
-        gitService.commit("Add new Proxy");
-
+        gatewayConfigFilesService.addGatewayConfigFile(proxy);
     }
 }

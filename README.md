@@ -25,12 +25,17 @@ This project is part of [FIWARE](https://www.fiware.org/). For more information 
 | :books: [Documentation](https://github.com/coatrack/coatrack/wiki) |  :whale: [Docker Hub](https://hub.docker.com/r/coatrack/admin/) | :dart: [Roadmap](https://github.com/coatrack/coatrack/blob/master/docs/roadmap.md) |
 | ----------------------------------------------| ----------------------------------------------------------------| --------------------------------------------------------------------|
 
+
+
 ## Contents
 
 * [Background](#background)
-* [Install](#install)
 * [Usage](#usage)
+* [Build and Run CoatRack Locally via CLI](#Build and Run CoatRack Locally via CLI)
+* [Build and Run CoatRack Locally via Docker Compose](#Build and Run CoatRack Locally via Docker Compose)
 * [License](#license)
+
+
 
 ## Background
 
@@ -52,42 +57,69 @@ The following figure shows the typical CoatRack architecture, the CoatRack web a
 
 ![CoatRack architecture overview](./spring-boot/admin/src/main/resources/static/images/coatrack-architecture-overview.png)
 
-## Install
 
-Scripts for building and running CoatRack are available in the root folder of the code base. To build CoatRack, use:
 
-```console
-./build.sh
-```
-To run the CoatRack web application, use:
-
-```console
-./run-admin-application.sh
-```
-After starting up, the CoatRack web application will be accessible at `http://localhost:8080` 
-
-*Optional:* If you are a CoatRack developer and want to run the application using a custom Spring profile, you can pass the profile name to the run script as follows:
-
-```console
-./run-admin-application.sh [optional-spring-profile-name]
-```
-To create your personal custom Spring profile for CoatRack, please follow the instructions in the following template file:
-```
-spring-boot/admin/src/main/resources/application-private-TEMPLATE.yml
-```
 ## Usage
 
-To start using CoatRack: 
+To start using CoatRack:
 
-- either run the admin application locally, as explained in the [Install](#install) section
-- or open the public instance available at (https://coatrack.eu).
+- either run CoatRack locally as explained in the "Install ..." sections
+- or open the public instance available at https://coatrack.eu.
 
-To log-in to CoatRack, a Github account is required. After logging in and filling in the registration form, the CoatRack admin application will open. Use the "Getting started tutorials" that are accessible from inside the application to learn the basics of using CoatRack.
+To log-in to CoatRack, a Github account is required. After logging in and filling in the registration form, the CoatRack Web  Application will open. Use the "Getting started tutorials" that are  accessible from inside the application to learn the basics of using  CoatRack.
 
 There are two tutorials inside the application:
 
 - Offering service APIs via CoatRack
 - Using service APIs offered via CoatRack
+
+
+
+## Build and Run CoatRack Locally via CLI
+
+The following prerequisites are required:
+
+- a Linux shell - Windows users can use the Windows-Powershell or the Git Bash shell instead, WSL is not supported
+- OpenJDK 11
+- Maven 3.6.3 or higher
+
+Open a terminal, go into the `coatrack` directory and build all components using one the the commands below:
+
+```
+mvn clean package -DskipTests
+```
+
+Run the Web Application component (admin):
+
+```
+java -jar spring-boot/admin/target/coatrack-admin-*.jar
+```
+
+The windows terminal does not recognize the `*` . If you are using the windows terminal then the `*` is to be replaced by the proper coatrack version number. Just take a look at the jar file in `spring-boot/admin/target/` directory and adapt the command above.
+
+Now, open another session/terminal and additionally run the config-server component:
+
+```
+java -jar spring-boot/config-server/target/coatrack-config-server-*.jar
+```
+
+Now you a have a fully working instance of CoatRack using non-persistent databases. You can access it on `http://localhost:8080`.
+
+
+
+## Build and Run CoatRack Locally via Docker Compose
+
+The following prerequisites are required:
+
+- a Linux shell - Windows users can use WSL or the Git Bash shell instead
+- OpenJDK 11
+- Maven 3.6.3 or higher
+- docker 20.10.12 or higher
+- docker-compose 1.29.2 or higher
+
+With your terminal go into the `coatrack/docker` directory where you will find the script `build-and-deploy-images-locally.sh` which builds CoatRack from source, creates container images on your local machine and runs CoatRack locally using these images. This is especially useful for developers who did changes to the source code and want to locally test the impact of these changes in a realistic setup.
+
+
 
 ## License
 

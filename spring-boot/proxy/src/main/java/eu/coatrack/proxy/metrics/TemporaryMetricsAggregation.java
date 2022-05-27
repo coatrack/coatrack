@@ -28,46 +28,44 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class MetricsHolder {
+public class TemporaryMetricsAggregation {
 
-    private static final Logger log = LoggerFactory.getLogger(MetricsHolder.class);
+    private static final Logger log = LoggerFactory.getLogger(TemporaryMetricsAggregation.class);
 
     private static final Pattern PATTERN_TO_SPLIT_SERVLET_PATH = Pattern.compile("^/?([^/]+)(/.*)?");
     private static final int MATCHER_GROUP_INDEX_OF_SERVICE_API_ID = 1;
     private static final int MATCHER_GROUP_INDEX_OF_PATH = 2;
 
-    private final HttpServletRequest request;
     private final String apiKeyValue;
     private final MetricType metricType;
     private final Integer httpResponseCode;
+    private final String requestURI;
+    private final String requestMethod;
 
-    private String requestMethod;
     private String serviceApiName;
     private String path;
-    private Matcher matcher;
 
-    public MetricsHolder(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
-        this.request = request;
+    public TemporaryMetricsAggregation(HttpServletRequest request, String apiKeyValue, MetricType metricType, Integer httpResponseCode) {
         this.apiKeyValue = apiKeyValue;
         this.metricType = metricType;
         this.httpResponseCode = httpResponseCode;
-        initializeResidualFields();
+        this.requestMethod = request.getMethod();
+        this.requestURI = request.getRequestURI();
+        initFieldsBasedOnRequestObject(request);
     }
 
-    private void initializeResidualFields() {
-        requestMethod = request.getMethod();
-        matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
-
+    private void initFieldsBasedOnRequestObject(HttpServletRequest request) {
+        Matcher matcher = PATTERN_TO_SPLIT_SERVLET_PATH.matcher(request.getServletPath());
         if (matcher.find()) {
             // first element of the servlet path is the service api's name/id
             serviceApiName = matcher.group(MATCHER_GROUP_INDEX_OF_SERVICE_API_ID);
-            initializePath();
+            initializePath(matcher);
         } else {
             log.warn("matcher {} did not match servlet path {}", matcher, request.getServletPath());
         }
     }
 
-    private void initializePath() {
+    private void initializePath(Matcher matcher) {
         // rest of the servlet path is the actual path that is called on the proxied service
         path = matcher.group(MATCHER_GROUP_INDEX_OF_PATH);
         log.debug("matched servlet path '{}' with service uri identifier '{}' and path '{}'",
@@ -106,6 +104,6 @@ public class MetricsHolder {
     }
 
     public String getRequestURI() {
-        return request.getRequestURI();
+        return requestURI;
     }
 }

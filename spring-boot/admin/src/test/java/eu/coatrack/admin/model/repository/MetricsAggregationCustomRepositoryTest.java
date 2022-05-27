@@ -28,8 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -49,17 +47,7 @@ public class MetricsAggregationCustomRepositoryTest {
     @Autowired
     MetricRepository metricRepository;
 
-    @MockBean
-    OAuth2AuthorizedClientService clientService;
-
-    /**
-     * api provider username, needs to be in sync with sample data
-     *
-     * @see eu.coatrack.admin.DatabaseInitializer
-     */
-    @Value("${ygg.admin.database.sampleDataUsername:exampleCompanyInc}")
-    private String sampleDataApiProviderUsername;
-
+    private String sampleDataApiProviderUsername = "exampleCompanyInc";
     private LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
     private LocalDate today = LocalDate.now();
 

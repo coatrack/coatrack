@@ -21,24 +21,20 @@ package eu.coatrack.admin.model.repository;
  */
 
 import eu.coatrack.api.Proxy;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
-import org.springframework.data.rest.core.annotation.RestResource;
-import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.access.prepost.PostFilter;
 
-import java.util.List;
 import java.util.Optional;
 
 /**
- * These unsecured methods are only to be used within an authenticate() method. The lack of
- * method security prevents StackOverflow exceptions when these methods are called within authenticate().
+ * This is an additional repository for internal use, without using filter method security like other repositories
+ * would do for external access.
+ * This method can be used within the Spring Security method "authenticate()" without causing a recursive
+ * authentication call which could lead to a StackOverflowException.
  * @author Christoph Baier
  */
-@RepositoryRestResource(collectionResourceRel = "proxies", path = "proxies")
-public interface UnsecuredProxyRepository extends PagingAndSortingRepository<Proxy, String> {
+
+public interface InternalProxyRepository extends PagingAndSortingRepository<Proxy, String> {
 
     Optional<Proxy> findById(@Param("id") String id);
 
