@@ -75,6 +75,15 @@ public class OAuthUserDetailsService {
         return email;
     }
 
+    private String getPrimaryEmailFromLoggedInUser() {
+        return getEmailsListFromGithub()
+                .stream()
+                .filter(email -> (email.isVerified() && email.isPrimary()))
+                .map(GithubEmail::getEmail)
+                .findFirst()
+                .orElse(null);
+    }
+
     private List<GithubEmail> getEmailsListFromGithub() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getTokenFromLoggedInUser());
@@ -83,15 +92,6 @@ public class OAuthUserDetailsService {
         ResponseEntity<List<GithubEmail>> emailsListFromGithub = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
                 githubRequest, new ParameterizedTypeReference<List<GithubEmail>>() {});
         return emailsListFromGithub.getBody();
-    }
-
-    private String getPrimaryEmailFromLoggedInUser() {
-        return getEmailsListFromGithub()
-                .stream()
-                .filter(email -> (email.isVerified() && email.isPrimary()))
-                .map(GithubEmail::getEmail)
-                .findFirst()
-                .orElse(null);
     }
 
     public String getTokenFromLoggedInUser() {
