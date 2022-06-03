@@ -92,14 +92,6 @@ spring:
     rest:
       base-path: /api
 
-spring.application.name: ygg-admin
-
-# TODO Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
-spring.cloud.config:
-  username: admin
-  password: password
-  uri: http://localhost:8998
-
   security:
     oauth2:
       client:
@@ -119,5 +111,13 @@ spring.cloud.config:
             user-name-attribute: login
           resource:
             userInfoUri: https://api.github.com/user
+
+spring.application.name: ygg-admin
+
+# TODO Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
+spring.cloud.config:
+  username: admin
+  password: password
+  uri: http://localhost:8998
 
 management.security.enabled: false
