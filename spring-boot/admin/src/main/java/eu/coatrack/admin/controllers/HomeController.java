@@ -23,7 +23,9 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.components.WebUI;
 import eu.coatrack.admin.model.repository.CoverRepository;
 import eu.coatrack.admin.model.repository.ErrorRepository;
+import eu.coatrack.admin.service.HomeService;
 import eu.coatrack.api.ServiceCover;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
@@ -44,46 +46,24 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class HomeController {
 
-    public static final String HOME_VIEW = "home";
-    public static final String ERROR_VIEW = "error";
-    public static final String REDIRECT_HOME_VIEW = "redirect:/";
-    public static final String ERROR_403_VIEW = "errors/custom";
-
-    private final WebUI webUI;
-
     @Autowired
-    private ErrorRepository errorRepository;
-
-    @Autowired
-    private CoverRepository coverRepository;
-
-    @Autowired
-    public HomeController(WebUI webUI) {
-        this.webUI = webUI;
-    }
+    private HomeService homeService;
 
     @RequestMapping("/")
     public String home(Model model) {
-
-        String springVersion = webUI.parameterizedMessage("home.spring.version",
-                SpringBootVersion.getVersion(), SpringVersion.getVersion());
-        model.addAttribute("springVersion", springVersion);
-        return HOME_VIEW;
+        return homeService.home(model);
     }
 
     @PostMapping(value = "/errors", produces = "application/json")
     @ResponseBody
-    public eu.coatrack.api.Error saveErrors(@RequestBody eu.coatrack.api.Error error) {
-
-        return errorRepository.save(error);
-
+    public eu.coatrack.api.Error saveErrors(eu.coatrack.api.Error error) {
+        return homeService.saveErrors(error);
     }
 
     @RequestMapping(value = "/covers", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public Iterable<ServiceCover> serviceCoversListPageRest(){
-
-        return coverRepository.findAll();
+        return homeService.serviceCoversListPageRest();
     }
 
 }
