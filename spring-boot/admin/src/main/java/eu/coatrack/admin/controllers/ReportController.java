@@ -53,6 +53,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping(path = "/admin/reports")
 public class ReportController {
 
+    private static final String REPORT_VIEW = "admin/reports/report";
+
     @Autowired
     private ReportService reportService;
 
@@ -70,7 +72,25 @@ public class ReportController {
             @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId,
             @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
     ) {
-        return reportService.report(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
+
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(REPORT_VIEW);
+        mav.addObject("services", serviceApiRepository.findByDeletedWhen(null));
+        mav.addObject("users", serviceConsumers);
+        mav.getModel().put("dateFrom", df.format(from));
+        mav.getModel().put("dateUntil", df.format(until));
+        mav.addObject("selectedServiceId", selectedServiceId);
+        mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
+        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
+        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findById(selectedApiConsumerUserId).orElse(null));
+        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
+        mav.addObject("exportUser", exportUser);
+        mav.addObject("isReportForConsumer", false);
+        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
+
+        return mav;
+        return ;
     }
 
     @RequestMapping(value = "/apiUsage/{dateFrom}/{dateUntil}/{selectedServiceId}/{apiConsumerId}/{onlyPaidCalls}", method = RequestMethod.GET, produces = "application/json")
@@ -99,6 +119,20 @@ public class ReportController {
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
     ) {
-        return reportService.searchReportsByServicesConsumed(dateFrom, dateUntil, selectedServiceId, isOnlyPaidCalls);
+
+
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(REPORT_VIEW);
+        mav.addObject("services", servicesThatLoggedInUserHasAKeyFor);
+        mav.getModel().put("dateFrom", df.format(dateFromDate));
+        mav.getModel().put("dateUntil", df.format(dateUntilDate));
+        mav.addObject("selectedServiceId", selectedServiceId);
+        mav.addObject("selectedApiConsumerUserId", user.getId());
+        mav.addObject("consumerUserSelectedForReport", user);
+        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
+        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
+        mav.addObject("isReportForConsumer", true);
+        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
+        return mav;
     }
 }

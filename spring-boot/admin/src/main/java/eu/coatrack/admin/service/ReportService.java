@@ -35,9 +35,6 @@ public class ReportService {
         FREE,
         MONTHLY,
     }
-
-    private static final String REPORT_VIEW = "admin/reports/report";
-
     private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
@@ -58,20 +55,20 @@ public class ReportService {
         return report(null, null, -1L, -1L, false);
     }
 
-    public ModelAndView report(String dateFrom, String dateUntil, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
-        Date dateFromDate = new Date();
-        Date dateUntilDate = new Date();
-
-        if (dateFrom != null && dateUntil != null) {
-            try {
-                dateFromDate = df.parse(dateFrom);
-                dateUntilDate = df.parse(dateUntil);
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-        }
+    public ModelAndView tryReport(String dateFromString, String dateUntilString, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
+        Date dateFrom = tryParseDateString(dateFromString);
+        Date dateUntil = tryParseDateString(dateUntilString);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        ModelAndView result = new ModelAndView();
+
+        result = report(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
+
+        return result;
+    }
+
+    public ModelAndView report(Date from, Date until, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
         User exportUser = userRepository.findByUsername(auth.getName());
 
         // Gets all the consumers of the services of the Authenticated User
@@ -84,24 +81,6 @@ public class ReportService {
 
         List<String> payPerCallServicesIds = getPayPerCallServicesIds(servicesProvidedByLoggedInUser);
 
-        ModelAndView mav = new ModelAndView();
-
-        mav.setViewName(REPORT_VIEW);
-
-        mav.addObject("services", serviceApiRepository.findByDeletedWhen(null));
-        mav.addObject("users", serviceConsumers);
-        mav.getModel().put("dateFrom", df.format(dateFromDate));
-        mav.getModel().put("dateUntil", df.format(dateUntilDate));
-        mav.addObject("selectedServiceId", selectedServiceId);
-        mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
-        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findById(selectedApiConsumerUserId).orElse(null));
-        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
-        mav.addObject("exportUser", exportUser);
-        mav.addObject("isReportForConsumer", false);
-        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
-
-        return mav;
     }
 
     public DataTableView<ApiUsageReport> reportApiUsage(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean onlyPaidCalls) {
@@ -284,19 +263,11 @@ public class ReportService {
     // deleted parameter selectedApiConsumerUserId because it has no use inside method
     public ModelAndView searchReportsByServicesConsumed(String dateFrom, String dateUntil, Long selectedServiceId, boolean isOnlyPaidCalls) {
 
-        Date dateFromDate = new Date();
-        Date dateUntilDate = new Date();
-
-        if (dateFrom != null && dateUntil != null) {
-            try {
-                dateFromDate = df.parse(dateFrom);
-                dateUntilDate = df.parse(dateUntil);
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-        }
+        Date from = tryParseDateString(dateFrom);
+        Date until = tryParseDateString(dateUntil);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         User user = userRepository.findByUsername(auth.getName());
         List<ApiKey> apiKeysByLoggedInUser = apiKeyRepository.findByLoggedInAPIConsumer();
 
@@ -308,20 +279,21 @@ public class ReportService {
 
         List <String> payPerCallServicesIds = getPayPerCallServicesIds(servicesThatLoggedInUserHasAKeyFor);
 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName(REPORT_VIEW);
-        mav.addObject("services", servicesThatLoggedInUserHasAKeyFor);
-        mav.getModel().put("dateFrom", df.format(dateFromDate));
-        mav.getModel().put("dateUntil", df.format(dateUntilDate));
-        mav.addObject("selectedServiceId", selectedServiceId);
-        mav.addObject("selectedApiConsumerUserId", user.getId());
-        mav.addObject("consumerUserSelectedForReport", user);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
-        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
-        mav.addObject("isReportForConsumer", true);
-        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
+
 
         return mav;
+    }
+
+    private Date tryParseDateString(String dateString) {
+        Date date = null;
+        if (dateString != null) {
+            try {
+                date = df.parse(dateString);
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return date;
     }
 
 
