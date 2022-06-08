@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 import eu.coatrack.admin.model.repository.TransactionRepository;
+import eu.coatrack.admin.service.TransactionService;
 import eu.coatrack.api.DataTableView;
 import eu.coatrack.api.Transaction;
 import eu.coatrack.api.TransactionType;
@@ -42,67 +43,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/transactions")
 public class TransactionController {
 
-    private SimpleDateFormat df = new SimpleDateFormat("dd/MM/YYYY");
-
     @Autowired
-    private TransactionRepository transactionRepository;
+    private TransactionService transactionService;
 
     @RequestMapping(value = "/findByTypeWithdrawal", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public DataTableView findByType() {
-        List<Transaction> result = transactionRepository.findByType(TransactionType.WITHDRAWAL);
-
-        List<List<String>> dataTable = new ArrayList();
-
-        result.stream().sorted((o1, o2) -> {
-            return o1.getRegistrationTime().compareTo(o2.getRegistrationTime());
-        }).map((item) -> {
-            List<String> dataTableItem = new ArrayList<>();
-            dataTableItem.add(df.format(item.getRegistrationTime()));
-            dataTableItem.add(item.getDescription());
-            dataTableItem.add(Double.toString(item.getAmount()));
-            return dataTableItem;
-        }).forEachOrdered((dataTableItem) -> {
-            dataTable.add(dataTableItem);
-        });
-
-        DataTableView data = new DataTableView();
-        data.setData(dataTable);
-
-        return data;
+        return transactionService.findByType();
     }
 
     @RequestMapping(value = "/findByTypeAnyDeposit", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public DataTableView findByTypeAnyDeposit() {
-
-        List<Transaction> result = new ArrayList<>();
-        Stream.of(transactionRepository.findByType(TransactionType.DEPOSIT)).forEach(result::addAll);
-        Stream.of(transactionRepository.findByType(TransactionType.SERVICE_DEPOSIT)).forEach(result::addAll);
-
-        Collections.sort(result, (o1, o2) -> {
-
-            return o1.getRegistrationTime().compareTo(o2.getRegistrationTime());
-        });
-
-        List<List<String>> dataTable = new ArrayList();
-
-        result.stream().sorted((o1, o2) -> {
-            return o1.getRegistrationTime().compareTo(o2.getRegistrationTime());
-        }).map((item) -> {
-            List<String> dataTableItem = new ArrayList<>();
-            dataTableItem.add(df.format(item.getRegistrationTime()));
-            dataTableItem.add(item.getType().getDisplayString());
-            dataTableItem.add(item.getDescription());
-            dataTableItem.add(Double.toString(item.getAmount()));
-            return dataTableItem;
-        }).forEachOrdered((dataTableItem) -> {
-            dataTable.add(dataTableItem);
-        });
-        DataTableView data = new DataTableView();
-        data.setData(dataTable);
-
-        return data;
+        return transactionService.findByTypeAnyDeposit();
     }
 
 }
