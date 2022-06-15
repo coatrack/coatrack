@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,8 +25,11 @@ import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.admin.service.ReportService;
+import eu.coatrack.admin.service.ServiceApiService;
+import eu.coatrack.admin.service.UserService;
 import eu.coatrack.api.*;
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.math.raw.Mod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +59,17 @@ public class ReportController {
     private static final String REPORT_VIEW = "admin/reports/report";
 
     @Autowired
-    private ReportService reportService;
+    private UserService userService;
 
+    @Autowired
+    private ServiceApiService serviceApiService;
+
+    @Autowired
+    private ReportService reportService;
 
     @RequestMapping(value = "", method = RequestMethod.GET)
     public ModelAndView report() {
-        return reportService.report();
+        return report(null, null, -1L, -1L, false);
     }
 
     @RequestMapping(value = "/{dateFrom}/{dateUntil}/{selectedServiceId}/{selectedApiConsumerUserId}/{isOnlyPaidCalls}", method = RequestMethod.GET)
@@ -72,30 +80,42 @@ public class ReportController {
             @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId,
             @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
     ) {
+        ModelAndView result = new ModelAndView();
+        result.setViewName(REPORT_VIEW);
 
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            List<ServiceApi> servicesProvided = serviceApiService.getServicesProvidedByLoggedInUser(); // TODO delete
+            Report report = reportService.getReport(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
+            User currentUser = userService.getLoggedIn();
+            List<User> totalConsumers = reportService.getServiceConsumers(servicesProvided);
+            List<String> idsPayedPerCall = reportService.getPayPerCallServicesIds(servicesProvided);
 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName(REPORT_VIEW);
-        mav.addObject("services", serviceApiRepository.findByDeletedWhen(null));
-        mav.addObject("users", serviceConsumers);
-        mav.getModel().put("dateFrom", df.format(from));
-        mav.getModel().put("dateUntil", df.format(until));
-        mav.addObject("selectedServiceId", selectedServiceId);
-        mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
-        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findById(selectedApiConsumerUserId).orElse(null));
-        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
-        mav.addObject("exportUser", exportUser);
-        mav.addObject("isReportForConsumer", false);
-        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
+            // generell data
+            result.addObject("users", totalConsumers);
+            result.addObject("selectedServiceId", selectedServiceId);
+            result.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
+            result.addObject("services", servicesProvided);
+            result.addObject("payPerCallServicesIds", idsPayedPerCall);
+            result.addObject("exportUser", currentUser);
 
-        return mav;
-        return ;
+            // data regarding report
+            result.addObject("isOnlyPaidCalls", report.isOnlyPaidCalls()); // TODO delete
+            result.addObject("isReportForConsumer", report.isForConsumer()); // TODO delete
+            result.addObject("dateFrom", report.getFrom()); // TODO delete
+            result.addObject("dateUntil", report.getUntil()); // TODO delete
+            result.addObject("serviceApiSelectedForReport", report.getSelectedService()); // TODO delete
+            result.addObject("consumerUserSelectedForReport", report.getSelectedConsumer()); // TODO delete
+        } else {
+            result.addObject("error", "Request is not authenticated! Please log in.");
+        }
+
+        return result;
     }
 
     @RequestMapping(value = "/apiUsage/{dateFrom}/{dateUntil}/{selectedServiceId}/{apiConsumerId}/{onlyPaidCalls}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
-    public DataTableView reportApiUsage(
+    public DataTableView<ApiUsageReport> reportApiUsage(
             @PathVariable("dateFrom") String dateFrom,
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
@@ -108,7 +128,7 @@ public class ReportController {
 
     @RequestMapping(value = "/consumer", method = GET)
     public ModelAndView showGenerateReportPageForServiceConsumer() {
-        return reportService.showGenerateReportPageForServiceConsumer();
+        return searchReportsByServicesConsumed(null, null, -1L, false);
     }
 
     // deleted @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId, because it is not used
@@ -119,20 +139,31 @@ public class ReportController {
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
     ) {
+        List<ServiceApi> servicesFromUser = serviceApiService.getServicesLoggedInUserHasKeyFor();
+        List<String> payPerCallServicesIds = reportService.getPayPerCallServicesIds(servicesFromUser);
+        List<User> totalConsumers = reportService.getServiceConsumers(servicesFromUser);
+        User currentUser = userService.getLoggedIn();
+        Report report = reportService.getReport(dateFrom, dateUntil, selectedServiceId, -1L, isOnlyPaidCalls);
 
+        ModelAndView result = new ModelAndView(REPORT_VIEW);
 
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName(REPORT_VIEW);
-        mav.addObject("services", servicesThatLoggedInUserHasAKeyFor);
-        mav.getModel().put("dateFrom", df.format(dateFromDate));
-        mav.getModel().put("dateUntil", df.format(dateUntilDate));
-        mav.addObject("selectedServiceId", selectedServiceId);
-        mav.addObject("selectedApiConsumerUserId", user.getId());
-        mav.addObject("consumerUserSelectedForReport", user);
-        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
-        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
-        mav.addObject("isReportForConsumer", true);
-        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
-        return mav;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(auth != null) {
+            result.addObject("selectedServiceId", selectedServiceId);
+            result.addObject("selectedApiConsumerUserId", userService.getLoggedIn().getId());
+            result.addObject("services", serviceApiService.getServicesLoggedInUserHasKeyFor());
+            result.addObject("payPerCallServicesIds", payPerCallServicesIds);
+            result.addObject("exportUser", currentUser);
+            result.addObject("users", totalConsumers);
+
+            result.addObject("isOnlyPaidCalls", report.isOnlyPaidCalls());
+            result.addObject("isReportForConsumer", report.isForConsumer());
+            result.getModel().put("dateFrom", report.getFrom());
+            result.getModel().put("dateUntil", report.getUntil());
+            result.addObject("serviceApiSelectedForReport", report.getSelectedService());
+        } else {
+            result.addObject("error", "Request is not authenticated! Please log in.");
+        }
+        return result;
     }
 }
