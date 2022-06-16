@@ -21,34 +21,17 @@ package eu.coatrack.admin.controllers;
  */
 
 import eu.coatrack.admin.model.repository.ApiKeyRepository;
-import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.admin.service.ReportService;
-import eu.coatrack.admin.service.ServiceApiService;
-import eu.coatrack.admin.service.UserService;
 import eu.coatrack.api.*;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.math.raw.Mod;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
-
-import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
+import java.util.List;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Slf4j
@@ -59,10 +42,12 @@ public class ReportController {
     private static final String REPORT_VIEW = "admin/reports/report";
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Autowired
-    private ServiceApiService serviceApiService;
+    private ServiceApiRepository serviceApiRepository;
+
+    @Autowired ApiKeyRepository apiKeyRepository;
 
     @Autowired
     private ReportService reportService;
@@ -85,9 +70,10 @@ public class ReportController {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null) {
-            List<ServiceApi> servicesProvided = serviceApiService.getServicesProvidedByLoggedInUser(); // TODO delete
+
+            User currentUser = userRepository.findByUsername(auth.getName());
+            List<ServiceApi> servicesProvided = serviceApiRepository.findByDeletedWhen(null);
             Report report = reportService.getReport(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
-            User currentUser = userService.getLoggedIn();
             List<User> totalConsumers = reportService.getServiceConsumers(servicesProvided);
             List<String> idsPayedPerCall = reportService.getPayPerCallServicesIds(servicesProvided);
 
@@ -139,19 +125,24 @@ public class ReportController {
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
     ) {
-        List<ServiceApi> servicesFromUser = serviceApiService.getServicesLoggedInUserHasKeyFor();
-        List<String> payPerCallServicesIds = reportService.getPayPerCallServicesIds(servicesFromUser);
-        List<User> totalConsumers = reportService.getServiceConsumers(servicesFromUser);
-        User currentUser = userService.getLoggedIn();
+
+
+
         Report report = reportService.getReport(dateFrom, dateUntil, selectedServiceId, -1L, isOnlyPaidCalls);
 
         ModelAndView result = new ModelAndView(REPORT_VIEW);
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         if(auth != null) {
+            User currentUser = userRepository.findByUsername(auth.getName());
+            List<ServiceApi> servicesFromUser = serviceApiRepository.findByApiKeyList(apiKeyRepository.findByLoggedInAPIConsumer());
+            List<String> payPerCallServicesIds = reportService.getPayPerCallServicesIds(servicesFromUser);
+            List<User> totalConsumers = reportService.getServiceConsumers(servicesFromUser);
+
             result.addObject("selectedServiceId", selectedServiceId);
-            result.addObject("selectedApiConsumerUserId", userService.getLoggedIn().getId());
-            result.addObject("services", serviceApiService.getServicesLoggedInUserHasKeyFor());
+            result.addObject("selectedApiConsumerUserId", currentUser.getId());
+            result.addObject("services", servicesFromUser);
             result.addObject("payPerCallServicesIds", payPerCallServicesIds);
             result.addObject("exportUser", currentUser);
             result.addObject("users", totalConsumers);
