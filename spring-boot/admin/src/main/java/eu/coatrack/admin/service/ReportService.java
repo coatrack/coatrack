@@ -20,21 +20,19 @@ package eu.coatrack.admin.service;
  * #L%
  */
 
-import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.api.*;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.AntPathMatcher;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
@@ -42,144 +40,16 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class ReportService {
-    static class ApiUsageReporter {
-        enum CallType {
-            MATCHING, NOT_MATCHING, FREE, MONTHLY,
-        }
-
-        private final Map<CallType, AtomicLong> generalNumberOfCalls = new HashMap<>();
-        private final Map<EntryPoint, AtomicLong> noOfCallsPerEntryPoint = new TreeMap<>();
-        private final ServiceApi service;
-        private final AntPathMatcher parser = new AntPathMatcher();
-        private final List<ApiUsageReport> results = new ArrayList<>();
-        private final Date from;
-        private final Date until;
-
-        public ApiUsageReporter(ServiceApi serviceApi, Date from, Date until) {
-            this.service = serviceApi;
-            this.from = from;
-            this.until = until;
-            generalNumberOfCalls.put(CallType.NOT_MATCHING, new AtomicLong(0));
-            generalNumberOfCalls.put(CallType.FREE, new AtomicLong(0));
-            generalNumberOfCalls.put(CallType.MONTHLY, new AtomicLong(0));
-
-            for (EntryPoint entryPoint : serviceApi.getEntryPoints()) {
-                noOfCallsPerEntryPoint.put(entryPoint, new AtomicLong(0L));
-            }
-        }
-
-        /**
-         * @deprecated
-         * This method is going to disappear with implementation of typesafe queries
-         */
-        @Deprecated
-        private MetricResult metricResultFromObjArray(Object[] item) {
-            String username = (String) item[0];
-            Long serviceId = (Long) item[1];
-            MetricType metricType = (MetricType) item[2];
-            Long callsPerEntry = (Long) item[3];
-            String path = (String) item[4];
-            String requestMethod = (String) item[5];
-            return new MetricResult(username, serviceId, metricType, callsPerEntry, path, requestMethod);
-        }
-
-        public void countCalls(List metricResults, boolean onlyPaidCalls) {
-            metricResults.forEach(metricResult -> {
-                MetricResult metric = metricResultFromObjArray((Object[]) metricResult);
-                log.debug("Metric for report: user '{}' service '{}' type '{}' calls '{}' path '{}' method '{}'", metric.getUsername(), metric.getServiceId(), metric.getType(), metric.getCallsPerEntry(), metric.getPath(), metric.getRequestMethod());
-                if (metric.getType() == MetricType.RESPONSE) {
-                    if (service.getServiceAccessPaymentPolicy() == ServiceAccessPaymentPolicy.FOR_FREE) {
-                        generalNumberOfCalls.get(CallType.FREE).addAndGet(metric.getCallsPerEntry());
-                    } else if (service.getServiceAccessPaymentPolicy() == ServiceAccessPaymentPolicy.MONTHLY_FEE) {
-                        generalNumberOfCalls.get(CallType.MONTHLY).addAndGet(metric.getCallsPerEntry());
-                    } else if (service.getServiceAccessPaymentPolicy() == WELL_DEFINED_PRICE) {
-                        boolean entryPointMatching = matchesEntryPoint(metric);
-                        if (!entryPointMatching && !onlyPaidCalls) {
-                            generalNumberOfCalls.get(CallType.NOT_MATCHING).addAndGet(metric.getCallsPerEntry());
-                        }
-                    }
-                }
-            });
-        }
-
-        private boolean matchesEntryPoint(MetricResult metric) {
-            for (EntryPoint entryPoint : service.getEntryPoints()) {
-                if (entryPoint.getPathPattern() != null && entryPoint.getHttpMethod() != null) {
-                    boolean pathMatches = parser.match(entryPoint.getPathPattern(), metric.getPath());
-                    if (pathMatches) {
-                        if (entryPoint.getHttpMethod().equals(metric.getRequestMethod()) || entryPoint.getHttpMethod().equals("*")) {
-                            noOfCallsPerEntryPoint.get(entryPoint).addAndGet(metric.getCallsPerEntry());
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-
-        public List<ApiUsageReport> getReports() {
-            if (!noOfCallsPerEntryPoint.isEmpty())
-                sumUpCallsWithMatchingRules();
-
-            if (generalNumberOfCalls.get(CallType.NOT_MATCHING).get() > 0)
-                sumUpAllOtherCalls();
-
-            if (generalNumberOfCalls.get(CallType.FREE).get() > 0)
-                sumUpAllFreeCalls();
-
-            if (generalNumberOfCalls.get(CallType.MONTHLY).get() > 0)
-                sumUpCallsWithMonthlyFlatrate();
-            return results;
-        }
-
-        private void sumUpCallsWithMatchingRules() {
-            for (EntryPoint entryPoint : service.getEntryPoints()) {
-                String name = String.format("%s (%s %s)", entryPoint.getName(), entryPoint.getHttpMethod(), entryPoint.getPathPattern());
-                long numberOfCalls = noOfCallsPerEntryPoint.get(entryPoint).longValue();
-                double price = BigDecimal.valueOf(entryPoint.getPricePerCall()).doubleValue();
-                double total = BigDecimal.valueOf(entryPoint.getPricePerCall() * noOfCallsPerEntryPoint.get(entryPoint).longValue() / 1000).doubleValue();
-
-                results.add(new ApiUsageReport(name, numberOfCalls, price, total));
-            }
-        }
-
-        private void sumUpAllOtherCalls() {
-            long numberOfCalls = generalNumberOfCalls.get(CallType.NOT_MATCHING).get();
-            results.add(new ApiUsageReport("Other Calls", numberOfCalls, 0, 0));
-        }
-
-        private void sumUpAllFreeCalls() {
-            long numberOfCalls = generalNumberOfCalls.get(CallType.FREE).get();
-            results.add(new ApiUsageReport("All Calls", numberOfCalls, 0, 0));
-        }
-
-        private void sumUpCallsWithMonthlyFlatrate() {
-            Calendar startCalendar = new GregorianCalendar();
-            startCalendar.setTime(from);
-            Calendar endCalendar = new GregorianCalendar();
-            endCalendar.setTime(until);
-
-            int diffYear = endCalendar.get(Calendar.YEAR) - startCalendar.get(Calendar.YEAR);
-            int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
-            long numberOfCalls = generalNumberOfCalls.get(CallType.MONTHLY).get();
-
-            ApiUsageReport apiUsageReportForMonthlyFlatrate = new ApiUsageReport("All Calls", numberOfCalls, service.getMonthlyFee(), service.getMonthlyFee() * diffMonth);
-            results.add(apiUsageReportForMonthlyFlatrate);
-        }
-
-    }
 
     private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private ServiceApiRepository serviceApiRepository;
-
-    @Autowired
-    private MetricsAggregationCustomRepository metricsAggregationCustomRepository;
+    private final ServiceApiRepository serviceApiRepository;
 
 
     public Report getReport(String dateFrom, String dateUntil, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
@@ -194,6 +64,7 @@ public class ReportService {
         return getReport(null, null, -1L, -1L, false);
     }
 
+    // TODO add to ServiceApiService
     public List<User> getServiceConsumers(List<ServiceApi> servicesProvidedByUser) {
         return servicesProvidedByUser.stream()
                 .flatMap(api -> api.getApiKeys().stream())
@@ -206,16 +77,16 @@ public class ReportService {
         ServiceApi serviceApi = serviceApiRepository.findById(selectedServiceId).orElse(null);
         Date from = tryParseDateString(dateFrom);
         Date until = tryParseDateString(dateUntil);
-        List<ApiUsageReport> result;
+        List<ApiUsageReport> apiUsageReports;
 
         if (serviceApi != null) {
-            result = calculateApiUsageReportForSpecificService(serviceApi, apiConsumerId, from, until, onlyPaidCalls);
+            apiUsageReports = calculateApiUsageReportForSpecificService(serviceApi, apiConsumerId, from, until, onlyPaidCalls);
         } else {
-            result = new ArrayList<>();
+            apiUsageReports = new ArrayList<>();
         }
 
         DataTableView<ApiUsageReport> table = new DataTableView<>();
-        table.setData(result);
+        table.setData(apiUsageReports);
         return table;
     }
 
@@ -227,30 +98,28 @@ public class ReportService {
         return payPerCallServicesIds;
     }
 
+
     public double calculateTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
+
+        Date from = java.sql.Date.valueOf(timePeriodStart);
+        Date until = java.sql.Date.valueOf(timePeriodEnd);
+
         List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
         List<ServiceApi> offeredServices = serviceApiRepository.findByOwnerUsername(apiProviderUsername);
+
         for (ServiceApi service : offeredServices) {
-            List<ApiUsageReport> calculatedApiUsage = calculateApiUsageReportForSpecificService(service, -1L, // for all consumers
-                    java.sql.Date.valueOf(timePeriodStart), java.sql.Date.valueOf(timePeriodEnd), true);
+            List<ApiUsageReport> calculatedApiUsage = calculateApiUsageReportForSpecificService(service, -1L, from, until, true);
             apiUsageReportsForAllOfferedServices.addAll(calculatedApiUsage);
         }
         double total = apiUsageReportsForAllOfferedServices.stream().mapToDouble(ApiUsageReport::getTotal).sum();
-
         return total;
     }
 
-    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi serviceApi, Long apiConsumerId, Date from, Date until, boolean onlyPaidCalls) {
+    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi service, Long apiConsumerId, Date from, Date until, boolean onlyPaidCalls) {
         // TODO needs to be typed, raw use for implicit types are no fun
-        List metricResult = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, serviceApi.getId(), serviceApi.getOwner().getUsername(), apiConsumerId, from, until, true);
-        List<ApiUsageReport> result = new ArrayList<>();
-        if (metricResult != null && !metricResult.isEmpty()) {
-            ApiUsageReporter apiUsageReporter = new ApiUsageReporter(serviceApi, from, until);
-            apiUsageReporter.countCalls(metricResult, onlyPaidCalls);
-            result = apiUsageReporter.getReports();
-            result.forEach(reportRow -> log.debug("row for report: " + reportRow));
-        }
-        return result;
+        ApiUsageCalculator apiUsageCalculator = new ApiUsageCalculator(service, from, until);
+        List<ApiUsageReport> apiUsageReports = apiUsageCalculator.calculateForSpecificService(apiConsumerId, onlyPaidCalls);
+        return apiUsageReports;
     }
 
     //TODO this should not be here, put it somewhere senseful
@@ -265,4 +134,10 @@ public class ReportService {
         }
         return date;
     }
+
+    public UserRepository getUserRepository() {
+        return userRepository;
+    }
+
+
 }
