@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.MetricRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
+import eu.coatrack.admin.service.ReportService;
 import eu.coatrack.api.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +42,7 @@ import org.springframework.test.context.ContextConfiguration;
 public class AdminControllerTest {
 
     @Autowired
-    ReportController reportController;
+    private ReportService reportService;
 
     @Autowired
     MetricRepository metricRepository;
@@ -99,7 +100,7 @@ public class AdminControllerTest {
     public void test() {
 
         ServiceApi randomServiceApiFromDB = serviceApiRepository.findAll().iterator().next();
-        reportController.calculateApiUsageReportForSpecificService(randomServiceApiFromDB, -1L, new Date(), new Date(), false);
+        reportService.calculateApiUsageReportForSpecificService(randomServiceApiFromDB, -1L, new Date(), new Date(), false);
     }
 
 }

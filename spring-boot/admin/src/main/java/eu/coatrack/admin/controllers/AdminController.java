@@ -42,6 +42,7 @@ import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
+import eu.coatrack.admin.service.ReportService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import javassist.NotFoundException;
@@ -112,7 +113,7 @@ public class AdminController {
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
     static {
-        Map<Integer, Color> colorMap = new HashMap<Integer, Color>();
+        Map<Integer, Color> colorMap = new HashMap<>();
         colorMap.put(400, Color.ORANGE);
         colorMap.put(401, Color.SALMON);
         colorMap.put(403, Color.LIGHT_YELLOW);
@@ -125,10 +126,10 @@ public class AdminController {
 
     /* REPOSITORIES */
     @Autowired
-    MetricsAggregationCustomRepository metricsAggregationCustomRepository;
+    private MetricsAggregationCustomRepository metricsAggregationCustomRepository;
 
     @Autowired
-    MetricRepository metricRepository;
+    private MetricRepository metricRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -153,19 +154,19 @@ public class AdminController {
 
     /* CONTROLLERS */
     @Autowired
-    UserController userController;
+    private UserController userController;
 
     @Autowired
-    ReportController reportController;
+    private ReportService reportService;
 
     @Autowired
-    WebUI webUI;
+    private WebUI webUI;
 
     @Autowired
-    UserSessionSettings session;
+    private UserSessionSettings session;
 
     @Autowired
-    GatewayHealthMonitorService gatewayHealthMonitorService;
+    private GatewayHealthMonitorService gatewayHealthMonitorService;
 
     @RequestMapping(value = "/profiles", method = GET)
     public ModelAndView goProfiles(Model model) throws IOException {
@@ -479,7 +480,7 @@ public class AdminController {
         stats.callsTotal = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
                 selectedTimePeriodEnd, apiProviderUsername);
 
-        stats.revenueTotal = reportController.calculateTotalRevenueForApiProvider(auth.getName(),
+        stats.revenueTotal = reportService.calculateTotalRevenueForApiProvider(auth.getName(),
                 selectedTimePeriodStart, selectedTimePeriodEnd);
 
         return stats;
