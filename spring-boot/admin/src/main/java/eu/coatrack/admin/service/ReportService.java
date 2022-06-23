@@ -98,7 +98,6 @@ public class ReportService {
         return payPerCallServicesIds;
     }
 
-
     public double calculateTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
 
         Date from = java.sql.Date.valueOf(timePeriodStart);
