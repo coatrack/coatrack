@@ -21,16 +21,14 @@ package eu.coatrack.admin.logic;
  */
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.admin.service.GitService;
+import eu.coatrack.admin.service.GatewayConfigFilesService;
 import eu.coatrack.config.ConfigServerCredential;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.User;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +52,7 @@ public class CreateProxyAction implements Action {
     //
     ///////////////////////////
     @Autowired
-    private GitService gitService;
+    private GatewayConfigFilesService gatewayConfigFilesService;
 
     @Autowired
     private RestTemplate restTemplate;
@@ -106,7 +104,7 @@ public class CreateProxyAction implements Action {
                 selectedServices.forEach(s -> log.debug("service-id:" + s));
                 selectedServices.stream()
                         .map(idString -> idString)
-                        .map(id -> serviceApiRepository.findOne(id))
+                        .map(id -> serviceApiRepository.findById(id).orElse(null))
                         .forEach(service -> proxy.getServiceApis().add(service));
             }
             proxy.setId(UUID.randomUUID().toString());
@@ -125,12 +123,9 @@ public class CreateProxyAction implements Action {
             proxy.setOwner(user);
             proxy = proxyRepository.save(proxy);
 
-            gitService.init();
+            gatewayConfigFilesService.addGatewayConfigFile(proxy);
 
-            gitService.addProxy(proxy);
-            gitService.commit("Add new proxy with id:" + proxy.getId());
-
-        } catch (GitAPIException | URISyntaxException | IOException exception) {
+        } catch (IOException exception) {
             this.ex = exception;
             log.error("Error occurred when creating proxy:" + exception.getMessage(), exception);
         }

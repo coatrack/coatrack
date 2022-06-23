@@ -23,9 +23,8 @@ package eu.coatrack.admin.service;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ProxyHealthStatus;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -36,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 public class GatewayHealthMonitorServiceTest {
@@ -65,7 +65,7 @@ public class GatewayHealthMonitorServiceTest {
         return proxy;
     }
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         sampleProxies = Arrays.asList(createSampleProxy(true, "testProxyMonitoringEnabledA"),
@@ -83,7 +83,7 @@ public class GatewayHealthMonitorServiceTest {
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
                         .healthDataForAllGateways);
-        Assert.assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
+        assertEquals(ProxyHealthStatus.OK, healthStatusSummary);
     }
 
     @Test
@@ -94,7 +94,7 @@ public class GatewayHealthMonitorServiceTest {
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
                         .healthDataForAllGateways);
-        Assert.assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
+        assertEquals(ProxyHealthStatus.WARNING, healthStatusSummary);
     }
 
     @Test
@@ -105,7 +105,7 @@ public class GatewayHealthMonitorServiceTest {
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
                         .healthDataForAllGateways);
-        Assert.assertEquals(ProxyHealthStatus.CRITICAL, healthStatusSummary);
+        assertEquals(ProxyHealthStatus.CRITICAL, healthStatusSummary);
     }
 
     @Test
@@ -115,13 +115,13 @@ public class GatewayHealthMonitorServiceTest {
                 .calculateGatewayHealthStatusSummary(gatewayHealthMonitorService
                         .getGatewayHealthMonitorData()
                         .healthDataForAllGateways);
-        Assert.assertEquals(ProxyHealthStatus.NEVER_CONNECTED, healthStatusSummary);
+        assertEquals(ProxyHealthStatus.NEVER_CONNECTED, healthStatusSummary);
     }
 
     @Test
     public void listShouldBeOrganizedFirstByMonitoringEnabledAndThenByGatewayName() {
         List<String> expectedOrderOfGatewayNames = Arrays.asList("testProxyMonitoringEnabledA", "testProxyMonitoringEnabledB", "testProxyMonitoringDisabledA");
-        Assert.assertEquals(expectedOrderOfGatewayNames,
+        assertEquals(expectedOrderOfGatewayNames,
                 gatewayHealthMonitorService.getGatewayHealthMonitorData()
                         .healthDataForAllGateways
                         .stream()

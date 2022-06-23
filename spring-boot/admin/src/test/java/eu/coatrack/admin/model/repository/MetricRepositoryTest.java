@@ -25,8 +25,7 @@ import eu.coatrack.api.Metric;
 import eu.coatrack.api.Proxy;
 import eu.coatrack.api.ServiceApi;
 import eu.coatrack.api.User;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -35,7 +34,6 @@ import org.springframework.test.context.junit4.SpringRunner;
  *
  * @author perezdf
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class MetricRepositoryTest {
 

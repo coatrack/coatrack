@@ -141,7 +141,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         log.debug("Update Service");
 
         ModelAndView mav = new ModelAndView();
-        mav.addObject("service", serviceApiRepository.findOne(id));
+        mav.addObject("service", serviceApiRepository.findById(id).orElse(null));
        
         mav.setViewName(ADMIN_SERVICE_COVER_EDITOR);
         return mav;
@@ -152,7 +152,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         log.debug("Update Service");
 
         ModelAndView mav = new ModelAndView();
-        mav.addObject("service", serviceApiRepository.findOne(id));
+        mav.addObject("service", serviceApiRepository.findById(id).orElse(null));
         mav.addObject("mode", ADMIN_SERVICE_UPDATE_MODE);
 
         mav.addObject("serviceAccessPermissionPolicies", ServiceAccessPermissionPolicy.values());
@@ -181,7 +181,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUsername(auth.getName());
 
-        ServiceApi serviceStored = serviceApiRepository.findOne(service.getId());
+        ServiceApi serviceStored = serviceApiRepository.findById(service.getId()).orElse(null);
 
         // check if the attributes relevant to the proxy config have changed
         boolean theProxyConfigNeedsToBeUpdated = !((serviceStored.getLocalUrl() != null) && serviceStored.getLocalUrl().equals(service.getLocalUrl())
@@ -267,7 +267,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
             session.setDashboardDateRangeEnd(selectedTimePeriodEnd);
         }
 
-        model.addAttribute("service", serviceApiRepository.findOne(id));
+        model.addAttribute("service", serviceApiRepository.findById(id).orElse(null));
 
         List<MetricsAggregation> metricsForThisService = metricsAggregationRepo.getSummarizedMetricsByServiceIdAndDateRange(
                 id, session.getDashboardDateRangeStart(), session.getDashboardDateRangeEnd());
@@ -433,8 +433,8 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public ServiceApi getByIdRest(@PathVariable("id") long id) throws IOException {
-        log.info("getById " + id + " proxy:" + serviceApiRepository.findOne(id));
-        return serviceApiRepository.findOne(id);
+        log.info("getById " + id + " proxy:" + serviceApiRepository.findById(id).orElse(null));
+        return serviceApiRepository.findById(id).orElse(null);
     }
 
     @RequestMapping(value = "{id}/proxies", method = RequestMethod.GET, produces = "application/json")
@@ -449,7 +449,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
     public Iterable<ServiceApi> deleteRest(@PathVariable("id") long id) throws IOException {
 
         // TODO: Consider the idea to change by a Custom Query or Delete on Cascade
-        ServiceApi serviceApi = serviceApiRepository.findOne(id);
+        ServiceApi serviceApi = serviceApiRepository.findById(id).orElse(null);
         serviceApi.setDeletedWhen(new Date());
         serviceApiRepository.save(serviceApi);
 
@@ -485,7 +485,7 @@ private int ADMIN_SERVICE_UPDATE_MODE =1;
         User user = userRepository.findByUsername(auth.getName());
 
         // get selected service
-        ServiceApi selectedService = serviceApiRepository.findOne(selectedServiceId);
+        ServiceApi selectedService = serviceApiRepository.findById(selectedServiceId).orElse(null);
 
         // create API key for logged in user and selected service
         log.debug("creating new api key for user {} and service {}", user, selectedService);

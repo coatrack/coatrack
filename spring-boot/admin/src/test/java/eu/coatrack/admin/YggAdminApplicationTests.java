@@ -20,12 +20,13 @@ package eu.coatrack.admin;
  * #L%
  */
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.oauth2.OAuth2AutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 
-
 @SpringBootTest
+@EnableAutoConfiguration(exclude = OAuth2AutoConfiguration.class)
 public class YggAdminApplicationTests {
 
 	@Test

@@ -21,20 +21,18 @@ package eu.coatrack.admin.model.repository;
  */
 
 import java.util.List;
-import junit.framework.Assert;
 import eu.coatrack.api.ServiceApi;
 import eu.coatrack.api.User;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  *
  * @author perezdf
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class ServiceApiTest {
 
@@ -67,7 +65,7 @@ public class ServiceApiTest {
         
         List<ServiceApi> services = serviceApiRepository.findByOwnerUsername("something");
         
-        Assert.assertNotNull(services);
+        assertNotNull(services);
 
     }
 

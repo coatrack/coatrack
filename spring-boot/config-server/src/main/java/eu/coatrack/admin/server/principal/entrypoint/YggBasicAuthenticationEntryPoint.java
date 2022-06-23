@@ -22,7 +22,6 @@ package eu.coatrack.admin.server.principal.entrypoint;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
@@ -38,7 +37,7 @@ public class YggBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPo
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)
-            throws IOException, ServletException {
+            throws IOException {
         response.addHeader("WWW-Authenticate", "Basic realm=\"" + getRealmName() + "\"");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = response.getWriter();
@@ -46,7 +45,7 @@ public class YggBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPo
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         setRealmName("Coatrack");
         super.afterPropertiesSet();
     }

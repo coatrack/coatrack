@@ -79,6 +79,9 @@ public class UserController {
         return "register";
     }
 
+    @Value("${ygg.mail.verify-new-users-via-mail}")
+    private boolean verifyNewUsersViaEmail;
+
     @Value("${ygg.mail.sender.user}")
     private String mail_sender_user;
 
@@ -115,8 +118,16 @@ public class UserController {
         CreditAccount creditAccount = new CreditAccount();
 
         user.setAccount(creditAccount);
+        creditAccount.setUser(user);
 
         userRepository.save(user);
+
+        if (verifyNewUsersViaEmail) sendVerificationEmail(user);
+
+        return "redirect:/admin";
+    }
+
+    private void sendVerificationEmail(User user) throws MessagingException {
 
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
         mailSender.setHost(mail_server_url);
@@ -145,14 +156,12 @@ public class UserController {
                 + "\n"
                 + "<p>Coatrack Team</p>", true);
         mailSender.send(message);
-
-        return "redirect:/admin";
     }
 
     @GetMapping(value = "users/{id}/verify/{emailVerificationCode}")
     public ModelAndView userEmailVeritification(@PathVariable("id") Long id, @PathVariable("emailVerificationCode") String emailVerificationCode) {
 
-        User user = userRepository.findOne(id);
+        User user = userRepository.findById(id).orElse(null);
 
         if (user.getEmailVerifiedUrl().equals(emailVerificationCode)) {
             user.setEmailVerified(Boolean.TRUE);

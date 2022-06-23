@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    username: postgres
+    password: postgres1234
+    url: jdbc:postgresql://localhost/ygg_config_server
+    driver: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true

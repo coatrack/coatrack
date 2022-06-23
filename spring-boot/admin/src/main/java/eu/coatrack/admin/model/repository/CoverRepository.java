@@ -24,7 +24,7 @@ import eu.coatrack.api.ServiceCover;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
-@RepositoryRestResource(collectionResourceRel = "/api/covers", path = "/api/covers")
+@RepositoryRestResource(collectionResourceRel = "/api/covers")
 public interface CoverRepository extends PagingAndSortingRepository<ServiceCover, Long> {
 
 }

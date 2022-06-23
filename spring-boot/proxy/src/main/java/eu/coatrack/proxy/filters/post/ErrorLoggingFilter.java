@@ -24,6 +24,7 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import eu.coatrack.proxy.metrics.MetricsCounterService;
 import eu.coatrack.api.MetricType;
+import eu.coatrack.proxy.metrics.TemporaryMetricsAggregation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,11 +84,11 @@ public class ErrorLoggingFilter extends ZuulFilter {
             log.warn("Response body and data stream are null - assuming that service is unavailable (logging status 503)");
 
             String apiKeyValue = SecurityContextHolder.getContext().getAuthentication().getCredentials().toString();
-            metricsCounterService.increment(
+            metricsCounterService.increment(new TemporaryMetricsAggregation(
                     request,
                     apiKeyValue,
                     MetricType.EMPTY_RESPONSE,
-                    HttpStatus.SERVICE_UNAVAILABLE.value());
+                    HttpStatus.SERVICE_UNAVAILABLE.value()));
             // set context parameter to prevent ResponseLoggingFilter from "double-logging"
             ctx.set(CONTEXT_KEY_ALREADY_LOGGED_AS_ERROR, CONTEXT_VALUE_TRUE);
         }

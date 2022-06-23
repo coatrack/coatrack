@@ -24,23 +24,20 @@ import eu.coatrack.admin.model.vo.MetricsAggregation;
 import eu.coatrack.admin.model.vo.StatisticsPerApiUser;
 import eu.coatrack.admin.model.vo.StatisticsPerDay;
 import eu.coatrack.admin.model.vo.StatisticsPerHttpStatusCode;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author perezdf
  */
-@RunWith(SpringRunner.class)
 @DataJpaTest
 public class MetricsAggregationCustomRepositoryTest {
 
@@ -50,14 +47,7 @@ public class MetricsAggregationCustomRepositoryTest {
     @Autowired
     MetricRepository metricRepository;
 
-    /**
-     * api provider username, needs to be in sync with sample data
-     *
-     * @see eu.coatrack.admin.DatabaseInitializer
-     */
-    @Value("${ygg.admin.database.sampleDataUsername:exampleCompanyInc}")
-    private String sampleDataApiProviderUsername;
-
+    private String sampleDataApiProviderUsername = "exampleCompanyInc";
     private LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
     private LocalDate today = LocalDate.now();
 
@@ -84,7 +74,7 @@ public class MetricsAggregationCustomRepositoryTest {
         resultList = repository.getIDsOfLatestMetricsPerSession(resultItem.getProxy().getId(), null, false, true, sampleDataApiProviderUsername);
         boolean found = false;
         for (Long id : resultList) {
-            Metric item = metricRepository.findOne(id);
+            Metric item = metricRepository.findById(id).orElse(null);
             if (resultItem.getProxy().getId().equals(item.getProxy().getId())) {
                 found = true;
             }
@@ -101,7 +91,7 @@ public class MetricsAggregationCustomRepositoryTest {
         resultList = repository.getIDsOfLatestMetricsPerSession(null, resultItem.getType(), false, true, sampleDataApiProviderUsername);
         boolean found = false;
         for (Long id : resultList) {
-            Metric item = metricRepository.findOne(id);
+            Metric item = metricRepository.findById(id).orElse(null);
             if (resultItem.getType().equals(item.getType())) {
                 found = true;
             }

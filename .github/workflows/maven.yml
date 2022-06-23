@@ -37,7 +37,7 @@ jobs:
       - name: Build
         run: bash build.sh
       - name: Push to docker
-        run: bash build-docker.sh
+        run: cd docker && bash build-and-push-images.sh
 
   deploy_to_kubernetes:
     needs: build_and_push_to_docker

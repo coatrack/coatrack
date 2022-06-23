@@ -82,7 +82,7 @@ public class CreditAccountController {
     public CreditAccount getAccount(
             @PathVariable("id") Long id
     ) {
-        return creditAccountRepository.findOne(id);
+        return creditAccountRepository.findById(id).orElse(null);
     }
 
     @RequestMapping(value = "/withDrawal", method = RequestMethod.POST, produces = "application/json")
@@ -187,7 +187,7 @@ public class CreditAccountController {
             bankAccountRepository.save(bankAccount);
         });
 
-        BankAccount bankAccount = bankAccountRepository.findOne(id);
+        BankAccount bankAccount = bankAccountRepository.findById(id).orElse(null);
         bankAccount.setDefaultAccount(true);
         bankAccountRepository.save(bankAccount);
 
