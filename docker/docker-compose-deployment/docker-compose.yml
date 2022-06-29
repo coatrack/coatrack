@@ -47,7 +47,8 @@ services:
       --spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect \
       --spring.datasource.initialization-mode=always \
       --ygg.admin.database.insertSampleDataOnStartup=${INSERT_SAMPLE_DATA_ON_STARTUP} \
-      --ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri=http://localhost:8998 \
+      --ygg.proxy.generate-bootstrap-properties.spring.cloud.config.uri=http://host.docker.internal:8998 \
+      --ygg.admin.api-base-url-for-gateway=http://host.docker.internal:8080/api/ \
       --spring.cloud.config.uri=http://${CONFIG_SERVER_CONTAINER_NAME}:8998 \
       --spring.cloud.config.username=${CONFIG_SERVER_USERNAME} \
       --spring.cloud.config.password=${CONFIG_SERVER_PASSWORD} \
