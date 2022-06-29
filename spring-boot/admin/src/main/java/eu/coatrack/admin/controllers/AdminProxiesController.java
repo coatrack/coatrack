@@ -24,7 +24,6 @@ import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.service.GatewayDockerComposeFileProviderService;
-import eu.coatrack.admin.service.GitService;
 import eu.coatrack.admin.service.GatewayConfigFilesService;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
