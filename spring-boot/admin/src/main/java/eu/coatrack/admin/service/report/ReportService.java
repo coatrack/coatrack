@@ -1,4 +1,4 @@
-package eu.coatrack.admin.service;
+package eu.coatrack.admin.service.report;
 
 /*-
  * #%L
@@ -20,10 +20,11 @@ package eu.coatrack.admin.service;
  * #L%
  */
 
+import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
+import eu.coatrack.admin.service.report.ApiUsageCalculator;
 import eu.coatrack.api.*;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,10 +40,7 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 
 @Slf4j
 @Service
-@AllArgsConstructor
 public class ReportService {
-
-    private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
     private final UserRepository userRepository;
@@ -51,36 +48,23 @@ public class ReportService {
     @Autowired
     private final ServiceApiRepository serviceApiRepository;
 
+    @Autowired
+    private final MetricsAggregationCustomRepository metricsAggregationCustomRepository;
 
-    public Report getReport(String dateFrom, String dateUntil, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
-        Date from = tryParseDateString(dateFrom);
-        Date until = tryParseDateString(dateUntil);
-        ServiceApi selectedService = (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null);
-        User selectedConsumer = (selectedApiConsumerUserId == -1L) ? null : userRepository.findById(selectedApiConsumerUserId).orElse(null);
-        return new Report(isOnlyPaidCalls, false, from, until, selectedService, selectedConsumer);
+    @Autowired
+    private ApiUsageCalculator apiUsageCalculator;
+
+    public ReportService(UserRepository userRepository, ServiceApiRepository serviceApiRepository, MetricsAggregationCustomRepository metricsAggregationCustomRepository) {
+        this.userRepository = userRepository;
+        this.serviceApiRepository = serviceApiRepository;
+        this.metricsAggregationCustomRepository = metricsAggregationCustomRepository;
     }
 
-    public Report getReport() {
-        return getReport(null, null, -1L, -1L, false);
-    }
-
-    // TODO add to ServiceApiService
-    public List<User> getServiceConsumers(List<ServiceApi> servicesProvidedByUser) {
-        return servicesProvidedByUser.stream()
-                .flatMap(api -> api.getApiKeys().stream())
-                .map(ApiKey::getUser)
-                .distinct()
-                .collect(Collectors.toList());
-    }
-
-    public DataTableView<ApiUsageReport> reportApiUsage(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean onlyPaidCalls) {
-        ServiceApi serviceApi = serviceApiRepository.findById(selectedServiceId).orElse(null);
-        Date from = tryParseDateString(dateFrom);
-        Date until = tryParseDateString(dateUntil);
+    public DataTableView<ApiUsageReport> reportApiUsage(ApiUsageDTO apiUsageDTO) {
         List<ApiUsageReport> apiUsageReports;
 
-        if (serviceApi != null) {
-            apiUsageReports = calculateApiUsageReportForSpecificService(serviceApi, apiConsumerId, from, until, onlyPaidCalls);
+        if (apiUsageDTO != null && apiUsageDTO.service != null) {
+            apiUsageReports = calculateApiUsageReportForSpecificService(apiUsageDTO);
         } else {
             apiUsageReports = new ArrayList<>();
         }
@@ -99,7 +83,6 @@ public class ReportService {
     }
 
     public double calculateTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
-
         Date from = java.sql.Date.valueOf(timePeriodStart);
         Date until = java.sql.Date.valueOf(timePeriodEnd);
 
@@ -114,29 +97,40 @@ public class ReportService {
         return total;
     }
 
-    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi service, Long apiConsumerId, Date from, Date until, boolean onlyPaidCalls) {
-        // TODO needs to be typed, raw use for implicit types are no fun
-        ApiUsageCalculator apiUsageCalculator = new ApiUsageCalculator(service, from, until);
-        List<ApiUsageReport> apiUsageReports = apiUsageCalculator.calculateForSpecificService(apiConsumerId, onlyPaidCalls);
+    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
+        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, apiUsageDTO.service.getId(), apiUsageDTO.service.getOwner().getUsername(), apiUsageDTO.consumer.getId(), apiUsageDTO.from, apiUsageDTO.until, true);
+        List<ApiUsageReport> apiUsageReports = apiUsageCalculator.calculateForSpecificService(metricResults, apiUsageDTO);
         return apiUsageReports;
     }
 
-    //TODO this should not be here, put it somewhere senseful
-    public static Date tryParseDateString(String dateString) {
-        Date date = null;
-        if (dateString != null) {
-            try {
-                date = df.parse(dateString);
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return date;
+    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi service, long consumerId, Date from, Date until, boolean considerOnlyPaidCalls) {
+        ApiUsageDTO apiUsageDTO = new ApiUsageDTO(
+                service,
+                null,
+                from,
+                until,
+                considerOnlyPaidCalls,
+                false
+        );
+        return calculateApiUsageReportForSpecificService(apiUsageDTO);
+    }
+
+
+    // TODO add to ServiceApiService
+    @Deprecated
+    public List<User> getServiceConsumers(List<ServiceApi> servicesProvidedByUser) {
+        return servicesProvidedByUser.stream()
+                .flatMap(api -> api.getApiKeys().stream())
+                .map(ApiKey::getUser)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public UserRepository getUserRepository() {
         return userRepository;
     }
 
-
+    public void setApiUsageCalculator(ApiUsageCalculator apiUsageCalculator) {
+        this.apiUsageCalculator = apiUsageCalculator;
+    }
 }
