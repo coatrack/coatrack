@@ -20,19 +20,18 @@ package eu.coatrack.admin.service.report;
  * #L%
  */
 
-import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
-import eu.coatrack.admin.service.report.ApiUsageCalculator;
 import eu.coatrack.api.*;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
@@ -40,25 +39,15 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class ReportService {
-
-    @Autowired
-    private final UserRepository userRepository;
 
     @Autowired
     private final ServiceApiRepository serviceApiRepository;
 
-    @Autowired
-    private final MetricsAggregationCustomRepository metricsAggregationCustomRepository;
 
     @Autowired
     private ApiUsageCalculator apiUsageCalculator;
-
-    public ReportService(UserRepository userRepository, ServiceApiRepository serviceApiRepository, MetricsAggregationCustomRepository metricsAggregationCustomRepository) {
-        this.userRepository = userRepository;
-        this.serviceApiRepository = serviceApiRepository;
-        this.metricsAggregationCustomRepository = metricsAggregationCustomRepository;
-    }
 
     public DataTableView<ApiUsageReport> reportApiUsage(ApiUsageDTO apiUsageDTO) {
         List<ApiUsageReport> apiUsageReports;
@@ -86,8 +75,13 @@ public class ReportService {
         Date from = java.sql.Date.valueOf(timePeriodStart);
         Date until = java.sql.Date.valueOf(timePeriodEnd);
 
-        List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
+        // TODO serviceApi dependency can be moved up by 1 layer, there is no other usage
         List<ServiceApi> offeredServices = serviceApiRepository.findByOwnerUsername(apiProviderUsername);
+        return calculateTotalRevenueForApiProvider(offeredServices, from, until);
+    }
+
+    public double calculateTotalRevenueForApiProvider(List<ServiceApi> offeredServices, Date from, Date until) {
+        List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
 
         for (ServiceApi service : offeredServices) {
             List<ApiUsageReport> calculatedApiUsage = calculateApiUsageReportForSpecificService(service, -1L, from, until, true);
@@ -97,10 +91,9 @@ public class ReportService {
         return total;
     }
 
-    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
-        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, apiUsageDTO.service.getId(), apiUsageDTO.service.getOwner().getUsername(), apiUsageDTO.consumer.getId(), apiUsageDTO.from, apiUsageDTO.until, true);
-        List<ApiUsageReport> apiUsageReports = apiUsageCalculator.calculateForSpecificService(metricResults, apiUsageDTO);
-        return apiUsageReports;
+
+    private List<ApiUsageReport> calculateApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
+        return apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
     }
 
     public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi service, long consumerId, Date from, Date until, boolean considerOnlyPaidCalls) {
@@ -126,9 +119,7 @@ public class ReportService {
                 .collect(Collectors.toList());
     }
 
-    public UserRepository getUserRepository() {
-        return userRepository;
-    }
+
 
     public void setApiUsageCalculator(ApiUsageCalculator apiUsageCalculator) {
         this.apiUsageCalculator = apiUsageCalculator;

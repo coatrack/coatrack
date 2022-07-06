@@ -1,8 +1,11 @@
 package eu.coatrack.admin.service.report;
 
+import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.api.*;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
@@ -13,10 +16,12 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.*;
 
 @Slf4j
 @Service
-@NoArgsConstructor
+@AllArgsConstructor
 public class ApiUsageCalculator {
     private static final AntPathMatcher parser = new AntPathMatcher();
 
+    @Autowired
+    private final MetricsAggregationCustomRepository metricsAggregationCustomRepository;
     /**
      * @deprecated This method is going to disappear with implementation of typesafe queries
      */
@@ -33,6 +38,7 @@ public class ApiUsageCalculator {
 
     public ApiUsageCounter countCalls(List metricResults, ApiUsageDTO apiUsageDTO) {
         ApiUsageCounter counter = new ApiUsageCounter(apiUsageDTO.service);
+        // TODO replace anonymous function with fitting method
         metricResults.forEach(metricResult -> {
             MetricResult metric = metricResultFromObjArray((Object[]) metricResult);
             log.debug("Metric for report: user '{}' service '{}' type '{}' calls '{}' path '{}' method '{}'", metric.getUsername(), metric.getServiceId(), metric.getType(), metric.getCallsPerEntry(), metric.getPath(), metric.getRequestMethod());
@@ -114,16 +120,16 @@ public class ApiUsageCalculator {
     }
 
 
-    public List<ApiUsageReport> calculateForSpecificService(List metricResult, ApiUsageDTO apiUsageDTO) {
-        // TODO needs to be typed, raw use for implicit types are no fun
+    public List<ApiUsageReport> calculateForSpecificService(ApiUsageDTO apiUsageDTO) {
+        // TODO needs to be typed, raw use of implicit types are no fun
+        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, apiUsageDTO.service.getId(), apiUsageDTO.service.getOwner().getUsername(), apiUsageDTO.consumer.getId(), apiUsageDTO.from, apiUsageDTO.until, true);
         List<ApiUsageReport> apiUsageReports = new ArrayList<>();
-        if (metricResult != null && !metricResult.isEmpty()) {
-            ApiUsageCounter countedCalls = countCalls(metricResult, apiUsageDTO);
+        if (metricResults != null && !metricResults.isEmpty()) {
+            ApiUsageCounter countedCalls = countCalls(metricResults, apiUsageDTO);
             apiUsageReports = getReports(apiUsageDTO, countedCalls);
             apiUsageReports.forEach(reportRow -> log.debug("row for report: " + reportRow));
         }
         return apiUsageReports;
     }
-
 
 }

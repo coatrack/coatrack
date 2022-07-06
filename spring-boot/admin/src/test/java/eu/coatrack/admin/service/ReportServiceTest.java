@@ -57,7 +57,7 @@ public class ReportServiceTest {
         doReturn(Optional.of(getServiceDummy())).when(serviceApiRepository).findById(1L);
         doReturn(getMetricResultDummy()).when(metricsAggregationCustomRepository).getUsageApiConsumer(any(MetricType.class), anyLong(), anyString(), anyLong(), eq(null), eq(null), eq(true));
 
-        reportService = new ReportService(userRepository, serviceApiRepository, metricsAggregationCustomRepository);
+        //reportService = new ReportService(userRepository, serviceApiRepository, metricsAggregationCustomRepository);
     }
 
 
