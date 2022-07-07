@@ -20,8 +20,6 @@ package eu.coatrack.admin.service;
  * #L%
  */
 import eu.coatrack.api.Proxy;
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +29,6 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -196,7 +193,7 @@ public class CustomProxyFileGeneratorService {
 
         bootstrapPropsForGeneratedFile.setProperty(
                 CUSTOM_PROPERTIES_CREDENTIAL_ID,
-                proxy.getCredentialName());
+                proxy.getConfigServerUsername());
         bootstrapPropsForGeneratedFile.setProperty(
                 CUSTOM_PROPERTIES_CREDENTIAL_PASSWORD,
                 proxy.getConfigServerPassword());

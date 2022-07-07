@@ -23,6 +23,7 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
+import eu.coatrack.admin.service.GatewayDockerComposeFileProviderService;
 import eu.coatrack.admin.service.GatewayConfigFilesService;
 import eu.coatrack.api.ApiKey;
 import eu.coatrack.api.Proxy;
@@ -42,6 +43,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -92,6 +94,9 @@ public class AdminProxiesController {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private GatewayDockerComposeFileProviderService gatewayDockerComposeFileContentProviderService;
 
     @RequestMapping(value = "", method = GET)
     public ModelAndView proxyListPage() {
@@ -288,5 +293,19 @@ public class AdminProxiesController {
         log.debug("inform proxy {} about updated config - calling refresh at URL: {}", updatedProxy.getId(), refreshUrl);
         Object responseOfRefreshCall = restTemplate.postForObject(new URI(refreshUrl), null, Object.class);
         log.info("refresh call to proxy returned: {}", responseOfRefreshCall);
+    }
+
+    @GetMapping("{gateway-id}/downloadGatewayDockerComposeFile")
+    public void downloadGatewayDockerComposeFile(HttpServletResponse response, @PathVariable("gateway-id") String gatewayId) throws Exception {
+        log.info("Starting to create custom docker compose file.");
+        String customizedContent = gatewayDockerComposeFileContentProviderService.provideDockerComposeFileContentOfGateway(gatewayId);
+        InputStream inputStream = new ByteArrayInputStream(customizedContent.getBytes(StandardCharsets.UTF_8));
+
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", "docker-compose.yml"));
+        response.setContentLength(customizedContent.length());
+
+        FileCopyUtils.copy(inputStream, response.getOutputStream());
+        inputStream.close();
     }
 }
