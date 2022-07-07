@@ -3,7 +3,6 @@ package eu.coatrack.admin.service.report;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.api.*;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,19 @@ public class ApiUsageCalculator {
 
     @Autowired
     private final MetricsAggregationCustomRepository metricsAggregationCustomRepository;
+
+    public List<ApiUsageReport> calculateForSpecificService(ApiUsageDTO apiUsageDTO) {
+        // TODO needs to be typed, raw use of implicit types are no fun
+        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, apiUsageDTO.service.getId(), apiUsageDTO.service.getOwner().getUsername(), apiUsageDTO.consumer.getId(), apiUsageDTO.from, apiUsageDTO.until, true);
+        List<ApiUsageReport> apiUsageReports = new ArrayList<>();
+        if (metricResults != null && !metricResults.isEmpty()) {
+            ApiUsageCounter countedCalls = countCalls(metricResults, apiUsageDTO);
+            apiUsageReports = getReports(apiUsageDTO, countedCalls);
+            apiUsageReports.forEach(reportRow -> log.debug("row for report: " + reportRow));
+        }
+        return apiUsageReports;
+    }
+
     /**
      * @deprecated This method is going to disappear with implementation of typesafe queries
      */
@@ -36,30 +48,35 @@ public class ApiUsageCalculator {
         return new MetricResult(username, serviceId, metricType, callsPerEntry, path, requestMethod);
     }
 
-    public ApiUsageCounter countCalls(List metricResults, ApiUsageDTO apiUsageDTO) {
+    private ApiUsageCounter countCalls(List metricResults, ApiUsageDTO apiUsageDTO) {
         ApiUsageCounter counter = new ApiUsageCounter(apiUsageDTO.service);
-        // TODO replace anonymous function with fitting method
-        metricResults.forEach(metricResult -> {
-            MetricResult metric = metricResultFromObjArray((Object[]) metricResult);
-            log.debug("Metric for report: user '{}' service '{}' type '{}' calls '{}' path '{}' method '{}'", metric.getUsername(), metric.getServiceId(), metric.getType(), metric.getCallsPerEntry(), metric.getPath(), metric.getRequestMethod());
-            if (metric.getType() == MetricType.RESPONSE) {
-                if (apiUsageDTO.service.getServiceAccessPaymentPolicy() == FOR_FREE) {
-                    counter.addFree(metric.getCallsPerEntry());
-                } else if (apiUsageDTO.service.getServiceAccessPaymentPolicy() == MONTHLY_FEE) {
-                    counter.addMonthlyBilled(metric.getCallsPerEntry());
-                } else if (apiUsageDTO.service.getServiceAccessPaymentPolicy() == WELL_DEFINED_PRICE) {
-                    boolean entryPointMatching = matchesEntryPoint(metric, apiUsageDTO.service, counter);
-                    if (!entryPointMatching && !apiUsageDTO.considerOnlyPaidCalls) {
-                        counter.addNotMatching(metric.getCallsPerEntry());
-                    }
-                }
-            }
-        });
+        metricResults.forEach(metricResult -> evaluateMetric(metricResult, apiUsageDTO, counter));
         return counter;
     }
 
+    // Will disappear after typing the Queries
+    @Deprecated
+    private void evaluateMetric(Object metricResult, ApiUsageDTO apiUsageDTO, ApiUsageCounter counter) {
+        MetricResult metric = metricResultFromObjArray((Object[]) metricResult);
+        evaluateMetric(metric, apiUsageDTO, counter);
+    }
 
-    // TODO does this have to be smaller?
+    private void evaluateMetric(MetricResult metric, ApiUsageDTO apiUsageDTO, ApiUsageCounter counter) {
+        log.debug("Metric for report: user '{}' service '{}' type '{}' calls '{}' path '{}' method '{}'", metric.getUsername(), metric.getServiceId(), metric.getType(), metric.getCallsPerEntry(), metric.getPath(), metric.getRequestMethod());
+        if (metric.getType() == MetricType.RESPONSE) {
+            if (apiUsageDTO.service.getServiceAccessPaymentPolicy() == FOR_FREE) {
+                counter.addFree(metric.getCallsPerEntry());
+            } else if (apiUsageDTO.service.getServiceAccessPaymentPolicy() == MONTHLY_FEE) {
+                counter.addMonthlyBilled(metric.getCallsPerEntry());
+            } else if (apiUsageDTO.service.getServiceAccessPaymentPolicy() == WELL_DEFINED_PRICE) {
+                boolean entryPointMatching = matchesEntryPoint(metric, apiUsageDTO.service, counter);
+                if (!entryPointMatching && !apiUsageDTO.considerOnlyPaidCalls) {
+                    counter.addNotMatching(metric.getCallsPerEntry());
+                }
+            }
+        }
+    }
+
     private boolean matchesEntryPoint(MetricResult metric, ServiceApi service, ApiUsageCounter counter) {
         for (EntryPoint entryPoint : service.getEntryPoints()) {
             if (entryPoint.getPathPattern() != null && entryPoint.getHttpMethod() != null) {
@@ -118,18 +135,4 @@ public class ApiUsageCalculator {
         int diffMonth = diffYear * 12 + endCalendar.get(Calendar.MONTH) - startCalendar.get(Calendar.MONTH);
         return diffMonth;
     }
-
-
-    public List<ApiUsageReport> calculateForSpecificService(ApiUsageDTO apiUsageDTO) {
-        // TODO needs to be typed, raw use of implicit types are no fun
-        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, apiUsageDTO.service.getId(), apiUsageDTO.service.getOwner().getUsername(), apiUsageDTO.consumer.getId(), apiUsageDTO.from, apiUsageDTO.until, true);
-        List<ApiUsageReport> apiUsageReports = new ArrayList<>();
-        if (metricResults != null && !metricResults.isEmpty()) {
-            ApiUsageCounter countedCalls = countCalls(metricResults, apiUsageDTO);
-            apiUsageReports = getReports(apiUsageDTO, countedCalls);
-            apiUsageReports.forEach(reportRow -> log.debug("row for report: " + reportRow));
-        }
-        return apiUsageReports;
-    }
-
 }
