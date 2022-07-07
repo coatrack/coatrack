@@ -51,7 +51,7 @@ public class ReportService {
         List<ApiUsageReport> apiUsageReports;
 
         if (apiUsageDTO != null && apiUsageDTO.service != null) {
-            apiUsageReports = reportApiUsageReportForSpecificService(apiUsageDTO);
+            apiUsageReports = calculateApiUsageReportForSpecificService(apiUsageDTO);
         } else {
             apiUsageReports = new ArrayList<>();
         }
@@ -61,7 +61,7 @@ public class ReportService {
         return table;
     }
 
-    public List<ApiUsageReport> reportApiUsageReportForSpecificService(ServiceApi service, long consumerId, Date from, Date until, boolean considerOnlyPaidCalls) {
+    public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi service, long consumerId, Date from, Date until, boolean considerOnlyPaidCalls) {
         ApiUsageDTO apiUsageDTO = new ApiUsageDTO(
                 service,
                 null,
@@ -70,7 +70,7 @@ public class ReportService {
                 considerOnlyPaidCalls,
                 false
         );
-        return reportApiUsageReportForSpecificService(apiUsageDTO);
+        return calculateApiUsageReportForSpecificService(apiUsageDTO);
     }
 
     // TODO remove after refactoring admin controller, serviceApiRepository can be moved to AdminController
@@ -88,14 +88,14 @@ public class ReportService {
         List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
 
         for (ServiceApi service : offeredServices) {
-            List<ApiUsageReport> calculatedApiUsage = reportApiUsageReportForSpecificService(service, -1L, from, until, true);
+            List<ApiUsageReport> calculatedApiUsage = calculateApiUsageReportForSpecificService(service, -1L, from, until, true);
             apiUsageReportsForAllOfferedServices.addAll(calculatedApiUsage);
         }
         double total = apiUsageReportsForAllOfferedServices.stream().mapToDouble(ApiUsageReport::getTotal).sum();
         return total;
     }
 
-    private List<ApiUsageReport> reportApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
+    private List<ApiUsageReport> calculateApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
         return apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
     }
 
