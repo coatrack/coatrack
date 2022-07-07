@@ -42,10 +42,9 @@ import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
-import eu.coatrack.admin.service.ReportService;
+import eu.coatrack.admin.service.report.ReportService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
-import javassist.NotFoundException;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -480,7 +479,7 @@ public class AdminController {
         stats.callsTotal = metricsAggregationCustomRepository.getTotalNumberOfLoggedApiCalls(selectedTimePeriodStart,
                 selectedTimePeriodEnd, apiProviderUsername);
 
-        stats.revenueTotal = reportService.calculateTotalRevenueForApiProvider(auth.getName(),
+        stats.revenueTotal = reportService.reportTotalRevenueForApiProvider(auth.getName(),
                 selectedTimePeriodStart, selectedTimePeriodEnd);
 
         return stats;
