@@ -50,7 +50,7 @@ public class ReportService {
     public DataTableView<ApiUsageReport> reportApiUsage(ApiUsageDTO apiUsageDTO) {
         List<ApiUsageReport> apiUsageReports;
 
-        if (apiUsageDTO != null && apiUsageDTO.service != null) {
+        if (apiUsageDTO != null && apiUsageDTO.getService() != null) {
             apiUsageReports = calculateApiUsageReportForSpecificService(apiUsageDTO);
         } else {
             apiUsageReports = new ArrayList<>();
@@ -99,7 +99,7 @@ public class ReportService {
         return apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
     }
 
-    // TODO add to ServiceApiService
+    // TODO move to ServiceApiService
     @Deprecated
     public List<String> getPayPerCallServicesIds(List<ServiceApi> serviceApis) {
         List<String> payPerCallServicesIds = new ArrayList<>();
@@ -110,7 +110,7 @@ public class ReportService {
     }
 
 
-    // TODO add to ServiceApiService
+    // TODO move to ServiceApiService
     @Deprecated
     public List<User> getServiceConsumers(List<ServiceApi> servicesProvidedByUser) {
         return servicesProvidedByUser.stream()
