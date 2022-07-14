@@ -96,12 +96,12 @@ public class ReportController {
             response.addObject("exportUser", currentUser);
 
             // data regarding report
-            response.addObject("isOnlyPaidCalls", report.considerOnlyPaidCalls); // TODO delete
-            response.addObject("isReportForConsumer", report.isForConsumer); // TODO delete
-            response.addObject("dateFrom", report.from); // TODO delete
-            response.addObject("dateUntil", report.until); // TODO delete
-            response.addObject("serviceApiSelectedForReport", report.service); // TODO delete
-            response.addObject("consumerUserSelectedForReport", report.consumer); // TODO delete
+            response.addObject("isOnlyPaidCalls", report.isConsiderOnlyPaidCalls()); // TODO delete
+            response.addObject("isReportForConsumer", report.isForConsumer()); // TODO delete
+            response.addObject("dateFrom", report.getFrom()); // TODO delete
+            response.addObject("dateUntil", report.getUntil()); // TODO delete
+            response.addObject("serviceApiSelectedForReport", report.getService()); // TODO delete
+            response.addObject("consumerUserSelectedForReport", report.getConsumer()); // TODO delete
         } else {
             response.addObject("error", "Request is not authenticated! Please log in.");
         }
@@ -172,11 +172,11 @@ public class ReportController {
             response.addObject("exportUser", currentUser);
             response.addObject("users", totalConsumers);
 
-            response.addObject("isOnlyPaidCalls", report.considerOnlyPaidCalls); // TODO to delete
-            response.addObject("isReportForConsumer", report.isForConsumer); // TODO to delete
-            response.getModel().put("dateFrom", report.from); // TODO delete
-            response.getModel().put("dateUntil", report.until); // TODO delete
-            response.addObject("serviceApiSelectedForReport", report.service); // TODO delete
+            response.addObject("isOnlyPaidCalls", report.isConsiderOnlyPaidCalls()); // TODO to delete
+            response.addObject("isReportForConsumer", report.isForConsumer()); // TODO to delete
+            response.getModel().put("dateFrom", report.getFrom()); // TODO delete
+            response.getModel().put("dateUntil", report.getUntil()); // TODO delete
+            response.addObject("serviceApiSelectedForReport", report.getService()); // TODO delete
         } else {
             response.addObject("error", "Request is not authenticated! Please log in.");
         }
