@@ -23,22 +23,31 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
-import eu.coatrack.admin.service.ReportService;
-import eu.coatrack.api.*;
+import eu.coatrack.admin.service.report.ApiUsageDTO;
+import eu.coatrack.admin.service.report.ReportService;
+import eu.coatrack.api.ApiUsageReport;
+import eu.coatrack.api.DataTableView;
+import eu.coatrack.api.ServiceApi;
+import eu.coatrack.api.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Slf4j
 @RestController
 @RequestMapping(path = "/admin/reports")
 public class ReportController {
-
+    private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
     private static final String REPORT_VIEW = "admin/reports/report";
 
     @Autowired
@@ -47,7 +56,8 @@ public class ReportController {
     @Autowired
     private ServiceApiRepository serviceApiRepository;
 
-    @Autowired ApiKeyRepository apiKeyRepository;
+    @Autowired
+    ApiKeyRepository apiKeyRepository;
 
     @Autowired
     private ReportService reportService;
@@ -63,40 +73,40 @@ public class ReportController {
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId,
-            @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
+            @PathVariable("isOnlyPaidCalls") boolean considerOnlyPaidCalls
     ) {
-        ModelAndView result = new ModelAndView();
-        result.setViewName(REPORT_VIEW);
-
+        ModelAndView response = new ModelAndView(REPORT_VIEW);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         if (auth != null) {
+
+            ApiUsageDTO report = getApiUsageDTO(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, considerOnlyPaidCalls);
 
             User currentUser = userRepository.findByUsername(auth.getName());
             List<ServiceApi> servicesProvided = serviceApiRepository.findByDeletedWhen(null);
-            Report report = reportService.getReport(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
             List<User> totalConsumers = reportService.getServiceConsumers(servicesProvided);
             List<String> idsPayedPerCall = reportService.getPayPerCallServicesIds(servicesProvided);
 
             // generell data
-            result.addObject("users", totalConsumers);
-            result.addObject("selectedServiceId", selectedServiceId);
-            result.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
-            result.addObject("services", servicesProvided);
-            result.addObject("payPerCallServicesIds", idsPayedPerCall);
-            result.addObject("exportUser", currentUser);
+            response.addObject("users", totalConsumers);
+            response.addObject("selectedServiceId", selectedServiceId);
+            response.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
+            response.addObject("services", servicesProvided);
+            response.addObject("payPerCallServicesIds", idsPayedPerCall);
+            response.addObject("exportUser", currentUser);
 
             // data regarding report
-            result.addObject("isOnlyPaidCalls", report.isOnlyPaidCalls()); // TODO delete
-            result.addObject("isReportForConsumer", report.isForConsumer()); // TODO delete
-            result.addObject("dateFrom", report.getFrom()); // TODO delete
-            result.addObject("dateUntil", report.getUntil()); // TODO delete
-            result.addObject("serviceApiSelectedForReport", report.getSelectedService()); // TODO delete
-            result.addObject("consumerUserSelectedForReport", report.getSelectedConsumer()); // TODO delete
+            response.addObject("isOnlyPaidCalls", report.isConsiderOnlyPaidCalls()); // TODO delete
+            response.addObject("isReportForConsumer", report.isForConsumer()); // TODO delete
+            response.addObject("dateFrom", report.getFrom()); // TODO delete
+            response.addObject("dateUntil", report.getUntil()); // TODO delete
+            response.addObject("serviceApiSelectedForReport", report.getService()); // TODO delete
+            response.addObject("consumerUserSelectedForReport", report.getConsumer()); // TODO delete
         } else {
-            result.addObject("error", "Request is not authenticated! Please log in.");
+            response.addObject("error", "Request is not authenticated! Please log in.");
         }
 
-        return result;
+        return response;
     }
 
     @RequestMapping(value = "/apiUsage/{dateFrom}/{dateUntil}/{selectedServiceId}/{apiConsumerId}/{onlyPaidCalls}", method = RequestMethod.GET, produces = "application/json")
@@ -106,9 +116,28 @@ public class ReportController {
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("apiConsumerId") Long apiConsumerId,
-            @PathVariable("onlyPaidCalls") boolean onlyPaidCalls
+            @PathVariable("onlyPaidCalls") boolean considerOnlyPaidCalls
     ) {
-        return reportService.reportApiUsage(dateFrom, dateUntil, selectedServiceId, apiConsumerId, onlyPaidCalls);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        ApiUsageDTO apiUsageDTO = null;
+        if (auth != null) {
+            apiUsageDTO = getApiUsageDTO(dateFrom, dateUntil, selectedServiceId, apiConsumerId, considerOnlyPaidCalls);
+        }
+        return reportService.reportApiUsage(apiUsageDTO);
+    }
+
+
+    //TODO this should not be here, put it somewhere senseful
+    private static Date tryParseDateString(String dateString) {
+        Date date = null;
+        if (dateString != null) {
+            try {
+                date = df.parse(dateString);
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return date;
     }
 
 
@@ -123,38 +152,43 @@ public class ReportController {
             @PathVariable("dateFrom") String dateFrom,
             @PathVariable("dateUntil") String dateUntil,
             @PathVariable("selectedServiceId") Long selectedServiceId,
-            @PathVariable("isOnlyPaidCalls") boolean isOnlyPaidCalls
+            @PathVariable("isOnlyPaidCalls") boolean considerOnlyPaidCalls
     ) {
-
-
-
-        Report report = reportService.getReport(dateFrom, dateUntil, selectedServiceId, -1L, isOnlyPaidCalls);
-
-        ModelAndView result = new ModelAndView(REPORT_VIEW);
-
+        ModelAndView response = new ModelAndView(REPORT_VIEW);
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if(auth != null) {
+        if (auth != null) {
+            ApiUsageDTO report = getApiUsageDTO(dateFrom, dateUntil, selectedServiceId, -1L, considerOnlyPaidCalls);
+
             User currentUser = userRepository.findByUsername(auth.getName());
             List<ServiceApi> servicesFromUser = serviceApiRepository.findByApiKeyList(apiKeyRepository.findByLoggedInAPIConsumer());
             List<String> payPerCallServicesIds = reportService.getPayPerCallServicesIds(servicesFromUser);
             List<User> totalConsumers = reportService.getServiceConsumers(servicesFromUser);
 
-            result.addObject("selectedServiceId", selectedServiceId);
-            result.addObject("selectedApiConsumerUserId", currentUser.getId());
-            result.addObject("services", servicesFromUser);
-            result.addObject("payPerCallServicesIds", payPerCallServicesIds);
-            result.addObject("exportUser", currentUser);
-            result.addObject("users", totalConsumers);
+            response.addObject("selectedServiceId", selectedServiceId);
+            response.addObject("selectedApiConsumerUserId", currentUser.getId());
+            response.addObject("services", servicesFromUser);
+            response.addObject("payPerCallServicesIds", payPerCallServicesIds);
+            response.addObject("exportUser", currentUser);
+            response.addObject("users", totalConsumers);
 
-            result.addObject("isOnlyPaidCalls", report.isOnlyPaidCalls());
-            result.addObject("isReportForConsumer", report.isForConsumer());
-            result.getModel().put("dateFrom", report.getFrom());
-            result.getModel().put("dateUntil", report.getUntil());
-            result.addObject("serviceApiSelectedForReport", report.getSelectedService());
+            response.addObject("isOnlyPaidCalls", report.isConsiderOnlyPaidCalls()); // TODO to delete
+            response.addObject("isReportForConsumer", report.isForConsumer()); // TODO to delete
+            response.getModel().put("dateFrom", report.getFrom()); // TODO delete
+            response.getModel().put("dateUntil", report.getUntil()); // TODO delete
+            response.addObject("serviceApiSelectedForReport", report.getService()); // TODO delete
         } else {
-            result.addObject("error", "Request is not authenticated! Please log in.");
+            response.addObject("error", "Request is not authenticated! Please log in.");
         }
-        return result;
+        return response;
+    }
+
+    private ApiUsageDTO getApiUsageDTO(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean considerOnlyPaidCalls)  {
+        Date from = tryParseDateString(dateFrom);
+        Date until = tryParseDateString(dateUntil);
+        ServiceApi selectedService = serviceApiRepository.findById(selectedServiceId).orElse(null);
+        User selectedConsumer = userRepository.findById(apiConsumerId).orElse(null);
+        ApiUsageDTO apiUsageDTO = new ApiUsageDTO(selectedService, selectedConsumer, from, until, considerOnlyPaidCalls, false);
+        return apiUsageDTO;
     }
 }

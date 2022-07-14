@@ -23,7 +23,7 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.logic.CreateApiKeyAction;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
-import eu.coatrack.admin.service.ReportService;
+import eu.coatrack.admin.service.report.ReportService;
 import eu.coatrack.api.*;
 
 import io.swagger.annotations.ApiOperation;
