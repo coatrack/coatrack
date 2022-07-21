@@ -30,8 +30,9 @@ public class CallCount {
 
     public void addForEntryPoint(EntryPoint entryPoint, long count) {
         if(!hasEntryPoint(entryPoint))
-            callsPerEntryPoint.put(entryPoint, 0L);
-        callsPerEntryPoint.merge(entryPoint, count, Long::sum);
+            callsPerEntryPoint.put(entryPoint, count);
+        else
+            callsPerEntryPoint.merge(entryPoint, count, Long::sum);
     }
 
     public long getCallsByEntryPoint(EntryPoint entryPoint) {
