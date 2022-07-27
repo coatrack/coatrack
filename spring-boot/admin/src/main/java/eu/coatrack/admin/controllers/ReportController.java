@@ -129,7 +129,7 @@ public class ReportController {
 
     //TODO this should not be here, put it somewhere senseful
     private static Date tryParseDateString(String dateString) {
-        Date date = null;
+        Date date = new Date();
         if (dateString != null) {
             try {
                 date = df.parse(dateString);
