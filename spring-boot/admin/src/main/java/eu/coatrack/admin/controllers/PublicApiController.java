@@ -23,6 +23,7 @@ package eu.coatrack.admin.controllers;
 import eu.coatrack.admin.logic.CreateApiKeyAction;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
+import eu.coatrack.admin.service.ReportService;
 import eu.coatrack.api.*;
 
 import io.swagger.annotations.ApiOperation;
@@ -69,7 +70,7 @@ public class PublicApiController implements InitializingBean {
     private CreateApiKeyAction createApiKeyAction;
 
     @Autowired
-    private ReportController reportController;
+    private ReportService reportService;
 
     private ModelMapper modelMapper;
 
@@ -126,13 +127,13 @@ public class PublicApiController implements InitializingBean {
         // if user is the owner of the service
         if (serviceOwnerUsername.equals(auth.getName())) {
 
-            apiUsageReports.addAll(reportController.calculateApiUsageReportForSpecificService(service, -1L, // for all consumers
+            apiUsageReports.addAll(reportService.calculateApiUsageReportForSpecificService(service, -1L, // for all consumers
                     java.sql.Date.valueOf(dateFromParsedToDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()),
                     java.sql.Date.valueOf(dateUntilParsedToDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()),
                     true));
         } else {
             Long userId = userRepository.findByUsername(auth.getName()).getId();
-            apiUsageReports = reportController.calculateApiUsageReportForSpecificService(service, userId, dateFromParsedToDate, dateUntilParsedToDate, false);
+            apiUsageReports = reportService.calculateApiUsageReportForSpecificService(service, userId, dateFromParsedToDate, dateUntilParsedToDate, false);
         }
 
         ServiceUsageStatisticsDTO serviceUsageStatisticsDTO = new ServiceUsageStatisticsDTO();
