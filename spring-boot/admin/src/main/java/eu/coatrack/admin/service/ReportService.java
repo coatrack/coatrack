@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.math.BigDecimal;
@@ -36,7 +35,7 @@ public class ReportService {
         MONTHLY,
     }
     private final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-
+    private static final String REPORT_VIEW = "admin/reports/report";
     @Autowired
     private ServiceApiRepository serviceApiRepository;
 
@@ -69,6 +68,7 @@ public class ReportService {
     }
 
     public ModelAndView report(Date from, Date until, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User exportUser = userRepository.findByUsername(auth.getName());
 
         // Gets all the consumers of the services of the Authenticated User
@@ -80,7 +80,21 @@ public class ReportService {
                 .collect(Collectors.toList());
 
         List<String> payPerCallServicesIds = getPayPerCallServicesIds(servicesProvidedByLoggedInUser);
-
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(REPORT_VIEW);
+        mav.addObject("services", serviceApiRepository.findByDeletedWhen(null));
+        mav.addObject("users", serviceConsumers);
+        mav.getModel().put("dateFrom", df.format(from));
+        mav.getModel().put("dateUntil", df.format(until));
+        mav.addObject("selectedServiceId", selectedServiceId);
+        mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
+        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
+        mav.addObject("consumerUserSelectedForReport", (selectedApiConsumerUserId == -1L) ? null : userRepository.findById(selectedApiConsumerUserId).orElse(null));
+        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
+        mav.addObject("exportUser", exportUser);
+        mav.addObject("isReportForConsumer", false);
+        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
+        return mav;
     }
 
     public DataTableView<ApiUsageReport> reportApiUsage(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean onlyPaidCalls) {
@@ -279,8 +293,18 @@ public class ReportService {
 
         List <String> payPerCallServicesIds = getPayPerCallServicesIds(servicesThatLoggedInUserHasAKeyFor);
 
-
-
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName(REPORT_VIEW);
+        mav.addObject("services", servicesThatLoggedInUserHasAKeyFor);
+        mav.getModel().put("dateFrom", df.format(dateFrom));
+        mav.getModel().put("dateUntil", df.format(dateUntil));
+        mav.addObject("selectedServiceId", selectedServiceId);
+        mav.addObject("selectedApiConsumerUserId", user.getId());
+        mav.addObject("consumerUserSelectedForReport", user);
+        mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
+        mav.addObject("payPerCallServicesIds", payPerCallServicesIds);
+        mav.addObject("isReportForConsumer", true);
+        mav.addObject("isOnlyPaidCalls", isOnlyPaidCalls);
         return mav;
     }
 
