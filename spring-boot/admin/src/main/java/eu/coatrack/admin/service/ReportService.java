@@ -84,8 +84,8 @@ public class ReportService {
         mav.setViewName(REPORT_VIEW);
         mav.addObject("services", serviceApiRepository.findByDeletedWhen(null));
         mav.addObject("users", serviceConsumers);
-        mav.getModel().put("dateFrom", df.format(from));
-        mav.getModel().put("dateUntil", df.format(until));
+        mav.getModel().put("dateFrom",  df.format(from != null ? from : new Date()));
+        mav.getModel().put("dateUntil", df.format(until != null ? until : new Date()));
         mav.addObject("selectedServiceId", selectedServiceId);
         mav.addObject("selectedApiConsumerUserId", selectedApiConsumerUserId);
         mav.addObject("serviceApiSelectedForReport", (selectedServiceId == -1L) ? null : serviceApiRepository.findById(selectedServiceId).orElse(null));
@@ -296,8 +296,8 @@ public class ReportService {
         ModelAndView mav = new ModelAndView();
         mav.setViewName(REPORT_VIEW);
         mav.addObject("services", servicesThatLoggedInUserHasAKeyFor);
-        mav.getModel().put("dateFrom", df.format(dateFrom));
-        mav.getModel().put("dateUntil", df.format(dateUntil));
+        mav.getModel().put("dateFrom", df.format(dateFrom != null ? from : new Date()));
+        mav.getModel().put("dateUntil", df.format(dateUntil != null ? until : new Date()));
         mav.addObject("selectedServiceId", selectedServiceId);
         mav.addObject("selectedApiConsumerUserId", user.getId());
         mav.addObject("consumerUserSelectedForReport", user);
