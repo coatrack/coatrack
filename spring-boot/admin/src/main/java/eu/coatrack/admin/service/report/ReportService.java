@@ -23,6 +23,7 @@ package eu.coatrack.admin.service.report;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.*;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +40,7 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Setter
 public class ReportService {
 
     @Autowired
