@@ -3,8 +3,6 @@ package eu.coatrack.admin.service.report;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
-import eu.coatrack.admin.service.ApiUsageCalculator;
-import eu.coatrack.admin.service.ReportService;
 import eu.coatrack.api.*;
 import org.junit.jupiter.api.Test;
 
