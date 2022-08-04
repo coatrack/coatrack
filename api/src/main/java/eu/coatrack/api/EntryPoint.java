@@ -9,9 +9,9 @@ package eu.coatrack.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,8 +20,17 @@ package eu.coatrack.api;
  * #L%
  */
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 @Entity
 @Table(name = "entry_points")
 public class EntryPoint implements Comparable<EntryPoint>{
@@ -41,55 +50,7 @@ public class EntryPoint implements Comparable<EntryPoint>{
     @OrderColumn
     private Integer position;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getHttpMethod() {
-        return httpMethod;
-    }
-
-    public void setHttpMethod(String httpMethod) {
-        this.httpMethod = httpMethod;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPathPattern() {
-        return pathPattern;
-    }
-
-    public void setPathPattern(String pathPattern) {
-        this.pathPattern = pathPattern;
-    }
-
-    public double getPricePerCall() {
-        return pricePerCall;
-    }
-
-    public void setPricePerCall(double pricePerCall) {
-        this.pricePerCall = pricePerCall;
-    }
-
-    public Integer getPosition() {
-        return position;
-    }
-
-    public void setPosition(Integer position) {
-        this.position = position;
-    }
-
     public int compareTo(EntryPoint obj) {
-        return new Long(id).compareTo(new Long(obj.id));
+        return Long.compare(id, obj.id);
     }
 }
