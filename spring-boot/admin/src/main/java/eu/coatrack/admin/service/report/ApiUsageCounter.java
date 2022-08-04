@@ -15,6 +15,7 @@ import org.springframework.util.AntPathMatcher;
 import java.util.Date;
 import java.util.List;
 
+import static eu.coatrack.api.MetricType.RESPONSE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.*;
 
 @Getter
