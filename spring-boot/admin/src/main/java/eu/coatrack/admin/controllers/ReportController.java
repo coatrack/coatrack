@@ -128,8 +128,8 @@ public class ReportController {
 
 
     //TODO this should not be here, put it somewhere senseful
-    private static Date tryParseDateString(String dateString) {
-        Date date = null;
+    private static Date parseDateStringOrGetToday(String dateString) {
+        Date date = new Date();
         if (dateString != null) {
             try {
                 date = df.parse(dateString);
@@ -184,8 +184,8 @@ public class ReportController {
     }
 
     private ApiUsageDTO getApiUsageDTO(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean considerOnlyPaidCalls)  {
-        Date from = tryParseDateString(dateFrom);
-        Date until = tryParseDateString(dateUntil);
+        Date from = parseDateStringOrGetToday(dateFrom);
+        Date until = parseDateStringOrGetToday(dateUntil);
         ServiceApi selectedService = serviceApiRepository.findById(selectedServiceId).orElse(null);
         User selectedConsumer = userRepository.findById(apiConsumerId).orElse(null);
         ApiUsageDTO apiUsageDTO = new ApiUsageDTO(selectedService, selectedConsumer, from, until, considerOnlyPaidCalls, false);
