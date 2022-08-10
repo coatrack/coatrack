@@ -4,7 +4,6 @@ import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.api.EntryPoint;
 import eu.coatrack.api.MetricResult;
 import eu.coatrack.api.MetricType;
-import eu.coatrack.api.ServiceApi;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +61,15 @@ public class ApiUsageCounter {
             } else if (apiUsageDTO.getService().getServiceAccessPaymentPolicy() == MONTHLY_FEE) {
                 callCount.addMonthlyBilled(metric.getCallsPerEntry());
             } else if (apiUsageDTO.getService().getServiceAccessPaymentPolicy() == WELL_DEFINED_PRICE) {
-                boolean entryPointMatching = matchesEntryPoint(metric, apiUsageDTO.getService(), callCount);
+                boolean entryPointMatching = false;
+
+                for (EntryPoint entryPoint : apiUsageDTO.getService().getEntryPoints()) {
+                    entryPointMatching = matchesForEntryPoint(entryPoint, metric);
+                    if (entryPointMatching) {
+                        callCount.addForEntryPoint(entryPoint, metric.getCallsPerEntry());
+                    }
+                }
+
                 if (!entryPointMatching && !apiUsageDTO.isConsiderOnlyPaidCalls()) {
                     callCount.addNotMatching(metric.getCallsPerEntry());
                 }
@@ -70,9 +77,16 @@ public class ApiUsageCounter {
         }
     }
 
-    /**
-     * @deprecated This method is going to disappear with implementation of typesafe queries
-     */
+    private boolean matchesForEntryPoint(EntryPoint entryPoint, MetricResult metric) {
+        boolean isMatchForEntryPoint = false;
+        if (entryPoint.getPathPattern() != null && entryPoint.getHttpMethod() != null) {
+            boolean pathMatches = parser.match(entryPoint.getPathPattern(), metric.getPath());
+            isMatchForEntryPoint = pathMatches && entryPoint.getHttpMethod().equals(metric.getRequestMethod()) || entryPoint.getHttpMethod().equals("*");
+        }
+        return isMatchForEntryPoint;
+    }
+
+    //This method is going to disappear with implementation of typesafe queries
     @Deprecated
     private MetricResult metricResultFromObjArray(Object[] item) {
         String username = (String) item[0];
@@ -84,19 +98,4 @@ public class ApiUsageCounter {
         return new MetricResult(username, serviceId, metricType, callsPerEntry, path, requestMethod);
     }
 
-
-    private boolean matchesEntryPoint(MetricResult metric, ServiceApi service, CallCount callCount) {
-        for (EntryPoint entryPoint : service.getEntryPoints()) {
-            if (entryPoint.getPathPattern() != null && entryPoint.getHttpMethod() != null) {
-                boolean pathMatches = parser.match(entryPoint.getPathPattern(), metric.getPath());
-                if (pathMatches) {
-                    if (entryPoint.getHttpMethod().equals(metric.getRequestMethod()) || entryPoint.getHttpMethod().equals("*")) {
-                        callCount.addForEntryPoint(entryPoint, metric.getCallsPerEntry());
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 }

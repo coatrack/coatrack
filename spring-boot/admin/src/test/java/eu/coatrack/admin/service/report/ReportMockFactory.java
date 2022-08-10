@@ -4,16 +4,13 @@ import eu.coatrack.api.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 import static eu.coatrack.api.MetricType.RESPONSE;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-public class ReportDummyFactory {
+public class ReportMockFactory {
 
 
     public static ServiceApi getServiceApiDummy(ServiceAccessPaymentPolicy accessPaymentPolicy) {
@@ -50,16 +47,16 @@ public class ReportDummyFactory {
         return Arrays.asList(entryPointA, entryPointB, entryPointC);
     }
 
-    public static ApiUsageDTO getApiUsageDTODummy(ServiceAccessPaymentPolicy accessPaymentPolicy) {
-        ApiUsageDTO apiUsageDTODummy = mock(ApiUsageDTO.class);
+    public static ApiUsageDTO getApiUsageDTO(ServiceAccessPaymentPolicy accessPaymentPolicy) {
+        ApiUsageDTO apiUsageDTO = mock(ApiUsageDTO.class);
         Date from = getDateFromString("25-06-2022");
         Date until = new Date();
 
-        doReturn(from).when(apiUsageDTODummy).getFrom();
-        doReturn(until).when(apiUsageDTODummy).getUntil();
-        doReturn(getConsumerDummy()).when(apiUsageDTODummy).getConsumer();
-        doReturn(getServiceApiDummy(accessPaymentPolicy)).when(apiUsageDTODummy).getService();
-        return apiUsageDTODummy;
+        doReturn(from).when(apiUsageDTO).getFrom();
+        doReturn(until).when(apiUsageDTO).getUntil();
+        doReturn(getConsumerDummy()).when(apiUsageDTO).getConsumer();
+        doReturn(getServiceApiDummy(accessPaymentPolicy)).when(apiUsageDTO).getService();
+        return apiUsageDTO;
     }
 
     private static User getConsumerDummy() {
@@ -69,7 +66,7 @@ public class ReportDummyFactory {
     }
 
     public static Date getDateFromString(String dateString) {
-        Date date = null;
+        Date date;
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
             date = formatter.parse(dateString);
@@ -77,5 +74,23 @@ public class ReportDummyFactory {
             throw new RuntimeException(e);
         }
         return date;
+    }
+
+    public static Map<EntryPoint, Long> getEntryPointMap() {
+        Map<EntryPoint, Long> callsPerEntryPoint = new TreeMap<>();
+        List<EntryPoint> entryPoints = getEntryPointDummys();
+        callsPerEntryPoint.put(entryPoints.get(0), 3L);
+        callsPerEntryPoint.put(entryPoints.get(1), 4L);
+        callsPerEntryPoint.put(entryPoints.get(2), 7L);
+        return callsPerEntryPoint;
+    }
+
+    public static CallCount getCallCountDummy() {
+        return new CallCount(
+                1L,
+                2L,
+                3L,
+                getEntryPointMap()
+        );
     }
 }

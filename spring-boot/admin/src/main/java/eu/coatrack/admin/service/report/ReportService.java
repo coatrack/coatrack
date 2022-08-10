@@ -1,25 +1,5 @@
 package eu.coatrack.admin.service.report;
 
-/*-
- * #%L
- * coatrack-admin
- * %%
- * Copyright (C) 2013 - 2022 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.*;
 import lombok.AllArgsConstructor;
@@ -42,7 +22,8 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 @AllArgsConstructor
 @Setter
 public class ReportService {
-
+    // TODO serviceApi dependency can be moved up by 1 layer, there is no other usage
+    @Deprecated
     @Autowired
     private final ServiceApiRepository serviceApiRepository;
 
@@ -53,6 +34,7 @@ public class ReportService {
         List<ApiUsageReport> apiUsageReports;
 
         if (apiUsageDTO != null && apiUsageDTO.getService() != null) {
+            // TODO replace calculateApiUsageReportForSpecificService(apiUsageDTO) with apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
             apiUsageReports = calculateApiUsageReportForSpecificService(apiUsageDTO);
         } else {
             apiUsageReports = new ArrayList<>();
@@ -63,6 +45,21 @@ public class ReportService {
         return table;
     }
 
+    public double reportTotalRevenueForApiProvider(List<ServiceApi> offeredServices, Date from, Date until) {
+        List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
+
+        for (ServiceApi service : offeredServices) {
+            ApiUsageDTO apiUsageDTO = new ApiUsageDTO(service, null, from, until, true, false);
+            List<ApiUsageReport> calculatedApiUsage = calculateApiUsageReportForSpecificService(apiUsageDTO);
+            apiUsageReportsForAllOfferedServices.addAll(calculatedApiUsage);
+        }
+        double total = apiUsageReportsForAllOfferedServices.stream().mapToDouble(ApiUsageReport::getTotal).sum();
+        return total;
+    }
+
+
+    // TODO remove after refactoring PublicApiController
+    @Deprecated
     public List<ApiUsageReport> calculateApiUsageReportForSpecificService(ServiceApi service, long consumerId, Date from, Date until, boolean considerOnlyPaidCalls) {
         ApiUsageDTO apiUsageDTO = new ApiUsageDTO(
                 service,
@@ -75,31 +72,23 @@ public class ReportService {
         return calculateApiUsageReportForSpecificService(apiUsageDTO);
     }
 
-    // TODO remove after refactoring admin controller, serviceApiRepository can be moved to AdminController
+    // TODO remove after refactoring PublicApiController
+    @Deprecated
+    private List<ApiUsageReport> calculateApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
+        return apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
+    }
+
+
+    // TODO move to ServiceApiService after refactoring admin controller, serviceApiRepository can be moved to AdminController
     @Deprecated
     public double reportTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
         Date from = java.sql.Date.valueOf(timePeriodStart);
         Date until = java.sql.Date.valueOf(timePeriodEnd);
-
-        // TODO serviceApi dependency can be moved up by 1 layer, there is no other usage
         List<ServiceApi> offeredServices = serviceApiRepository.findByOwnerUsername(apiProviderUsername);
         return reportTotalRevenueForApiProvider(offeredServices, from, until);
     }
 
-    public double reportTotalRevenueForApiProvider(List<ServiceApi> offeredServices, Date from, Date until) {
-        List<ApiUsageReport> apiUsageReportsForAllOfferedServices = new ArrayList<>();
 
-        for (ServiceApi service : offeredServices) {
-            List<ApiUsageReport> calculatedApiUsage = calculateApiUsageReportForSpecificService(service, -1L, from, until, true);
-            apiUsageReportsForAllOfferedServices.addAll(calculatedApiUsage);
-        }
-        double total = apiUsageReportsForAllOfferedServices.stream().mapToDouble(ApiUsageReport::getTotal).sum();
-        return total;
-    }
-
-    private List<ApiUsageReport> calculateApiUsageReportForSpecificService(ApiUsageDTO apiUsageDTO) {
-        return apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
-    }
 
     // TODO move to ServiceApiService
     @Deprecated

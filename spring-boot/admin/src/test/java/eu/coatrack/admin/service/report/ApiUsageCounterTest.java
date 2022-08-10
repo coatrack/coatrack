@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
-import static eu.coatrack.admin.service.report.ReportDummyFactory.*;
+import static eu.coatrack.admin.service.report.ReportMockFactory.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.*;
@@ -38,7 +38,7 @@ public class ApiUsageCounterTest {
 
     @Test
     public void countMonthly() {
-        ApiUsageDTO apiUsageDTO = getApiUsageDTODummy(ServiceAccessPaymentPolicy.MONTHLY_FEE);
+        ApiUsageDTO apiUsageDTO = ReportMockFactory.getApiUsageDTO(ServiceAccessPaymentPolicy.MONTHLY_FEE);
         CallCount result = apiUsageCounter.count(apiUsageDTO);
         assertFalse(result.isEmpty());
         assertEquals(6L, result.getMonthlyBilledCalls());
@@ -46,7 +46,7 @@ public class ApiUsageCounterTest {
 
     @Test
     public void countEntryPoint() {
-        ApiUsageDTO apiUsageDTO = getApiUsageDTODummy(ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE);
+        ApiUsageDTO apiUsageDTO = ReportMockFactory.getApiUsageDTO(ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE);
         CallCount result = apiUsageCounter.count(apiUsageDTO);
         assertFalse(result.isEmpty());
         assertEquals(6L, result.getCallsByEntryPoint(getEntryPointDummys().get(0)));

@@ -4,7 +4,6 @@ import eu.coatrack.api.EntryPoint;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
