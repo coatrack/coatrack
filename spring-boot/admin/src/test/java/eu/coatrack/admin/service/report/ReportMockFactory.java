@@ -31,18 +31,18 @@ public class ReportMockFactory {
     // Will produce typed list after refactoring MetricsAggregationCustomRepository
     @Deprecated
     public static List getMetricResultList() {
-        Object[] metricA = new Object[]{"Peter", 1L, RESPONSE, 1L, "/test", "GET"};
-        Object[] metricB = new Object[]{"Tiffany", 2L, RESPONSE, 2L, "/test", "GET"};
-        Object[] metricC = new Object[]{"Bobo", 3L, RESPONSE, 3L, "/test", "GET"};
+        Object[] metricA = new Object[]{"Peter", 1L, RESPONSE, 1L, "/a", "GET"};
+        Object[] metricB = new Object[]{"Tiffany", 2L, RESPONSE, 2L, "/b", "GET"};
+        Object[] metricC = new Object[]{"Bobo", 3L, RESPONSE, 3L, "/c", "GET"};
         List<Object[]> metricResultList = Arrays.asList(metricA, metricB, metricC);
         return metricResultList;
     }
 
 
     public static List<EntryPoint> getEntryPointDummys() {
-        EntryPoint entryPointA = new EntryPoint(0L, "entryPointA", "/test", "GET", 1.0, 0);
-        EntryPoint entryPointB = new EntryPoint(1L, "entryPointA", "/test", "GET", 2.0, 1);
-        EntryPoint entryPointC = new EntryPoint(2L, "entryPointA", "/test", "GET", 3.0, 2);
+        EntryPoint entryPointA = new EntryPoint(0L, "entryPointA", "/a", "GET", 1.0, 0);
+        EntryPoint entryPointB = new EntryPoint(1L, "entryPointB", "/b", "GET", 2.0, 1);
+        EntryPoint entryPointC = new EntryPoint(2L, "entryPointC", "/c", "GET", 3.0, 2);
 
         return Arrays.asList(entryPointA, entryPointB, entryPointC);
     }

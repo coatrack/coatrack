@@ -49,7 +49,10 @@ public class ApiUsageCounterTest {
         ApiUsageDTO apiUsageDTO = ReportMockFactory.getApiUsageDTO(ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE);
         CallCount result = apiUsageCounter.count(apiUsageDTO);
         assertFalse(result.isEmpty());
-        assertEquals(6L, result.getCallsByEntryPoint(getEntryPointDummys().get(0)));
+        assertEquals(1L, result.getCallsByEntryPoint(getEntryPointDummys().get(0)));
+        assertEquals(2L, result.getCallsByEntryPoint(getEntryPointDummys().get(1)));
+        assertEquals(3L, result.getCallsByEntryPoint(getEntryPointDummys().get(2)));
+
 
     }
 
