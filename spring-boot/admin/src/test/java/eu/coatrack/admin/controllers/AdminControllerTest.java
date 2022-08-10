@@ -24,17 +24,16 @@ import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.MetricRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.api.*;
+import eu.coatrack.api.ApiKey;
+import eu.coatrack.api.Metric;
+import eu.coatrack.api.MetricType;
+import eu.coatrack.api.Proxy;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
-
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.ContextConfiguration;
 
 @DataJpaTest(showSql = true)
 @ContextConfiguration(classes = SpringSecurityTestConfig.class)
@@ -93,16 +92,4 @@ public class AdminControllerTest {
 
         return copy;
     }
-
-
-    // Has to be updated due to restructuring of ReportController
-    @Deprecated
-    @Test
-    @WithUserDetails("aa11aa22-aa33-aa44-aa55-aa66aa77aa88")
-    public void test() {
-
-        ServiceApi randomServiceApiFromDB = serviceApiRepository.findAll().iterator().next();
-        //reportController.calculateApiUsageReportForSpecificService(randomServiceApiFromDB, -1L, new Date(), new Date(), false);
-    }
-
 }
