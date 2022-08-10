@@ -4,17 +4,21 @@ import eu.coatrack.api.EntryPoint;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
 
 @AllArgsConstructor
-@NoArgsConstructor
 public class CallCount {
     private long freeCalls = 0;
     private long notMatchingCalls = 0;
     private long monthlyBilledCalls = 0;
     private Map<EntryPoint, Long> callsPerEntryPoint;
+
+    public CallCount() {
+        callsPerEntryPoint = new HashMap<>();
+    }
 
     public void addFree(long count) {
         freeCalls += count;
@@ -30,8 +34,9 @@ public class CallCount {
 
     public void addForEntryPoint(EntryPoint entryPoint, long count) {
         if(!hasEntryPoint(entryPoint))
-            callsPerEntryPoint.put(entryPoint, 0L);
-        callsPerEntryPoint.merge(entryPoint, count, Long::sum);
+            callsPerEntryPoint.put(entryPoint, count);
+        else
+            callsPerEntryPoint.merge(entryPoint, count, Long::sum);
     }
 
     public long getCallsByEntryPoint(EntryPoint entryPoint) {

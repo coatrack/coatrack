@@ -1,17 +1,14 @@
 package eu.coatrack.admin.service.report;
 
-import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
-import eu.coatrack.api.*;
+import eu.coatrack.api.ApiUsageReport;
+import eu.coatrack.api.EntryPoint;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.AntPathMatcher;
 
 import java.math.BigDecimal;
 import java.util.*;
-
-import static eu.coatrack.api.ServiceAccessPaymentPolicy.*;
 
 @Slf4j
 @Service
@@ -57,7 +54,7 @@ public class ApiUsageCalculator {
         return apiUsageReports;
     }
 
-    private int getMonthDifference(Date from, Date until) {
+    private static int getMonthDifference(Date from, Date until) {
         Calendar startCalendar = new GregorianCalendar();
         startCalendar.setTime(from);
         Calendar endCalendar = new GregorianCalendar();
