@@ -33,7 +33,7 @@ public class ApiUsageCounter {
 
         Long serviceId = apiUsageDTO.getService().getId();
         String ownerName = apiUsageDTO.getService().getOwner().getUsername();
-        Long consumerId = apiUsageDTO.getConsumer().getId();
+        Long consumerId = apiUsageDTO.getConsumer() != null ? apiUsageDTO.getConsumer().getId() : -1L;
         Date from = apiUsageDTO.getFrom();
         Date until = apiUsageDTO.getUntil();
 
