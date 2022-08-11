@@ -1,85 +1,50 @@
 package eu.coatrack.admin.service.report;
 
-import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.admin.model.repository.UserRepository;
-import eu.coatrack.api.*;
+import eu.coatrack.api.ApiUsageReport;
+import eu.coatrack.api.DataTableView;
+import eu.coatrack.api.ServiceAccessPaymentPolicy;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.Date;
 
-import static org.mockito.ArgumentMatchers.*;
+import static eu.coatrack.admin.service.report.ReportMockFactory.*;
+import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
 public class ReportServiceTest {
 
+    // TODO serviceApi dependency can be moved up by 1 layer, there is no other usage
+    @Deprecated
+    private final ServiceApiRepository serviceApiRepository;
+    private final ApiUsageCalculator apiUsageCalculator;
+
+    @Autowired
     private ReportService reportService;
 
-    private UserRepository userRepository;
-    private ServiceApiRepository serviceApiRepository;
-    private MetricsAggregationCustomRepository metricsAggregationCustomRepository;
-
-    private User getUserDummy() {
-        User userDummy = mock(User.class);
-        doReturn(1L).when(userDummy).getId();
-        doReturn("Pete Peterson").when(userDummy).getUsername();
-        return userDummy;
-    }
-
-    private ServiceApi getServiceDummy() {
-        ServiceApi serviceApiDummy = mock(ServiceApi.class);
-        doReturn(1L).when(serviceApiDummy).getId();
-        doReturn("SuperDuperService").when(serviceApiDummy).getName();
-        return serviceApiDummy;
-    }
-
-    private List getMetricResultDummy() {
-        List<Object[]> metricResultDummy = Arrays.asList(new Object[][]{
-                { "Pete Peterson", 1L, MetricType.RESPONSE, 0L, "/test", "POST" }
-        });
-        return metricResultDummy;
-    }
-
     public ReportServiceTest() {
-        userRepository = mock(UserRepository.class);
         serviceApiRepository = mock(ServiceApiRepository.class);
-        metricsAggregationCustomRepository = mock(MetricsAggregationCustomRepository.class);
+        apiUsageCalculator = mock(ApiUsageCalculator.class);
+        doReturn(getApiUsageReports()).when(apiUsageCalculator).calculateForSpecificService(any(ApiUsageDTO.class));
 
-        doReturn(Optional.of(getUserDummy())).when(userRepository).findById(1L);
-
-        doReturn(Optional.of(getServiceDummy())).when(serviceApiRepository).findById(1L);
-        doReturn(getMetricResultDummy()).when(metricsAggregationCustomRepository).getUsageApiConsumer(any(MetricType.class), anyLong(), anyString(), anyLong(), eq(null), eq(null), eq(true));
-
-        //reportService = new ReportService(userRepository, serviceApiRepository, metricsAggregationCustomRepository);
+        reportService = new ReportService(serviceApiRepository, apiUsageCalculator);
     }
-
 
     @Test
     public void reportApiUsage() {
-        ApiUsageCalculator apiUsageCalculator = mock(ApiUsageCalculator.class);
-        //reportService.setApiUsageCalculator(apiUsageCalculator);
-        ApiUsageDTO apiUsageDTO = new ApiUsageDTO(getServiceDummy(), getUserDummy(), null, null, false, false);
-        DataTableView<ApiUsageReport> reportedUsage = reportService.reportApiUsage(apiUsageDTO);
+        DataTableView<ApiUsageReport> tableView = reportService.reportApiUsage(getApiUsageDTO(WELL_DEFINED_PRICE));
 
+        assertEquals(3, tableView.getData().size());
     }
 
     @Test
-    public void getPayPerCallServicesIds() {
+    public void reportTotalRevenueForApiProvider() {
+        double res = reportService.reportTotalRevenueForApiProvider(getServiceList(), new Date(), new Date());
 
+        assertEquals(600.0, res);
     }
-
-    @Test
-    public void calculateTotalRevenueForApiProvider() {
-
-    }
-
-    @Test
-    public void calculateApiUsageReportForSpecificService() {
-
-    }
-
-
 }
