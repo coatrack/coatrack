@@ -79,11 +79,13 @@ public class ReportService {
     }
 
 
-    // TODO move to ServiceApiService after refactoring admin controller, serviceApiRepository can be moved to AdminController
+
     @Deprecated
     public double reportTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
         Date from = java.sql.Date.valueOf(timePeriodStart);
         Date until = java.sql.Date.valueOf(timePeriodEnd);
+
+        // TODO move to ServiceApiService after refactoring admin controller, serviceApiRepository can be moved to AdminController
         List<ServiceApi> offeredServices = serviceApiRepository.findByOwnerUsername(apiProviderUsername);
         return reportTotalRevenueForApiProvider(offeredServices, from, until);
     }
