@@ -2,12 +2,11 @@ package eu.coatrack.admin.service.report;
 
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.api.MetricType;
-import eu.coatrack.api.ServiceAccessPaymentPolicy;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
-import static eu.coatrack.admin.service.report.ReportMockFactory.*;
+import static eu.coatrack.admin.service.report.ReportDataFactory.*;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.MONTHLY_FEE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -40,7 +39,7 @@ public class ApiUsageCounterTest {
 
     @Test
     public void countMonthly() {
-        ApiUsageDTO apiUsageDTO = ReportMockFactory.getApiUsageDTO(MONTHLY_FEE);
+        ApiUsageDTO apiUsageDTO = ReportDataFactory.getApiUsageDTO(MONTHLY_FEE);
         CallCount result = apiUsageCounter.count(apiUsageDTO);
         assertFalse(result.isEmpty());
         assertEquals(6L, result.getMonthlyBilledCalls());

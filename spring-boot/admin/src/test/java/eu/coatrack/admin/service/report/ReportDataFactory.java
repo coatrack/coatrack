@@ -10,8 +10,9 @@ import static eu.coatrack.api.MetricType.RESPONSE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.MONTHLY_FEE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 
-public class ReportMockFactory {
+public class ReportDataFactory {
 
+    private final static User consumer = getUser(1L, "Pete");
 
     public static ServiceApi getServiceApi(long id, ServiceAccessPaymentPolicy accessPaymentPolicy, double monthlyFee) {
         ServiceApi serviceDummy = new ServiceApi();
@@ -78,13 +79,24 @@ public class ReportMockFactory {
     }
 
 
-    private static User getUser(long id, String name) {
+    public static User getUser(long id, String name) {
         User userDummy = new User();
         userDummy.setId(id);
         userDummy.setUsername(name);
         return userDummy;
     }
 
+    public static User getConsumer() {
+        return consumer;
+    }
+
+    public static List<User> getConsumers() {
+        return Arrays.asList(
+                consumer,
+                getUser(2L, "Hans"),
+                getUser(3L, "Steffen")
+        );
+    }
 
     public static Date getDateFromString(String dateString) {
         Date date;

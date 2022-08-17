@@ -19,14 +19,14 @@ public class ApiUsageCalculatorTest {
 
     public ApiUsageCalculatorTest() {
         apiUsageCounter = mock(ApiUsageCounter.class);
-        doReturn(ReportMockFactory.getCallCount()).when(apiUsageCounter).count(any(ApiUsageDTO.class));
+        doReturn(ReportDataFactory.getCallCount()).when(apiUsageCounter).count(any(ApiUsageDTO.class));
 
         apiUsageCalculator = new ApiUsageCalculator(apiUsageCounter);
     }
 
     @Test
     public void calculateForSpecificService() {
-        ApiUsageDTO apiUsageDTO = ReportMockFactory.getApiUsageDTO(WELL_DEFINED_PRICE);
+        ApiUsageDTO apiUsageDTO = ReportDataFactory.getApiUsageDTO(WELL_DEFINED_PRICE);
 
         List<ApiUsageReport> result = apiUsageCalculator.calculateForSpecificService(apiUsageDTO);
         // well defined price

@@ -3,13 +3,12 @@ package eu.coatrack.admin.service.report;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiUsageReport;
 import eu.coatrack.api.DataTableView;
-import eu.coatrack.api.ServiceAccessPaymentPolicy;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
-import static eu.coatrack.admin.service.report.ReportMockFactory.*;
+import static eu.coatrack.admin.service.report.ReportDataFactory.*;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
