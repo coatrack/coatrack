@@ -485,7 +485,7 @@ public class AdminController {
         return stats;
     }
 
-    private class GeneralStats {
+    public static class GeneralStats {
 
         public LocalDate dateUntil;
         public LocalDate dateFrom;
