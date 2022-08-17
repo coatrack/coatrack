@@ -1,5 +1,6 @@
 package eu.coatrack.admin.service.report;
 
+import eu.coatrack.admin.factories.ReportDataFactory;
 import eu.coatrack.api.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 public class ApiUsageCalculatorTest {
+    private final ApiUsageCalculator apiUsageCalculator;
 
-    @Autowired
-    private ApiUsageCalculator apiUsageCalculator;
-
-    private ApiUsageCounter apiUsageCounter;
+    private final ApiUsageCounter apiUsageCounter;
 
     public ApiUsageCalculatorTest() {
         apiUsageCounter = mock(ApiUsageCounter.class);

@@ -1,5 +1,7 @@
-package eu.coatrack.admin.service.report;
+package eu.coatrack.admin.factories;
 
+import eu.coatrack.admin.service.report.ApiUsageDTO;
+import eu.coatrack.admin.service.report.CallCount;
 import eu.coatrack.api.*;
 
 import java.text.ParseException;

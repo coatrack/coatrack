@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.*;
 
-import static eu.coatrack.admin.service.report.ReportDataFactory.*;
+import static eu.coatrack.admin.factories.ReportDataFactory.*;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.MONTHLY_FEE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -17,10 +17,9 @@ import static org.mockito.Mockito.mock;
 
 public class ApiUsageCounterTest {
 
-    @Autowired
-    private ApiUsageCounter apiUsageCounter;
+    private final ApiUsageCounter apiUsageCounter;
 
-    private MetricsAggregationCustomRepository metricsAggregationCustomRepository;
+    private final MetricsAggregationCustomRepository metricsAggregationCustomRepository;
 
     public ApiUsageCounterTest() {
         metricsAggregationCustomRepository = mock(MetricsAggregationCustomRepository.class);

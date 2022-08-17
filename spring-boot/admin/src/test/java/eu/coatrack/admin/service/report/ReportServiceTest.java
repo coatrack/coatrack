@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
-import static eu.coatrack.admin.service.report.ReportDataFactory.*;
+import static eu.coatrack.admin.factories.ReportDataFactory.*;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -22,8 +22,7 @@ public class ReportServiceTest {
     private final ServiceApiRepository serviceApiRepository;
     private final ApiUsageCalculator apiUsageCalculator;
 
-    @Autowired
-    private ReportService reportService;
+    private final ReportService reportService;
 
     public ReportServiceTest() {
         serviceApiRepository = mock(ServiceApiRepository.class);
