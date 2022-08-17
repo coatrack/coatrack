@@ -3,6 +3,7 @@ package eu.coatrack.admin.service.report;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.*;
 import lombok.AllArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,9 @@ import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Setter
 public class ReportService {
+    // TODO serviceApi dependency can be moved up by 1 layer, there is no other usage
     @Deprecated
     @Autowired
     private final ServiceApiRepository serviceApiRepository;
@@ -76,11 +79,13 @@ public class ReportService {
     }
 
 
-    // TODO move to ServiceApiService after refactoring admin controller, serviceApiRepository can be moved to AdminController
+
     @Deprecated
     public double reportTotalRevenueForApiProvider(String apiProviderUsername, LocalDate timePeriodStart, LocalDate timePeriodEnd) {
         Date from = java.sql.Date.valueOf(timePeriodStart);
         Date until = java.sql.Date.valueOf(timePeriodEnd);
+
+        // TODO move to ServiceApiService after refactoring admin controller, serviceApiRepository can be moved to AdminController
         List<ServiceApi> offeredServices = serviceApiRepository.findByOwnerUsername(apiProviderUsername);
         return reportTotalRevenueForApiProvider(offeredServices, from, until);
     }

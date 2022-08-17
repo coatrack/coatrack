@@ -84,14 +84,19 @@ data:
   # Security
   # ****
 
-  security.oauth2.client.clientId: 21a84668d01527c4b788
-  security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
-  security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
-  security.oauth2.client.userAuthorizationUri: https://github.com/login/oauth/authorize
-  security.oauth2.client.tokenName: oauth_token
-  security.oauth2.client.authenticationScheme: header
-  security.oauth2.client.clientAuthenticationScheme: header
-  security.oauth2.client.scope.user: email
-  security.oauth2.client.scope.read: user
-  security.oauth2.resource.userInfoUri: https://api.github.com/user
+#  security.oauth2.client.clientId: 21a84668d01527c4b788
+#  security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
+#  security.oauth2.client.accessTokenUri: https://github.com/login/oauth/access_token
+ # security.oauth2.client.userAuthorizationUri: https://github.com/login/oauth/authorize
+#  security.oauth2.client.tokenName: oauth_token
+  security.oauth2.client.registration.clientId: 21a84668d01527c4b788
+  security.oauth2.client.registration.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
+  security.oauth2.client.registration.redirectUri: http://dev.coatrack.eu/login/oath2/code/github
+  security.oauth2.client.registration.authenticationScheme: header
+  security.oauth2.client.registration.clientAuthenticationScheme: header
+  security.oauth2.client.registration.scope.user: email
+  security.oauth2.client.registration.scope.read: user
+  security.oauth2.client.provider.github.userNameAttribute: login
+  security.oauth2.client.provider.resource.userInfoUri: https://api.github.com/user
+
   spring.profiles.active: dev

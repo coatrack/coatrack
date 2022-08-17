@@ -32,15 +32,7 @@ public class ApiUsageCalculator {
             }
         }
 
-        if (count.getNotMatchingCalls() > 0) {
-            apiUsageReports.add(new ApiUsageReport("Other Calls", count.getNotMatchingCalls(), 0, 0));
-        }
-
-        if (count.getFreeCalls() > 0) {
-            apiUsageReports.add(new ApiUsageReport("All Calls", count.getFreeCalls(), 0, 0));
-        }
-
-        if(count.getMonthlyBilledCalls() > 0) {
+        if (count.getMonthlyBilledCalls() > 0) {
             int diffMonth = getMonthDifference(apiUsageDTO.getFrom(), apiUsageDTO.getUntil());
             ApiUsageReport apiUsageReportForMonthlyFlatrate = new ApiUsageReport(
                     "All Calls",
@@ -50,6 +42,16 @@ public class ApiUsageCalculator {
             );
             apiUsageReports.add(apiUsageReportForMonthlyFlatrate);
         }
+
+        if (count.getNotMatchingCalls() > 0) {
+            apiUsageReports.add(new ApiUsageReport("Other Calls", count.getNotMatchingCalls(), 0, 0));
+        }
+
+        if (count.getFreeCalls() > 0) {
+            apiUsageReports.add(new ApiUsageReport("Free Calls", count.getFreeCalls(), 0, 0));
+        }
+
+
         apiUsageReports.forEach(reportRow -> log.debug("row for report: " + reportRow));
         return apiUsageReports;
     }

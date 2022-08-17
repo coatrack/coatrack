@@ -4,35 +4,41 @@ import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.api.EntryPoint;
 import eu.coatrack.api.MetricResult;
 import eu.coatrack.api.MetricType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.AntPathMatcher;
 
+import java.util.Date;
 import java.util.List;
 
+import static eu.coatrack.api.MetricType.RESPONSE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.*;
 
 @Getter
 @Slf4j
 @Service
+@AllArgsConstructor
 public class ApiUsageCounter {
     private static final AntPathMatcher parser = new AntPathMatcher();
+
     @Autowired
     private MetricsAggregationCustomRepository metricsAggregationCustomRepository;
 
-
     public CallCount count(ApiUsageDTO apiUsageDTO) {
         CallCount callCount = new CallCount();
-
-        long serviceId = apiUsageDTO.getService() != null ? apiUsageDTO.getService().getId() : -1L;
-        long consumerId = apiUsageDTO.getConsumer() != null ? apiUsageDTO.getConsumer().getId() : -1L;
-        String ownerName = apiUsageDTO.getService().getOwner().getUsername();
-
         // TODO needs to be typed, raw use of implicit types are no fun
-        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(MetricType.RESPONSE, serviceId,
-               ownerName, consumerId, apiUsageDTO.getFrom(), apiUsageDTO.getUntil(), true);
+
+        Long serviceId = apiUsageDTO.getService().getId();
+        String ownerName = apiUsageDTO.getService().getOwner().getUsername();
+        Long consumerId = apiUsageDTO.getConsumer() != null ? apiUsageDTO.getConsumer().getId() : -1L;
+        Date from = apiUsageDTO.getFrom();
+        Date until = apiUsageDTO.getUntil();
+
+
+        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(RESPONSE, serviceId, ownerName, consumerId, from, until,true);
 
         if (metricResults != null && !metricResults.isEmpty()) {
             metricResults.forEach(metricResult -> evaluateMetric(metricResult, apiUsageDTO, callCount));
@@ -49,7 +55,7 @@ public class ApiUsageCounter {
 
     private void evaluateMetric(MetricResult metric, ApiUsageDTO apiUsageDTO, CallCount callCount) {
         log.debug("Metric for report: user '{}' service '{}' type '{}' calls '{}' path '{}' method '{}'", metric.getUsername(), metric.getServiceId(), metric.getType(), metric.getCallsPerEntry(), metric.getPath(), metric.getRequestMethod());
-        if (metric.getType() == MetricType.RESPONSE) {
+        if (metric.getType() == RESPONSE) {
             if (apiUsageDTO.getService().getServiceAccessPaymentPolicy() == FOR_FREE) {
                 callCount.addFree(metric.getCallsPerEntry());
             } else if (apiUsageDTO.getService().getServiceAccessPaymentPolicy() == MONTHLY_FEE) {

@@ -29,6 +29,7 @@ import eu.coatrack.api.ApiUsageReport;
 import eu.coatrack.api.DataTableView;
 import eu.coatrack.api.ServiceApi;
 import eu.coatrack.api.User;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Slf4j
 @RestController
+@AllArgsConstructor
 @RequestMapping(path = "/admin/reports")
 public class ReportController {
     private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -57,7 +59,7 @@ public class ReportController {
     private ServiceApiRepository serviceApiRepository;
 
     @Autowired
-    ApiKeyRepository apiKeyRepository;
+    private ApiKeyRepository apiKeyRepository;
 
     @Autowired
     private ReportService reportService;
@@ -127,18 +129,6 @@ public class ReportController {
     }
 
 
-    //TODO this should not be here, put it somewhere senseful
-    private static Date tryParseDateString(String dateString) {
-        Date date = new Date();
-        if (dateString != null) {
-            try {
-                date = df.parse(dateString);
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
-        }
-        return date;
-    }
 
 
     @RequestMapping(value = "/consumer", method = GET)
@@ -183,12 +173,27 @@ public class ReportController {
         return response;
     }
 
+
     private ApiUsageDTO getApiUsageDTO(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean considerOnlyPaidCalls)  {
-        Date from = tryParseDateString(dateFrom);
-        Date until = tryParseDateString(dateUntil);
+        Date from = parseDateStringOrGetToday(dateFrom);
+        Date until = parseDateStringOrGetToday(dateUntil);
         ServiceApi selectedService = serviceApiRepository.findById(selectedServiceId).orElse(null);
         User selectedConsumer = userRepository.findById(apiConsumerId).orElse(null);
-        ApiUsageDTO apiUsageDTO = new ApiUsageDTO(selectedService, selectedConsumer, from, until, considerOnlyPaidCalls, false);
-        return apiUsageDTO;
+        return new ApiUsageDTO(selectedService, selectedConsumer, from, until, considerOnlyPaidCalls, false);
     }
+
+    //TODO this should not be here, put it somewhere senseful
+    private static Date parseDateStringOrGetToday(String dateString) {
+        Date date = new Date();
+        if (dateString != null) {
+            try {
+                date = df.parse(dateString);
+            } catch (ParseException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return date;
+    }
+
+
 }
