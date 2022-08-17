@@ -1,5 +1,6 @@
 package eu.coatrack.admin.service.report;
 
+import eu.coatrack.admin.factories.ReportDataFactory;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.api.MetricType;
 import org.junit.jupiter.api.Test;
