@@ -4,8 +4,13 @@ import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.admin.service.report.ReportService;
+import eu.coatrack.api.ApiUsageReport;
+import eu.coatrack.api.DataTableView;
+import eu.coatrack.api.ServiceApi;
+import eu.coatrack.api.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -15,113 +20,108 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Collections;
+import java.util.*;
 
-import static eu.coatrack.admin.factories.ReportDataFactory.getConsumer;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static eu.coatrack.admin.factories.ReportDataFactory.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.web.ModelAndViewAssert.assertCompareListModelAttribute;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-
-@ContextConfiguration(classes = {UserRepository.class, ServiceApiRepository.class, ApiKeyRepository.class, ReportService.class, ReportController.class})
-@WebMvcTest(controllers = {ReportController.class})
+// I don't actually know why ServiceApiRepository or UserRepository are sufficient to declare context
+@ContextConfiguration(classes = {ServiceApiRepository.class})
+@WebMvcTest(ReportController.class)
 public class ReportControllerTest {
-    @Autowired
-    private MockMvc mvc;
 
-    @MockBean
-    private UserRepository userRepository;
+    private final MockMvc mvc;
 
-    @MockBean
-    private ServiceApiRepository serviceApiRepository;
+    private final UserRepository userRepository;
+    private final ServiceApiRepository serviceApiRepository;
+    private final ApiKeyRepository apiKeyRepository;
+    private final ReportService reportService;
 
-    @MockBean
-    private ApiKeyRepository apiKeyRepository;
-
-    @MockBean
-    private ReportService reportService;
-
-
-    //private ReportController reportController;
+    private final ReportController reportController;
 
 
     public ReportControllerTest() {
-        /*userRepository = mock(UserRepository.class);
+        userRepository = mock(UserRepository.class);
         serviceApiRepository = mock(ServiceApiRepository.class);
         apiKeyRepository = mock(ApiKeyRepository.class);
-        reportService = mock(ReportService.class);*/
+        reportService = mock(ReportService.class);
 
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("Tester");
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ADMIN");
         Authentication authentication = new UsernamePasswordAuthenticationToken(getConsumer().getUsername(), "PetesPassword", Collections.singletonList(authority));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        //reportController = new ReportController(userRepository, serviceApiRepository, apiKeyRepository, reportService);
+        reportController = new ReportController(userRepository, serviceApiRepository, apiKeyRepository, reportService);
+        mvc = MockMvcBuilders.standaloneSetup(reportController)
+                .build();
     }
 
     @Test
     public void reportWithoutParam() throws Exception {
-        mvc.perform(MockMvcRequestBuilders
-                .get("/admin/reports"))
-                .andExpect(model().size(12))
-                .andExpect(status().isOk());
+        doReturn(getConsumer()).when(userRepository).findByUsername(anyString());
+        doReturn(getServiceList()).when(serviceApiRepository).findByDeletedWhen(null);
+        doReturn(getConsumers()).when(reportService).getServiceConsumers(anyList());
+        doReturn(Arrays.asList("1", "2", "3")).when(reportService).getPayPerCallServicesIds(anyList());
+
+        ModelAndView response = reportController.report();
+
+        assertEquals(response.getViewName(), ReportController.REPORT_VIEW);
+
+        mvc.perform(get("/admin/reports/"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(model().size(12));
+
 
     }
 
 
     @Test
     public void reportWithParam() {
-/*        String dateFrom = "22-06-2022";
+        String dateFrom = "22-06-2022";
         String dateUntil = "28-06-2022";
         long selectedServiceId = 0L;
         long selectedApiConsumerUserId = 0L;
         boolean considerOnlyPaidCalls = false;
 
-
-        doReturn(getConsumer()).when(userRepository).findByUsername(getConsumer().getUsername());
-        doReturn(getServiceList()).when(serviceApiRepository).findByDeletedWhen(null);
-        doReturn(getConsumers()).when(reportService).getServiceConsumers(anyList());
-        doReturn(Arrays.asList(1L, 2L, 3L)).when(reportService).getPayPerCallServicesIds(anyList());*/
-
-
-
-
     }
 
     @Test
     public void reportApiUsage() {
-        /*String dateFrom = "";
+        String dateFrom = "";
         String dateUntil = "";
         long selectedServiceId = 0L;
         long selectedApiConsumerUserId = 0L;
         boolean considerOnlyPaidCalls = false;
 
-        DataTableView<ApiUsageReport> actual = reportController.reportApiUsage(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, considerOnlyPaidCalls);
-
-
-        // TODO can I remove the DataTableView from the Project? It seems to be just a wrapper for a list
-        DataTableView<ApiUsageReport> expected = new DataTableView<>();*/
-
     }
 
     @Test
     public void showGenerateReportPageForServiceConsumer() {
-       /* ModelAndView actual = reportController.showGenerateReportPageForServiceConsumer();
 
-        ModelAndView expected = new ModelAndView();*/
 
     }
 
     @Test
     public void searchReportsByServicesConsumed() {
-        /*String dateFrom = "";
+        String dateFrom = "";
         String dateUntil = "";
         long selectedServiceId = 0L;
         boolean considerOnlyPaidCalls = false;
 
-        ModelAndView actual = reportController.searchReportsByServicesConsumed(dateFrom, dateUntil, selectedServiceId, considerOnlyPaidCalls);
 
-        ModelAndView expected = new ModelAndView();*/
 
     }
 

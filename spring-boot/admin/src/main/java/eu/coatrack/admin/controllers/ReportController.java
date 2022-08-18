@@ -50,7 +50,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping(path = "/admin/reports")
 public class ReportController {
     private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-    private static final String REPORT_VIEW = "admin/reports/report";
+    public static final String REPORT_VIEW = "admin/reports/report";
 
     @Autowired
     private UserRepository userRepository;
