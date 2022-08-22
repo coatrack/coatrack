@@ -79,7 +79,7 @@ public class OAuthUserDetailsService {
     }
 
     private String getPrimaryEmailFromLoggedInUser() {
-        return getEmailsListFromGithub()
+        return getEmailAddressesOfLoggedInUserFromGithub()
                 .stream()
                 .filter(email -> (email.isVerified() && email.isPrimary()))
                 .map(GithubEmail::getEmail)
@@ -87,7 +87,7 @@ public class OAuthUserDetailsService {
                 .orElse(null);
     }
 
-    private List<GithubEmail> getEmailsListFromGithub() {
+    private List<GithubEmail> getEmailAddressesOfLoggedInUserFromGithub() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getAuthorizationBearerTokenFromLoggedInUser());
         HttpEntity<String> AuthorizationHeaderForGitHubAPI = new HttpEntity(headers);
