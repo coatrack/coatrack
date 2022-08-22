@@ -264,10 +264,6 @@
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
             <version>3.0.3</version>
         </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
