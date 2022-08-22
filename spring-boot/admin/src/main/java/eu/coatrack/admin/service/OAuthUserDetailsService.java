@@ -43,7 +43,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OAuthUserDetailsService {
 
-    private static final String GITHUB_API_EMAIL = "https://api.github.com/user/emails";
+    private static final String GITHUB_API_EMAILS_URL = "https://api.github.com/user/emails";
 
     private final OAuth2AuthorizedClientService clientService;
     private final RestTemplate restTemplate;
@@ -89,15 +89,15 @@ public class OAuthUserDetailsService {
 
     private List<GithubEmail> getEmailsListFromGithub() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "token " + getTokenFromLoggedInUser());
+        headers.add("Authorization", "token " + getAuthorizationBearerTokenFromLoggedInUser());
         HttpEntity<String> githubRequest = new HttpEntity(headers);
 
-        ResponseEntity<List<GithubEmail>> emailsListFromGithub = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
+        ResponseEntity<List<GithubEmail>> emailsListFromGithub = restTemplate.exchange(GITHUB_API_EMAILS_URL, HttpMethod.GET,
                 githubRequest, new ParameterizedTypeReference<List<GithubEmail>>() {});
         return emailsListFromGithub.getBody();
     }
 
-    public String getTokenFromLoggedInUser() {
+    public String getAuthorizationBearerTokenFromLoggedInUser() {
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
