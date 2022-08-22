@@ -90,10 +90,10 @@ public class OAuthUserDetailsService {
     private List<GithubEmail> getEmailsListFromGithub() {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "token " + getAuthorizationBearerTokenFromLoggedInUser());
-        HttpEntity<String> githubRequest = new HttpEntity(headers);
+        HttpEntity<String> AuthorizationHeaderForGitHubAPI = new HttpEntity(headers);
 
         ResponseEntity<List<GithubEmail>> emailsListFromGithub = restTemplate.exchange(GITHUB_API_EMAILS_URL, HttpMethod.GET,
-                githubRequest, new ParameterizedTypeReference<List<GithubEmail>>() {});
+                AuthorizationHeaderForGitHubAPI, new ParameterizedTypeReference<List<GithubEmail>>() {});
         return emailsListFromGithub.getBody();
     }
 
