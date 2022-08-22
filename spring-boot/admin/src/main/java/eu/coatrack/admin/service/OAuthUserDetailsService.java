@@ -73,12 +73,12 @@ public class OAuthUserDetailsService {
         // Oauth2 (so the Oauth2 will "respect" the public/private set in the GitHub Profile).
         // Therefore, the only way is to make a specific call to the GitHub API requesting for all the registered emails from the LoggedInUser (using the authentication token to define which user specifically)
         if (email == null || email.isEmpty()) {
-            email = getPrimaryEmailFromLoggedInUser();
+            email = getEmailFromLoggedInUserViaGitHubAPI();
         }
         return email;
     }
 
-    private String getPrimaryEmailFromLoggedInUser() {
+    private String getEmailFromLoggedInUserViaGitHubAPI() {
         return getEmailAddressesOfLoggedInUserFromGithub()
                 .stream()
                 .filter(email -> (email.isVerified() && email.isPrimary()))
