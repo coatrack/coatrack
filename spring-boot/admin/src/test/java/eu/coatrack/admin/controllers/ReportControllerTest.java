@@ -75,14 +75,22 @@ public class ReportControllerTest {
         doReturn(getConsumers()).when(reportService).getServiceConsumers(anyList());
         doReturn(Arrays.asList("1", "2", "3")).when(reportService).getPayPerCallServicesIds(anyList());
 
-        ModelAndView response = reportController.report();
-
-        assertEquals(response.getViewName(), ReportController.REPORT_VIEW);
-
         mvc.perform(get("/admin/reports/"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(model().size(12));
+                .andExpect(view().name(ReportController.REPORT_VIEW))
+                .andExpect(model().attribute("users", ))
+                .andExpect(model().attribute("selectedServiceId",))
+                .andExpect(model().attribute("selectedApiConsumerUserId", ))
+                .andExpect(model().attribute("services", ))
+                .andExpect(model().attribute("payPerCallServicesIds", ))
+                .andExpect(model().attribute("exportUser", ))
+                .andExpect(model().attribute("isOnlyPaidCalls", )) // TODO delete
+                .andExpect(model().attribute("isReportForConsumer", )) // TODO delete
+                .andExpect(model().attribute("dateFrom", )) // TODO delete
+                .andExpect(model().attribute("dateUntil", )) // TODO delete
+                .andExpect(model().attribute("serviceApiSelectedForReport", )) // TODO delete
+                .andExpect(model().attribute("consumerUserSelectedForReport", )); // TODO delete
 
 
     }
@@ -120,7 +128,6 @@ public class ReportControllerTest {
         String dateUntil = "";
         long selectedServiceId = 0L;
         boolean considerOnlyPaidCalls = false;
-
 
 
     }
