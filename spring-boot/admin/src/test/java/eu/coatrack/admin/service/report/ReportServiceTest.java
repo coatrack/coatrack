@@ -4,11 +4,9 @@ import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.api.ApiUsageReport;
 import eu.coatrack.api.DataTableView;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.util.Date;
-
 import static eu.coatrack.admin.factories.ReportDataFactory.*;
+import static eu.coatrack.admin.utils.DateUtils.getTodayMinusOneMonthAsString;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,21 +25,22 @@ public class ReportServiceTest {
     public ReportServiceTest() {
         serviceApiRepository = mock(ServiceApiRepository.class);
         apiUsageCalculator = mock(ApiUsageCalculator.class);
-        doReturn(getApiUsageReports()).when(apiUsageCalculator).calculateForSpecificService(any(ApiUsageDTO.class));
+        doReturn(apiUsageReports).when(apiUsageCalculator).calculateForSpecificService(any(ApiUsageDTO.class));
 
         reportService = new ReportService(serviceApiRepository, apiUsageCalculator);
     }
 
     @Test
     public void reportApiUsage() {
-        DataTableView<ApiUsageReport> tableView = reportService.reportApiUsage(getApiUsageDTO(WELL_DEFINED_PRICE));
+        ApiUsageDTO apiUsageDTO = getApiUsageDTO(getTodayMinusOneMonthAsString(), WELL_DEFINED_PRICE);
+        DataTableView<ApiUsageReport> tableView = reportService.reportApiUsage(apiUsageDTO);
 
         assertEquals(3, tableView.getData().size());
     }
 
     @Test
     public void reportTotalRevenueForApiProvider() {
-        double res = reportService.reportTotalRevenueForApiProvider(getServiceList(), new Date(), new Date());
+        double res = reportService.reportTotalRevenueForApiProvider(serviceApis, new Date(), new Date());
 
         assertEquals(600.0, res);
     }
