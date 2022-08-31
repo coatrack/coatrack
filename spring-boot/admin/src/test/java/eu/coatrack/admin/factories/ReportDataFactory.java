@@ -3,83 +3,85 @@ package eu.coatrack.admin.factories;
 import eu.coatrack.admin.service.report.ApiUsageDTO;
 import eu.coatrack.admin.service.report.CallCount;
 import eu.coatrack.api.*;
+import lombok.Getter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static eu.coatrack.admin.utils.DateUtils.getDateFromString;
 import static eu.coatrack.api.MetricType.RESPONSE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.MONTHLY_FEE;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 
+@Getter
 public class ReportDataFactory {
 
-    private final static User consumer = getUser(1L, "Pete");
+    public final static User consumer = getUser(1L, "Pete");
+
+    public final static List<User> consumers = Arrays.asList(
+            consumer,
+            getUser(2L, "Hans"),
+            getUser(3L, "Steffen")
+    );
+
+    public final static List<ServiceApi> serviceApis = Arrays.asList(
+            getServiceApi(1L, MONTHLY_FEE, 500L),
+            getServiceApi(2L, WELL_DEFINED_PRICE, 1000L)
+    );
+
+    @Deprecated
+    public final static List<Object[]> metricResultListObjectArrays = Arrays.asList(
+            new Object[]{"Peter", 1L, RESPONSE, 1L, "/a", "GET"},
+            new Object[]{"Tiffany", 2L, RESPONSE, 2L, "/b", "GET"},
+            new Object[]{"Bobo", 3L, RESPONSE, 3L, "/c", "GET"}
+    );
+
+    public final static List<MetricResult> metricResultList = Arrays.asList(
+            new MetricResult("Peter", 1L, RESPONSE, 1L, "/a", "GET"),
+            new MetricResult("Tiffany", 2L, RESPONSE, 2L, "/b", "GET"),
+            new MetricResult("Bobo", 3L, RESPONSE, 3L, "/c", "GET")
+    );
+
+    public final static List<EntryPoint> entryPoints = Arrays.asList(
+            new EntryPoint(0L, "entryPointA", "/a", "GET", 1.0, 0),
+            new EntryPoint(1L, "entryPointB", "/b", "GET", 2.0, 1),
+            new EntryPoint(2L, "entryPointC", "/c", "GET", 3.0, 2)
+    );
+
+    public final static List<ApiUsageReport> apiUsageReports = Arrays.asList(
+            new ApiUsageReport("ReportA", 1L, 100.0, 100.0),
+            new ApiUsageReport("ReportB", 1L, 100.0, 100.0),
+            new ApiUsageReport("ReportC", 1L, 100.0, 100.0)
+    );
+
+
+    public final static List<String> payPerCallServiceIds = Arrays.asList("1", "2", "3");
+
+    public final static long selectedServiceId = -1L;
+    public final static long selectedApiConsumerUserId = -1L;
+    public final static boolean considerOnlyPaidCalls = false;
+
 
     public static ServiceApi getServiceApi(long id, ServiceAccessPaymentPolicy accessPaymentPolicy, double monthlyFee) {
         ServiceApi serviceDummy = new ServiceApi();
         serviceDummy.setId(id);
         serviceDummy.setServiceAccessPaymentPolicy(accessPaymentPolicy);
-        serviceDummy.setEntryPoints(getEntryPoints());
+        serviceDummy.setEntryPoints(entryPoints);
         serviceDummy.setOwner(getUser(0L, "Owner, simple"));
         serviceDummy.setMonthlyFee(monthlyFee);
         return serviceDummy;
     }
-
-    public static List<ServiceApi> getServiceList() {
-        return Arrays.asList(
-                getServiceApi(1L, MONTHLY_FEE, 500L),
-                getServiceApi(2L, WELL_DEFINED_PRICE, 1000L)
-        );
-    }
-
-    @Deprecated
-    public static List getMetricResultListAsObjectArray() {
-        return Arrays.asList(
-                new Object[]{"Peter", 1L, RESPONSE, 1L, "/a", "GET"},
-                new Object[]{"Tiffany", 2L, RESPONSE, 2L, "/b", "GET"},
-                new Object[]{"Bobo", 3L, RESPONSE, 3L, "/c", "GET"}
-        );
-    }
-
-    public static List<MetricResult> getMetricResultList() {
-        return Arrays.asList(
-                new MetricResult("Peter", 1L, RESPONSE, 1L, "/a", "GET"),
-                new MetricResult("Tiffany", 2L, RESPONSE, 2L, "/b", "GET"),
-                new MetricResult("Bobo", 3L, RESPONSE, 3L, "/c", "GET")
-        );
-    }
-
-    public static List<EntryPoint> getEntryPoints() {
-        EntryPoint entryPointA = new EntryPoint(0L, "entryPointA", "/a", "GET", 1.0, 0);
-        EntryPoint entryPointB = new EntryPoint(1L, "entryPointB", "/b", "GET", 2.0, 1);
-        EntryPoint entryPointC = new EntryPoint(2L, "entryPointC", "/c", "GET", 3.0, 2);
-
-        return Arrays.asList(entryPointA, entryPointB, entryPointC);
-    }
-
-    public static ApiUsageDTO getApiUsageDTO(ServiceAccessPaymentPolicy accessPaymentPolicy) {
-        Date from = getDateFromString("25-06-2022");
-        Date until = new Date();
+    public static ApiUsageDTO getApiUsageDTO(String fromString, ServiceAccessPaymentPolicy accessPaymentPolicy) {
+        Date from = getDateFromString(fromString);
         ApiUsageDTO apiUsageDTO = new ApiUsageDTO(
                 getServiceApi(1L, accessPaymentPolicy, 100.0),
                 getUser(1L, "Consumer, simple"),
                 from,
-                until,
+                new Date(), // TODO this can be a problem
                 false,
                 false
         );
         return apiUsageDTO;
     }
-
-    public static List<ApiUsageReport> getApiUsageReports() {
-        return Arrays.asList(
-                new ApiUsageReport("ReportA", 1L, 100.0, 100.0),
-                new ApiUsageReport("ReportB", 1L, 100.0, 100.0),
-                new ApiUsageReport("ReportC", 1L, 100.0, 100.0)
-        );
-    }
-
 
     public static User getUser(long id, String name) {
         User userDummy = new User();
@@ -88,32 +90,8 @@ public class ReportDataFactory {
         return userDummy;
     }
 
-    public static User getConsumer() {
-        return consumer;
-    }
-
-    public static List<User> getConsumers() {
-        return Arrays.asList(
-                consumer,
-                getUser(2L, "Hans"),
-                getUser(3L, "Steffen")
-        );
-    }
-
-    public static Date getDateFromString(String dateString) {
-        Date date;
-        try {
-            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-            date = formatter.parse(dateString);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        return date;
-    }
-
     public static Map<EntryPoint, Long> getEntryPointMap() {
         Map<EntryPoint, Long> callsPerEntryPoint = new TreeMap<>();
-        List<EntryPoint> entryPoints = getEntryPoints();
         callsPerEntryPoint.put(entryPoints.get(0), 3L);
         callsPerEntryPoint.put(entryPoints.get(1), 4L);
         callsPerEntryPoint.put(entryPoints.get(2), 7L);
