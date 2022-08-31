@@ -37,11 +37,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import static eu.coatrack.admin.utils.DateUtils.parseDateStringOrGetTodayIfNull;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @Slf4j
@@ -49,7 +48,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @AllArgsConstructor
 @RequestMapping(path = "/admin/reports")
 public class ReportController {
-    private final static SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+
     public static final String REPORT_VIEW = "admin/reports/report";
 
     @Autowired
@@ -111,36 +110,16 @@ public class ReportController {
         return response;
     }
 
-    @RequestMapping(value = "/apiUsage/{dateFrom}/{dateUntil}/{selectedServiceId}/{apiConsumerId}/{onlyPaidCalls}", method = RequestMethod.GET, produces = "application/json")
-    @ResponseBody
-    public DataTableView<ApiUsageReport> reportApiUsage(
-            @PathVariable("dateFrom") String dateFrom,
-            @PathVariable("dateUntil") String dateUntil,
-            @PathVariable("selectedServiceId") Long selectedServiceId,
-            @PathVariable("apiConsumerId") Long apiConsumerId,
-            @PathVariable("onlyPaidCalls") boolean considerOnlyPaidCalls
-    ) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        ApiUsageDTO apiUsageDTO = null;
-        if (auth != null) {
-            apiUsageDTO = getApiUsageDTO(dateFrom, dateUntil, selectedServiceId, apiConsumerId, considerOnlyPaidCalls);
-        }
-        return reportService.reportApiUsage(apiUsageDTO);
-    }
-
-
-
-
     @RequestMapping(value = "/consumer", method = GET)
     public ModelAndView showGenerateReportPageForServiceConsumer() {
         return searchReportsByServicesConsumed(null, null, -1L, false);
     }
 
     // deleted @PathVariable("selectedApiConsumerUserId") Long selectedApiConsumerUserId, because it is not used
-    @RequestMapping(value = "/consumer/{dateFrom}/{dateUntil}/{selectedServiceId}/{selectedApiConsumerUserId}/{isOnlyPaidCalls}", method = RequestMethod.GET)
+    @RequestMapping(value = "/consumer/{dateFrom}/{dateUntil}/{selectedServiceId}/{isOnlyPaidCalls}", method = RequestMethod.GET)
     public ModelAndView searchReportsByServicesConsumed(
-            @PathVariable("dateFrom") String dateFrom,
-            @PathVariable("dateUntil") String dateUntil,
+            @PathVariable("dateFrom") String dateFromString,
+            @PathVariable("dateUntil") String dateUntilString,
             @PathVariable("selectedServiceId") Long selectedServiceId,
             @PathVariable("isOnlyPaidCalls") boolean considerOnlyPaidCalls
     ) {
@@ -148,7 +127,7 @@ public class ReportController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth != null) {
-            ApiUsageDTO report = getApiUsageDTO(dateFrom, dateUntil, selectedServiceId, -1L, considerOnlyPaidCalls);
+            ApiUsageDTO report = getApiUsageDTO(dateFromString, dateUntilString, selectedServiceId, -1L, considerOnlyPaidCalls);
 
             User currentUser = userRepository.findByUsername(auth.getName());
             List<ServiceApi> servicesFromUser = serviceApiRepository.findByApiKeyList(apiKeyRepository.findByLoggedInAPIConsumer());
@@ -173,27 +152,28 @@ public class ReportController {
         return response;
     }
 
-
     private ApiUsageDTO getApiUsageDTO(String dateFrom, String dateUntil, Long selectedServiceId, Long apiConsumerId, boolean considerOnlyPaidCalls)  {
-        Date from = parseDateStringOrGetToday(dateFrom);
-        Date until = parseDateStringOrGetToday(dateUntil);
+        Date from = parseDateStringOrGetTodayIfNull(dateFrom);
+        Date until = parseDateStringOrGetTodayIfNull(dateUntil);
         ServiceApi selectedService = serviceApiRepository.findById(selectedServiceId).orElse(null);
         User selectedConsumer = userRepository.findById(apiConsumerId).orElse(null);
         return new ApiUsageDTO(selectedService, selectedConsumer, from, until, considerOnlyPaidCalls, false);
     }
 
-    //TODO this should not be here, put it somewhere senseful
-    private static Date parseDateStringOrGetToday(String dateString) {
-        Date date = new Date();
-        if (dateString != null) {
-            try {
-                date = df.parse(dateString);
-            } catch (ParseException ex) {
-                ex.printStackTrace();
-            }
+    @RequestMapping(value = "/apiUsage/{dateFrom}/{dateUntil}/{selectedServiceId}/{apiConsumerId}/{onlyPaidCalls}", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public DataTableView<ApiUsageReport> reportApiUsage(
+            @PathVariable("dateFrom") String dateFrom,
+            @PathVariable("dateUntil") String dateUntil,
+            @PathVariable("selectedServiceId") Long selectedServiceId,
+            @PathVariable("apiConsumerId") Long apiConsumerId,
+            @PathVariable("onlyPaidCalls") boolean considerOnlyPaidCalls
+    ) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        ApiUsageDTO apiUsageDTO = null;
+        if (auth != null) {
+            apiUsageDTO = getApiUsageDTO(dateFrom, dateUntil, selectedServiceId, apiConsumerId, considerOnlyPaidCalls);
         }
-        return date;
+        return reportService.reportApiUsage(apiUsageDTO);
     }
-
-
 }

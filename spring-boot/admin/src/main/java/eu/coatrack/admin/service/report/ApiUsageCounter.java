@@ -38,7 +38,8 @@ public class ApiUsageCounter {
         Date until = apiUsageDTO.getUntil();
 
 
-        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(RESPONSE, serviceId, ownerName, consumerId, from, until,true);
+        List metricResults = metricsAggregationCustomRepository.getUsageApiConsumer(
+                RESPONSE, serviceId, ownerName, consumerId, from, until,true);
 
         if (metricResults != null && !metricResults.isEmpty()) {
             metricResults.forEach(metricResult -> evaluateMetric(metricResult, apiUsageDTO, callCount));
