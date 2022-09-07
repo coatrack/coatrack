@@ -1,11 +1,14 @@
-package eu.coatrack.admin.service.report;
+package eu.coatrack.admin.report;
 
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
+import eu.coatrack.admin.service.report.ApiUsageCalculator;
+import eu.coatrack.admin.service.report.ApiUsageDTO;
+import eu.coatrack.admin.service.report.ReportService;
 import eu.coatrack.api.ApiUsageReport;
 import eu.coatrack.api.DataTableView;
 import org.junit.jupiter.api.Test;
 import java.util.Date;
-import static eu.coatrack.admin.factories.ReportDataFactory.*;
+import static eu.coatrack.admin.datafactories.ReportDataFactory.*;
 import static eu.coatrack.admin.utils.DateUtils.getTodayMinusOneMonthAsString;
 import static eu.coatrack.api.ServiceAccessPaymentPolicy.WELL_DEFINED_PRICE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,6 +28,7 @@ public class ReportServiceTest {
     public ReportServiceTest() {
         serviceApiRepository = mock(ServiceApiRepository.class);
         apiUsageCalculator = mock(ApiUsageCalculator.class);
+
         doReturn(apiUsageReports).when(apiUsageCalculator).calculateForSpecificService(any(ApiUsageDTO.class));
 
         reportService = new ReportService(serviceApiRepository, apiUsageCalculator);

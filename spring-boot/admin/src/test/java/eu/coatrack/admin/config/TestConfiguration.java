@@ -1,4 +1,4 @@
-package eu.coatrack.admin.controllers;
+package eu.coatrack.admin.config;
 
 import org.springframework.context.annotation.Configuration;
 
