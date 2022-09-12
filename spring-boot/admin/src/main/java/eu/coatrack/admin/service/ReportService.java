@@ -1,5 +1,25 @@
 package eu.coatrack.admin.service;
 
+/*-
+ * #%L
+ * coatrack-admin
+ * %%
+ * Copyright (C) 2013 - 2022 Corizon | Institut für angewandte Systemtechnik Bremen GmbH (ATB)
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
@@ -57,14 +77,7 @@ public class ReportService {
     public ModelAndView tryReport(String dateFromString, String dateUntilString, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
         Date dateFrom = tryParseDateString(dateFromString);
         Date dateUntil = tryParseDateString(dateUntilString);
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        ModelAndView result = new ModelAndView();
-
-        result = report(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
-
-        return result;
+        return report(dateFrom, dateUntil, selectedServiceId, selectedApiConsumerUserId, isOnlyPaidCalls);
     }
 
     public ModelAndView report(Date from, Date until, Long selectedServiceId, Long selectedApiConsumerUserId, boolean isOnlyPaidCalls) {
