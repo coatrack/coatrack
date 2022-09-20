@@ -1,0 +1,32 @@
+deployments:
+  - name: coatrack-config-server
+    configMaps:
+      - name: coatrack-config
+      - name: coatrack-server-config
+    replicas: 1
+    image:
+      repository: coatrack/coatrack-config-server
+      tag: 2.0.0-SNAPSHOT
+    ingress:
+      hosts:
+        - host: config.dev.coatrack.eu
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+          - config.dev.coatrack.eu
+          secretName: coatrack-config-server-tls
+    volumes:
+      - name: gluster
+        mountPath: /mnt/coatrack
+        readOnly: false
+        type: |-
+          persistentVolumeClaim:
+            claimName: coatrack-pvc
+    imagePullSecrets:
+      - name: docker-login
+configMaps:
+  - name: coatrack-server-config
+    values:
+      spring.profiles.active: native

@@ -1,54 +1,3 @@
-deployments:
-  - name: coatrack-admin
-    configMaps:
-      - name: coatrack-config
-    replicas: 1
-      repository: coatrack/coatrack-admin
-      tag: 2.0.0-SNAPSHOT
-    ingress:
-      hosts:
-        - host: dev.coatrack.eu
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-          - dev.coatrack.eu
-          secretName: coatrack-tls
-    volumes:
-      - name: gluster
-        mountPath: /mnt/coatrack
-        readOnly: false
-        type: |-
-          persistentVolumeClaim:
-            claimName: coatrack-pvc
-    imagePullSecrets:
-      - name: docker-login
-  - name: coatrack-config-server
-    configMaps:
-      - name: coatrack-config
-    replicas: 1
-      repository: coatrack/coatrack-config-server
-      tag: 2.0.0-SNAPSHOT
-    ingress:
-      hosts:
-        - host: config.dev.coatrack.eu
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-          - config.dev.coatrack.eu
-          secretName: coatrack-config-server-tls
-    volumes:
-      - name: gluster
-        mountPath: /mnt/coatrack
-        readOnly: false
-        type: |-
-          persistentVolumeClaim:
-            claimName: coatrack-pvc
-    imagePullSecrets:
-      - name: docker-login
 configMaps:
   - name: coatrack-config
     values:
@@ -73,6 +22,7 @@ configMaps:
       ygg.mail.server.url: "smtp.serviciodecorreo.es"
       ygg.mail.server.port: "465"
       ygg.mail.verification.server.url: "https://dev.coatrack.eu"
+      ygg.admin.gateway.config.files.folder: /configfiles/
       ygg.admin.payment.commision.variable: "50"
       ygg.admin.payment.commision.fix: "1"
       ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
@@ -89,12 +39,6 @@ configMaps:
       ygg.admin.gettingStarted.consumer.testService.provider.username: "perezdf"
       ygg.admin.gettingStarted.consumer.testService.uriIdentifier: "raincoat-service"
 
-      # ****
-      # Git Service
-      # ****
-      ygg.admin.gitService.url: https://bitbucket.org/perezdf/anthill-settings.git
-      ygg.admin.gitService.user: fpd.judo@gmail.com
-      ygg.admin.gitService.password: "fpdvip1234"
       ygg.admin.servicecovers.path: "/tmp"
 
       # ****
@@ -115,7 +59,8 @@ configMaps:
       spring.cloud.config.uri: http://coatrack-config-server
       spring.cloud.config.username: admin
       spring.cloud.config.password: password
-  
+      spring.cloud.config.server.native.searchLocations: /configfiles/
+      
       # ****
       # Session
       # ****
@@ -127,15 +72,13 @@ configMaps:
       # ****
       # Security
       # ****
-      security.oauth2.client.registration.clientId: 21a84668d01527c4b788
-      security.oauth2.client.registration.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
-      security.oauth2.client.registration.redirectUri: http://dev.coatrack.eu/login/oath2/code/github
-      security.oauth2.client.registration.authenticationScheme: header
-      security.oauth2.client.registration.clientAuthenticationScheme: header
-      security.oauth2.client.registration.scope.user: email
-      security.oauth2.client.registration.scope.read: user
+      security.oauth2.client.clientId: 21a84668d01527c4b788
+      security.oauth2.client.clientSecret: ca1bc92395c491245e3a1f50c84d31d6e1b2f908
+      security.oauth2.client.redirectUri: http://dev.coatrack.eu/login/oath2/code/github
+      security.oauth2.client.authenticationScheme: header
+      security.oauth2.client.clientAuthenticationScheme: header
+      security.oauth2.client.scope.user: email
+      security.oauth2.client.scope.read: user
       security.oauth2.client.provider.github.userNameAttribute: login
       security.oauth2.client.provider.resource.userInfoUri: https://api.github.com/user
-
-      spring.profiles.active: dev
 
