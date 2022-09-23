@@ -64,7 +64,7 @@ public class ReportServiceTest {
     @Test
     public void reportApiUsage() {
         ApiUsageCalculator apiUsageCalculator = mock(ApiUsageCalculator.class);
-        reportService.setApiUsageCalculator(apiUsageCalculator);
+        //reportService.setApiUsageCalculator(apiUsageCalculator);
         ApiUsageDTO apiUsageDTO = new ApiUsageDTO(getServiceDummy(), getUserDummy(), null, null, false, false);
         DataTableView<ApiUsageReport> reportedUsage = reportService.reportApiUsage(apiUsageDTO);
 
