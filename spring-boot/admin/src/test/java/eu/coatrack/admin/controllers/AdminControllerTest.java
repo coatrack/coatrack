@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,36 +24,35 @@ import eu.coatrack.admin.model.repository.ApiKeyRepository;
 import eu.coatrack.admin.model.repository.MetricRepository;
 import eu.coatrack.admin.model.repository.ProxyRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
-import eu.coatrack.api.*;
+import eu.coatrack.api.ApiKey;
+import eu.coatrack.api.Metric;
+import eu.coatrack.api.MetricType;
+import eu.coatrack.api.Proxy;
+import eu.coatrack.admin.service.report.ReportService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.junit4.SpringRunner;
-
+import org.springframework.test.context.ContextConfiguration;
 import java.util.Date;
 
-import org.springframework.security.test.context.support.WithUserDetails;
-import org.springframework.test.context.ContextConfiguration;
-
-@DataJpaTest(showSql = true)
+@DataJpaTest()
 @ContextConfiguration(classes = SpringSecurityTestConfig.class)
 public class AdminControllerTest {
 
     @Autowired
-    ReportController reportController;
+    private ReportService reportService;
 
     @Autowired
-    MetricRepository metricRepository;
+    private MetricRepository metricRepository;
 
     @Autowired
-    ProxyRepository proxyRepository;
+    private ProxyRepository proxyRepository;
 
     @Autowired
-    ApiKeyRepository apiKeyRepository;
+    private ApiKeyRepository apiKeyRepository;
 
     @Autowired
-    ServiceApiRepository serviceApiRepository;
+    private ServiceApiRepository serviceApiRepository;
 
     private Metric testMetric;
     private Metric copyOfTestMetric;
@@ -93,13 +92,4 @@ public class AdminControllerTest {
 
         return copy;
     }
-
-    @Test
-    @WithUserDetails("aa11aa22-aa33-aa44-aa55-aa66aa77aa88")
-    public void test() {
-
-        ServiceApi randomServiceApiFromDB = serviceApiRepository.findAll().iterator().next();
-        reportController.calculateApiUsageReportForSpecificService(randomServiceApiFromDB, -1L, new Date(), new Date(), false);
-    }
-
 }
