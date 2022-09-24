@@ -61,29 +61,4 @@ public class ReportServiceTest {
     }
 
 
-    @Test
-    public void reportApiUsage() {
-        ApiUsageCalculator apiUsageCalculator = mock(ApiUsageCalculator.class);
-        //reportService.setApiUsageCalculator(apiUsageCalculator);
-        ApiUsageDTO apiUsageDTO = new ApiUsageDTO(getServiceDummy(), getUserDummy(), null, null, false, false);
-        DataTableView<ApiUsageReport> reportedUsage = reportService.reportApiUsage(apiUsageDTO);
-
-    }
-
-    @Test
-    public void getPayPerCallServicesIds() {
-
-    }
-
-    @Test
-    public void calculateTotalRevenueForApiProvider() {
-
-    }
-
-    @Test
-    public void calculateApiUsageReportForSpecificService() {
-
-    }
-
-
 }
