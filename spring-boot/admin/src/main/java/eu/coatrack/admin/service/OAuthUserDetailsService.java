@@ -69,9 +69,9 @@ public class OAuthUserDetailsService {
 
     public String getEmailFromLoggedInUser() throws JsonProcessingException {
         String email = getLoggedInUser().getAttribute("email");
-        // In case that the LoggedInUser has their email set as private in the GitHub Profile, then this will not be returned when logging in with the
-        // Oauth2 (so the Oauth2 will "respect" the public/private set in the GitHub Profile).
-        // Therefore, the only way is to make a specific call to the GitHub API requesting for all the registered emails from the LoggedInUser (using the authentication token to define which user specifically)
+        // The OAuth2User object will not include an email in case the user has
+        // set their email as private in GitHub. In this case a dedicated call
+        // to the GitHub API is required to get the user's email adresses
         if (email == null || email.isEmpty()) {
             email = getEmailFromLoggedInUserViaGitHubAPI();
         }
