@@ -22,7 +22,8 @@ package eu.coatrack.admin.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.coatrack.config.github.GithubEmail;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,16 +38,24 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class OAuthUserDetailsService {
-
-    private static final String GITHUB_API_EMAILS_URL = "https://api.github.com/user/emails";
 
     private final OAuth2AuthorizedClientService clientService;
     private final RestTemplate restTemplate;
+    private String GITHUB_API_EMAILS_URL;
+
+    @Value("${spring.security.oauth2.client.provider.resource.userInfoUri}")
+    private String githubApiEndpoint;
+
+    @PostConstruct
+    public void initialize() {
+        GITHUB_API_EMAILS_URL = githubApiEndpoint + "/emails";
+    }
 
     private OAuth2User getLoggedInUser() {
         return (OAuth2User) SecurityContextHolder
@@ -93,7 +102,8 @@ public class OAuthUserDetailsService {
         HttpEntity<String> githubApiRequestEntityWithAuthHeader = new HttpEntity(headers);
 
         ResponseEntity<List<GithubEmail>> emailsListFromGithub = restTemplate.exchange(GITHUB_API_EMAILS_URL, HttpMethod.GET,
-                githubApiRequestEntityWithAuthHeader, new ParameterizedTypeReference<List<GithubEmail>>() {});
+                githubApiRequestEntityWithAuthHeader, new ParameterizedTypeReference<List<GithubEmail>>() {
+                });
         return emailsListFromGithub.getBody();
     }
 
