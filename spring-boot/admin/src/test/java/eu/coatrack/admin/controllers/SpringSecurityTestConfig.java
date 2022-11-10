@@ -20,11 +20,8 @@ package eu.coatrack.admin.controllers;
  * #L%
  */
 
-import java.util.Arrays;
-
 import eu.coatrack.admin.model.vo.YggUserPrincipal;
 import eu.coatrack.api.User;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.ResourceServerProperties;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +30,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+
+import java.util.Arrays;
 
 @TestConfiguration
 public class SpringSecurityTestConfig {
@@ -52,10 +51,4 @@ public class SpringSecurityTestConfig {
         return new InMemoryUserDetailsManager(Arrays.asList(
                 basicUser));
     }
-
-    @Bean
-    public ResourceServerProperties resourceServerProperties(){
-        return new ResourceServerProperties();
-    }
-
 }

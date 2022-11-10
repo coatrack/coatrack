@@ -31,9 +31,6 @@ import be.ceau.chart.options.LineOptions;
 import be.ceau.chart.options.scales.LinearScale;
 import be.ceau.chart.options.scales.LinearScales;
 import be.ceau.chart.options.ticks.LinearTicks;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.coatrack.admin.UserSessionSettings;
 import eu.coatrack.admin.components.WebUI;
 import eu.coatrack.admin.logic.CreateApiKeyAction;
@@ -42,6 +39,7 @@ import eu.coatrack.admin.logic.CreateServiceAction;
 import eu.coatrack.admin.model.repository.*;
 import eu.coatrack.admin.model.vo.*;
 import eu.coatrack.admin.service.GatewayHealthMonitorService;
+import eu.coatrack.admin.service.OAuthUserDetailsService;
 import eu.coatrack.api.*;
 import eu.coatrack.config.github.GithubEmail;
 import javassist.NotFoundException;
@@ -53,21 +51,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.core.SpringVersion;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Date;
@@ -106,8 +97,6 @@ public class AdminController {
     private static final String ADMIN_STARTPAGE = "admin/startpage";
     private static final String ADMIN_CONSUMER_WIZARD = "admin/consumer_wizard/wizard";
     private static final String ADMIN_PROFILE = "admin/profile/profile";
-    private static final String GITHUB_API_USER = "https://api.github.com/user";
-    private static final String GITHUB_API_EMAIL = GITHUB_API_USER + "/emails";
     private static final String GATEWAY_HEALTH_MONITOR_FRAGMENT = "admin/fragments/gateway_health_monitor :: gateway-health-monitor";
     private static final Map<Integer, Color> chartColorsPerHttpResponseCode;
 
@@ -167,8 +156,11 @@ public class AdminController {
     @Autowired
     GatewayHealthMonitorService gatewayHealthMonitorService;
 
+    @Autowired
+    OAuthUserDetailsService oAuthUserDetailsService;
+
     @RequestMapping(value = "/profiles", method = GET)
-    public ModelAndView goProfiles(Model model) throws IOException {
+    public ModelAndView goProfiles() throws IOException {
 
         ModelAndView mav = new ModelAndView();
 
@@ -177,7 +169,7 @@ public class AdminController {
     }
 
     @RequestMapping(value = "", method = GET)
-    public ModelAndView home(Model model, HttpServletRequest request) throws IOException {
+    public ModelAndView home(Model model) throws IOException {
 
         Authentication auth = SecurityContextHolder
                 .getContext()
@@ -186,14 +178,11 @@ public class AdminController {
         ModelAndView mav = new ModelAndView();
 
         if (auth.isAuthenticated()) {
-            User user = userRepository.findByUsername(auth.getName());
+            User user = userRepository.findByUsername(oAuthUserDetailsService.getLoginNameFromLoggedInUser());
 
             if (user != null) {
 
-                boolean end = false;
-                boolean found = false;
-
-                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(auth.getName());
+                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(oAuthUserDetailsService.getLoginNameFromLoggedInUser());
                 if (services != null && !services.isEmpty()) {
                     mav.setViewName(ADMIN_HOME_VIEW);
                     // The user is already stored in our database
@@ -219,54 +208,12 @@ public class AdminController {
 
                 // The user is new for our database therefore we try to retrieve as much user
                 // info is possible from Github
-                OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-
-                RestTemplate restTemplate = new RestTemplate();
-
-                HttpHeaders headers = new HttpHeaders();
-                headers.add("Authorization", "token " + details.getTokenValue());
-                HttpEntity<String> githubRequest = new HttpEntity<String>(headers);
-
-                ResponseEntity<String> userInfoResponse = restTemplate.exchange(GITHUB_API_USER, HttpMethod.GET,
-                        githubRequest, String.class);
-                String userInfo = userInfoResponse.getBody();
-
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-                Map<String, Object> userMap = objectMapper.readValue(userInfo,
-                        new TypeReference<Map<String, Object>>() {
-                });
-                String email = (String) userMap.get("email");
-                if (email == null || email.isEmpty()) {
-
-                    ResponseEntity<String> userEmailsResponse = restTemplate.exchange(GITHUB_API_EMAIL, HttpMethod.GET,
-                            githubRequest, String.class);
-                    String userEmails = userEmailsResponse.getBody();
-                    List<GithubEmail> emailsList = objectMapper.readValue(userEmails,
-                            objectMapper.getTypeFactory().constructCollectionType(List.class, GithubEmail.class));
-
-                    Iterator<GithubEmail> it = emailsList.iterator();
-                    boolean found = false;
-                    if (emailsList.size() > 0) {
-                        while (!found && it.hasNext()) {
-                            GithubEmail githubEmail = it.next();
-                            if (githubEmail.getVerified()) {
-                                email = githubEmail.getEmail();
-                                found = true;
-                            }
-                        }
-                        if (!found) {
-                            email = emailsList.get(0).getEmail();
-                        }
-                    }
-                }
-
                 user = new User();
-                user.setUsername((String) userMap.get("login"));
-                user.setFirstname((String) userMap.get("name"));
-                user.setCompany((String) userMap.get("company"));
+                user.setUsername(oAuthUserDetailsService.getLoginNameFromLoggedInUser());
+                user.setFirstname(oAuthUserDetailsService.getNameFromLoggedInUser());
+                user.setCompany((oAuthUserDetailsService.getCompanyFromLoggedInUser()));
 
+                String email = oAuthUserDetailsService.getEmailFromLoggedInUser();
                 if (email != null) {
                     user.setEmail(email);
                 }

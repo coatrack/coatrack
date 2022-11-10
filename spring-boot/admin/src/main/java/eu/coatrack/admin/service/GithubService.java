@@ -22,34 +22,29 @@ package eu.coatrack.admin.service;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
+import eu.coatrack.config.github.GithubUser;
+import eu.coatrack.config.github.GithubUserList;
+import eu.coatrack.config.github.GithubUserProfile;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.CacheConfiguration;
 import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
-import eu.coatrack.config.github.GithubUser;
-import eu.coatrack.config.github.GithubUserList;
-import eu.coatrack.config.github.GithubUserProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -65,6 +60,9 @@ public class GithubService {
     private static final String GITHUB_API_SEARCH_USERS = "https://api.github.com/search/users";
 
     private final ObjectMapper objectMapper;
+
+    @Autowired
+    OAuthUserDetailsService oAuthUserDetailsService;
 
     public GithubService() {
         objectMapper = new ObjectMapper();
@@ -141,8 +139,6 @@ public class GithubService {
         RestTemplate restTemplate = new RestTemplate();
 
         Cache githubUserCache = cacheManager.getCache("githubUsersCache");
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
 
         GithubUserProfile githubUserProfile = null;
         Element githubUserProfileWrapperCached = githubUserCache.get(githubUser.getId());
@@ -153,7 +149,7 @@ public class GithubService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("Authorization", "Bearer " + details.getTokenValue());
+                headers.set("Authorization", "Bearer " + oAuthUserDetailsService.getAuthorizationBearerTokenFromLoggedInUser());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 ResponseEntity<String> response = restTemplate.exchange(URI.create(githubUser.getUrl()), HttpMethod.GET, request, String.class);
@@ -176,9 +172,6 @@ public class GithubService {
         String criteria = URLEncoder.encode(criteriaArg, "UTF-8");
         Cache githubQueryCache = cacheManager.getCache("githubQueryCache");
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-
         Element githubQueeyWrapperCached = githubQueryCache.get(criteria);
         String queryResult = null;
         if (githubQueeyWrapperCached == null) {
@@ -190,7 +183,7 @@ public class GithubService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("Authorization", "Bearer " + details.getTokenValue());
+                headers.set("Authorization", "Bearer " + oAuthUserDetailsService.getAuthorizationBearerTokenFromLoggedInUser());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, request, String.class);
@@ -220,9 +213,6 @@ public class GithubService {
         String criteria = URLEncoder.encode(username, "UTF-8");
         Cache githubQueryCache = cacheManager.getCache("githubQueryCache");
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthenticationDetails details = (OAuth2AuthenticationDetails) auth.getDetails();
-
         Element githubQueeyWrapperCached = githubQueryCache.get(criteria);
         String queryResult = null;
         if (githubQueeyWrapperCached == null) {
@@ -234,7 +224,7 @@ public class GithubService {
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.set("Authorization", "Bearer " + details.getTokenValue());
+                headers.set("Authorization", "Bearer " + oAuthUserDetailsService.getAuthorizationBearerTokenFromLoggedInUser());
                 HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
                 ResponseEntity<String> response = restTemplate.exchange(uri, HttpMethod.GET, request, String.class);

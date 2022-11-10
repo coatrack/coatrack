@@ -92,6 +92,26 @@ spring:
     rest:
       base-path: /api
 
+  security:
+    oauth2:
+      client:
+        registration:
+          # the following oauth client configuration is just for development testing purposes, do NOT use in a production setting
+          github:
+            client-id: e188a243cc57ef90f2b5
+            client-secret: a5630e2f873890bdc8366aac0155e8113ece0997
+            scope[0]: user:email
+            scope[1]: read:user
+            clientAuthenticationScheme: header
+            authenticationScheme: header
+            redirect-uri: http://localhost:8080/login/oauth2/code/github
+        provider:
+          github:
+            # Use the "login" attribute of the Github user info as authentication name in Spring Security
+            user-name-attribute: login
+          resource:
+            userInfoUri: https://api.github.com/user
+
 spring.application.name: ygg-admin
 
 # TODO Still require for the service generated proxies, maybe we can consider the idea to rename the property in order to not confuse
@@ -99,26 +119,5 @@ spring.cloud.config:
   username: admin
   password: password
   uri: http://localhost:8998
-
-security:
-  oauth2:
-    client:
-      # the following oauth client configuration is just for development testing purposes, do NOT use in a production setting
-      clientId: e188a243cc57ef90f2b5
-      clientSecret: a5630e2f873890bdc8366aac0155e8113ece0997
-      accessTokenUri: https://github.com/login/oauth/access_token
-      userAuthorizationUri: https://github.com/login/oauth/authorize
-      tokenName: oauth_token
-      # send client id/secret to Github as ...
-      #clientAuthenticationScheme: form # form fields
-      clientAuthenticationScheme: header # headers
-      # send oauth token to Github as ...
-      authenticationScheme: header # header
-      #authenticationScheme: query # query parameter
-      scope:
-        - user:email
-        - read:user
-    resource:
-      userInfoUri: https://api.github.com/user
 
 management.security.enabled: false

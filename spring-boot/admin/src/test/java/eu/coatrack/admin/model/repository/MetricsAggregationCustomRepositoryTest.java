@@ -9,9 +9,9 @@ package eu.coatrack.admin.model.repository;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,8 +26,9 @@ import eu.coatrack.admin.model.vo.StatisticsPerDay;
 import eu.coatrack.admin.model.vo.StatisticsPerHttpStatusCode;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -46,6 +47,9 @@ public class MetricsAggregationCustomRepositoryTest {
 
     @Autowired
     MetricRepository metricRepository;
+
+    @MockBean
+    OAuth2AuthorizedClientService oAuth2AuthorizedClientService;
 
     private String sampleDataApiProviderUsername = "exampleCompanyInc";
     private LocalDate thirtyDaysAgo = LocalDate.now().minusDays(30);
