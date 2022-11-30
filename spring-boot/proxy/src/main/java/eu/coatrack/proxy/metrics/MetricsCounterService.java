@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.StringJoiner;
@@ -38,6 +40,11 @@ import eu.coatrack.api.ApiKey;
 @Service
 public class MetricsCounterService {
 
+    // Quick fix of #237 by setting default time zones of Admin and Gateway to UCT timezone.
+    // In the future, this system should be overhauled by the introduction of ZonedDateTime's.
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("Europe/London")));
+    }
     private static final Logger log = LoggerFactory.getLogger(MetricsCounterService.class);
 
     // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
@@ -51,9 +58,6 @@ public class MetricsCounterService {
     public MetricsCounterService(MeterRegistry meterRegistry, MetricsTransmitter metricsTransmitter) {
         this.meterRegistry = meterRegistry;
         this.metricsTransmitter = metricsTransmitter;
-        // Quick fix of #237 by setting default time zones of Admin and Gateway to UCT timezone.
-        // In the future, this system should be overhauled by the introduction of ZonedDateTime's.
-        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("Europe/London")));
     }
 
     public void increment(TemporaryMetricsAggregation tma) {
@@ -95,7 +99,7 @@ public class MetricsCounterService {
                 .add(tma.getApiKeyValue())
                 .add(tma.getMetricType().toString())
                 .add(String.valueOf(tma.getHttpResponseCode()))
-                .add(java.sql.Date.valueOf(utcTimeNow.toLocalDate()).toString())
+                .add(utcTimeNow.toLocalDate().toString())
                 .add(tma.getPath());
         return stringJoiner.toString();
     }
