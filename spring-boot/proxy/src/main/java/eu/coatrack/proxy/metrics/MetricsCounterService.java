@@ -28,9 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.StringJoiner;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -63,9 +61,9 @@ public class MetricsCounterService {
     public void increment(TemporaryMetricsAggregation tma) {
         logBeginningOfIncrementation(tma);
 
-        ZonedDateTime utcTimeNow = ZonedDateTime.now(ZoneId.of("Europe/London"));
-        int currentCount = incrementCounterAndReturnCurrentValue(tma, utcTimeNow);
-        Metric metricToTransmit = createMetricToTransmit(tma, utcTimeNow);
+        LocalDate now = LocalDate.now();
+        int currentCount = incrementCounterAndReturnCurrentValue(tma, now);
+        Metric metricToTransmit = createMetricToTransmit(tma, now);
 
         metricToTransmit.setCount(currentCount);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
@@ -79,8 +77,8 @@ public class MetricsCounterService {
         ));
     }
 
-    private int incrementCounterAndReturnCurrentValue(TemporaryMetricsAggregation tma, ZonedDateTime utcTimeNow) {
-        String counterId = createCounterIdFromMetric(tma, utcTimeNow);
+    private int incrementCounterAndReturnCurrentValue(TemporaryMetricsAggregation tma, LocalDate now) {
+        String counterId = createCounterIdFromMetric(tma, now);
         log.debug("Incrementing counter with ID {}.", counterId);
 
         Counter counter = meterRegistry.find(counterId).counter();
@@ -91,7 +89,7 @@ public class MetricsCounterService {
         return (int) counter.count();
     }
 
-    private String createCounterIdFromMetric(TemporaryMetricsAggregation tma, ZonedDateTime utcTimeNow) {
+    private String createCounterIdFromMetric(TemporaryMetricsAggregation tma, LocalDate now) {
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
                 .add(tma.getServiceApiName())
@@ -99,12 +97,12 @@ public class MetricsCounterService {
                 .add(tma.getApiKeyValue())
                 .add(tma.getMetricType().toString())
                 .add(String.valueOf(tma.getHttpResponseCode()))
-                .add(utcTimeNow.toLocalDate().toString())
+                .add(now.toString())
                 .add(tma.getPath());
         return stringJoiner.toString();
     }
 
-    private Metric createMetricToTransmit(TemporaryMetricsAggregation tma, ZonedDateTime utcTimeNow) {
+    private Metric createMetricToTransmit(TemporaryMetricsAggregation tma, LocalDate now) {
         Metric metricToTransmit = new Metric();
 
         ApiKey apiKey = new ApiKey();
@@ -114,7 +112,7 @@ public class MetricsCounterService {
         metricToTransmit.setRequestMethod(tma.getRequestMethod());
         metricToTransmit.setType(tma.getMetricType());
         metricToTransmit.setHttpResponseCode(tma.getHttpResponseCode());
-        metricToTransmit.setDateOfApiCall(java.util.Date.from(utcTimeNow.toInstant()));
+        metricToTransmit.setDateOfApiCall(java.util.Date.from(now.atStartOfDay().toInstant(ZoneOffset.UTC)));
         metricToTransmit.setPath(tma.getPath());
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
 
