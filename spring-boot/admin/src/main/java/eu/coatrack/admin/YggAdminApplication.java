@@ -30,12 +30,21 @@ import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
+import java.time.ZoneId;
+import java.util.TimeZone;
+
 @SpringBootApplication
 @EnableSwagger2
 @EnableJpaRepositories("eu.coatrack*")
 @ComponentScan(basePackages = {"eu.coatrack*", "eu.coatrack.*"})
 @EntityScan(basePackages = {"eu.coatrack*", "eu.coatrack.*"})
 public class YggAdminApplication {
+
+    // Quick fix of #237 by setting default time zones of Admin and Gateway to UCT timezone.
+    // In the future, this system should be overhauled by the introduction of ZonedDateTime's.
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("UTC")));
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(YggAdminApplication.class, args);

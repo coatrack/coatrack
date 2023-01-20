@@ -41,8 +41,9 @@ public class MetricsCounterService {
     // Quick fix of #237 by setting default time zones of Admin and Gateway to UCT timezone.
     // In the future, this system should be overhauled by the introduction of ZonedDateTime's.
     static {
-        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("Europe/London")));
+        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of("UTC")));
     }
+
     private static final Logger log = LoggerFactory.getLogger(MetricsCounterService.class);
 
     // this ID should be unique for each start of the proxy application, so that CoatRack admin knows when counting was restarted
@@ -61,9 +62,9 @@ public class MetricsCounterService {
     public void increment(TemporaryMetricsAggregation tma) {
         logBeginningOfIncrementation(tma);
 
-        LocalDate now = LocalDate.now();
-        int currentCount = incrementCounterAndReturnCurrentValue(tma, now);
-        Metric metricToTransmit = createMetricToTransmit(tma, now);
+        LocalDate today = LocalDate.now();
+        int currentCount = incrementCounterAndReturnCurrentValue(tma, today);
+        Metric metricToTransmit = createMetricToTransmit(tma, today);
 
         metricToTransmit.setCount(currentCount);
         metricsTransmitter.transmitToCoatRackAdmin(metricToTransmit);
@@ -77,8 +78,8 @@ public class MetricsCounterService {
         ));
     }
 
-    private int incrementCounterAndReturnCurrentValue(TemporaryMetricsAggregation tma, LocalDate now) {
-        String counterId = createCounterIdFromMetric(tma, now);
+    private int incrementCounterAndReturnCurrentValue(TemporaryMetricsAggregation tma, LocalDate today) {
+        String counterId = createCounterIdFromMetric(tma, today);
         log.debug("Incrementing counter with ID {}.", counterId);
 
         Counter counter = meterRegistry.find(counterId).counter();
@@ -89,7 +90,7 @@ public class MetricsCounterService {
         return (int) counter.count();
     }
 
-    private String createCounterIdFromMetric(TemporaryMetricsAggregation tma, LocalDate now) {
+    private String createCounterIdFromMetric(TemporaryMetricsAggregation tma, LocalDate today) {
         StringJoiner stringJoiner = new StringJoiner(SEPARATOR);
         stringJoiner.add(PREFIX)
                 .add(tma.getServiceApiName())
@@ -97,12 +98,12 @@ public class MetricsCounterService {
                 .add(tma.getApiKeyValue())
                 .add(tma.getMetricType().toString())
                 .add(String.valueOf(tma.getHttpResponseCode()))
-                .add(now.toString())
+                .add(today.toString())
                 .add(tma.getPath());
         return stringJoiner.toString();
     }
 
-    private Metric createMetricToTransmit(TemporaryMetricsAggregation tma, LocalDate now) {
+    private Metric createMetricToTransmit(TemporaryMetricsAggregation tma, LocalDate today) {
         Metric metricToTransmit = new Metric();
 
         ApiKey apiKey = new ApiKey();
@@ -112,7 +113,7 @@ public class MetricsCounterService {
         metricToTransmit.setRequestMethod(tma.getRequestMethod());
         metricToTransmit.setType(tma.getMetricType());
         metricToTransmit.setHttpResponseCode(tma.getHttpResponseCode());
-        metricToTransmit.setDateOfApiCall(java.util.Date.from(now.atStartOfDay().toInstant(ZoneOffset.UTC)));
+        metricToTransmit.setDateOfApiCall(java.util.Date.from(today.atStartOfDay().toInstant(ZoneOffset.UTC)));
         metricToTransmit.setPath(tma.getPath());
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
 
