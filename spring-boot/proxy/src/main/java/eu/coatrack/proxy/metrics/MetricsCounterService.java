@@ -113,7 +113,7 @@ public class MetricsCounterService {
         metricToTransmit.setRequestMethod(tma.getRequestMethod());
         metricToTransmit.setType(tma.getMetricType());
         metricToTransmit.setHttpResponseCode(tma.getHttpResponseCode());
-        metricToTransmit.setDateOfApiCall(java.util.Date.from(today.atStartOfDay().toInstant(ZoneOffset.UTC)));
+        metricToTransmit.setDateOfApiCall(Date.valueOf(today));
         metricToTransmit.setPath(tma.getPath());
         metricToTransmit.setMetricsCounterSessionID(counterSessionID);
 
