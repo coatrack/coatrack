@@ -59,6 +59,8 @@ jobs:
           coatrack_image: 2.0.0-SNAPSHOT
           helm_chart: ${{ secrets.HELM_CHART }}
           helm_chart_version: ${{ secrets.HELM_CHART_VERSION }}
+      - name: docker login
+        run: echo $NEXUS_PASSWORD | docker login docker.bebr.nl -u $NEXUS_USERNAME --password-stdin
       - name: helm update
         run: |
           helm upgrade --cleanup-on-fail --install coatrack bebr/generic-microservice -n coatrack --kubeconfig kubeconfig.yml --values environment-setup/dev/config_dev.yml --set deployments[0].image.tag= 2.0.0-SNAPSHOT --set deployments[1].image.tag= 2.0.0-SNAPSHOT
