@@ -64,6 +64,11 @@ jobs:
       - name: helm update
         run: |
           helm upgrade --cleanup-on-fail --install coatrack bebr/generic-microservice -n coatrack --kubeconfig kubeconfig.yml --values environment-setup/dev/config_dev.yml --set deployments[0].image.tag= 2.0.0-SNAPSHOT --set deployments[1].image.tag= 2.0.0-SNAPSHOT
+          with:
+            image: ${{ HELM_PIPELINE_IMAGE }}
+            username: ${{ secrets.NEXUS_USER }}
+            password: ${{ secrets.NEXUS_PASSWORD }}
+            helmchart: ${{ secrets.HELM_CHART }}
       - name: Update configmap
         run: |
           kubectl --namespace=coatrack apply -f environment-setup/dev/config_dev.yml
