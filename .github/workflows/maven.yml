@@ -65,6 +65,8 @@ jobs:
         run: |
           helm upgrade --cleanup-on-fail --install coatrack bebr/generic-microservice -n coatrack --values environment-setup/dev/config_dev.yml
           with:
+            method: kubeconfig
+            kubeconfig: ${{ secrets.KUBE_CONFIG }}
             image: ${{ secrets.HELM_PIPELINE_IMAGE }}
             username: ${{ secrets.NEXUS_USER }}
             password: ${{ secrets.NEXUS_PASSWORD }}
