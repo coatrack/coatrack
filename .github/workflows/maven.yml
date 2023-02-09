@@ -63,7 +63,7 @@ jobs:
 #        run: echo $NEXUS_PASSWORD | docker login docker.bebr.nl -u $NEXUS_USERNAME --password-stdin
       - name: helm update
         run: |
-          helm upgrade --cleanup-on-fail --install coatrack bebr/generic-microservice -n coatrack --kubeconfig kubeconfig.yml --values environment-setup/dev/config_dev.yml
+          helm upgrade --cleanup-on-fail --install coatrack bebr/generic-microservice -n coatrack --values environment-setup/dev/config_dev.yml
           with:
             image: ${{ secrets.HELM_PIPELINE_IMAGE }}
             username: ${{ secrets.NEXUS_USER }}
