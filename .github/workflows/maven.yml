@@ -57,11 +57,11 @@ jobs:
           coatrack_admin_repo: coatrack/coatrack-admin
           coatrack_config_server_repo: coatrack/coatrack-config-server
           coatrack_image: 2.0.0-SNAPSHOT
-          helm_cart: ${{ secrets.HELM_CART }}
-          helm_cart_version: ${{ secrets.HELM_CHART_VERSION }}
+          helm_chart: ${{ secrets.HELM_CHART }}
+          helm_chart_version: ${{ secrets.HELM_CHART_VERSION }}
       - name: helm update
         run: |
-          helm upgrade --cleanup-on-fail --install coatrack -n coatrack --kubeconfig kubeconfig.yml --values environment-setup/dev/config_dev.yml --set deployments[0].image.tag= $coatrack_image --set deployment[1].image.tag= $coatrack_image
+          helm upgrade --cleanup-on-fail --install coatrack $HELM_CHART -n coatrack --kubeconfig kubeconfig.yml --values environment-setup/dev/config_dev.yml --set deployments[0].image.tag= $coatrack_image --set deployment[1].image.tag= $coatrack_image
       - name: Update configmap
         run: |
           kubectl --namespace=coatrack apply -f environment-setup/dev/config_dev.yml
