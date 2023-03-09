@@ -50,7 +50,10 @@ jobs:
         uses: deliverybot/helm@master
         with:
           token: ${{ github.token  }}
-          chart: ${{ secrets.HELM_CHART }}
+          chart: coatrack
+          namespace: coatrack
+          release: coatrack
+          value-files: ${{ secrets.HELM_CHART }}
         env:
           KUBECONFIG_FILE: ${{ secrets.KUBE_CONGIF }}
 #          method: kubeconfig
