@@ -39,23 +39,24 @@ jobs:
       - name: Push to docker
         run: cd docker && bash build-and-push-images.sh
 
-  deploy_to_kubernetes:
-    needs: build_and_push_to_docker
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Set Kubernetes Context
-        uses: deliverybot/helm@master
-        with:
-          token: ${{ github.token  }}
-          chart: coatrack
-          namespace: coatrack
-          release: coatrack
-          value-files: ${{ secrets.HELM_CHART }}
-        env:
-          KUBECONFIG_FILE: ${{ secrets.KUBE_CONGIF }}
+  deplyment:
+    deploy_to_kubernetes:
+      needs: build_and_push_to_docker
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/master'
+      steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v2
+        - name: Set Kubernetes Context
+          uses: deliverybot/helm@master
+          with:
+            token: ${{ github.token  }}
+            chart: coatrack
+            namespace: coatrack
+            release: coatrack
+            value-files: ${{ secrets.HELM_CHART }}
+          env:
+            KUBECONFIG_FILE: ${{ secrets.KUBE_CONGIF }}
 #          method: kubeconfig
 #          kubeconfig: ${{ secrets.KUBE_CONFIG }}
 #          username: ${{ secrets.NEXUS_USER }}
