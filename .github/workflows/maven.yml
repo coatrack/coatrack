@@ -39,27 +39,55 @@ jobs:
       - name: Push to docker
         run: cd docker && bash build-and-push-images.sh
 
-  deploy_to_kubernetes:
-    needs: build_and_push_to_docker
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
-    steps:
-      - name: Checkout Repo
-        uses: actions/checkout@v2
-      - name: Set Kubernetes Context
-        uses: azure/k8s-set-context@v1
-        with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBE_CONFIG }}
-      - name: Update configmap
-        run: |
-          kubectl --namespace=coatrack apply -f environment-setup/dev/config_dev.yml
-      - name: Update container image coatrack-admin
-        run: |
-          kubectl --namespace=coatrack set image deployment/coatrack-admin coatrack-admin-container=coatrack/coatrack-admin:2.0.0-SNAPSHOT
-      - name: Update container image coatrack-config-server
-        run: |
-          kubectl --namespace=coatrack set image deployment/coatrack-config-server coatrack-config-server-container=coatrack/coatrack-config-server:2.0.0-SNAPSHOT
-      - name: restart containers
-        run: |
-          kubectl --namespace=coatrack rollout restart deploy
+  deplyment:
+    deploy_to_kubernetes:
+      needs: build_and_push_to_docker
+      runs-on: ubuntu-latest
+      if: github.ref == 'refs/heads/master'
+      steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v2
+        - name: Set Kubernetes Context
+          uses: deliverybot/helm@master
+          with:
+            token: ${{ github.token  }}
+            chart: coatrack
+            namespace: coatrack
+            release: coatrack
+            value-files: ${{ secrets.HELM_CHART }}
+          env:
+            KUBECONFIG_FILE: ${{ secrets.KUBE_CONGIF }}
+#          method: kubeconfig
+#          kubeconfig: ${{ secrets.KUBE_CONFIG }}
+#          username: ${{ secrets.NEXUS_USER }}
+#          password: ${{ secrets.NEXUS_PASSWORD }}
+#          docker_support_image: ${{ secrets.HELM_PIPELINE_IMAGE }}
+#          coatrack_admin_repo: coatrack/coatrack-admin
+#          coatrack_config_server_repo: coatrack/coatrack-config-server
+#          coatrack_image: 2.0.0-SNAPSHOT
+#          helm_chart: ${{ secrets.HELM_CHART }}
+#          helm_chart_version: ${{ secrets.HELM_CHART_VERSION }}
+#      - name: docker login
+#        run: echo $NEXUS_PASSWORD | docker login docker.bebr.nl -u $NEXUS_USERNAME --password-stdin
+#      - name: helm update
+#        run: |
+#          helm upgrade --cleanup-on-fail --install coatrack bebr/generic-microservice -n coatrack --values environment-setup/dev/config_dev.yml
+#          with:
+#            method: kubeconfig
+#            kubeconfig: ${{ secrets.KUBE_CONFIG }}
+#            image: ${{ secrets.HELM_PIPELINE_IMAGE }}
+#            username: ${{ secrets.NEXUS_USER }}
+#            password: ${{ secrets.NEXUS_PASSWORD }}
+#            helmchart: ${{ secrets.HELM_CHART }}
+#      - name: Update configmap
+#        run: |
+#          kubectl --namespace=coatrack apply -f environment-setup/dev/config_dev.yml
+#      - name: Update container image coatrack-admin
+#        run: |
+#          kubectl --namespace=coatrack set image deployment/coatrack-admin coatrack-admin-container=coatrack/coatrack-admin:2.0.0-SNAPSHOT
+#      - name: Update container image coatrack-config-server
+#        run: |
+#          kubectl --namespace=coatrack set image deployment/coatrack-config-server coatrack-config-server-container=coatrack/coatrack-config-server:2.0.0-SNAPSHOT
+#      - name: restart containers
+#        run: |
+#          kubectl --namespace=coatrack rollout restart deploy

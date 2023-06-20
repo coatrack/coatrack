@@ -39,6 +39,8 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -58,6 +60,9 @@ public class MetricsControllerTest {
 
     @Autowired
     ApiKeyRepository apiKeyRepository;
+
+    @MockBean
+    OAuth2AuthorizedClientService clientService;
 
     private Metric testMetric;
     private Metric copyOfTestMetric;

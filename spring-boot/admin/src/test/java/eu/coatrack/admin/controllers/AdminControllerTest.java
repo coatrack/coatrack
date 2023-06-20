@@ -32,6 +32,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 
 import java.util.Date;
 
@@ -53,6 +55,9 @@ public class AdminControllerTest {
 
     @Autowired
     ServiceApiRepository serviceApiRepository;
+
+    @MockBean
+    OAuth2AuthorizedClientService clientService;
 
     private Metric testMetric;
     private Metric copyOfTestMetric;

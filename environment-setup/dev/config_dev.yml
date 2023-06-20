@@ -79,10 +79,10 @@ configMaps:
   - name: coatrack-config
     values:
       spring.datasource.username: coatrack
-      spring.datasource.password: coatrack123
+      spring.datasource.password: h8ZDBwq7FRhE97Qa
       spring.datasource.dbname: coatrack_dev
       #spring.datasource.host: kyoe.es
-      spring.datasource.host: "5.9.13.240"
+      spring.datasource.host: "162.55.96.173"
       spring.datasource.port: "5432"
       spring.datasource.url: jdbc:postgresql://${spring.datasource.host}:${spring.datasource.port}/${spring.datasource.dbname}
       spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation: "true"
