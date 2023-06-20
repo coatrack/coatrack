@@ -23,7 +23,11 @@ package eu.coatrack.admin.controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import eu.coatrack.admin.service.GithubService;
+import eu.coatrack.admin.service.GithubUserService;
 import eu.coatrack.api.DataTableView;
+import eu.coatrack.config.github.GithubUserProfile;
+import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,14 +38,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+@Slf4j
 @Controller
 @RequestMapping("/admin/github")
 public class GithubUserController {
 
-    private static final Logger log = LoggerFactory.getLogger(GithubUserController.class);
-
     @Autowired
-    private GithubService githubService;
+    private GithubUserService githubUserService;
 
     /**
      * This method is used to return an empty list for the AJAX default value.
@@ -52,11 +55,8 @@ public class GithubUserController {
      */
     @GetMapping(value = "/search_empty", produces = "application/json")
     @ResponseBody
-    public DataTableView apiKeyGithubUserListPageRestEmpty() throws IOException {
-        DataTableView table = new DataTableView();
-        table.setData(new ArrayList());
-
-        return table;
+    public DataTableView<GithubUserProfile> apiKeyGithubUserListPageRestEmpty() throws IOException {
+        return githubUserService.getEmptyDataTableView();
     }
 
     /**
@@ -72,24 +72,14 @@ public class GithubUserController {
      */
     @GetMapping(value = "/search/{criteria:.+}", produces = "application/json")
     @ResponseBody
-    public DataTableView apiKeyGithubUserListPageRestByCriteria(@PathVariable("criteria") String criteria) throws IOException {
-
-        DataTableView table = new DataTableView();
-
-        table.setData(githubService.findGithubUserProfileByCriteria(criteria));
-
-        return table;
+    public DataTableView<GithubUserProfile> apiKeyGithubUserListPageRestByCriteria(@PathVariable("criteria") String criteria) throws IOException {
+        return githubUserService.getDataTableViewByCriteria(criteria);
     }
 
     @GetMapping(value = "/{username}", produces = "application/json")
     @ResponseBody
-    public DataTableView apiKeyGithubUserListPageRestByUsername(@PathVariable("username") String username) throws IOException {
-
-        DataTableView table = new DataTableView();
-
-        table.setData(githubService.findGithubUserProfileByUsername(username));
-
-        return table;
+    public DataTableView<GithubUserProfile> apiKeyGithubUserListPageRestByUsername(@PathVariable("username") String username) throws IOException {
+        return githubUserService.getDataTableViewByCriteria(username);
     }
 
 }

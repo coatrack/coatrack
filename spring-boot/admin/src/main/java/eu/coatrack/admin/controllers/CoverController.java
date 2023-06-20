@@ -28,8 +28,10 @@ import java.util.UUID;
 import eu.coatrack.admin.model.repository.CoverRepository;
 import eu.coatrack.admin.model.repository.ServiceApiRepository;
 import eu.coatrack.admin.service.CoverImageReadService;
+import eu.coatrack.admin.service.CoverService;
 import eu.coatrack.api.ServiceApi;
 import eu.coatrack.api.ServiceCover;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,51 +45,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+@Slf4j
 @Controller
 @RequestMapping(value = "/admin/covers")
 public class CoverController {
 
-    private static final Logger log = LoggerFactory.getLogger(CoverController.class);
-
     @Autowired
-    private CoverRepository coverRepository;
-
-    @Autowired
-    private ServiceApiRepository serviceRepository;
-
-    @Autowired
-    private CoverImageReadService coverImageReadService;
-
-    @Autowired
-    AdminServicesController adminServicesController;
-
-    @Value("${ygg.admin.servicecovers.path}")
-    private String serviceCoversPath;
-
-    @Value("${ygg.admin.servicecovers.url}")
-    private String serviceCoversUrl;
+    private CoverService coverService;
 
     @RequestMapping(value = "/{id}/upload")
-    public ModelAndView fileUpload(Authentication auth, @PathVariable("id") Long serviceId, @RequestParam("file") MultipartFile file) throws IOException, ParseException, java.text.ParseException {
-
-        ServiceApi service = serviceRepository.findById(serviceId).orElse(null);
-
-        String coverFilename = UUID.randomUUID().toString();
-
-        ServiceCover cover = new ServiceCover();
-        cover.setService(service);
-        cover.setOriginalFileName(StringUtils.cleanPath(file.getOriginalFilename()));
-        cover.setFileName(coverFilename);
-        cover.setFileType(file.getContentType());
-        cover.setSize(file.getSize());
-        cover.setLocalPath(serviceCoversPath + File.separator + coverFilename);
-        cover.setUrl(serviceCoversUrl + coverFilename);
-
-        coverImageReadService.readExcelInputStream(new ByteArrayInputStream(file.getBytes()),
-                new File(cover.getLocalPath()));
-
-        coverRepository.save(cover);
-
-        return adminServicesController.serviceListPage();
+    public ModelAndView fileUpload(Authentication auth, @PathVariable("id") Long serviceId, @RequestParam("file") MultipartFile file) throws IOException, java.text.ParseException {
+        return coverService.fileUpload(auth, serviceId, file);
     }
 }

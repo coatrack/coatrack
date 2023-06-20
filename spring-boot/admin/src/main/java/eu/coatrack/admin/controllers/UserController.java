@@ -9,9 +9,9 @@ package eu.coatrack.admin.controllers;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,14 +19,19 @@ package eu.coatrack.admin.controllers;
  * limitations under the License.
  * #L%
  */
+
 import java.util.Properties;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
+
+import com.sun.org.apache.bcel.internal.generic.RETURN;
 import eu.coatrack.admin.model.repository.TransactionRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
+import eu.coatrack.admin.service.UserService;
 import eu.coatrack.admin.validator.UserValidator;
 import eu.coatrack.api.CreditAccount;
 import eu.coatrack.api.User;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,17 +55,14 @@ import org.springframework.web.servlet.ModelAndView;
 /**
  * @author gr-hovest(at)atb-bremen.de
  */
+
+@Slf4j
 @Controller
 @RequestMapping(value = "/")
 public class UserController {
 
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserValidator userValidator;
+    private UserService userService;
 
     @ModelAttribute("user")
     public User getUserObject() {
@@ -68,117 +70,26 @@ public class UserController {
     }
 
     @RequestMapping("/register")
-    public String registerForm(User user, BindingResult bindingResult, Model model) {
-
-        if (user == null) {
-            user = getUserObject();
-        }
-
-        model.addAttribute("user", user);
-
-        return "register";
+    public String registerForm(User user, Model model) {
+        return userService.registerForm(user, model);
     }
 
-    @Value("${ygg.mail.verify-new-users-via-mail}")
-    private boolean verifyNewUsersViaEmail;
-
-    @Value("${ygg.mail.sender.user}")
-    private String mail_sender_user;
-
-    @Value("${ygg.mail.sender.password}")
-    private String mail_sender_password;
-
-    @Value("${ygg.mail.server.url}")
-    private String mail_server_url;
-
-    @Value("${ygg.mail.server.port}")
-    private int mail_server_port;
-
-    @Value("${ygg.mail.verification.server.url}")
-    private String mail_verification_server_url;
-
-    @Value("${ygg.mail.sender.from}")
-    private String mail_sender_from;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
 
     @PostMapping(value = "/register")
     public String registerUser(User user, BindingResult bindingResult, Model model) throws MessagingException {
-
-        userValidator.validate(user, bindingResult);
-
-        if (bindingResult.hasErrors()) {
-
-            return "register";
-        }
-
-        user.setInitialized(Boolean.FALSE);
-
-        CreditAccount creditAccount = new CreditAccount();
-
-        user.setAccount(creditAccount);
-        creditAccount.setUser(user);
-
-        userRepository.save(user);
-
-        if (verifyNewUsersViaEmail) sendVerificationEmail(user);
-
-        return "redirect:/admin";
+        return userService.registerUser(user, bindingResult, model);
     }
 
-    private void sendVerificationEmail(User user) throws MessagingException {
 
-        JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-        mailSender.setHost(mail_server_url);
-        mailSender.setPort(mail_server_port);
-        mailSender.setProtocol("smtp");
-
-        mailSender.setUsername(mail_sender_user);
-        mailSender.setPassword(mail_sender_password);
-
-        Properties props = mailSender.getJavaMailProperties();
-        props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.debug", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(user.getEmail());
-        helper.setFrom(mail_sender_from);
-        helper.setSubject("Verification of your email address");
-        helper.setText("Dear Sir or Madam </p></p></p> In order to verify your email address, please open the following link: </p> <p><a \n"
-                + "href=\"" + mail_verification_server_url + "/users/" + user.getId() + "/verify/" + user.getEmailVerifiedUrl() + "\">Click</a></p>\n"
-                + "\n"
-                + "<p>Best regards</p>\n"
-                + "\n"
-                + "<p>Coatrack Team</p>", true);
-        mailSender.send(message);
-    }
 
     @GetMapping(value = "users/{id}/verify/{emailVerificationCode}")
     public ModelAndView userEmailVeritification(@PathVariable("id") Long id, @PathVariable("emailVerificationCode") String emailVerificationCode) {
-
-        User user = userRepository.findById(id).orElse(null);
-
-        if (user.getEmailVerifiedUrl().equals(emailVerificationCode)) {
-            user.setEmailVerified(Boolean.TRUE);
-        }
-        userRepository.save(user);
-
-        ModelAndView mav = new ModelAndView();
-
-        mav.setViewName("verified");
-        return mav;
+        return userService.userEmailVeritification(id, emailVerificationCode);
     }
 
     @RequestMapping(value = "/me", method = RequestMethod.GET, produces = "application/json")
     @ResponseBody
     public User me() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userRepository.findByUsername(auth.getName());
-        return user;
+        return userService.me();
     }
 }
