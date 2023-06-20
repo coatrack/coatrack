@@ -20,37 +20,17 @@ package eu.coatrack.admin.controllers;
  * #L%
  */
 
-import java.util.Properties;
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-
-import com.sun.org.apache.bcel.internal.generic.RETURN;
-import eu.coatrack.admin.model.repository.TransactionRepository;
-import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.admin.service.UserService;
-import eu.coatrack.admin.validator.UserValidator;
-import eu.coatrack.api.CreditAccount;
 import eu.coatrack.api.User;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.mail.MessagingException;
 
 /**
  * @author gr-hovest(at)atb-bremen.de
