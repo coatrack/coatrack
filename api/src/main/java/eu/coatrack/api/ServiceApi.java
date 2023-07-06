@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -45,6 +46,7 @@ public class ServiceApi implements ServiceApiInterface{
     @Column(nullable = false)
     private String name;
 
+    @Size(max=1000)
     private String description;
 
     @Column(nullable = false)
@@ -235,10 +237,7 @@ public class ServiceApi implements ServiceApiInterface{
             return false;
         }
         final ServiceApi other = (ServiceApi) obj;
-        if (this.id != other.id) {
-            return false;
-        }
-        return true;
+        return this.id == other.id;
     }
 
     @Override

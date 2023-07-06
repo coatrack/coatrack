@@ -37,6 +37,8 @@ import eu.coatrack.admin.components.WebUI;
 import eu.coatrack.admin.model.repository.MetricsAggregationCustomRepository;
 import eu.coatrack.admin.model.repository.UserRepository;
 import eu.coatrack.admin.model.vo.StatisticsPerHttpStatusCode;
+import eu.coatrack.admin.service.AdminConsumerService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,65 +72,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 /**
  * @author Timon Veenstra <tveenstra@bebr.nl>
  */
+@Slf4j
 @Controller
 @RequestMapping(value = "/admin/consumer")
 public class AdminConsumerController {
-
-    private static final Logger log = LoggerFactory.getLogger(AdminConsumerController.class);
-
-    private static final String ADMIN_HOME_VIEW = "admin/dashboard";
-
-    private static final String ADMIN_CONSUMER_HOME_VIEW = "admin/consumer_dashboard";
-
     @Autowired
-    MetricsAggregationCustomRepository metricsAggregationCustomRepository;
+    private AdminConsumerService adminConsumerService;
 
-    @Autowired
-    MetricRepository metricRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private ServiceApiRepository serviceApiRepository;
-
-    @Autowired
-    UserController userController;
-
-    @Autowired
-    ReportController reportController;
-
-    @Autowired
-    WebUI webUI;
-
-    @Autowired
-    UserSessionSettings session;
 
     @RequestMapping(value = "", method = GET)
     public ModelAndView home(Model model) throws IOException {
-
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        ModelAndView mav = new ModelAndView();
-
-        if (auth.isAuthenticated()) {
-
-            if (userRepository.findByUsername(auth.getName()) != null) {
-
-                boolean end = false;
-                boolean found = false;
-
-                List<ServiceApi> services = serviceApiRepository.findByOwnerUsername(auth.getName());
-
-                // IT IS A CONSUMER USER
-                mav.setViewName(ADMIN_CONSUMER_HOME_VIEW);
-
-            }
-
-        }
-
-        return mav;
-
+        return adminConsumerService.home(model);
     }
 
     @RequestMapping(value = "/dashboard/userStatsDoughnutChart", method = GET, produces = "application/json")
@@ -137,23 +91,7 @@ public class AdminConsumerController {
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        List<StatisticsPerService> userStatsList = metricsAggregationCustomRepository.getConsumerStatisticsPerApiConsumerInDescendingOrderByNoOfCalls(selectedTimePeriodStart, selectedTimePeriodEnd, auth.getName());
-        DoughnutDataset dataset = new DoughnutDataset()
-                .setLabel("API calls")
-                .addBackgroundColors(Color.AQUA_MARINE, Color.LIGHT_BLUE, Color.LIGHT_SALMON, Color.LIGHT_BLUE, Color.GRAY)
-                .setBorderWidth(2);
-        userStatsList.forEach(stats -> dataset.addData(stats.getNoOfCalls()));
-        if (userStatsList.size() > 0) {
-            DoughnutData data = new DoughnutData()
-                    .addDataset(dataset);
-            userStatsList.forEach(stats -> data.addLabel(stats.getService()));
-
-            return new DoughnutChart(data);
-        } else {
-            return new DoughnutChart();
-        }
+        return adminConsumerService.generateUserStatisticsDoughnutChart(selectedTimePeriodStart, selectedTimePeriodEnd);
     }
 
     @RequestMapping(value = "/dashboard/statsPerDayLineChart", method = GET, produces = "application/json")
@@ -162,49 +100,7 @@ public class AdminConsumerController {
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerDay> statsList = metricsAggregationCustomRepository.getNoOfCallsPerDayForDateRange(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd, null,
-                auth.getName());
-
-        // create a map with entries for all days in the given date range
-        Map<LocalDate, Long> callsPerDay = new TreeMap<>();
-        long timePeriodDurationInDays = ChronoUnit.DAYS.between(selectedTimePeriodStart, selectedTimePeriodEnd);
-        for (int i = 0; i <= timePeriodDurationInDays; i++) {
-            // put "0" as default, in case no calls are registered in database
-            callsPerDay.put(selectedTimePeriodStart.plusDays(i), 0l);
-        }
-
-        // add numbers from database, if any
-        statsList.forEach(statisticsPerDay -> {
-            callsPerDay.put(
-                    statisticsPerDay.getLocalDate(),
-                    statisticsPerDay.getNoOfCalls());
-        });
-
-        // create actual chart
-        LineDataset dataset = new LineDataset()
-                .setLabel("Total number of API calls per day")
-                .setBackgroundColor(Color.LIGHT_YELLOW)
-                .setBorderWidth(3);
-        LineData data = new LineData()
-                .addDataset(dataset);
-
-        callsPerDay.forEach((date, noOfCalls) -> {
-            data.addLabel(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
-            dataset.addData(noOfCalls)
-                    .addPointStyle(PointStyle.CIRCLE)
-                    .addPointBorderWidth(2)
-                    .setLineTension(0f)
-                    .setSteppedLine(false)
-                    .addPointBackgroundColor(Color.LIGHT_YELLOW)
-                    .addPointBorderColor(Color.LIGHT_GRAY);
-        });
-        LineOptions lineOptions = new LineOptions().setScales(new LinearScales().addyAxis(
-                new LinearScale().setTicks(new LinearTicks().setBeginAtZero(true))));
-
-        return new LineChart(data, lineOptions);
+       return adminConsumerService.generateStatsPerDayLineChart(selectedTimePeriodStart, selectedTimePeriodEnd);
     }
 
     @RequestMapping(value = "/dashboard/httpResponseStatsChart", method = GET, produces = "application/json")
@@ -213,25 +109,7 @@ public class AdminConsumerController {
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<StatisticsPerHttpStatusCode> statsList = metricsAggregationCustomRepository.getNoOfCallsPerHttpResponseCode(
-                selectedTimePeriodStart,
-                selectedTimePeriodEnd, null,
-                auth.getName());
-        if (statsList.size() > 0) {
-            DoughnutDataset dataset = new DoughnutDataset()
-                    .setLabel("HTTP response codes")
-                    .addBackgroundColors(Color.LIGHT_BLUE, Color.LIGHT_GRAY, Color.LIGHT_SALMON, Color.AZURE, Color.BLACK)
-                    .setBorderWidth(2);
-            statsList.forEach(stats -> dataset.addData(stats.getNoOfCalls()));
-
-            DoughnutData data = new DoughnutData()
-                    .addDataset(dataset);
-            statsList.forEach(stats -> data.addLabel(stats.getStatusCode().toString()));
-            return new DoughnutChart(data);
-        } else {
-            return new DoughnutChart();
-        }
+        return adminConsumerService.generateHttpResponseStatisticsDoughnutChart(selectedTimePeriodStart, selectedTimePeriodEnd);
     }
 
     @RequestMapping(value = "/dashboard/metricsByLoggedUserStatistics", method = GET, produces = "application/json")
@@ -239,10 +117,8 @@ public class AdminConsumerController {
     private Iterable<Metric> loadCallsStatistics(
             @RequestParam("dateFrom") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodStart,
             @RequestParam("dateUntil") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate selectedTimePeriodEnd) {
-        log.debug("List of Calls by the user during the date range from " + selectedTimePeriodStart + " and " + selectedTimePeriodEnd);
 
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return metricRepository.retrieveByUserConsumer(auth.getName(), Date.valueOf(selectedTimePeriodStart), Date.valueOf(selectedTimePeriodEnd));
+        return adminConsumerService.loadCallsStatistics(selectedTimePeriodStart, selectedTimePeriodEnd);
     }
 
 }
