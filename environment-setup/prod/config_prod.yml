@@ -36,6 +36,10 @@ data:
   ygg.admin.payment.commision.variable: "50"
   ygg.admin.payment.commision.fix: "1"
   ygg.admin.payment.commision.bookKeeping.contact: fperezduran@bebr.nl
+  
+  # ***********
+  # General
+  # ***********
   ygg.admin.api-base-url-for-gateway: "https://coatrack.eu/api/"
   ygg.admin.server.url: "https://coatrack.eu"
   ygg.admin.database.insertSampleDataOnStartup: "false"
