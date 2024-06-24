@@ -74,8 +74,13 @@
                                     <td th:text=" ${proxy.description}">proxy description</td>
                                     <td class="text-center ">
                                         <a th:href="|@{/admin/proxies/}${proxy.id}/download|">
+                                           <button>
+                                               <i class="glyphicon glyphicon-download-alt"></i>
+                                           </button>
+                                        </a>
+                                        <a th:href="|@{/admin/proxies/}${proxy.id}/downloadGatewayDockerComposeFile|">
                                             <button>
-                                                <i class="glyphicon glyphicon-download-alt"></i>
+                                                <i class="fa fa-save"></i>
                                             </button>
                                         </a>
                                     </td>

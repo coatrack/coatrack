@@ -93,7 +93,7 @@ public class GatewayAuthProvider implements AuthenticationProvider {
 
             if (proxy != null) {
                 log.debug("Proxy was found by gateway api key verifier: " + proxy);
-                if (proxy.getCredentialName().equals(authToken.getUser()) && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
+                if (proxy.getConfigServerUsername().equals(authToken.getUser()) && proxy.getConfigServerPassword().equals(authToken.getPassword())) {
                     return true;
                 } else {
                     log.debug("Gateway's Credential doesnt match for apiKey/UUID" + gatewayUUID);

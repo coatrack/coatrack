@@ -36,18 +36,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Component
 public class WebUI {
 
-    private static final Logger log = LoggerFactory.getLogger(WebUI.class);
-
     @Resource
     private MessageSource messageSource;
+
+    public String parameterizedMessage(String code, Object... params) {
+        return getMessage(code, params);
+    }
 
     public String getMessage(String code, Object... params) {
         Locale current = LocaleContextHolder.getLocale();
         return messageSource.getMessage(code, params, current);
-    }
-
-    public String parameterizedMessage(String code, Object... params) {
-        String localizedMessage = getMessage(code, params);
-        return localizedMessage;
     }
 }

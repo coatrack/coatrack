@@ -118,7 +118,7 @@ public class CreateProxyAction implements Action {
 
             log.debug("Trying to POST credentials of new proxy {} to config server at {}", proxy.getId(), config_server_credentials_url);
             ConfigServerCredential credentialGenerated = restTemplate.postForObject(config_server_credentials_url+"/credentials", configServerCredential, ConfigServerCredential.class);
-            proxy.setConfigServerName(credentialGenerated.getName());
+            proxy.setConfigServerUsername(credentialGenerated.getName());
 
             proxy.setOwner(user);
             proxy = proxyRepository.save(proxy);
